@@ -1,0 +1,6 @@
+<!-- Included from `model_with_assets.xml` -->
+<mujoco>
+  <worldbody>
+    <geom type="sphere" size="1" pos="1 0 0"/>
+  </worldbody>
+</mujoco>

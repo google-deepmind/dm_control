@@ -1,0 +1,62 @@
+<!-- Cartpole Model
+
+State-Space (name/joint/parameter):
+
+- cart      slider      position (m)
+- pole      hinge       angle (rad)
+- cart      slider      velocity (m/s)
+- pole      hinge       angular velocity (rad/s)
+
+Actuators (name/actuator/parameter):
+
+- cart      motor       force x (N)
+-->
+<mujoco model='test_cartpole'>
+  <compiler inertiafromgeom='true' coordinate='local'/>
+
+  <custom>
+    <numeric name="control_timestep" data="0.04" />
+  </custom>
+
+  <option timestep='0.01'/>
+
+  <default>
+    <joint damping='0.05' solreflimit='.08 1'/>
+    <geom contype='0' friction='1 0.1 0.1'/>
+  </default>
+
+  <worldbody>
+    <camera name='fixed' pos='0 -2.5 0' quat='0.707 0.707 0 0'/>
+    <geom name='floor' pos='0 0 -1' size='4 4 4' type='plane' />
+    <geom name='rail1' type='capsule' pos='0 .07 0' quat='0.707 0 0.707 0'
+          size='0.02 1.2' />
+    <geom name='rail2' type='capsule' pos='0 -.07 0' quat='0.707 0 0.707 0'
+          size='0.02 1.2' />
+    <body name='cart' pos='0 0 0'>
+      <camera pos='0 -2.5 0' quat='0.707 0.707 0 0' />
+      <joint name='slider' type='slide' limited='true' pos='0 0 0'
+               axis='1 0 0' range='-1 1' />
+      <geom name='cart' type='box' pos='0 0 0'
+              size='0.2 0.1 0.05' rgba='0.7 0.7 0 1' />
+      <site name='cart sensor' type='box' pos='0 0 0'
+              size='0.2 0.1 0.05' rgba='0.7 0.7 0 0' />
+      <body name='pole' pos='0 0 0'>
+        <camera name='pole'  pos='0 -2.5 0' quat='0.707 0.707 0 0' />
+        <joint name='hinge' type='hinge' pos='0 0 0' axis='0 1 0'/>
+        <geom type='capsule' fromto='0 0 0 0 0 0.6'
+                size='0.045 0.3' rgba='0 0.7 0.7 1' />
+        <site type='sphere' size='.01' name='tip' pos='.001 0 .6'/>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <motor name='slide' joint='slider' gear='50' ctrllimited='true' ctrlrange='-1 1' />
+  </actuator>
+
+  <sensor>
+    <accelerometer name="accelerometer" site="cart sensor"/>
+    <touch name="collision" site="cart sensor"/>
+  </sensor>
+
+</mujoco>

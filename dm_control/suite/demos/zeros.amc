@@ -1,0 +1,213 @@
+#DUMMY AMC for testing
+:FULLY-SPECIFIED
+:DEGREES
+1
+root 0 0 0 0 0 0
+lowerback 0 0 0
+upperback 0 0 0
+thorax 0 0 0
+lowerneck 0 0 0
+upperneck 0 0 0
+head 0 0 0
+rclavicle 0 0
+rhumerus 0 0 0
+rradius 0
+rwrist 0
+rhand 0 0
+rfingers 0
+rthumb 0 0
+lclavicle 0 0
+lhumerus 0 0 0
+lradius 0
+lwrist 0
+lhand 0 0
+lfingers 0
+lthumb 0 0
+rfemur 0 0 0
+rtibia 0
+rfoot 0 0
+rtoes 0
+lfemur 0 0 0
+ltibia 0
+lfoot 0 0
+ltoes 0
+2
+root 0 0 0 0 0 0
+lowerback 0 0 0
+upperback 0 0 0
+thorax 0 0 0
+lowerneck 0 0 0
+upperneck 0 0 0
+head 0 0 0
+rclavicle 0 0
+rhumerus 0 0 0
+rradius 0
+rwrist 0
+rhand 0 0
+rfingers 0
+rthumb 0 0
+lclavicle 0 0
+lhumerus 0 0 0
+lradius 0
+lwrist 0
+lhand 0 0
+lfingers 0
+lthumb 0 0
+rfemur 0 0 0
+rtibia 0
+rfoot 0 0
+rtoes 0
+lfemur 0 0 0
+ltibia 0
+lfoot 0 0
+ltoes 0
+3
+root 0 0 0 0 0 0
+lowerback 0 0 0
+upperback 0 0 0
+thorax 0 0 0
+lowerneck 0 0 0
+upperneck 0 0 0
+head 0 0 0
+rclavicle 0 0
+rhumerus 0 0 0
+rradius 0
+rwrist 0
+rhand 0 0
+rfingers 0
+rthumb 0 0
+lclavicle 0 0
+lhumerus 0 0 0
+lradius 0
+lwrist 0
+lhand 0 0
+lfingers 0
+lthumb 0 0
+rfemur 0 0 0
+rtibia 0
+rfoot 0 0
+rtoes 0
+lfemur 0 0 0
+ltibia 0
+lfoot 0 0
+ltoes 0
+4
+root 0 0 0 0 0 0
+lowerback 0 0 0
+upperback 0 0 0
+thorax 0 0 0
+lowerneck 0 0 0
+upperneck 0 0 0
+head 0 0 0
+rclavicle 0 0
+rhumerus 0 0 0
+rradius 0
+rwrist 0
+rhand 0 0
+rfingers 0
+rthumb 0 0
+lclavicle 0 0
+lhumerus 0 0 0
+lradius 0
+lwrist 0
+lhand 0 0
+lfingers 0
+lthumb 0 0
+rfemur 0 0 0
+rtibia 0
+rfoot 0 0
+rtoes 0
+lfemur 0 0 0
+ltibia 0
+lfoot 0 0
+ltoes 0
+5
+root 0 0 0 0 0 0
+lowerback 0 0 0
+upperback 0 0 0
+thorax 0 0 0
+lowerneck 0 0 0
+upperneck 0 0 0
+head 0 0 0
+rclavicle 0 0
+rhumerus 0 0 0
+rradius 0
+rwrist 0
+rhand 0 0
+rfingers 0
+rthumb 0 0
+lclavicle 0 0
+lhumerus 0 0 0
+lradius 0
+lwrist 0
+lhand 0 0
+lfingers 0
+lthumb 0 0
+rfemur 0 0 0
+rtibia 0
+rfoot 0 0
+rtoes 0
+lfemur 0 0 0
+ltibia 0
+lfoot 0 0
+ltoes 0
+6
+root 0 0 0 0 0 0
+lowerback 0 0 0
+upperback 0 0 0
+thorax 0 0 0
+lowerneck 0 0 0
+upperneck 0 0 0
+head 0 0 0
+rclavicle 0 0
+rhumerus 0 0 0
+rradius 0
+rwrist 0
+rhand 0 0
+rfingers 0
+rthumb 0 0
+lclavicle 0 0
+lhumerus 0 0 0
+lradius 0
+lwrist 0
+lhand 0 0
+lfingers 0
+lthumb 0 0
+rfemur 0 0 0
+rtibia 0
+rfoot 0 0
+rtoes 0
+lfemur 0 0 0
+ltibia 0
+lfoot 0 0
+ltoes 0
+7
+root 0 0 0 0 0 0
+lowerback 0 0 0
+upperback 0 0 0
+thorax 0 0 0
+lowerneck 0 0 0
+upperneck 0 0 0
+head 0 0 0
+rclavicle 0 0
+rhumerus 0 0 0
+rradius 0
+rwrist 0
+rhand 0 0
+rfingers 0
+rthumb 0 0
+lclavicle 0 0
+lhumerus 0 0 0
+lradius 0
+lwrist 0
+lhand 0 0
+lfingers 0
+lthumb 0 0
+rfemur 0 0 0
+rtibia 0
+rfoot 0 0
+rtoes 0
+lfemur 0 0 0
+ltibia 0
+lfoot 0 0
+ltoes 0

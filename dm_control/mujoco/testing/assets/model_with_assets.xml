@@ -1,0 +1,13 @@
+<!-- A model with externally defined assets (a texture, a mesh, and a supplementary XML file) -->
+
+<mujoco model="Textured cube mesh and sphere">
+  <asset>
+    <mesh name="cube" file="mesh.stl"/>
+    <texture name="texture" file="texture.png"/>
+    <material name="mat_texture" texture="texture"/>
+  </asset>
+  <include file="included.xml"/>
+  <worldbody>
+    <geom type="mesh" mesh="cube" material="mat_texture"/>
+  </worldbody>
+</mujoco>
