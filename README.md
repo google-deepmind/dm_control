@@ -9,7 +9,7 @@ This package contains:
 
 - Libraries that provide Python bindings to the MuJoCo physics engine.
 
-If you use this package, please cite our accompanying accompanying [tech report](tech_report.pdf).
+If you use this package, please cite our accompanying accompanying [tech report](https://arxiv.org/abs/1801.00690).
 
 ## Installation and requirements
 
@@ -75,7 +75,7 @@ while not time_step.last():
   print(time_step.reward, time_step.discount, time_step.observation)
 ```
 
-See our [tech report](tech_report.pdf) for further details.
+See our [tech report](https://arxiv.org/abs/1801.00690) for further details.
 
 ## Illustration video
 
