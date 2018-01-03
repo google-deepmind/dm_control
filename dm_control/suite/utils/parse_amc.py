@@ -29,6 +29,11 @@ import numpy as np
 
 from scipy import interpolate
 
+try:
+  xrange          # Python 2
+except NameError:
+  xrange = range  # Python 3
+
 mjlib = mjbindings.mjlib
 
 MOCAP_DT = 1.0/120.0
