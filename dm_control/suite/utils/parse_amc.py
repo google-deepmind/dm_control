@@ -21,6 +21,8 @@ from __future__ import print_function
 
 import collections
 
+from six.moves import xrange  # pylint: disable=redefined-builtin
+
 # Internal dependencies.
 
 from dm_control.mujoco.wrapper import mjbindings
@@ -28,11 +30,6 @@ from dm_control.mujoco.wrapper import mjbindings
 import numpy as np
 
 from scipy import interpolate
-
-try:
-  xrange          # Python 2
-except NameError:
-  xrange = range  # Python 3
 
 mjlib = mjbindings.mjlib
 
