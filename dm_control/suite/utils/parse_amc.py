@@ -29,6 +29,8 @@ import numpy as np
 
 from scipy import interpolate
 
+from six.moves import xrange  # pylint: disable=redefined-builtin
+
 mjlib = mjbindings.mjlib
 
 MOCAP_DT = 1.0/120.0
