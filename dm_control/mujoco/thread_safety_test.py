@@ -19,8 +19,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from six.moves import xrange  # pylint: disable=redefined-builtin
-
 # Internal dependencies.
 
 from absl.testing import absltest
@@ -28,6 +26,8 @@ from absl.testing import absltest
 from dm_control.mujoco import engine
 from dm_control.mujoco.testing import assets
 from dm_control.mujoco.testing import decorators
+
+from six.moves import xrange  # pylint: disable=redefined-builtin
 
 MODEL = assets.get_contents('cartpole.xml')
 NUM_STEPS = 10
