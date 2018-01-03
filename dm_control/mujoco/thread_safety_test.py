@@ -30,6 +30,11 @@ from dm_control.mujoco.testing import decorators
 MODEL = assets.get_contents('cartpole.xml')
 NUM_STEPS = 10
 
+try:
+  xrange          # Python 2
+except NameError:
+  xrange = range  # Python 3
+
 
 class ThreadSafetyTest(absltest.TestCase):
 
