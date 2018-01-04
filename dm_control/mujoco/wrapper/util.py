@@ -23,6 +23,7 @@ import ctypes
 import ctypes.util
 import functools
 import os
+import platform
 import sys
 import threading
 # Internal dependencies.
@@ -37,17 +38,23 @@ ENV_MJLIB_PATH = "MJLIB_PATH"
 ENV_MJKEY_PATH = "MJKEY_PATH"
 
 
-def _find_shared_library_extension():
+MJLIB_NAME = "mujoco150"
+
+
+def _get_shared_library_filename():
   try:
     libc_path = ctypes.util.find_library("c")
     libc_filename = os.path.split(libc_path)[1]
-    return "." + libc_filename.split(".")[1]
+    prefix = "lib" if libc_filename.startswith("lib") else ""
+    extension = libc_filename.split(".")[1]
   except (AttributeError, IndexError):
-    return ".so"
+    prefix = "lib"
+    extension = "so"
+  return "{}{}.{}".format(prefix, MJLIB_NAME, extension)
 
 
-SHARED_LIB_EXT = _find_shared_library_extension()
-DEFAULT_MJLIB_PATH = "~/.mujoco/mjpro150/bin/libmujoco150" + SHARED_LIB_EXT
+DEFAULT_MJLIB_PATH = os.path.join(
+    "~/.mujoco/mjpro150/bin", _get_shared_library_filename())
 DEFAULT_MJKEY_PATH = "~/.mujoco/mjkey.txt"
 
 
@@ -90,8 +97,12 @@ def get_mjlib():
     for library_path in paths_to_try:
       try:
         return ctypes.cdll.LoadLibrary(library_path)
-      except OSError:
-        pass
+      except OSError as e:
+        if "undefined symbol" in str(e) and platform.system() == "Linux":
+          # This means that we've found MuJoCo but haven't loaded GLEW.
+          ctypes.CDLL(ctypes.util.find_library("GL"), ctypes.RTLD_GLOBAL)
+          ctypes.CDLL(ctypes.util.find_library("GLEW"), ctypes.RTLD_GLOBAL)
+          return ctypes.cdll.LoadLibrary(library_path)
     raw_path = DEFAULT_MJLIB_PATH
   return ctypes.cdll.LoadLibrary(_get_full_path(raw_path))
 

@@ -39,6 +39,12 @@ Follow these steps to install `dm_control`:
    non-default paths, specify their locations using the `MJKEY_PATH` and
    `MJLIB_PATH` environment variables respectively.
 
+## Additional instructions for Linux
+
+Install `GLFW` and `GLEW` through your Linux distribution's package manager.
+For example, on Debian and Ubuntu, this can be done by running
+`sudo apt-get install libglfw3 libglew2.0`.
+
 ## Additional instructions for Homebrew users on macOS
 
 1. The above instructions using `pip` should work, provided that you
