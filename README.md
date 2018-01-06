@@ -1,4 +1,4 @@
-# `dm_control`: The DeepMind Control Suite and Control Package
+# `dm_control`: The DeepMind Control Suite and Package
 
 # ![all domains](all_domains.png)
 
