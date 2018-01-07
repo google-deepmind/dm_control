@@ -43,10 +43,14 @@ MJLIB_NAME = "mujoco150"
 
 def _get_shared_library_filename():
   try:
-    libc_path = ctypes.util.find_library("c")
-    libc_filename = os.path.split(libc_path)[1]
-    prefix = "lib" if libc_filename.startswith("lib") else ""
-    extension = libc_filename.split(".")[1]
+    if sys.platform == 'win32':
+      prefix = ''
+      extension = 'dll'
+    else:
+      libc_path = ctypes.util.find_library("c")
+      libc_filename = os.path.split(libc_path)[1]
+      prefix = "lib" if libc_filename.startswith("lib") else ""
+      extension = libc_filename.split(".")[1]
   except (AttributeError, IndexError):
     prefix = "lib"
     extension = "so"
