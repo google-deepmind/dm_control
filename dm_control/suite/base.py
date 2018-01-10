@@ -60,16 +60,16 @@ class Task(control.Task):
     return self._random
 
   def action_spec(self, physics):
-    """Returns actions corresponding to the Mujoco actuators."""
+    """Returns a `BoundedArraySpec` matching the `physics` actuators."""
     return mujoco.action_spec(physics)
 
-  def before_step(self, actions, physics):
-    """Sets actuation from the continuous actions."""
+  def before_step(self, action, physics):
+    """Sets the control signal for the actuators to values in `action`."""
     # Support legacy internal code.
     try:
-      physics.set_control(actions.continuous_actions)
+      physics.set_control(action.continuous_actions)
     except AttributeError:
-      physics.set_control(actions)
+      physics.set_control(action)
 
     # Reset any reward visualisation at the start of a new episode.
     if self._visualize_reward and physics.time() == 0.0:

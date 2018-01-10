@@ -283,7 +283,9 @@ class Task(object):
     Called by `control.Environment` before stepping the physics engine.
 
     Args:
-      action: Actions proto.
+      action: numpy array or array-like action values, or a nested structure of
+        such arrays. Should conform to the specification returned by
+        `self.action_spec(physics)`.
       physics: Instance of `Physics`.
     """
 
@@ -302,10 +304,15 @@ class Task(object):
 
   @abc.abstractmethod
   def action_spec(self, physics):
-    """Returns a nested structure of `ArraySpec`s describing the actions.
+    """Returns a specification describing the valid actions for this task.
 
     Args:
       physics: Instance of `Physics`.
+
+    Returns:
+      A `BoundedArraySpec`, or a nested structure containing `BoundedArraySpec`s
+      that describe the shapes, dtypes and elementwise lower and upper bounds
+      for the action array(s) passed to `self.step`.
     """
 
   @abc.abstractmethod

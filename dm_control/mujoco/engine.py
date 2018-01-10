@@ -745,7 +745,7 @@ class TextOverlay(object):
 
 
 def action_spec(physics):
-  """Returns an `BoundedArraySpec` matching the `Physics` actuators."""
+  """Returns a `BoundedArraySpec` matching the `physics` actuators."""
   num_actions = physics.model.nu
   is_limited = physics.model.actuator_ctrllimited.ravel().astype(np.bool)
   control_range = physics.model.actuator_ctrlrange
