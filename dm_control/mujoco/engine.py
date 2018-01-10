@@ -299,7 +299,7 @@ class Physics(_control.Physics):
     # Forcibly clear the previous context to avoid problems with GL
     # implementations which do not support multiple contexts on a given device.
     if hasattr(self, '_contexts'):
-      self._contexts.gl.free_context()
+      self._contexts.gl.free()
 
     # Set up rendering context. Need to provide at least one rendering api in
     # the BUILD target.

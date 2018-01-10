@@ -13,7 +13,7 @@
 # limitations under the License.
 # ============================================================================
 
-"""Tests for GLFWRenderer."""
+"""Tests for GLFWContext."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -23,32 +23,42 @@ from __future__ import print_function
 
 from absl.testing import absltest
 
-from dm_control import render
+from dm_control.render import glfw_renderer
 
-import glfw
 import mock
 
 MAX_WIDTH = 1024
 MAX_HEIGHT = 1024
+CONTEXT_PATH = glfw_renderer.__name__ + ".glfw"
 
 
-class GLFWRendererTest(absltest.TestCase):
+@mock.patch(CONTEXT_PATH)
+class GLFWContextTest(absltest.TestCase):
 
-  @mock.patch(render.__name__ + ".glfw_renderer.glfw", spec=glfw)
-  def test_context_activation_and_deactivation(self, mock_glfw):
-    context = mock.MagicMock()
+  def setUp(self):
+    self.context = mock.MagicMock()
 
-    mock_glfw.create_window = mock.MagicMock(return_value=context)
-    mock_glfw.get_current_context = mock.MagicMock(return_value=None)
+    with mock.patch(CONTEXT_PATH):
+      self.renderer = glfw_renderer.GLFWContext(MAX_WIDTH, MAX_HEIGHT)
 
-    renderer = render.Renderer(MAX_WIDTH, MAX_HEIGHT)
-    renderer.make_context_current = mock.MagicMock()
+  def tearDown(self):
+    self.renderer._context = None
 
-    with renderer.make_current(2, 2):
-      mock_glfw.make_context_current.assert_called_once_with(context)
-      mock_glfw.make_context_current.reset_mock()
+  def test_activation(self, mock_glfw):
+    self.renderer.activate(MAX_WIDTH, MAX_HEIGHT)
+    mock_glfw.make_context_current.assert_called_once()
 
-    mock_glfw.make_context_current.assert_called_once_with(None)
+  def test_deactivation(self, mock_glfw):
+    self.renderer.deactivate()
+    mock_glfw.make_context_current.assert_called_once()
+
+  def test_freeing(self, mock_glfw):
+    self.renderer._context = mock.MagicMock()
+    self.renderer._previous_context = mock.MagicMock()
+    self.renderer.free()
+    mock_glfw.destroy_window.assert_called_once()
+    self.assertIsNone(self.renderer._context)
+    self.assertIsNone(self.renderer._previous_context)
 
 
 if __name__ == "__main__":

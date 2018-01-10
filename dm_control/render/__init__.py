@@ -21,15 +21,15 @@ descending priority: EGL > GLFW > OSMesa.
 
 # pylint: disable=g-import-not-at-top
 try:
-  from dm_control.render.glfw_renderer import GLFWRenderer as _GLFWRenderer
+  from dm_control.render.glfw_renderer import GLFWContext as _GLFWRenderer
 except (ImportError, IOError):
   _GLFWRenderer = None
 try:
-  from dm_control.render.egl_renderer import EGLRenderer as _EGLRenderer
+  from dm_control.render.egl_renderer import EGLContext as _EGLRenderer
 except ImportError:
   _EGLRenderer = None
 try:
-  from dm_control.render.osmesa_renderer import OSMesaRenderer as _OSMesaRenderer
+  from dm_control.render.osmesa_renderer import OSMesaContext as _OSMesaRenderer
 except ImportError:
   _OSMesaRenderer = None
 # pylint: enable=g-import-not-at-top
