@@ -271,16 +271,18 @@ def _create_finalizer(ptr, free_func):
       as its only argument when `ptr` is garbage collected.
   """
   ptr_type = type(ptr)
-  address = ctypes.addressof(ptr)
+  address = ctypes.addressof(ptr.contents)
 
   if address not in _FINALIZERS:  # Only one finalizer needed per address.
+
+    logging.debug("Allocated %s at %x", ptr_type.__name__, address)
 
     def callback(dead_ptr_ref):
       del dead_ptr_ref  # Unused weakref to the dead ctypes pointer object.
       # Temporarily resurrect the dead pointer so that we can free it.
-      temp_ptr = ptr_type.from_address(address)
-      logging.debug("Freeing %s", temp_ptr)
+      temp_ptr = ctypes.cast(address, ptr_type)
       free_func(temp_ptr)
+      logging.debug("Freed %s at %x", ptr_type.__name__, address)
       del _FINALIZERS[address]  # Remove the weakref from the global cache.
 
     # Store weakrefs in a global cache so that they don't get garbage collected
