@@ -31,6 +31,7 @@ from dm_control.mujoco.wrapper.mjbindings import mjlib
 
 from dm_control.rl import control
 
+import mock
 import numpy as np
 from six.moves import cPickle
 from six.moves import xrange  # pylint: disable=redefined-builtin
@@ -210,6 +211,19 @@ class MujocoEngineTest(parameterized.TestCase):
     physics = engine.Physics.from_xml_string(
         MODEL_WITH_ASSETS, assets=ASSETS)
     physics.reload_from_xml_string(MODEL_WITH_ASSETS, assets=ASSETS)
+
+  def testFree(self):
+    def mock_free(obj):
+      return mock.patch.object(obj, 'free', wraps=obj.free)
+
+    with mock_free(self._physics.model) as mock_free_model:
+      with mock_free(self._physics.data) as mock_free_data:
+        self._physics.free()
+
+    mock_free_model.assert_called_once()
+    mock_free_data.assert_called_once()
+    self.assertIsNone(self._physics.model.ptr)
+    self.assertIsNone(self._physics.data.ptr)
 
   @parameterized.parameters(
       'mjWARN_INERTIA',

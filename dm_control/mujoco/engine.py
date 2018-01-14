@@ -177,8 +177,10 @@ class Physics(_control.Physics):
     """
     camera = Camera(
         physics=self, height=height, width=width, camera_id=camera_id)
-    return camera.render(
+    image = camera.render(
         overlays=overlays, depth=depth, scene_option=scene_option)
+    camera._scene.free()  # pylint: disable=protected-access
+    return image
 
   def get_state(self):
     """Returns the physics state.
@@ -319,6 +321,16 @@ class Physics(_control.Physics):
     self._named = NamedIndexStructs(
         model=index.struct_indexer(self.model, 'mjmodel', axis_indexers),
         data=index.struct_indexer(self.data, 'mjdata', axis_indexers),)
+
+  def free(self):
+    """Frees the native MuJoCo data structures held by this `Physics` instance.
+
+    This is an advanced feature for use when manual memory management is
+    necessary. This `Physics` object MUST NOT be used after this function has
+    been called.
+    """
+    self.data.free()
+    self.model.free()
 
   @classmethod
   def from_model(cls, model):

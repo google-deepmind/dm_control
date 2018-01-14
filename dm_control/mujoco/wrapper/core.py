@@ -278,16 +278,31 @@ def _create_finalizer(ptr, free_func):
     logging.debug("Allocated %s at %x", ptr_type.__name__, address)
 
     def callback(dead_ptr_ref):
+      """A weakref callback that frees the resource held by a pointer."""
       del dead_ptr_ref  # Unused weakref to the dead ctypes pointer object.
-      # Temporarily resurrect the dead pointer so that we can free it.
-      temp_ptr = ctypes.cast(address, ptr_type)
-      free_func(temp_ptr)
-      logging.debug("Freed %s at %x", ptr_type.__name__, address)
-      del _FINALIZERS[address]  # Remove the weakref from the global cache.
+      if address not in _FINALIZERS:
+        # Someone had already explicitly called `call_finalizer_for_pointer`.
+        return
+      else:
+        # Turn the address back into a pointer to be freed.
+        temp_ptr = ctypes.cast(address, ptr_type)
+        free_func(temp_ptr)
+        logging.debug("Freed %s at %x", ptr_type.__name__, address)
+        del _FINALIZERS[address]  # Remove the weakref from the global cache.
 
     # Store weakrefs in a global cache so that they don't get garbage collected
     # before their referents.
-    _FINALIZERS[address] = weakref.ref(ptr, callback)
+    _FINALIZERS[address] = (weakref.ref(ptr, callback), callback)
+
+
+def _finalize(ptr):
+  """Calls the finalizer for the specified pointer to free allocated memory."""
+  address = ctypes.addressof(ptr.contents)
+  try:
+    ptr_ref, callback = _FINALIZERS[address]
+    callback(ptr_ref)
+  except KeyError:
+    pass
 
 
 def _load_xml(filename, vfs_or_none):
@@ -501,6 +516,16 @@ class MjModel(wrappers.MjModelWrapper):
     """Returns a copy of this MjModel instance."""
     return self.__copy__()
 
+  def free(self):
+    """Frees the native resources held by this MjModel.
+
+    This is an advanced feature for use when manual memory management is
+    necessary. This MjModel object MUST NOT be used after this function has
+    been called.
+    """
+    _finalize(self._ptr)
+    del self._ptr
+
   def name2id(self, name, object_type):
     """Returns the integer ID of a specified MuJoCo object.
 
@@ -672,6 +697,16 @@ class MjData(wrappers.MjDataWrapper):
     """Returns a copy of this MjData instance with the same parent MjModel."""
     return self.__copy__()
 
+  def free(self):
+    """Frees the native resources held by this MjData.
+
+    This is an advanced feature for use when manual memory management is
+    necessary. This MjData object MUST NOT be used after this function has
+    been called.
+    """
+    _finalize(self._ptr)
+    del self._ptr
+
   @property
   def model(self):
     """The parent MjModel for this MjData instance."""
@@ -729,6 +764,16 @@ class MjvScene(wrappers.MjvSceneWrapper):  # pylint: disable=missing-docstring
     _create_finalizer(scene_ptr, mjlib.mjv_freeScene)
 
     super(MjvScene, self).__init__(scene_ptr)
+
+  def free(self):
+    """Frees the native resources held by this MjvScene.
+
+    This is an advanced feature for use when manual memory management is
+    necessary. This MjvScene object MUST NOT be used after this function has
+    been called.
+    """
+    _finalize(self._ptr)
+    del self._ptr
 
 
 class MjvPerturb(wrappers.MjvPerturbWrapper):
