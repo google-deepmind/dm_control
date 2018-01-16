@@ -19,6 +19,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import functools
 import sys
 import threading
 
@@ -42,6 +43,7 @@ def run_threaded(num_threads=4, calls_per_thread=10):
   """
   def decorator(test_method):
     """Decorator around the test method."""
+    @functools.wraps(test_method)  # Needed for `named_parameters` to work.
     def decorated_method(self, *args, **kwargs):
       """Actual method this factory will return."""
       exceptions = []
