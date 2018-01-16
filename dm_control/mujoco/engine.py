@@ -52,7 +52,6 @@ from dm_control.rl import control as _control
 
 import numpy as np
 import six
-from six.moves import xrange  # pylint: disable=redefined-builtin
 
 from dm_control.rl import specs
 
@@ -127,13 +126,10 @@ class Physics(_control.Physics):
     """
     self.data.ctrl[:] = np.asarray(control)
 
-  def step(self, n_sub_steps=1):
+  def step(self):
     """Advances physics with up-to-date position and velocity dependent fields.
 
     The actuation can be updated by calling the `set_control` function first.
-
-    Args:
-      n_sub_steps: Optional number of times to advance the physics. Default 1.
     """
     # In the case of Euler integration we assume mj_step1 has already been
     # called for this state, finish the step with mj_step2 and then update all
@@ -141,12 +137,11 @@ class Physics(_control.Physics):
     # (most of) mjData is in sync with qpos and qvel. In the case of non-Euler
     # integrators (e.g. RK4) an additional mj_step1 must be called after the
     # last mj_step to ensure mjData syncing.
-    for _ in xrange(n_sub_steps):
-      if self.model.opt.integrator == enums.mjtIntegrator.mjINT_EULER:
-        mjlib.mj_step2(self.model.ptr, self.data.ptr)
-        mjlib.mj_step1(self.model.ptr, self.data.ptr)
-      else:
-        mjlib.mj_step(self.model.ptr, self.data.ptr)
+    if self.model.opt.integrator == enums.mjtIntegrator.mjINT_EULER:
+      mjlib.mj_step2(self.model.ptr, self.data.ptr)
+      mjlib.mj_step1(self.model.ptr, self.data.ptr)
+    else:
+      mjlib.mj_step(self.model.ptr, self.data.ptr)
 
     if self.model.opt.integrator != enums.mjtIntegrator.mjINT_EULER:
       mjlib.mj_step1(self.model.ptr, self.data.ptr)
