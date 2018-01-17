@@ -92,7 +92,7 @@ class PixelsTest(parameterized.TestCase):
     else:
       self.assertEqual(len(observation_spec) + 1, len(wrapped_observation_spec))
       expected_keys = list(observation_spec.keys()) + [pixel_key]
-      self.assertEqual(expected_keys, wrapped_observation_spec.keys())
+      self.assertEqual(expected_keys, list(wrapped_observation_spec.keys()))
 
     # Check that the added spec item is consistent with the added observation.
     time_step = wrapped.reset()
