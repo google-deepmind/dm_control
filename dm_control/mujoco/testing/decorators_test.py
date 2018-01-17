@@ -22,7 +22,6 @@ from __future__ import print_function
 # Internal dependencies.
 
 from absl.testing import absltest
-from absl.testing import parameterized
 
 from dm_control.mujoco.testing import decorators
 import mock
@@ -63,31 +62,6 @@ class RunThreadedTest(absltest.TestCase):
     test_runner(self)
 
     self.assertEqual(calls_per_thread, tested_method.call_count)
-
-  def test_works_with_named_parameters(self):
-
-    func = mock.MagicMock()
-    names = ["foo", "bar", "baz"]
-    params = [1, 2, 3]
-    calls_per_thread = 2
-    num_threads = 4
-
-    class FakeTest(parameterized.TestCase):
-
-      @parameterized.named_parameters(zip(names, params))
-      @decorators.run_threaded(calls_per_thread=calls_per_thread,
-                               num_threads=num_threads)
-      def test_method(self, param):
-        func(param)
-
-    suite = absltest.TestLoader().loadTestsFromTestCase(FakeTest)
-    suite.debug()  # Run tests without collecting the output.
-
-    expected_call_count = len(params) * calls_per_thread * num_threads
-
-    self.assertEqual(func.call_count, expected_call_count)
-    actual_params = {call[0][0] for call in func.call_args_list}
-    self.assertSetEqual(set(params), actual_params)
 
 
 if __name__ == "__main__":
