@@ -128,6 +128,10 @@ class Environment(environment.Base):
     """Returns the action specification for this environment."""
     return self._task.action_spec(self._physics)
 
+  def step_spec(self):
+    """May return a specification for the values returned by `step`."""
+    return self._task.step_spec(self._physics)
+
   def observation_spec(self):
     """Returns the observation specification for this environment.
 
@@ -314,6 +318,19 @@ class Task(object):
       that describe the shapes, dtypes and elementwise lower and upper bounds
       for the action array(s) passed to `self.step`.
     """
+
+  def step_spec(self, physics):
+    """Returns a specification describing the time_step for this task.
+
+    Args:
+      physics: Instance of `Physics`.
+
+    Returns:
+      A `BoundedArraySpec`, or a nested structure containing `BoundedArraySpec`s
+      that describe the shapes, dtypes and elementwise lower and upper bounds
+      for the array(s) returned by `self.step`.
+    """
+    raise NotImplementedError
 
   @abc.abstractmethod
   def get_observation(self, physics):

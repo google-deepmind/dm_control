@@ -150,6 +150,19 @@ class Base(object):
       An `ArraySpec`, or a nested dict, list or tuple of `ArraySpec`s.
     """
 
+  def step_spec(self):
+    """Optional method that defines fields returned by `step`.
+
+    Implement this method to define an environment that uses non-standard values
+    for any of the items returned by `step`. For example, an environment with
+    array-valued rewards.
+
+    Returns:
+      A `TimeStep` namedtuple containing (possibly nested) `ArraySpec`s defining
+      the reward, discount, and observation structure.
+    """
+    raise NotImplementedError
+
   def close(self):
     """Frees any resources used by the environment.
 
