@@ -74,7 +74,7 @@ def main(unused_argv):
     clock_dt = toc - tic
     tic = time.time()
     # Real-time playback not always possible as clock_dt > .03
-    plt.pause(np.max(0.01, .03 - clock_dt))  # Need min display time > 0.0.
+    plt.pause(max(0.01, 0.03 - clock_dt))  # Need min display time > 0.0.
     plt.draw()
   plt.waitforbuttonpress()
 
