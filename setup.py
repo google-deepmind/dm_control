@@ -138,12 +138,13 @@ setup(
     tests_require=[
         'mock',
         'nose',
+        'pillow',
     ],
     test_suite='nose.collector',
     packages=find_packages(),
     package_data={
         'dm_control.mujoco.testing':
-        ['assets/*.png', 'assets/*.stl', 'assets/*.xml'],
+        ['assets/*.png', 'assets/frames/*.png', 'assets/*.stl', 'assets/*.xml'],
         'dm_control.suite':
         ['*.xml', 'common/*.xml'],
     },
