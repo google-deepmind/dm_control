@@ -120,6 +120,19 @@ class CoreTest(parameterized.TestCase):
       # Should fail to load without the assets
       core.MjModel.from_xml_string(MODEL_WITH_ASSETS)
 
+  def testVFSFilenameTooLong(self):
+    limit = core._MAX_VFS_FILENAME_CHARACTERS
+    contents = "fake contents"
+    valid_filename = "a" * limit
+    with core._temporary_vfs({valid_filename: contents}):
+      pass
+    invalid_filename = "a" * (limit + 1)
+    expected_message = core._VFS_FILENAME_TOO_LONG.format(
+        length=(limit + 1), limit=limit, filename=invalid_filename)
+    with self.assertRaisesWithLiteralMatch(ValueError, expected_message):
+      with core._temporary_vfs({invalid_filename: contents}):
+        pass
+
   def testSaveLastParsedModelToXML(self):
     save_xml_path = os.path.join(OUT_DIR, "tmp_humanoid.xml")
 

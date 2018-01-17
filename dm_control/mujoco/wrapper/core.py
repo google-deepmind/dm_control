@@ -42,6 +42,13 @@ _NULL = b"\00"
 _FAKE_XML_FILENAME = b"model.xml"
 _FAKE_BINARY_FILENAME = b"model.mjb"
 
+# Although `mjMAXVFSNAME` from `mjmodel.h` specifies a limit of 100 bytes
+# (including the terminal null byte), the actual limit seems to be 99 bytes
+# (98 characters).
+_MAX_VFS_FILENAME_CHARACTERS = 98
+_VFS_FILENAME_TOO_LONG = (
+    "Filename length {length} exceeds {limit} character limit: {filename}")
+
 # Global cache used to store finalizers for freeing ctypes pointers.
 # Contains {pointer_address: weakref_object} pairs.
 _FINALIZERS = {}
@@ -223,6 +230,7 @@ def _temporary_vfs(filenames_and_contents):
 
   Args:
     filenames_and_contents: A dict containing `{filename: contents}` pairs.
+      The length of each filename must not exceed 98 characters.
 
   Yields:
     A `types.MJVFS` instance.
@@ -230,10 +238,17 @@ def _temporary_vfs(filenames_and_contents):
   Raises:
     Error: If a file cannot be added to the VFS, or if an error occurs when
       looking up the filename.
+    ValueError: If the length of a filename exceeds 98 characters.
   """
   vfs = types.MJVFS()
   mjlib.mj_defaultVFS(vfs)
   for filename, contents in six.iteritems(filenames_and_contents):
+    if len(filename) > _MAX_VFS_FILENAME_CHARACTERS:
+      raise ValueError(
+          _VFS_FILENAME_TOO_LONG.format(
+              length=len(filename),
+              limit=_MAX_VFS_FILENAME_CHARACTERS,
+              filename=filename))
     filename = util.to_binary_string(filename)
     contents = util.to_binary_string(contents)
     _, extension = os.path.splitext(filename)
