@@ -62,6 +62,7 @@ For example, on Debian and Ubuntu, this can be done by running
 
 ```python
 from dm_control import suite
+import numpy as np
 
 # Load one task:
 env = suite.load(domain_name="cartpole", task_name="swingup")
