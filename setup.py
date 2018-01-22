@@ -45,6 +45,24 @@ HEADER_FILENAMES = [
 ]
 
 
+def _initialize_mjbindings_options(cmd_instance):
+  """Set default values for options relating to `build_mjbindings`."""
+  # A default value must be assigned to each user option here.
+  cmd_instance.inplace = 0
+  cmd_instance.headers_dir = os.path.expanduser(DEFAULT_HEADERS_DIR)
+
+
+def _finalize_mjbindings_options(cmd_instance):
+  """Post-process options relating to `build_mjbindings`."""
+  header_paths = []
+  for filename in HEADER_FILENAMES:
+    full_path = os.path.join(cmd_instance.headers_dir, filename)
+    if not os.path.exists(full_path):
+      raise IOError('Header file {!r} does not exist.'.format(full_path))
+    header_paths.append(full_path)
+  cmd_instance.header_paths = ' '.join(header_paths)
+
+
 class BuildMJBindingsCommand(cmd.Command):
   """Runs `autowrap.py` to generate the low-level ctypes bindings for MuJoCo."""
   description = __doc__
@@ -58,20 +76,10 @@ class BuildMJBindingsCommand(cmd.Command):
   boolean_options = ['inplace']
 
   def initialize_options(self):
-    """Set default values for options."""
-    # A default value must be assigned to each user option here.
-    self.inplace = 0
-    self.headers_dir = os.path.expanduser(DEFAULT_HEADERS_DIR)
+    _initialize_mjbindings_options(self)
 
   def finalize_options(self):
-    """Post-process options."""
-    header_paths = []
-    for filename in HEADER_FILENAMES:
-      full_path = os.path.join(self.headers_dir, filename)
-      if not os.path.exists(full_path):
-        raise IOError('Header file {!r} does not exist.'.format(full_path))
-      header_paths.append(full_path)
-    self._header_paths = ' '.join(header_paths)
+    _finalize_mjbindings_options(self)
 
   def run(self):
     cwd = os.path.realpath(os.curdir)
@@ -84,7 +92,7 @@ class BuildMJBindingsCommand(cmd.Command):
     command = [
         sys.executable or 'python',
         AUTOWRAP_PATH,
-        '--header_paths={}'.format(self._header_paths),
+        '--header_paths={}'.format(self.header_paths),
         '--output_dir={}'.format(output_dir)
     ]
     self.announce('Running command: {}'.format(command), level=log.DEBUG)
@@ -104,7 +112,23 @@ class BuildMJBindingsCommand(cmd.Command):
 class InstallCommand(install.install):
   """Runs 'build_mjbindings' before installation."""
 
+  user_options = (
+      install.install.user_options + BuildMJBindingsCommand.user_options)
+  boolean_options = (
+      install.install.boolean_options + BuildMJBindingsCommand.boolean_options)
+
+  def initialize_options(self):
+    install.install.initialize_options(self)
+    _initialize_mjbindings_options(self)
+
+  def finalize_options(self):
+    install.install.finalize_options(self)
+    _finalize_mjbindings_options(self)
+
   def run(self):
+    self.reinitialize_command('build_mjbindings',
+                              inplace=self.inplace,
+                              headers_dir=self.headers_dir)
     self.run_command('build_mjbindings')
     install.install.run(self)
 
