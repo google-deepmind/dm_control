@@ -71,14 +71,6 @@ _GRID_POSITIONS = {
     'bottom right': enums.mjtGridPos.mjGRID_BOTTOMRIGHT,
 }
 
-_DIVERGENCE_WARNINGS = [
-    enums.mjtWarning.mjWARN_INERTIA,
-    enums.mjtWarning.mjWARN_BADQPOS,
-    enums.mjtWarning.mjWARN_BADQVEL,
-    enums.mjtWarning.mjWARN_BADQACC,
-    enums.mjtWarning.mjWARN_BADCTRL,
-]
-
 Contexts = collections.namedtuple('Contexts', ['gl', 'mujoco'])
 Selected = collections.namedtuple(
     'Selected', ['body', 'geom', 'world_position'])
@@ -146,7 +138,7 @@ class Physics(_control.Physics):
     if self.model.opt.integrator != enums.mjtIntegrator.mjINT_EULER:
       mjlib.mj_step1(self.model.ptr, self.data.ptr)
 
-    self.check_divergence()
+    self.check_invalid_state()
 
   def render(self, height=240, width=320, camera_id=-1, overlays=(),
              depth=False, scene_option=None):
@@ -250,16 +242,16 @@ class Physics(_control.Physics):
     # http://www.mujoco.org/book/programming.html#siForward
     mjlib.mj_forward(self.model.ptr, self.data.ptr)
 
-  def check_divergence(self):
-    """Raises a `base.PhysicsError` if the simulation state is divergent."""
-    warning_counts = [self.data.warning[i].number for i in _DIVERGENCE_WARNINGS]
+  def check_invalid_state(self):
+    """Raises a `base.PhysicsError` if the simulation state is invalid."""
+    warning_counts = [self.data.warning[i].number for i in
+                      xrange(enums.mjtWarning.mjNWARNING)]
     if any(warning_counts):
       warning_names = []
       for i in np.where(warning_counts)[0]:
-        field_idx = _DIVERGENCE_WARNINGS[i]
-        warning_names.append(enums.mjtWarning._fields[field_idx])
+        warning_names.append(enums.mjtWarning._fields[i])
       raise _control.PhysicsError(
-          'Physics state has diverged. Warning(s) raised: {}'.format(
+          'Physics state is invalid. Warning(s) raised: {}'.format(
               ', '.join(warning_names)))
 
   def __getstate__(self):

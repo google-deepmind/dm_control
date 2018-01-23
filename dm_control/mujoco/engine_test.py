@@ -236,9 +236,9 @@ class MujocoEngineTest(parameterized.TestCase):
     with self._physics.reset_context():
       self._physics.data.warning[warning_enum].number = 1
     with self.assertRaisesRegexp(control.PhysicsError, warning_name):
-      self._physics.check_divergence()
+      self._physics.check_invalid_state()
     self._physics.reset()
-    self._physics.check_divergence()
+    self._physics.check_invalid_state()
 
   @parameterized.parameters(float('inf'), float('nan'), 1e15)
   def testBadQpos(self, bad_value):
@@ -246,10 +246,10 @@ class MujocoEngineTest(parameterized.TestCase):
       self._physics.data.qpos[0] = bad_value
     mjlib.mj_checkPos(self._physics.model.ptr, self._physics.data.ptr)
     with self.assertRaises(control.PhysicsError):
-      self._physics.check_divergence()
+      self._physics.check_invalid_state()
     self._physics.reset()
     mjlib.mj_checkPos(self._physics.model.ptr, self._physics.data.ptr)
-    self._physics.check_divergence()
+    self._physics.check_invalid_state()
 
   def testNanControl(self):
     with self._physics.reset_context():
@@ -258,7 +258,7 @@ class MujocoEngineTest(parameterized.TestCase):
     # Apply the controls.
     mjlib.mj_step(self._physics.model.ptr, self._physics.data.ptr)
     with self.assertRaisesRegexp(control.PhysicsError, 'mjWARN_BADCTRL'):
-      self._physics.check_divergence()
+      self._physics.check_invalid_state()
 
   @parameterized.named_parameters(
       ('_copy', lambda x: x.copy()),
