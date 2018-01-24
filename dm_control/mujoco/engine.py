@@ -102,6 +102,8 @@ class Physics(_control.Physics):
   [0] http://www.mujoco.org/book/modeling.html
   """
 
+  _contexts = None
+
   def __init__(self, data):
     """Initializes a new `Physics` instance.
 
@@ -275,7 +277,8 @@ class Physics(_control.Physics):
   def _reload_from_data(self, data):
     """Initializes a new or existing `Physics` instance from a `wrapper.MjData`.
 
-    Assigns all attributes and sets up rendering contexts and named indexing.
+    Assigns all attributes, sets up named indexing, and creates rendering
+    contexts if rendering is enabled.
 
     The default constructor as well as the other `reload_from` methods should
     delegate to this method.
@@ -285,20 +288,8 @@ class Physics(_control.Physics):
     """
     self._data = data
 
-    # Forcibly clear the previous context to avoid problems with GL
-    # implementations which do not support multiple contexts on a given device.
-    if hasattr(self, '_contexts'):
-      self._contexts.gl.free()
-
-    # Set up rendering context. Need to provide at least one rendering api in
-    # the BUILD target.
-    render_context = render.Renderer(_MAX_WIDTH, _MAX_HEIGHT)
-    mujoco_context = wrapper.MjrContext()
-    with render_context.make_current(_MAX_WIDTH, _MAX_HEIGHT):
-      mjlib.mjr_makeContext(self.model.ptr, mujoco_context.ptr, _FONT_SCALE)
-      mjlib.mjr_setBuffer(
-          enums.mjtFramebuffer.mjFB_OFFSCREEN, mujoco_context.ptr)
-    self._contexts = Contexts(gl=render_context, mujoco=mujoco_context)
+    if not render.DISABLED:
+      self._make_rendering_contexts()
 
     # Call kinematics update to enable rendering.
     self.after_reset()
@@ -407,9 +398,27 @@ class Physics(_control.Physics):
   def named(self):
     return self._named
 
+  def _make_rendering_contexts(self):
+    """Creates the OpenGL and MuJoCo rendering contexts."""
+    # Forcibly clear the previous GL context to avoid problems with GL
+    # implementations which do not support multiple contexts on a given device.
+    if self._contexts:
+      self._contexts.gl.free()
+    # Create the OpenGL context.
+    render_context = render.Renderer(_MAX_WIDTH, _MAX_HEIGHT)
+    # Create the MuJoCo context.
+    mujoco_context = wrapper.MjrContext()
+    with render_context.make_current(_MAX_WIDTH, _MAX_HEIGHT):
+      mjlib.mjr_makeContext(self.model.ptr, mujoco_context.ptr, _FONT_SCALE)
+      mjlib.mjr_setBuffer(
+          enums.mjtFramebuffer.mjFB_OFFSCREEN, mujoco_context.ptr)
+    self._contexts = Contexts(gl=render_context, mujoco=mujoco_context)
+
   @property
   def contexts(self):
     """Returns a `Contexts` namedtuple, used in `Camera`s and rendering code."""
+    if render.DISABLED:
+      raise RuntimeError(render.DISABLED_MESSAGE)
     return self._contexts
 
   @property

@@ -17,39 +17,52 @@
 
 The `Renderer` class will use one of the following rendering APIs, in order of
 descending priority: EGL > GLFW > OSMesa.
+
+Rendering support can be disabled globally by setting the
+`DISABLE_MUJOCO_RENDERING` environment variable before launching the Python
+interpreter. This allows the MuJoCo bindings in `dm_control.mujoco` to be used
+on platforms where an OpenGL context cannot be created. Attempting to render
+when rendering has been disabled will result in a `RuntimeError`.
 """
 
+import os
+DISABLED = bool(os.environ.get('DISABLE_MUJOCO_RENDERING', ''))
+del os
+
+DISABLED_MESSAGE = (
+    'Rendering support has been disabled by the `DISABLE_MUJOCO_RENDERING` '
+    'environment variable')
+
 # pylint: disable=g-import-not-at-top
-try:
-  from dm_control.render.glfw_renderer import GLFWContext as _GLFWRenderer
-except (ImportError, IOError):
-  _GLFWRenderer = None
-try:
-  from dm_control.render.egl_renderer import EGLContext as _EGLRenderer
-except ImportError:
-  _EGLRenderer = None
-try:
-  from dm_control.render.osmesa_renderer import OSMesaContext as _OSMesaRenderer
-except ImportError:
-  _OSMesaRenderer = None
-# pylint: enable=g-import-not-at-top
-
 # pylint: disable=invalid-name
-if _EGLRenderer:
-  Renderer = _EGLRenderer
-elif _GLFWRenderer:
-  Renderer = _GLFWRenderer
-elif _OSMesaRenderer:
-  Renderer = _OSMesaRenderer
-else:
-  # This is a workaround that allows imports from `dm_control.render` to succeed
-  # even when there is no rendering API available. We need this in order to run
-  # integration tests on headless servers.
 
-  def Renderer(*args, **kwargs):
-    del args, kwargs  # Unused.
-    raise ImportError('No OpenGL rendering backend could be imported.')
+_GLFWRenderer = None
+_EGLRenderer = None
+_OSMesaRenderer = None
 
-# pylint: enable=invalid-name
+if not DISABLED:
+  try:
+    from dm_control.render.glfw_renderer import GLFWContext as _GLFWRenderer
+  except ImportError:
+    pass
+  try:
+    from dm_control.render.egl_renderer import EGLContext as _EGLRenderer
+  except ImportError:
+    pass
+  try:
+    from dm_control.render.osmesa_renderer import OSMesaContext as _OSMesaRenderer
+  except ImportError:
+    pass
 
-
+  if _EGLRenderer:
+    Renderer = _EGLRenderer
+  elif _GLFWRenderer:
+    Renderer = _GLFWRenderer
+  elif _OSMesaRenderer:
+    Renderer = _OSMesaRenderer
+  else:
+    raise ImportError(
+        'No OpenGL rendering backend could be imported. To use '
+        '`dm_control.mujoco` without rendering support, set the '
+        '`DISABLE_MUJOCO_RENDERING` environment variable before launching your '
+        'interpreter.')

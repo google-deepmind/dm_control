@@ -325,6 +325,15 @@ class MujocoEngineTest(parameterized.TestCase):
     np.testing.assert_array_equal(spec.minimum, [-np.inf, -1.0])
     np.testing.assert_array_equal(spec.maximum, [np.inf, 2.0])
 
+  def testErrorOnContextAccessIfRenderingDisabled(self):
+    expected_message = 'Error message'
+    with mock.patch(engine.__name__ + '.render') as mock_render:
+      mock_render.DISABLED = True
+      mock_render.DISABLED_MESSAGE = expected_message
+      physics = engine.Physics.from_xml_path(MODEL_PATH)
+      with self.assertRaisesWithLiteralMatch(RuntimeError, expected_message):
+        _ = physics.contexts
+
 
 if __name__ == '__main__':
   absltest.main()
