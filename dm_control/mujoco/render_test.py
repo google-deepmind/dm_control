@@ -20,10 +20,12 @@ from __future__ import division
 from __future__ import print_function
 
 import os
+import unittest
 
 # Internal dependencies.
 from absl.testing import absltest
 from absl.testing import parameterized
+from dm_control import render
 from dm_control.mujoco.testing import decorators
 from dm_control.mujoco.testing import image_utils
 from six.moves import zip  # pylint: disable=redefined-builtin
@@ -36,6 +38,7 @@ NUM_THREADS = 4
 CALLS_PER_THREAD = 1
 
 
+@unittest.skipIf(render.DISABLED, render.DISABLED_MESSAGE)
 class RenderTest(parameterized.TestCase):
 
   @parameterized.named_parameters(image_utils.SEQUENCES.items())

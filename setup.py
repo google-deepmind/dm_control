@@ -163,6 +163,7 @@ setup(
         'mock',
         'nose',
         'pillow',
+        'scipy',
     ],
     test_suite='nose.collector',
     packages=find_packages(),

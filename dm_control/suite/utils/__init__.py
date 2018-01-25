@@ -14,5 +14,3 @@
 # ============================================================================
 
 """Utility functions used in the control suite."""
-
-from dm_control.suite.utils import randomizers

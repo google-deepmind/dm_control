@@ -19,10 +19,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import unittest
+
 # Internal dependencies.
 
 from absl.testing import absltest
-
+from dm_control import render
 from dm_control.mujoco import engine
 from dm_control.mujoco.testing import assets
 from dm_control.mujoco.testing import decorators
@@ -68,6 +70,7 @@ class ThreadSafetyTest(absltest.TestCase):
     for _ in xrange(NUM_STEPS):
       physics2.step()
 
+  @unittest.skipIf(render.DISABLED, render.DISABLED_MESSAGE)
   @decorators.run_threaded(calls_per_thread=5)
   def test_load_physics_and_render(self):
     physics = engine.Physics.from_xml_string(MODEL)
@@ -83,6 +86,7 @@ class ThreadSafetyTest(absltest.TestCase):
 
     self.assertEqual(NUM_STEPS, len(unique_frames))
 
+  @unittest.skipIf(render.DISABLED, render.DISABLED_MESSAGE)
   @decorators.run_threaded(calls_per_thread=5)
   def test_render_multiple_physics_instances_per_thread_parallel(self):
     physics1 = engine.Physics.from_xml_string(MODEL)

@@ -19,20 +19,25 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import sys
+
 # Internal dependencies.
 
 from dm_control.render import base
-import glfw
+import six
 
-_done_init_glfw = False
-
-
-def _maybe_init_glfw():
-  global _done_init_glfw
-  if not _done_init_glfw:
-    if not glfw.init():
-      raise OSError('Failed to initialize GLFW.')
-    _done_init_glfw = True
+# Re-raise any exceptions that occur during module import as `ImportError`s.
+# This simplifies the conditional imports in `render/__init__.py`.
+try:
+  import glfw  # pylint: disable=g-import-not-at-top
+except (ImportError, IOError, OSError) as exc:
+  _, exc, tb = sys.exc_info()
+  six.reraise(ImportError, ImportError(str(exc)), tb)
+try:
+  glfw.init()
+except glfw.GLFWError as exc:
+  _, exc, tb = sys.exc_info()
+  six.reraise(ImportError, ImportError(str(exc)), tb)
 
 
 class GLFWContext(base.ContextBase):
@@ -46,7 +51,6 @@ class GLFWContext(base.ContextBase):
       max_height: Integer specifying the maximum framebuffer height in pixels.
     """
     super(GLFWContext, self).__init__()
-    _maybe_init_glfw()
     glfw.window_hint(glfw.VISIBLE, 0)
     glfw.window_hint(glfw.DOUBLEBUFFER, 0)
     self._context = glfw.create_window(width=max_width, height=max_height,

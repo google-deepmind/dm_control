@@ -19,19 +19,20 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import unittest
+
 # Internal dependencies.
-
 from absl.testing import absltest
-
-from dm_control.render import glfw_renderer
-
+from dm_control import render
 import mock
 
 MAX_WIDTH = 1024
 MAX_HEIGHT = 1024
-CONTEXT_PATH = glfw_renderer.__name__ + ".glfw"
+CONTEXT_PATH = render.__name__ + '.glfw_renderer.glfw'
 
 
+@unittest.skipUnless(render._GLFWRenderer,
+                     reason='GLFW renderer could not be imported.')
 @mock.patch(CONTEXT_PATH)
 class GLFWContextTest(absltest.TestCase):
 
@@ -39,7 +40,7 @@ class GLFWContextTest(absltest.TestCase):
     self.context = mock.MagicMock()
 
     with mock.patch(CONTEXT_PATH):
-      self.renderer = glfw_renderer.GLFWContext(MAX_WIDTH, MAX_HEIGHT)
+      self.renderer = render.Renderer(MAX_WIDTH, MAX_HEIGHT)
 
   def tearDown(self):
     self.renderer._context = None
@@ -61,5 +62,5 @@ class GLFWContextTest(absltest.TestCase):
     self.assertIsNone(self.renderer._previous_context)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
   absltest.main()
