@@ -61,6 +61,7 @@ For example, on Debian and Ubuntu, this can be done by running
 ## Control Suite quickstart
 
 ```python
+import numpy as np
 from dm_control import suite
 import numpy as np
 
