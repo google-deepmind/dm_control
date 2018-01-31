@@ -242,7 +242,10 @@ class Physics(object):
     Yields:
       The `Physics` instance.
     """
-    self.reset()
+    try:
+      self.reset()
+    except PhysicsError:
+      pass
     yield self
     self.after_reset()
 
