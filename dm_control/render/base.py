@@ -151,6 +151,7 @@ class _OptimizedContextPolicy(object):
       context: Render context to deactivate, an instance of ContextBase.
     """
     if self._active_context is context:
+      self._active_context.deactivate()
       self._active_context = None
 
   @property
