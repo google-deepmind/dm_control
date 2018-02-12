@@ -195,7 +195,7 @@ def compute_n_steps(control_timestep, physics_timestep, tolerance=1e-8):
 def _spec_from_observation(observation):
   result = collections.OrderedDict()
   for key, value in six.iteritems(observation):
-    result[key] = specs.ArraySpec(value.shape, value.dtype)
+    result[key] = specs.ArraySpec(value.shape, value.dtype, name=key)
   return result
 
 # Base class definitions for objects supplied to Environment.
