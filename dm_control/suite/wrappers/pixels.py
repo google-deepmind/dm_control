@@ -21,8 +21,6 @@ from __future__ import print_function
 
 import collections
 
-# Internal dependencies.
-
 from dm_control.rl import environment
 from dm_control.rl import specs
 

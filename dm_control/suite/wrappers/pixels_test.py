@@ -28,12 +28,13 @@ from absl.testing import absltest
 from absl.testing import parameterized
 
 from dm_control import render
-from dm_control.rl import environment
-from dm_control.rl import specs
 from dm_control.suite import cartpole
 from dm_control.suite.wrappers import pixels
 
 import numpy as np
+
+from dm_control.rl import environment
+from dm_control.rl import specs
 
 
 class FakePhysics(object):
