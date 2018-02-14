@@ -116,7 +116,10 @@ def mangle_comment(s):
   elif not s:
     return "<no header comment found>."
   else:
-    return ".\n".join(" ".join(line.split()) for line in s.splitlines()) + "."
+    out = "\n".join(" ".join(line.split()) for line in s.splitlines())
+    if not out.endswith("."):
+      out += "."
+    return out
 
 
 def camel_case(s):

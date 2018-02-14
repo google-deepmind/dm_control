@@ -357,39 +357,44 @@ class Function(CDeclBase):
   def ctypes_func_decl(self, cdll_name):
     """Generates a ctypes function declaration."""
     indent = codegen_util.Indenter()
-    # triple-quoted docstring
-    s = ("{0:}.{1.name:}.__doc__ = \"\"\"\n{1.docstring:}\"\"\"\n"  # pylint: disable=missing-format-attribute
-        ).format(cdll_name, self)
-    # arguments
-    s += "{0:}.{1.name:}.argtypes = [".format(cdll_name, self)  # pylint: disable=missing-format-attribute
-    if len(self.arguments) > 1:
-      s += "\n"
+    lines = []
+    lines.append("{0}.{1}.__doc__ = \"\"\"\n{2}\"\"\"".format(
+        cdll_name, self.name, self.docstring))
+    if self.arguments:
+      lines.append("{0}.{1}.argtypes = [".format(cdll_name, self.name))
       with indent:
         with indent:
-          s += ",\n".join(indent(a.arg) for a in six.itervalues(self.arguments))
-      s += "\n"
+          lines.extend(indent(a.arg + ",")
+                       for a in six.itervalues(self.arguments))
+      lines.append("]")
     else:
-      s += ", ".join(indent(a.arg) for a in six.itervalues(self.arguments))
-    s += "]\n"
-    # return value
-    s += "{0:}.{1.name:}.restype = {2:}\n".format(  # pylint: disable=missing-format-attribute
-        cdll_name, self, self.return_value.arg)
-    return s
+      lines.append("{0}.{1}.argtypes = None".format(cdll_name, self.name))
+    if self.return_value:
+      lines.append("{0}.{1}.restype = {2}".format(
+          cdll_name, self.name, self.return_value.arg))
+    else:
+      lines.append("{0}.{1}.restype = None".format(cdll_name, self.name))
+    lines.append("")  # Force a newline after the declaration.
+    return "\n".join(lines)
 
   @property
   def docstring(self):
     """Generates a docstring."""
     indent = codegen_util.Indenter()
-    s = "\n".join(textwrap.wrap(self.comment, 80)) + "\n\nArgs:\n"
-    with indent:
-      for a in six.itervalues(self.arguments):
-        s += indent("{a.name:}: {a.arg:}{const:}\n".format(
-            a=a, const=(" <const>" if a.is_const else "")))
-    s += "Returns:\n"
-    with indent:
-      s += indent("{0.return_value.arg}{1:}\n".format(  # pylint: disable=missing-format-attribute
-          self, (" <const>" if self.return_value.is_const else "")))
-    return s
+    lines = textwrap.wrap(self.comment, 80)
+    if self.arguments:
+      lines.append("\nArgs:")
+      with indent:
+        for a in six.itervalues(self.arguments):
+          s = "{a.name:}: {a.arg:}{const:}".format(
+              a=a, const=(" <const>" if a.is_const else ""))
+          lines.append(indent(s))
+    if self.return_value:
+      lines.append("\nReturns:")
+      with indent:
+        lines.append(indent(self.return_value.arg))
+    lines.append("")  # Force a newline at the end of the docstring.
+    return "\n".join(lines)
 
 
 class StaticStringArray(CDeclBase):

@@ -236,8 +236,9 @@ ENUM_DECL = pp.Group(
 
 # Function declarations.
 # ------------------------------------------------------------------------------
-MJAPI = pp.Keyword("MJAPI")
+MJAPI = pp.Keyword("MJAPI").suppress()
 CONST = pp.Keyword("const")
+VOID = pp.Group(pp.Keyword("void") + ~PTR).suppress()
 
 ARG = pp.Group(
     pp.Optional(CONST("is_const")) +
@@ -252,10 +253,10 @@ RET = pp.Group(
     pp.Optional(PTR("ptr")))
 
 FUNCTION_DECL = (
-    RET("return_value") +
+    (VOID | RET("return_value")) +
     NAME("name") +
     LPAREN +
-    pp.delimitedList(ARG, delim=COMMA)("arguments") +
+    (VOID | pp.delimitedList(ARG, delim=COMMA)("arguments")) +
     RPAREN +
     SEMI)
 

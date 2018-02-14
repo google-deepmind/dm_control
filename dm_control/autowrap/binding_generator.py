@@ -367,13 +367,19 @@ class BindingGenerator(object):
       for token in tokens:
         name = codegen_util.mangle_varname(token.name)
         comment = codegen_util.mangle_comment(token.comment)
-        args = codegen_util.UniqueOrderedDict()
-        for arg in token.arguments:
-          a = self.get_type_from_token(arg)
-          args[a.name] = a
-        r = self.get_type_from_token(token.return_value)
-        f = c_declarations.Function(name, args, r, comment)
-        self.funcs_dict[f.name] = f
+        if token.arguments:
+          args = codegen_util.UniqueOrderedDict()
+          for arg in token.arguments:
+            a = self.get_type_from_token(arg)
+            args[a.name] = a
+        else:
+          args = None
+        if token.return_value:
+          ret_val = self.get_type_from_token(token.return_value)
+        else:
+          ret_val = None
+        func = c_declarations.Function(name, args, ret_val, comment)
+        self.funcs_dict[func.name] = func
 
   def parse_global_strings(self, src):
     """Updates self.strings_dict."""
