@@ -13,7 +13,7 @@
 # limitations under the License.
 # ============================================================================
 
-"""Tests for control.utils.containers."""
+"""Tests for dm_control.utils.containers."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -24,47 +24,6 @@ from __future__ import print_function
 from absl.testing import absltest
 
 from dm_control.utils import containers
-
-
-class TaskTest(absltest.TestCase):
-
-  def test_factory_registered(self):
-    tasks = containers.Tasks()
-
-    @tasks.add
-    def test_factory1():  # pylint: disable=unused-variable
-      return 'executed 1'
-
-    @tasks.add
-    def test_factory2():  # pylint: disable=unused-variable
-      return 'executed 2'
-
-    with self.assertRaises(ValueError):
-      @tasks.add
-      def test_factory1():  # pylint: disable=function-redefined
-        return
-
-    self.assertEqual(2, len(tasks))
-    self.assertEqual(set(['test_factory1', 'test_factory2']),
-                     set(tasks.keys()))
-    self.assertEqual('executed 1', tasks['test_factory1']())
-    self.assertEqual('executed 2', tasks['test_factory2']())
-
-  def test_procedural_names(self):
-    tasks = containers.Tasks()
-    names = set(('easy', 'normal', 'hard'))
-    for name in names:
-      tasks.add(lambda: None, name=name)
-    self.assertEqual(len(names), len(tasks))
-    self.assertSetEqual(names, set(tasks.keys()))
-
-  def test_iteration_order(self):
-    tasks = containers.Tasks()
-    expected_order = ['first', 'second', 'third', 'fourth']
-    for name in expected_order:
-      tasks.add(lambda: None, name=name)
-    actual_order = list(tasks)
-    self.assertEqual(expected_order, actual_order)
 
 
 class TaggedTaskTest(absltest.TestCase):
