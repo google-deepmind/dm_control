@@ -33,8 +33,8 @@ class ImageUtilsTest(parameterized.TestCase):
 
   @parameterized.parameters(
       (0, 0, 0.0),
-      (0, 1, 12.264),
-      (0, 9, 39.052))
+      (0, 2, 23.208),
+      (0, 18, 53.881))
   def test_compute_rms(self, index1, index2, expected_rms):
     frames = list(image_utils.humanoid.iter_load())
     image1 = frames[index1]

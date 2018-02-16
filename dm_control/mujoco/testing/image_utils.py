@@ -19,6 +19,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import collections
 import functools
 import os
 
@@ -41,6 +42,10 @@ class ImagesNotClose(AssertionError):
     self.actual = actual
 
 
+_CameraSpec = collections.namedtuple(
+    '_CameraSpec', ['height', 'width', 'camera_id'])
+
+
 class _FrameSequence(object):
   """A sequence of pre-rendered frames used in integration tests."""
 
@@ -52,9 +57,7 @@ class _FrameSequence(object):
   def __init__(self,
                name,
                xml_string,
-               camera_id=-1,
-               height=128,
-               width=128,
+               camera_specs,
                num_frames=20,
                steps_per_frame=10,
                seed=0):
@@ -63,9 +66,8 @@ class _FrameSequence(object):
     Args:
       name: A string containing the name to be used for the sequence.
       xml_string: An MJCF XML string containing the model to be rendered.
-      camera_id: An integer or string specifying the camera ID to render.
-      height: The height of the rendered frames, in pixels.
-      width: The width of the rendered frames, in pixels.
+      camera_specs: A list of `_CameraSpec` instances specifying the cameras to
+        render on each frame.
       num_frames: The number of frames to render.
       steps_per_frame: The interval between frames, in simulation steps.
       seed: Integer or None, used to initialize the random number generator for
@@ -73,9 +75,7 @@ class _FrameSequence(object):
     """
     self._name = name
     self._xml_string = xml_string
-    self._camera_id = camera_id
-    self._height = height
-    self._width = width
+    self._camera_specs = camera_specs
     self._num_frames = num_frames
     self._steps_per_frame = steps_per_frame
     self._seed = seed
@@ -90,9 +90,8 @@ class _FrameSequence(object):
         actions = random_state.uniform(action_spec.minimum, action_spec.maximum)
         physics.set_control(actions)
         physics.step()
-      yield physics.render(height=self._height,
-                           width=self._width,
-                           camera_id=self._camera_id)
+      for camera_spec in self._camera_specs:
+        yield physics.render(**camera_spec._asdict())
 
   def iter_load(self):
     """Returns an iterator that yields saved frames as numpy arrays."""
@@ -111,23 +110,28 @@ class _FrameSequence(object):
       _save_pixels(pixels, path)
 
   def _iter_paths(self):
-    subdir_name = self._SUBDIR_TEMPLATE.format(name=self._name,
-                                               camera_id=self._camera_id,
-                                               width=self._width,
-                                               height=self._height,
-                                               seed=self._seed)
-    directory = os.path.join(self._FRAMES_DIR, subdir_name)
     for frame_num in xrange(self._num_frames):
       filename = self._FILENAME_TEMPLATE.format(frame_num=frame_num)
-      yield directory, filename
+      for camera_spec in self._camera_specs:
+        subdir_name = self._SUBDIR_TEMPLATE.format(
+            name=self._name, seed=self._seed, **camera_spec._asdict())
+        directory = os.path.join(self._FRAMES_DIR, subdir_name)
+        yield directory, filename
 
 
-cartpole = _FrameSequence('cartpole', assets.get_contents('cartpole.xml'),
-                          width=320, height=240, camera_id=0,
-                          steps_per_frame=5)
+cartpole = _FrameSequence(
+    name='cartpole',
+    xml_string=assets.get_contents('cartpole.xml'),
+    camera_specs=[_CameraSpec(width=320, height=240, camera_id=0)],
+    steps_per_frame=5)
 
-humanoid = _FrameSequence('humanoid', assets.get_contents('humanoid.xml'),
-                          width=128, height=128, camera_id=-1)
+humanoid = _FrameSequence(
+    name='humanoid',
+    xml_string=assets.get_contents('humanoid.xml'),
+    camera_specs=[
+        _CameraSpec(width=240, height=320, camera_id=0),
+        _CameraSpec(width=64, height=64, camera_id='head_track'),
+    ])
 
 
 SEQUENCES = {

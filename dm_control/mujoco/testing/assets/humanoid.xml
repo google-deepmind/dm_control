@@ -25,10 +25,12 @@
         <light cutoff="100" diffuse="1 1 1" dir="-0 0 -1.3" directional="true" exponent="1" pos="0 0 1.3" specular=".1 .1 .1"/>
         <geom condim="3" friction="1 .1 .1" material="MatPlane" name="floor" pos="0 0 0" rgba="0.8 0.9 0.8 1" size="20 20 0.125" type="plane"/>
         <!-- <geom condim="3" material="MatPlane" name="floor" pos="0 0 0" size="10 10 0.125" type="plane"/>-->
+        <camera pos="1.75 0 2" xyaxes="0 1 0 -0.65 0 1"/>
         <body name="torso" pos="0 0 1.4">
             <joint armature="0" damping="0" limited="false" name="root" pos="0 0 0" stiffness="0" type="free"/>
             <geom fromto="0 -.07 0 0 .07 0" name="torso1" size="0.07" type="capsule"/>
             <geom name="head" pos="0 0 .19" size=".09" type="sphere" user="258"/>
+            <camera name="head_track" pos="1 0 .19" xyaxes="0 1 0 0 0 1"/>
             <geom fromto="-.01 -.06 -.12 -.01 .06 -.12" name="uwaist" size="0.06" type="capsule"/>
             <body name="lwaist" pos="-.01 0 -0.260" quat="1.000 0 -0.002 0">
                 <geom fromto="0 -.06 0 0 .06 0" name="lwaist" size="0.06" type="capsule"/>
@@ -73,7 +75,6 @@
                     <joint armature="0.0028" axis="0 -1 1" name="right_elbow" pos="0 0 0" range="-90 50" stiffness="0" type="hinge"/>
                     <geom fromto="0.01 0.01 0.01 .17 .17 .17" name="right_larm" size="0.031" type="capsule"/>
                     <geom name="right_hand" pos=".18 .18 .18" size="0.04" type="sphere"/>
-                    <camera pos="0 0 0"/>
                 </body>
             </body>
             <body name="left_upper_arm" pos="0 0.17 0.06">
