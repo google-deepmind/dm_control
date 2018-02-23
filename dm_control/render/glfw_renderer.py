@@ -43,44 +43,39 @@ except glfw.GLFWError as exc:
 class GLFWContext(base.ContextBase):
   """An OpenGL context backed by GLFW."""
 
-  def __init__(self, max_width, max_height):
+  def _platform_init(self, max_width, max_height):
     """Initializes this context.
 
     Args:
       max_width: Integer specifying the maximum framebuffer width in pixels.
       max_height: Integer specifying the maximum framebuffer height in pixels.
     """
-    super(GLFWContext, self).__init__()
     glfw.window_hint(glfw.VISIBLE, 0)
     glfw.window_hint(glfw.DOUBLEBUFFER, 0)
     self._context = glfw.create_window(width=max_width, height=max_height,
                                        title='Invisible window', monitor=None,
                                        share=None)
-    self._previous_context = None
     # This reference prevents `glfw` from being garbage-collected before the
     # last window is destroyed, otherwise we may get `AttributeError`s when the
     # `__del__` method is later called.
     self._glfw = glfw
 
-  def activate(self, width, height):
+  def _platform_make_current(self):
+    glfw.make_context_current(self._context)
+
+  def _platform_resize_framebuffer(self, width, height):
     """Called when entering the `make_current` context manager.
 
     Args:
       width: Integer specifying the new framebuffer width in pixels.
       height: Integer specifying the new framebuffer height in pixels.
     """
-    self._previous_context = glfw.get_current_context()
-    glfw.make_context_current(self._context)
-    if (width, height) != glfw.get_window_size(self._context):
-      glfw.set_window_size(self._context, width, height)
+    glfw.set_window_size(self._context, width, height)
 
-  def deactivate(self):
-    """Called when exiting the `make_current` context manager."""
-    glfw.make_context_current(self._previous_context)
-
-  def _free(self):
+  def _platform_free(self):
     """Frees resources associated with this context."""
-    self._previous_context = None
     if self._context:
+      if glfw.get_current_context() == self._context:
+        glfw.make_context_current(None)
       glfw.destroy_window(self._context)
       self._context = None

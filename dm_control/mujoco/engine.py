@@ -419,10 +419,12 @@ class Physics(_control.Physics):
     render_context = render.Renderer(_MAX_WIDTH, _MAX_HEIGHT)
     # Create the MuJoCo context.
     mujoco_context = wrapper.MjrContext()
-    with render_context.make_current(_MAX_WIDTH, _MAX_HEIGHT):
-      mjlib.mjr_makeContext(self.model.ptr, mujoco_context.ptr, _FONT_SCALE)
-      mjlib.mjr_setBuffer(
-          enums.mjtFramebuffer.mjFB_OFFSCREEN, mujoco_context.ptr)
+    with render_context.make_current(_MAX_WIDTH, _MAX_HEIGHT) as ctx:
+      ctx.call(mjlib.mjr_makeContext, self.model.ptr,
+               mujoco_context.ptr, _FONT_SCALE)
+      ctx.call(mjlib.mjr_setBuffer,
+               enums.mjtFramebuffer.mjFB_OFFSCREEN,
+               mujoco_context.ptr)
     self._contexts = Contexts(gl=render_context, mujoco=mujoco_context)
 
   @property
@@ -567,9 +569,11 @@ class Camera(object):
     self._depth_buffer = np.empty((self._height, self._width), dtype=np.float32)
 
     if self._physics.contexts.mujoco is not None:
-      with self._physics.contexts.gl.make_current(self._width, self._height):
-        mjlib.mjr_setBuffer(enums.mjtFramebuffer.mjFB_OFFSCREEN,
-                            self._physics.contexts.mujoco.ptr)
+      width, height = self._width, self._height
+      with self._physics.contexts.gl.make_current(width, height) as ctx:
+        ctx.call(mjlib.mjr_setBuffer,
+                 enums.mjtFramebuffer.mjFB_OFFSCREEN,
+                 self._physics.contexts.mujoco.ptr)
 
   @property
   def width(self):
@@ -599,6 +603,32 @@ class Camera(object):
                           self._render_camera.ptr, enums.mjtCatBit.mjCAT_ALL,
                           self._scene.ptr)
 
+  def _render_on_gl_thread(self, overlays, depth, scene_option):
+    self.update(scene_option=scene_option)
+    mjlib.mjr_render(self._rect, self._scene.ptr,
+                     self._physics.contexts.mujoco.ptr)
+
+    if depth:
+      mjlib.mjr_readPixels(None, self._depth_buffer, self._rect,
+                           self._physics.contexts.mujoco.ptr)
+
+      # Get distance of near and far clipping planes.
+      extent = self._physics.model.stat.extent
+      near = self._physics.model.vis.map_.znear * extent
+      far = self._physics.model.vis.map_.zfar * extent
+
+      # Convert from [0 1] to depth in meters, see links below.
+      # http://stackoverflow.com/a/6657284/1461210
+      # https://www.khronos.org/opengl/wiki/Depth_Buffer_Precision
+      self._depth_buffer = near / (1 - self._depth_buffer * (1 - near / far))
+
+    else:
+      for overlay in overlays:
+        overlay.draw(self._physics.contexts.mujoco.ptr, self._rect)
+
+      mjlib.mjr_readPixels(self._rgb_buffer, None, self._rect,
+                           self._physics.contexts.mujoco.ptr)
+
   def render(self, overlays=(), depth=False, scene_option=None):
     """Renders the camera view as a numpy array of pixel values.
 
@@ -620,33 +650,9 @@ class Camera(object):
     if depth and overlays:
       raise ValueError('Overlays are not supported with depth rendering.')
 
-    self.update(scene_option=scene_option)
-
-    with self._physics.contexts.gl.make_current(self._width, self._height):
-      mjlib.mjr_render(self._rect, self._scene.ptr,
-                       self._physics.contexts.mujoco.ptr)
-
-      if depth:
-        mjlib.mjr_readPixels(None, self._depth_buffer, self._rect,
-                             self._physics.contexts.mujoco.ptr)
-
-        # Get distance of near and far clipping planes.
-        extent = self._physics.model.stat.extent
-        near = self._physics.model.vis.map_.znear * extent
-        far = self._physics.model.vis.map_.zfar * extent
-
-        # Convert from [0 1] to depth in meters, see links below.
-        # http://stackoverflow.com/a/6657284/1461210
-        # https://www.khronos.org/opengl/wiki/Depth_Buffer_Precision
-        self._depth_buffer = near / (1 - self._depth_buffer * (1 - near / far))
-
-      else:
-        for overlay in overlays:
-          overlay.draw(self._physics.contexts.mujoco.ptr, self._rect)
-
-        mjlib.mjr_readPixels(self._rgb_buffer, None, self._rect,
-                             self._physics.contexts.mujoco.ptr)
-
+    width, height = self._width, self._height
+    with self._physics.contexts.gl.make_current(width, height) as ctx:
+      ctx.call(self._render_on_gl_thread, overlays, depth, scene_option)
     return np.flipud(self._depth_buffer if depth else self._rgb_buffer)
 
   def select(self, cursor_position):

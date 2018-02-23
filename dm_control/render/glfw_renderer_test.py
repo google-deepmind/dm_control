@@ -23,43 +23,51 @@ import unittest
 
 # Internal dependencies.
 from absl.testing import absltest
-from dm_control import render
-import mock
+
+try:
+  from dm_control.render import glfw_renderer  # pylint: disable=g-import-not-at-top
+except (ImportError, IOError, OSError):
+  glfw_renderer = None
+
+import mock  # pylint: disable=g-import-not-at-top
 
 MAX_WIDTH = 1024
 MAX_HEIGHT = 1024
-CONTEXT_PATH = render.__name__ + '.glfw_renderer.glfw'
+
+if glfw_renderer:
+  CONTEXT_PATH = glfw_renderer.__name__ + '.glfw'
 
 
-@unittest.skipUnless(render._GLFWRenderer,
+@unittest.skipUnless(glfw_renderer,
                      reason='GLFW renderer could not be imported.')
-@mock.patch(CONTEXT_PATH)
 class GLFWContextTest(absltest.TestCase):
 
-  def setUp(self):
-    self.context = mock.MagicMock()
+  def test_init(self, mock_glfw):
+    mock_context = mock.MagicMock()
+    with mock.patch(CONTEXT_PATH) as mock_glfw:
+      mock_glfw.create_window.return_value = mock_context
+      renderer = glfw_renderer.GLFWContext(MAX_WIDTH, MAX_HEIGHT)
+    mock_glfw.make_context_current.assert_called_once_with(mock_context)
+    self.assertIs(renderer._context, mock_context)
 
-    with mock.patch(CONTEXT_PATH):
-      self.renderer = render.Renderer(MAX_WIDTH, MAX_HEIGHT)
-
-  def tearDown(self):
-    self.renderer._context = None
-
-  def test_activation(self, mock_glfw):
-    self.renderer.activate(MAX_WIDTH, MAX_HEIGHT)
-    mock_glfw.make_context_current.assert_called_once()
-
-  def test_deactivation(self, mock_glfw):
-    self.renderer.deactivate()
-    mock_glfw.make_context_current.assert_called_once()
+  def test_make_current(self, mock_glfw):
+    mock_context = mock.MagicMock()
+    with mock.patch(CONTEXT_PATH) as mock_glfw:
+      mock_glfw.create_window.return_value = mock_context
+      renderer = glfw_renderer.GLFWContext(MAX_WIDTH, MAX_HEIGHT)
+    with renderer.make_current(MAX_WIDTH, MAX_HEIGHT):
+      pass
+    mock_glfw.set_window_size.assert_called_once_with(
+        mock_context, MAX_WIDTH, MAX_HEIGHT)
 
   def test_freeing(self, mock_glfw):
-    self.renderer._context = mock.MagicMock()
-    self.renderer._previous_context = mock.MagicMock()
-    self.renderer.free()
-    mock_glfw.destroy_window.assert_called_once()
-    self.assertIsNone(self.renderer._context)
-    self.assertIsNone(self.renderer._previous_context)
+    mock_context = mock.MagicMock()
+    with mock.patch(CONTEXT_PATH) as mock_glfw:
+      mock_glfw.create_window.return_value = mock_context
+      renderer = glfw_renderer.GLFWContext(MAX_WIDTH, MAX_HEIGHT)
+    renderer.free()
+    mock_glfw.destroy_window.assert_called_once_with(mock_context)
+    self.assertIsNone(renderer._context)
 
 
 if __name__ == '__main__':

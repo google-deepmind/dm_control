@@ -152,6 +152,7 @@ setup(
         'absl-py',
         'enum34',
         'future',
+        'futures',
         'glfw',
         'lxml',
         'numpy',

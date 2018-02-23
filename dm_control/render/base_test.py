@@ -23,8 +23,7 @@ import threading
 # Internal dependencies.
 from absl.testing import absltest
 from dm_control.render import base
-import mock
-import six
+from dm_control.render import executor
 
 WIDTH = 1024
 HEIGHT = 768
@@ -34,133 +33,103 @@ class ContextBaseTests(absltest.TestCase):
 
   class ContextMock(base.ContextBase):
 
-    def __init__(self):
-      super(ContextBaseTests.ContextMock, self).__init__()
+    def _platform_init(self, max_width, max_height):
+      self.init_thread = threading.current_thread()
+      self.make_current_count = 0
+      self.resize_count = 0
 
-    def activate(self, width, height):
-      pass
+    def _platform_make_current(self):
+      self.make_current_count += 1
+      self.make_current_thread = threading.current_thread()
 
-    def deactivate(self):
-      pass
+    def _platform_resize_framebuffer(self, width, height):
+      self.resize_count += 1
+      self.resize_thread = threading.current_thread()
 
-    def _free(self):
-      pass
+    def _platform_free(self):
+      self.free_thread = threading.current_thread()
 
   def setUp(self):
-    self.original_manager = base.policy_manager
+    self.context = ContextBaseTests.ContextMock(WIDTH, HEIGHT)
 
-    base.policy_manager = mock.MagicMock()
-    self.context = ContextBaseTests.ContextMock()
-    self.context._policy = base.policy_manager
+  def test_init(self):
+    self.assertIs(self.context.init_thread, self.context.thread)
+    self.assertEqual(self.context._max_width, WIDTH)
+    self.assertEqual(self.context._max_height, HEIGHT)
 
-  def tearDown(self):
-    base.policy_manager = self.original_manager
+  def test_make_current(self):
+    self.assertEqual(self.context.make_current_count, 0)
+    self.assertEqual(self.context.resize_count, 0)
 
-  def test_activating_context(self):
     with self.context.make_current(WIDTH, HEIGHT):
-      base.policy_manager.activate.assert_called_once_with(
-          self.context, WIDTH, HEIGHT)
-    base.policy_manager.deactivate.assert_called_once_with(self.context)
+      pass
+    self.assertEqual(self.context.make_current_count, 1)
+    self.assertIs(self.context.make_current_thread, self.context.thread)
+    self.assertEqual(self.context.resize_count, 1)
+    self.assertIs(self.context.resize_thread, self.context.thread)
+    self.assertEqual(self.context._current_width, WIDTH)
+    self.assertEqual(self.context._current_height, HEIGHT)
 
+    # Same size, shouldn't trigger a resize.
+    with self.context.make_current(WIDTH, HEIGHT):
+      pass
+    self.assertEqual(self.context.resize_count, 1)
+    self.assertIs(self.context.resize_thread, self.context.thread)
+    self.assertEqual(self.context._current_width, WIDTH)
+    self.assertEqual(self.context._current_height, HEIGHT)
 
-class ContextPolicyManagerTests(absltest.TestCase):
+    # New size, should trigger a resize.
+    with self.context.make_current(WIDTH // 2, HEIGHT // 2):
+      pass
+    self.assertEqual(self.context.resize_count, 2)
+    self.assertIs(self.context.resize_thread, self.context.thread)
+    self.assertEqual(self.context._current_width, WIDTH // 2)
+    self.assertEqual(self.context._current_height, HEIGHT // 2)
 
-  def setUp(self):
-    self.context = mock.MagicMock()
-    self.policy = mock.MagicMock()
-    base.policy_manager._policy = self.policy
+  def test_thread_sharing(self):
+    first_context = ContextBaseTests.ContextMock(
+        WIDTH, HEIGHT, executor.PassthroughRenderExecutor)
+    second_context = ContextBaseTests.ContextMock(
+        WIDTH, HEIGHT, executor.PassthroughRenderExecutor)
 
-  def test_activation(self):
-    base.policy_manager.activate(self.context, WIDTH, HEIGHT)
-    self.policy.activate.assert_called_once_with(self.context, WIDTH, HEIGHT)
+    with first_context.make_current(WIDTH, HEIGHT):
+      pass
+    self.assertEqual(first_context.make_current_count, 1)
 
-  def test_deactivation(self):
-    base.policy_manager.deactivate(self.context)
-    self.policy.deactivate.assert_called_once_with(self.context)
+    with first_context.make_current(WIDTH, HEIGHT):
+      pass
+    self.assertEqual(first_context.make_current_count, 1)
 
-  def test_selecting_policy(self):
-    base.policy_manager.enable_debug_mode(True)
-    self.assertIsInstance(
-        base.policy_manager._policy, base._DebugContextPolicy)
-    base.policy_manager.enable_debug_mode(False)
-    self.assertIsInstance(
-        base.policy_manager._policy, base._OptimizedContextPolicy)
+    with second_context.make_current(WIDTH, HEIGHT):
+      pass
+    self.assertEqual(second_context.make_current_count, 1)
 
+    with second_context.make_current(WIDTH, HEIGHT):
+      pass
+    self.assertEqual(second_context.make_current_count, 1)
 
-class OptimizedContextPolicyTests(absltest.TestCase):
+    with first_context.make_current(WIDTH, HEIGHT):
+      pass
+    self.assertEqual(first_context.make_current_count, 2)
 
-  def setUp(self):
-    self.policy = base._OptimizedContextPolicy()
+    with second_context.make_current(WIDTH, HEIGHT):
+      pass
+    self.assertEqual(second_context.make_current_count, 2)
 
-  def test_activating_same_context_multiple_times(self):
-    context = mock.MagicMock(spec=base.ContextBase)
-    for _ in six.moves.xrange(3):
-      self.policy.activate(context, WIDTH, HEIGHT)
-      self.policy.deactivate(context)
-    context.activate.assert_called_once_with(WIDTH, HEIGHT)
-    self.assertEqual(0, context.deactivate.call_count)
+  def test_free(self):
+    with self.context.make_current(WIDTH, HEIGHT):
+      pass
 
-  def test_switching_contexts(self):
-    contexts = [mock.MagicMock(spec=base.ContextBase)
-                for _ in six.moves.xrange(3)]
-    for context in contexts:
-      self.policy.activate(context, WIDTH, HEIGHT)
-      self.policy.deactivate(context)
-    self.policy.activate(None, WIDTH, HEIGHT)
-    for context in contexts:
-      context.activate.assert_called_once_with(WIDTH, HEIGHT)
-      context.deactivate.assert_called_once()
+    thread = self.context.thread
+    self.assertIn(id(self.context), base._CURRENT_THREAD_FOR_CONTEXT)
+    self.assertIn(thread, base._CURRENT_CONTEXT_FOR_THREAD)
 
-  def test_context_are_tracked_separately_for_each_thread(self):
-    parent_context = mock.MagicMock(spec=base.ContextBase)
-    child_context = mock.MagicMock(spec=base.ContextBase)
+    self.context.free()
+    self.assertIs(self.context.free_thread, thread)
+    self.assertIsNone(self.context.thread)
 
-    def run():
-      # Record the context that was active on this thread prior to activation
-      # call.
-      self.child_thread_context_before = self.policy._active_context
-
-      # Activate and record the activated context.
-      self.policy.activate(child_context, WIDTH, HEIGHT)
-      self.child_thread_context_after = self.policy._active_context
-
-    thread = threading.Thread(target=run)
-
-    # Main thread activates 'parent_context'
-    self.policy.activate(parent_context, WIDTH, HEIGHT)
-    self.assertEqual(parent_context, self.policy._active_context)
-
-    # The child thread activates 'child_context'
-    thread.start()
-    thread.join()
-
-    # Activation from separate threads shouldn't affect one another
-    self.assertIsNone(self.child_thread_context_before)
-    self.assertEqual(parent_context, self.policy._active_context)
-    self.assertEqual(child_context, self.child_thread_context_after)
-
-
-class DebugContextPolicyTests(absltest.TestCase):
-
-  def setUp(self):
-    self.policy = base._DebugContextPolicy()
-
-  def test_activating_same_context_multiple_times(self):
-    context = mock.MagicMock()
-    for _ in six.moves.xrange(3):
-      self.policy.activate(context, WIDTH, HEIGHT)
-      self.policy.deactivate(context)
-    self.assertEqual(3, context.activate.call_count)
-    self.assertEqual(3, context.deactivate.call_count)
-
-  def test_switching_contexts(self):
-    contexts = [mock.MagicMock() for _ in six.moves.xrange(3)]
-    for context in contexts:
-      self.policy.activate(context, WIDTH, HEIGHT)
-      self.policy.deactivate(context)
-    for context in contexts:
-      context.activate.assert_called_once_with(WIDTH, HEIGHT)
-      context.deactivate.assert_called_once()
+    self.assertNotIn(id(self.context), base._CURRENT_THREAD_FOR_CONTEXT)
+    self.assertNotIn(thread, base._CURRENT_CONTEXT_FOR_THREAD)
 
 
 if __name__ == '__main__':
