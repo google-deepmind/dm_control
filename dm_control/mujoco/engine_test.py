@@ -229,10 +229,16 @@ class MujocoEngineTest(parameterized.TestCase):
 
     with mock_free(self._physics.model) as mock_free_model:
       with mock_free(self._physics.data) as mock_free_data:
-        self._physics.free()
+        if render.DISABLED:
+          self._physics.free()
+        else:
+          with mock_free(self._physics.contexts.mujoco) as mock_free_mjrcontext:
+            self._physics.free()
 
     mock_free_model.assert_called_once()
     mock_free_data.assert_called_once()
+    if not render.DISABLED:
+      mock_free_mjrcontext.assert_called_once()
     self.assertIsNone(self._physics.model.ptr)
     self.assertIsNone(self._physics.data.ptr)
 

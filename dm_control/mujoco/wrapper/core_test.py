@@ -28,6 +28,7 @@ import os
 from absl.testing import absltest
 from absl.testing import parameterized
 
+from dm_control import render
 from dm_control.mujoco.testing import assets
 from dm_control.mujoco.wrapper import core
 from dm_control.mujoco.wrapper.mjbindings import enums
@@ -416,6 +417,31 @@ class CoreTest(parameterized.TestCase):
 
       # Explicit freeing should not break any automatic GC triggered later.
       del wrapper
+      gc.collect()
+
+  @absltest.unittest.skipIf(render.DISABLED, render.DISABLED_MESSAGE)
+  def testFreeMjrContext(self):
+    for _ in xrange(5):
+      renderer = render.Renderer(640, 480)
+      def gl_make_current(renderer=renderer):
+        return renderer.make_current(640, 480)
+      with mock.patch.object(core.mjlib, "mjr_freeContext",
+                             wraps=mjlib.mjr_freeContext) as mock_destructor:
+        mjr_context = core.MjrContext(self.model, gl_make_current)
+        expected_address = ctypes.addressof(mjr_context.ptr.contents)
+        mjr_context.free()
+
+      self.assertIsNone(mjr_context.ptr)
+      mock_destructor.assert_called_once()
+      pointer = mock_destructor.call_args[0][0]
+      actual_address = ctypes.addressof(pointer.contents)
+      self.assertEqual(expected_address, actual_address)
+
+      # Explicit freeing should not break any automatic GC triggered later.
+      del mjr_context
+      del gl_make_current
+      renderer.free()
+      del renderer
       gc.collect()
 
 

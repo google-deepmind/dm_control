@@ -58,7 +58,6 @@ from six.moves import xrange  # pylint: disable=redefined-builtin
 
 from dm_control.rl import specs
 
-_FONT_SCALE = 150
 _MAX_WIDTH = 1024
 _MAX_HEIGHT = 1024
 
@@ -320,6 +319,10 @@ class Physics(_control.Physics):
     """
     self.data.free()
     self.model.free()
+    if self._contexts:
+      self._contexts.mujoco.free()
+      self._contexts.gl.free()
+      self._contexts = None
 
   @classmethod
   def from_model(cls, model):
@@ -414,17 +417,14 @@ class Physics(_control.Physics):
     # Forcibly clear the previous GL context to avoid problems with GL
     # implementations which do not support multiple contexts on a given device.
     if self._contexts:
+      self._contexts.mujoco.free()
       self._contexts.gl.free()
     # Create the OpenGL context.
     render_context = render.Renderer(_MAX_WIDTH, _MAX_HEIGHT)
     # Create the MuJoCo context.
-    mujoco_context = wrapper.MjrContext()
-    with render_context.make_current(_MAX_WIDTH, _MAX_HEIGHT) as ctx:
-      ctx.call(mjlib.mjr_makeContext, self.model.ptr,
-               mujoco_context.ptr, _FONT_SCALE)
-      ctx.call(mjlib.mjr_setBuffer,
-               enums.mjtFramebuffer.mjFB_OFFSCREEN,
-               mujoco_context.ptr)
+    def gl_make_current(render_context=render_context):
+      return render_context.make_current(_MAX_WIDTH, _MAX_HEIGHT)
+    mujoco_context = wrapper.MjrContext(self.model, gl_make_current)
     self._contexts = Contexts(gl=render_context, mujoco=mujoco_context)
 
   @property

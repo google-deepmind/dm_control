@@ -49,6 +49,9 @@ _MAX_VFS_FILENAME_CHARACTERS = 98
 _VFS_FILENAME_TOO_LONG = (
     "Filename length {length} exceeds {limit} character limit: {filename}")
 
+# Constants for MjrContext creation.
+_FONT_SCALE = 150
+
 # Global cache used to store finalizers for freeing ctypes pointers.
 # Contains {pointer_address: weakref_object} pairs.
 _FINALIZERS = {}
@@ -753,12 +756,56 @@ class MjvOption(wrappers.MjvOptionWrapper):
     super(MjvOption, self).__init__(ptr)
 
 
-class MjrContext(wrappers.MjrContextWrapper):
+class UnmanagedMjrContext(wrappers.MjrContextWrapper):
+  """A wrapper for MjrContext that does not manage the native object's lifetime.
+
+  This wrapper is provided for API backward-compatibility reasons, since the
+  creating and destruction of an MjrContext requires an OpenGL context to be
+  provided.
+  """
 
   def __init__(self):
     ptr = ctypes.pointer(types.MJRCONTEXT())
     mjlib.mjr_defaultContext(ptr)
+    super(UnmanagedMjrContext, self).__init__(ptr)
+
+
+class MjrContext(wrappers.MjrContextWrapper):  # pylint: disable=missing-docstring
+
+  def __init__(self, model, gl_make_current):
+    """Initializes this MjrContext instance.
+
+    Args:
+      model: An `MjModel` instance.
+      gl_make_current: A callable that takes no argument and returns a context
+        manager that yields an object exposing a `call` method for executing
+        OpenGL calls on an appropriate thread. See the docstring of
+        `dm_control.render.ContextBase` for more detail.
+    """
+    ptr = ctypes.pointer(types.MJRCONTEXT())
+    mjlib.mjr_defaultContext(ptr)
+
+    with gl_make_current() as ctx:
+      ctx.call(mjlib.mjr_makeContext, model.ptr, ptr, _FONT_SCALE)
+      ctx.call(mjlib.mjr_setBuffer, enums.mjtFramebuffer.mjFB_OFFSCREEN, ptr)
+
+    # Free resources when the ctypes pointer is garbage collected.
+    def finalize_mjr_context(ptr):
+      with gl_make_current() as ctx:
+        ctx.call(mjlib.mjr_freeContext, ptr)
+    _create_finalizer(ptr, finalize_mjr_context)
+
     super(MjrContext, self).__init__(ptr)
+
+  def free(self):
+    """Frees the native resources held by this MjrContext.
+
+    This is an advanced feature for use when manual memory management is
+    necessary. This MjrContext object MUST NOT be used after this function has
+    been called.
+    """
+    _finalize(self._ptr)
+    del self._ptr
 
 
 class MjvScene(wrappers.MjvSceneWrapper):  # pylint: disable=missing-docstring
