@@ -159,17 +159,6 @@ class CachedProperty(property):
         return obj_dict.setdefault(name, self.fget(obj))
 
 
-# It's easy to create numpy arrays from a pointer then have these persist after
-# the model has been destroyed and its underlying memory freed. To mitigate the
-# risk of writing to a pointer after it has been freed, all array attributes are
-# read-only by default. In order to write to them you need to explicitly set
-# their ".writeable" flag to True (the SetFlags context manager above provides
-# a convenient way to do this).
-
-# The proper solution would be to prevent the model from being garbage-collected
-# whilst any of the views onto its buffers are still alive.
-
-
 def _as_array(src, shape):
   """Converts a native `src` array to a managed numpy buffer.
 
