@@ -42,30 +42,29 @@ if glfw_renderer:
                      reason='GLFW renderer could not be imported.')
 class GLFWContextTest(absltest.TestCase):
 
-  def test_init(self, mock_glfw):
+  def test_init(self):
     mock_context = mock.MagicMock()
     with mock.patch(CONTEXT_PATH) as mock_glfw:
       mock_glfw.create_window.return_value = mock_context
       renderer = glfw_renderer.GLFWContext(MAX_WIDTH, MAX_HEIGHT)
-    mock_glfw.make_context_current.assert_called_once_with(mock_context)
     self.assertIs(renderer._context, mock_context)
 
-  def test_make_current(self, mock_glfw):
+  def test_make_current(self):
     mock_context = mock.MagicMock()
     with mock.patch(CONTEXT_PATH) as mock_glfw:
       mock_glfw.create_window.return_value = mock_context
       renderer = glfw_renderer.GLFWContext(MAX_WIDTH, MAX_HEIGHT)
-    with renderer.make_current(MAX_WIDTH, MAX_HEIGHT):
-      pass
+      with renderer.make_current(MAX_WIDTH, MAX_HEIGHT):
+        pass
     mock_glfw.set_window_size.assert_called_once_with(
         mock_context, MAX_WIDTH, MAX_HEIGHT)
 
-  def test_freeing(self, mock_glfw):
+  def test_freeing(self):
     mock_context = mock.MagicMock()
     with mock.patch(CONTEXT_PATH) as mock_glfw:
       mock_glfw.create_window.return_value = mock_context
       renderer = glfw_renderer.GLFWContext(MAX_WIDTH, MAX_HEIGHT)
-    renderer.free()
+      renderer.free()
     mock_glfw.destroy_window.assert_called_once_with(mock_context)
     self.assertIsNone(renderer._context)
 
