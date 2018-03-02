@@ -37,19 +37,23 @@ from dm_control.utils import io as resources
 ENV_MJLIB_PATH = "MJLIB_PATH"
 ENV_MJKEY_PATH = "MJKEY_PATH"
 
-
 MJLIB_NAME = "mujoco150"
 
 
 def _get_shared_library_filename():
-  try:
-    libc_path = ctypes.util.find_library("c")
-    libc_filename = os.path.split(libc_path)[1]
-    prefix = "lib" if libc_filename.startswith("lib") else ""
-    extension = libc_filename.split(".")[1]
-  except (AttributeError, IndexError):
+  """Get platform-dependent prefix and extension of MuJoCo shared library."""
+  platform_name = platform.system()
+  if platform_name == "Linux":
     prefix = "lib"
     extension = "so"
+  elif platform_name == "Darwin":
+    prefix = "lib"
+    extension = "dylib"
+  elif platform_name == "Windows":
+    prefix = ""
+    extension = "dll"
+  else:
+    raise OSError("Unsupported platform: {}".format(platform_name))
   return "{}{}.{}".format(prefix, MJLIB_NAME, extension)
 
 
