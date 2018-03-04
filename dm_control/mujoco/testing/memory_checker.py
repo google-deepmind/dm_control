@@ -29,7 +29,7 @@ import six
 
 
 # Used for overriding MuJoCo's memory handlers
-_LIBC = ctypes.cdll.LoadLibrary("libc.so.6")
+_LIBC = ctypes.cdll.LoadLibrary(ctypes.util.find_library("c"))
 _LIBC.aligned_alloc.argtypes = [ctypes.c_size_t, ctypes.c_size_t]
 _LIBC.aligned_alloc.restype = ctypes.c_void_p
 _LIBC.free.argtypes = [ctypes.c_void_p]
