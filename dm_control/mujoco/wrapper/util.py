@@ -108,7 +108,7 @@ def get_mjlib():
           ctypes.CDLL(ctypes.util.find_library("GLEW"), ctypes.RTLD_GLOBAL)
           return ctypes.cdll.LoadLibrary(library_path)
     raw_path = DEFAULT_MJLIB_PATH
-  return ctypes.cdll.LoadLibrary(_get_full_path(raw_path))
+  return ctypes.CDLL(_get_full_path(raw_path), ctypes.RTLD_GLOBAL)
 
 
 def get_mjkey_path():
