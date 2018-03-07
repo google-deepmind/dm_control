@@ -82,7 +82,7 @@ class ContextBase(object):
     self._render_executor.terminate(self._free_on_executor_thread)
 
   def __del__(self):
-    self._render_executor.terminate(self._free_on_executor_thread, async=True)
+    self.free()
 
   @contextlib.contextmanager
   def make_current(self):
