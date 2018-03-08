@@ -61,7 +61,8 @@ class ImageUtilsTest(parameterized.TestCase):
     def func():
       raise image_utils.ImagesNotClose(message, image1, image2)
 
-    with self.assertRaisesWithLiteralMatch(image_utils.ImagesNotClose, message):
+    with self.assertRaisesRegexp(image_utils.ImagesNotClose,
+                                 '{}.*'.format(message)):
       func()
 
     def validate_saved_file(name, expected_contents):
