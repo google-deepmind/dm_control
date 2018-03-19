@@ -19,8 +19,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-# Internal dependencies.
-
 from dm_control import mujoco
 from dm_control.rl import control
 
@@ -30,7 +28,9 @@ import numpy as np
 class Task(control.Task):
   """Base class for tasks in the Control Suite.
 
-  Maps actions directly to the states of MuJoCo actuators.
+  Actions are mapped directly to the states of MuJoCo actuators: each element of
+  the action array is used to set the control input for a single actuator. The
+  ordering of the actuators is the same as in the corresponding MJCF XML file.
 
   Attributes:
     random: A `numpy.random.RandomState` instance. This should be used to
