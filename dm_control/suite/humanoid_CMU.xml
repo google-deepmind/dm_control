@@ -7,11 +7,10 @@
   <statistic extent="2" center="0 0 1"/>
 
   <default class="main">
-    <joint limited="true" solimplimit="0 0.99 0.01" stiffness="0.1" armature="0.01" damping="1"/>
-    <geom size="0.03 0 0" condim="1" friction="0.7 0.005 0.0001" solref="0.015 1" solimp="0.99 0.99 0.003"/>
     <motor ctrllimited="true" ctrlrange="-1 1"/>
     <default class="humanoid">
-      <geom type="capsule" rgba="0.8 0.6 0.4 1"/>
+      <geom type="capsule" condim="1" rgba="0.8 0.6 0.4 1" size="0.03 0 0" friction="0.7 0.005 0.0001" solref="0.015 1" solimp="0.99 0.99 0.003"/>
+      <joint limited="true" solimplimit="0 0.99 0.01" stiffness="0.1" armature="0.01" damping="1"/>
       <default class="stiff_medium">
         <joint stiffness="10" damping="2"/>
       </default>
@@ -276,4 +275,3 @@
   </sensor>
 
 </mujoco>
-
