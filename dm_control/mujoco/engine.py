@@ -51,7 +51,6 @@ from dm_control.rl import control as _control
 
 import numpy as np
 import six
-from six.moves import xrange  # pylint: disable=redefined-builtin
 
 from dm_control.rl import specs
 
@@ -74,6 +73,9 @@ NamedIndexStructs = collections.namedtuple(
     'NamedIndexStructs', ['model', 'data'])
 Pose = collections.namedtuple(
     'Pose', ['lookat', 'distance', 'azimuth', 'elevation'])
+
+_INVALID_PHYSICS_STATE = (
+    'Physics state is invalid. Warning(s) raised: {warning_names}')
 
 
 class Physics(_control.Physics):
@@ -243,19 +245,16 @@ class Physics(_control.Physics):
   @contextlib.contextmanager
   def check_invalid_state(self):
     """Raises a `base.PhysicsError` if the simulation state is invalid."""
-    warning_counts_before = [self.data.warning[i].number for i in
-                             xrange(enums.mjtWarning.mjNWARNING)]
+    warning_counts_before = [warning.number for warning in self.data.warning]
     yield
-    warning_counts_increased = np.greater(
-        [self.data.warning[i].number for i in
-         xrange(enums.mjtWarning.mjNWARNING)], warning_counts_before)
-    if np.any(warning_counts_increased):
-      warning_names = []
-      for i in np.where(warning_counts_increased)[0]:
-        warning_names.append(enums.mjtWarning._fields[i])
+    warnings_raised = []
+    for i, old_warning_count in enumerate(warning_counts_before):
+      if self.data.warning[i].number > old_warning_count:
+        warnings_raised.append(i)
+    if warnings_raised:
+      warning_names = [enums.mjtWarning._fields[i] for i in warnings_raised]
       raise _control.PhysicsError(
-          'Physics state is invalid. Warning(s) raised: {}'.format(
-              ', '.join(warning_names)))
+          _INVALID_PHYSICS_STATE.format(warning_names=', '.join(warning_names)))
 
   def __getstate__(self):
     return self.data  # All state is assumed to reside within `self.data`.

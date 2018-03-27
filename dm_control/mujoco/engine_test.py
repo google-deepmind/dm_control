@@ -245,7 +245,9 @@ class MujocoEngineTest(parameterized.TestCase):
   @parameterized.parameters(*enums.mjtWarning._fields[:-1])
   def testDivergenceException(self, warning_name):
     warning_enum = getattr(enums.mjtWarning, warning_name)
-    with self.assertRaisesRegexp(control.PhysicsError, warning_name):
+    with self.assertRaisesWithLiteralMatch(
+        control.PhysicsError,
+        engine._INVALID_PHYSICS_STATE.format(warning_names=warning_name)):
       with self._physics.check_invalid_state():
         self._physics.data.warning[warning_enum].number = 1
     # Existing warnings should not raise an exception.
@@ -271,7 +273,9 @@ class MujocoEngineTest(parameterized.TestCase):
       pass
 
     # Apply the controls.
-    with self.assertRaisesRegexp(control.PhysicsError, 'mjWARN_BADCTRL'):
+    with self.assertRaisesWithLiteralMatch(
+        control.PhysicsError,
+        engine._INVALID_PHYSICS_STATE.format(warning_names='mjWARN_BADCTRL')):
       with self._physics.check_invalid_state():
         self._physics.data.ctrl[0] = float('nan')
         self._physics.step()
