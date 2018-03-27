@@ -15,19 +15,15 @@
 
 """Base class for OpenGL context handlers.
 
-The module lays foundation for defining various rendering contexts in a uniform
-manner.
+`ContextBase` defines a common API that OpenGL rendering contexts should conform
+to. In addition, it provides a `make_current` context manager that:
 
-ContextBase defines a common interface rendering contexts should fulfill. In
-addition, it provides a context activation method that can be used in 'with'
-statements to ensure symmetrical context activation and deactivation.
+1. Makes this OpenGL context current within the appropriate rendering thread.
+2. Yields an object exposing a `call` method that can be used to execute OpenGL
+   calls within the rendering thread.
 
-The problem of optimizing context swaps falls to ContextPolicyManager and the
-accompanying policy classes. OptimizedContextPolicy will attempt to reduce
-the number of context swaps, increasing application's performance.
-DebugContextPolicy, on the other, hand will rigorously keep activating and
-deactivating contexts for each request, providing a reliable framework for
-functional tests of the new context implementations.
+See the docstring for `dm_control.utils.render_executor` for further details
+regarding rendering threads.
 """
 
 from __future__ import absolute_import
