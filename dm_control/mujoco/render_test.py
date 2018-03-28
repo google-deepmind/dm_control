@@ -25,6 +25,7 @@ import unittest
 # Internal dependencies.
 from absl.testing import absltest
 from absl.testing import parameterized
+from dm_control import mujoco
 from dm_control import render
 from dm_control.mujoco.testing import decorators
 from dm_control.mujoco.testing import image_utils
@@ -68,6 +69,12 @@ class RenderTest(parameterized.TestCase):
     for expected, actual in zip(humanoid.iter_load(), humanoid_frames):
       image_utils.assert_images_close(expected, actual)
 
+  @decorators.run_threaded(num_threads=NUM_THREADS, calls_per_thread=1)
+  def test_repeatedly_create_and_destroy_rendering_contexts(self):
+    # Tests for errors that may occur due to per-thread GL resource leakage.
+    physics = mujoco.Physics.from_xml_string('<mujoco/>')
+    for _ in xrange(500):
+      physics._make_rendering_contexts()
 
 if __name__ == '__main__':
   absltest.main()
