@@ -23,8 +23,6 @@ import abc
 import collections
 import contextlib
 
-# Internal dependencies.
-
 import numpy as np
 import six
 from six.moves import xrange  # pylint: disable=redefined-builtin
@@ -64,7 +62,6 @@ class Environment(environment.Base):
     """
     self._task = task
     self._physics = physics
-    self._time_limit = time_limit
     self._flat_observation = flat_observation
 
     if n_sub_steps is not None and control_timestep is not None:
@@ -77,11 +74,18 @@ class Environment(environment.Base):
     else:
       self._n_sub_steps = 1
 
+    if time_limit == float('inf'):
+      self._step_limit = float('inf')
+    else:
+      self._step_limit = time_limit / (
+          self._physics.timestep() * self._n_sub_steps)
+    self._step_count = 0
     self._reset_next_step = True
 
   def reset(self):
     """Starts a new episode and returns the first `TimeStep`."""
     self._reset_next_step = False
+    self._step_count = 0
     with self._physics.reset_context():
       self._task.initialize_episode(self._physics)
 
@@ -111,18 +115,21 @@ class Environment(environment.Base):
     if self._flat_observation:
       observation = flatten_observation(observation)
 
-    if self.physics.time() >= self._time_limit:
+    self._step_count += 1
+    if self._step_count >= self._step_limit:
       discount = 1.0
     else:
       discount = self._task.get_termination(self._physics)
 
-    if discount is None:
-      return environment.TimeStep(
-          environment.StepType.MID, reward, 1.0, observation)
-    else:
+    episode_over = discount is not None
+
+    if episode_over:
       self._reset_next_step = True
       return environment.TimeStep(
           environment.StepType.LAST, reward, discount, observation)
+    else:
+      return environment.TimeStep(
+          environment.StepType.MID, reward, 1.0, observation)
 
   def action_spec(self):
     """Returns the action specification for this environment."""

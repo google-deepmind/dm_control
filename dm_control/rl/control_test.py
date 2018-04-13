@@ -74,12 +74,25 @@ class EnvironmentTest(parameterized.TestCase):
 
     self.assertEquals(_CONSTANT_REWARD_VALUE, time_step.reward)
 
-  def test_timeout(self):
-    self._physics.time = mock.Mock(return_value=2.)
+  @parameterized.parameters(
+      {'physics_timestep': .01, 'control_timestep': None,
+       'expected_steps': 1000},
+      {'physics_timestep': .01, 'control_timestep': .05,
+       'expected_steps': 5000})
+  def test_timeout(self, expected_steps, physics_timestep, control_timestep):
+    self._physics.timestep.return_value = physics_timestep
+    time_limit = expected_steps * (control_timestep or physics_timestep)
     env = control.Environment(
-        physics=self._physics, task=self._task, time_limit=1.)
-    env.reset()
-    time_step = env.step([1])
+        physics=self._physics, task=self._task, time_limit=time_limit,
+        control_timestep=control_timestep)
+
+    time_step = env.reset()
+    steps = 0
+    while not time_step.last():
+      time_step = env.step([1])
+      steps += 1
+
+    self.assertEqual(steps, expected_steps)
     self.assertTrue(time_step.last())
 
     time_step = env.step([1])
