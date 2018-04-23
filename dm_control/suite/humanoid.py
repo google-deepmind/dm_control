@@ -53,39 +53,39 @@ def get_model_and_assets():
 
 
 @SUITE.add('benchmarking')
-def stand(time_limit=_DEFAULT_TIME_LIMIT, random=None):
+def stand(time_limit=_DEFAULT_TIME_LIMIT, random=None, **kwargs):
   """Returns the Stand task."""
   physics = Physics.from_xml_string(*get_model_and_assets())
   task = Humanoid(move_speed=0, pure_state=False, random=random)
   return control.Environment(
-      physics, task, time_limit=time_limit, control_timestep=_CONTROL_TIMESTEP)
+      physics, task, time_limit=time_limit, control_timestep=_CONTROL_TIMESTEP, **kwargs)
 
 
 @SUITE.add('benchmarking')
-def walk(time_limit=_DEFAULT_TIME_LIMIT, random=None):
+def walk(time_limit=_DEFAULT_TIME_LIMIT, random=None, **kwargs):
   """Returns the Walk task."""
   physics = Physics.from_xml_string(*get_model_and_assets())
   task = Humanoid(move_speed=_WALK_SPEED, pure_state=False, random=random)
   return control.Environment(
-      physics, task, time_limit=time_limit, control_timestep=_CONTROL_TIMESTEP)
+      physics, task, time_limit=time_limit, control_timestep=_CONTROL_TIMESTEP, **kwargs)
 
 
 @SUITE.add('benchmarking')
-def run(time_limit=_DEFAULT_TIME_LIMIT, random=None):
+def run(time_limit=_DEFAULT_TIME_LIMIT, random=None, **kwargs):
   """Returns the Run task."""
   physics = Physics.from_xml_string(*get_model_and_assets())
   task = Humanoid(move_speed=_RUN_SPEED, pure_state=False, random=random)
   return control.Environment(
-      physics, task, time_limit=time_limit, control_timestep=_CONTROL_TIMESTEP)
+      physics, task, time_limit=time_limit, control_timestep=_CONTROL_TIMESTEP, **kwargs)
 
 
 @SUITE.add()
-def run_pure_state(time_limit=_DEFAULT_TIME_LIMIT, random=None):
+def run_pure_state(time_limit=_DEFAULT_TIME_LIMIT, random=None, **kwargs):
   """Returns the Run task."""
   physics = Physics.from_xml_string(*get_model_and_assets())
   task = Humanoid(move_speed=_RUN_SPEED, pure_state=True, random=random)
   return control.Environment(
-      physics, task, time_limit=time_limit, control_timestep=_CONTROL_TIMESTEP)
+      physics, task, time_limit=time_limit, control_timestep=_CONTROL_TIMESTEP, **kwargs)
 
 
 class Physics(mujoco.Physics):

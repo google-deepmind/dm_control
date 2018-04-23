@@ -54,21 +54,21 @@ def get_model_and_assets():
 
 
 @SUITE.add('benchmarking')
-def stand(time_limit=_DEFAULT_TIME_LIMIT, random=None):
+def stand(time_limit=_DEFAULT_TIME_LIMIT, random=None, **kwargs):
   """Returns a Hopper that strives to stand upright, balancing its pose."""
   physics = Physics.from_xml_string(*get_model_and_assets())
   task = Hopper(hopping=False, random=random)
   return control.Environment(
-      physics, task, time_limit=time_limit, control_timestep=_CONTROL_TIMESTEP)
+      physics, task, time_limit=time_limit, control_timestep=_CONTROL_TIMESTEP, **kwargs)
 
 
 @SUITE.add('benchmarking')
-def hop(time_limit=_DEFAULT_TIME_LIMIT, random=None):
+def hop(time_limit=_DEFAULT_TIME_LIMIT, random=None, **kwargs):
   """Returns a Hopper that strives to hop forward."""
   physics = Physics.from_xml_string(*get_model_and_assets())
   task = Hopper(hopping=True, random=random)
   return control.Environment(
-      physics, task, time_limit=time_limit, control_timestep=_CONTROL_TIMESTEP)
+      physics, task, time_limit=time_limit, control_timestep=_CONTROL_TIMESTEP, **kwargs)
 
 
 class Physics(mujoco.Physics):

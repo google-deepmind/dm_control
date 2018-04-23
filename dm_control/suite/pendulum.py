@@ -45,11 +45,11 @@ def get_model_and_assets():
 
 
 @SUITE.add('benchmarking')
-def swingup(time_limit=_DEFAULT_TIME_LIMIT, random=None):
+def swingup(time_limit=_DEFAULT_TIME_LIMIT, random=None, **kwargs):
   """Returns pendulum swingup task ."""
   physics = Physics.from_xml_string(*get_model_and_assets())
   task = SwingUp(random=random)
-  return control.Environment(physics, task, time_limit=time_limit)
+  return control.Environment(physics, task, time_limit=time_limit, **kwargs)
 
 
 class Physics(mujoco.Physics):

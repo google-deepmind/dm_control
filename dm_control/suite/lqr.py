@@ -60,26 +60,26 @@ def get_model_and_assets(n_bodies, n_actuators, random):
 
 
 @SUITE.add()
-def lqr_2_1(time_limit=_DEFAULT_TIME_LIMIT, random=None):
+def lqr_2_1(time_limit=_DEFAULT_TIME_LIMIT, random=None, **kwargs):
   """Returns an LQR environment with 2 bodies of which the first is actuated."""
   return _make_lqr(n_bodies=2,
                    n_actuators=1,
                    control_cost_coef=_CONTROL_COST_COEF,
                    time_limit=time_limit,
-                   random=random)
+                   random=random, **kwargs)
 
 
 @SUITE.add()
-def lqr_6_2(time_limit=_DEFAULT_TIME_LIMIT, random=None):
+def lqr_6_2(time_limit=_DEFAULT_TIME_LIMIT, random=None, **kwargs):
   """Returns an LQR environment with 6 bodies of which first 2 are actuated."""
   return _make_lqr(n_bodies=6,
                    n_actuators=2,
                    control_cost_coef=_CONTROL_COST_COEF,
                    time_limit=time_limit,
-                   random=random)
+                   random=random, **kwargs)
 
 
-def _make_lqr(n_bodies, n_actuators, control_cost_coef, time_limit, random):
+def _make_lqr(n_bodies, n_actuators, control_cost_coef, time_limit, random, **kwargs):
   """Returns a LQR environment.
 
   Args:
@@ -104,7 +104,7 @@ def _make_lqr(n_bodies, n_actuators, control_cost_coef, time_limit, random):
                                               random=random)
   physics = Physics.from_xml_string(model_string, assets=assets)
   task = LQRLevel(control_cost_coef, random=random)
-  return control.Environment(physics, task, time_limit=time_limit)
+  return control.Environment(physics, task, time_limit=time_limit, **kwargs)
 
 
 def _make_body(body_id, stiffness_range, damping_range, random):

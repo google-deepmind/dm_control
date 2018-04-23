@@ -55,30 +55,30 @@ def get_model_and_assets():
 
 
 @SUITE.add('benchmarking')
-def spin(time_limit=_DEFAULT_TIME_LIMIT, random=None):
+def spin(time_limit=_DEFAULT_TIME_LIMIT, random=None, **kwargs):
   """Returns the Spin task."""
   physics = Physics.from_xml_string(*get_model_and_assets())
   task = Spin(random=random)
   return control.Environment(
-      physics, task, time_limit=time_limit, control_timestep=_CONTROL_TIMESTEP)
+      physics, task, time_limit=time_limit, control_timestep=_CONTROL_TIMESTEP, **kwargs)
 
 
 @SUITE.add('benchmarking')
-def turn_easy(time_limit=_DEFAULT_TIME_LIMIT, random=None):
+def turn_easy(time_limit=_DEFAULT_TIME_LIMIT, random=None, **kwargs):
   """Returns the easy Turn task."""
   physics = Physics.from_xml_string(*get_model_and_assets())
   task = Turn(target_radius=_EASY_TARGET_SIZE, random=random)
   return control.Environment(
-      physics, task, time_limit=time_limit, control_timestep=_CONTROL_TIMESTEP)
+      physics, task, time_limit=time_limit, control_timestep=_CONTROL_TIMESTEP, **kwargs)
 
 
 @SUITE.add('benchmarking')
-def turn_hard(time_limit=_DEFAULT_TIME_LIMIT, random=None):
+def turn_hard(time_limit=_DEFAULT_TIME_LIMIT, random=None, **kwargs):
   """Returns the hard Turn task."""
   physics = Physics.from_xml_string(*get_model_and_assets())
   task = Turn(target_radius=_HARD_TARGET_SIZE, random=random)
   return control.Environment(
-      physics, task, time_limit=time_limit, control_timestep=_CONTROL_TIMESTEP)
+      physics, task, time_limit=time_limit, control_timestep=_CONTROL_TIMESTEP, **kwargs)
 
 
 class Physics(mujoco.Physics):

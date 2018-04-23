@@ -52,21 +52,21 @@ def get_model_and_assets():
 
 
 @SUITE.add()
-def stand(time_limit=_DEFAULT_TIME_LIMIT, random=None):
+def stand(time_limit=_DEFAULT_TIME_LIMIT, random=None, **kwargs):
   """Returns the Stand task."""
   physics = Physics.from_xml_string(*get_model_and_assets())
   task = HumanoidCMU(move_speed=0, random=random)
   return control.Environment(
-      physics, task, time_limit=time_limit, control_timestep=_CONTROL_TIMESTEP)
+      physics, task, time_limit=time_limit, control_timestep=_CONTROL_TIMESTEP, **kwargs)
 
 
 @SUITE.add()
-def run(time_limit=_DEFAULT_TIME_LIMIT, random=None):
+def run(time_limit=_DEFAULT_TIME_LIMIT, random=None, **kwargs):
   """Returns the Run task."""
   physics = Physics.from_xml_string(*get_model_and_assets())
   task = HumanoidCMU(move_speed=_RUN_SPEED, random=random)
   return control.Environment(
-      physics, task, time_limit=time_limit, control_timestep=_CONTROL_TIMESTEP)
+      physics, task, time_limit=time_limit, control_timestep=_CONTROL_TIMESTEP, **kwargs)
 
 
 class Physics(mujoco.Physics):
