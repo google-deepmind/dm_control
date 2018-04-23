@@ -73,47 +73,47 @@ def make_model(use_peg, insert):
 
 
 @SUITE.add('benchmarking', 'hard')
-def bring_ball(observe_target=True, time_limit=_TIME_LIMIT, random=None):
+def bring_ball(observe_target=True, time_limit=_TIME_LIMIT, random=None, **kwargs):
   """Returns manipulator bring task with the ball prop."""
   use_peg = False
   insert = False
   physics = Physics.from_xml_string(*make_model(use_peg, insert))
   task = Bring(use_peg, insert, observe_target, random=random)
   return control.Environment(
-      physics, task, control_timestep=_CONTROL_TIMESTEP, time_limit=time_limit)
+      physics, task, control_timestep=_CONTROL_TIMESTEP, time_limit=time_limit, **kwargs)
 
 
 @SUITE.add('hard')
-def bring_peg(observe_target=True, time_limit=_TIME_LIMIT, random=None):
+def bring_peg(observe_target=True, time_limit=_TIME_LIMIT, random=None, **kwargs):
   """Returns manipulator bring task with the peg prop."""
   use_peg = True
   insert = False
   physics = Physics.from_xml_string(*make_model(use_peg, insert))
   task = Bring(use_peg, insert, observe_target, random=random)
   return control.Environment(
-      physics, task, control_timestep=_CONTROL_TIMESTEP, time_limit=time_limit)
+      physics, task, control_timestep=_CONTROL_TIMESTEP, time_limit=time_limit, **kwargs)
 
 
 @SUITE.add('hard')
-def insert_ball(observe_target=True, time_limit=_TIME_LIMIT, random=None):
+def insert_ball(observe_target=True, time_limit=_TIME_LIMIT, random=None, **kwargs):
   """Returns manipulator insert task with the ball prop."""
   use_peg = False
   insert = True
   physics = Physics.from_xml_string(*make_model(use_peg, insert))
   task = Bring(use_peg, insert, observe_target, random=random)
   return control.Environment(
-      physics, task, control_timestep=_CONTROL_TIMESTEP, time_limit=time_limit)
+      physics, task, control_timestep=_CONTROL_TIMESTEP, time_limit=time_limit, **kwargs)
 
 
 @SUITE.add('hard')
-def insert_peg(observe_target=True, time_limit=_TIME_LIMIT, random=None):
+def insert_peg(observe_target=True, time_limit=_TIME_LIMIT, random=None, **kwargs):
   """Returns manipulator insert task with the peg prop."""
   use_peg = True
   insert = True
   physics = Physics.from_xml_string(*make_model(use_peg, insert))
   task = Bring(use_peg, insert, observe_target, random=random)
   return control.Environment(
-      physics, task, control_timestep=_CONTROL_TIMESTEP, time_limit=time_limit)
+      physics, task, control_timestep=_CONTROL_TIMESTEP, time_limit=time_limit, **kwargs)
 
 
 class Physics(mujoco.Physics):

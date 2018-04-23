@@ -42,19 +42,19 @@ def get_model_and_assets():
 
 
 @SUITE.add('benchmarking')
-def swingup(time_limit=_DEFAULT_TIME_LIMIT, random=None):
+def swingup(time_limit=_DEFAULT_TIME_LIMIT, random=None, **kwargs):
   """Returns Acrobot balance task."""
   physics = Physics.from_xml_string(*get_model_and_assets())
   task = Balance(sparse=False, random=random)
-  return control.Environment(physics, task, time_limit=time_limit)
+  return control.Environment(physics, task, time_limit=time_limit, **kwargs)
 
 
 @SUITE.add('benchmarking')
-def swingup_sparse(time_limit=_DEFAULT_TIME_LIMIT, random=None):
+def swingup_sparse(time_limit=_DEFAULT_TIME_LIMIT, random=None, **kwargs):
   """Returns Acrobot sparse balance."""
   physics = Physics.from_xml_string(*get_model_and_assets())
   task = Balance(sparse=True, random=random)
-  return control.Environment(physics, task, time_limit=time_limit)
+  return control.Environment(physics, task, time_limit=time_limit, **kwargs)
 
 
 class Physics(mujoco.Physics):

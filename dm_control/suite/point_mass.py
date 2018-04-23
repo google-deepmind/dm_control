@@ -43,19 +43,19 @@ def get_model_and_assets():
 
 
 @SUITE.add('benchmarking', 'easy')
-def easy(time_limit=_DEFAULT_TIME_LIMIT, random=None):
+def easy(time_limit=_DEFAULT_TIME_LIMIT, random=None, **kwargs):
   """Returns the easy point_mass task."""
   physics = Physics.from_xml_string(*get_model_and_assets())
   task = PointMass(randomize_gains=False, random=random)
-  return control.Environment(physics, task, time_limit=time_limit)
+  return control.Environment(physics, task, time_limit=time_limit, **kwargs)
 
 
 @SUITE.add()
-def hard(time_limit=_DEFAULT_TIME_LIMIT, random=None):
+def hard(time_limit=_DEFAULT_TIME_LIMIT, random=None, **kwargs):
   """Returns the hard point_mass task."""
   physics = Physics.from_xml_string(*get_model_and_assets())
   task = PointMass(randomize_gains=True, random=random)
-  return control.Environment(physics, task, time_limit=time_limit)
+  return control.Environment(physics, task, time_limit=time_limit, **kwargs)
 
 
 class Physics(mujoco.Physics):
