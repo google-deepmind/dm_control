@@ -139,7 +139,8 @@ class Stack(base.Task):
 
   def initialize_episode(self, physics):
     """Sets the state of the environment at the start of each episode."""
-    # local shortcuts
+    # Local aliases
+    randint = self.random.randint
     uniform = self.random.uniform
     model = physics.named.model
     data = physics.named.data
@@ -160,7 +161,7 @@ class Stack(base.Task):
       data.qpos['finger'] = data.qpos['thumb']
 
       # Randomise target location.
-      target_height = 2*np.random.randint(self._n_boxes) + 1
+      target_height = 2*randint(self._n_boxes) + 1
       box_size = model.geom_size['target', 0]
       model.body_pos['target', 'z'] = box_size * target_height
       model.body_pos['target', 'x'] = uniform(-.37, .37)

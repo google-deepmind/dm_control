@@ -181,7 +181,8 @@ class Bring(base.Task):
 
   def initialize_episode(self, physics):
     """Sets the state of the environment at the start of each episode."""
-    # local shortcuts
+    # Local aliases
+    choice = self.random.choice
     uniform = self.random.uniform
     model = physics.named.model
     data = physics.named.data
@@ -218,8 +219,8 @@ class Bring(base.Task):
 
       # Randomise object location.
       object_init_probs = [_P_IN_HAND, _P_IN_TARGET, 1-_P_IN_HAND-_P_IN_TARGET]
-      init_type = np.random.choice(['in_hand', 'in_target', 'uniform'], 1,
-                                   p=object_init_probs)[0]
+      init_type = choice(['in_hand', 'in_target', 'uniform'],
+                         p=object_init_probs)
       if init_type == 'in_target':
         object_x = target_x
         object_z = target_z
