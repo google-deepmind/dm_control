@@ -132,12 +132,10 @@ class Physics(_control.Physics):
     with self.check_invalid_state():
       if self.model.opt.integrator == enums.mjtIntegrator.mjINT_EULER:
         mjlib.mj_step2(self.model.ptr, self.data.ptr)
-        mjlib.mj_step1(self.model.ptr, self.data.ptr)
       else:
         mjlib.mj_step(self.model.ptr, self.data.ptr)
 
-      if self.model.opt.integrator != enums.mjtIntegrator.mjINT_EULER:
-        mjlib.mj_step1(self.model.ptr, self.data.ptr)
+      mjlib.mj_step1(self.model.ptr, self.data.ptr)
 
   def render(self, height=240, width=320, camera_id=-1, overlays=(),
              depth=False, scene_option=None):
@@ -597,6 +595,7 @@ class Camera(object):
                           self._scene.ptr)
 
   def _render_on_gl_thread(self, overlays, depth, scene_option):
+    """Call mjr_render(), process depth and overlays."""
     self.update(scene_option=scene_option)
     mjlib.mjr_render(self._rect, self._scene.ptr,
                      self._physics.contexts.mujoco.ptr)
