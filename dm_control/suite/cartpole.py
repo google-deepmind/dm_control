@@ -78,17 +78,18 @@ def swingup_sparse(time_limit=_DEFAULT_TIME_LIMIT, random=None):
 
 @SUITE.add()
 def two_poles(time_limit=_DEFAULT_TIME_LIMIT, random=None):
-  """Returns the Cartpole Balance task."""
+  """Returns the Cartpole Balance task with two poles."""
   physics = Physics.from_xml_string(*get_model_and_assets(num_poles=2))
   task = Balance(swing_up=True, sparse=False, random=random)
   return control.Environment(physics, task, time_limit=time_limit)
 
 
 @SUITE.add()
-def three_poles(time_limit=_DEFAULT_TIME_LIMIT, random=None):
-  """Returns the Cartpole Balance task."""
-  physics = Physics.from_xml_string(*get_model_and_assets(num_poles=3))
-  task = Balance(swing_up=True, sparse=False, random=random)
+def three_poles(time_limit=_DEFAULT_TIME_LIMIT, random=None, num_poles=3,
+                sparse=False):
+  """Returns the Cartpole Balance task with three or more poles."""
+  physics = Physics.from_xml_string(*get_model_and_assets(num_poles=num_poles))
+  task = Balance(swing_up=True, sparse=sparse, random=random)
   return control.Environment(physics, task, time_limit=time_limit)
 
 
