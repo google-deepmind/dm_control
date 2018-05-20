@@ -53,15 +53,22 @@ class ContextBase(object):
                render_executor_class=executor.RenderExecutor):
     """Initializes this context."""
     self._render_executor = render_executor_class()
+    self._refcount = 0
 
     self_weakref = weakref.ref(self)
     def _free_at_exit():
       if self_weakref():
-        self_weakref().free()
+        self_weakref()._free_unconditionally()  # pylint: disable=protected-access
     atexit.register(_free_at_exit)
 
     with self._render_executor.execution_context() as ctx:
       ctx.call(self._platform_init, max_width, max_height)
+
+  def increment_refcount(self):
+    self._refcount += 1
+
+  def decrement_refcount(self):
+    self._refcount -= 1
 
   @property
   def thread(self):
@@ -74,11 +81,15 @@ class ContextBase(object):
     self._platform_free()
 
   def free(self):
-    """Frees resources associated with this context."""
+    """Frees resources associated with this context if its refcount is zero."""
+    if self._refcount == 0:
+      self._free_unconditionally()
+
+  def _free_unconditionally(self):
     self._render_executor.terminate(self._free_on_executor_thread)
 
   def __del__(self):
-    self.free()
+    self._free_unconditionally()
 
   @contextlib.contextmanager
   def make_current(self):

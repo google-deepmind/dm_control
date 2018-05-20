@@ -466,7 +466,7 @@ class MjModel(wrappers.MjModelWrapper):
     Args:
       model_ptr: A `ctypes.POINTER` to an `mjbindings.types.MJMODEL` instance.
     """
-    super(MjModel, self).__init__(model_ptr)
+    super(MjModel, self).__init__(ptr=model_ptr)
 
   def __getstate__(self):
     # All of MjModel's state is assumed to reside within the MuJoCo C struct.
@@ -783,11 +783,14 @@ class MjrContext(wrappers.MjrContextWrapper):  # pylint: disable=missing-docstri
     with gl_context.make_current() as ctx:
       ctx.call(mjlib.mjr_makeContext, model.ptr, ptr, _FONT_SCALE)
       ctx.call(mjlib.mjr_setBuffer, enums.mjtFramebuffer.mjFB_OFFSCREEN, ptr)
+      gl_context.increment_refcount()
 
     # Free resources when the ctypes pointer is garbage collected.
     def finalize_mjr_context(ptr):
       with gl_context.make_current() as ctx:
         ctx.call(mjlib.mjr_freeContext, ptr)
+        gl_context.decrement_refcount()
+
     _create_finalizer(ptr, finalize_mjr_context)
 
     super(MjrContext, self).__init__(ptr)

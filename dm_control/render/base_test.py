@@ -38,6 +38,7 @@ class ContextBaseTests(absltest.TestCase):
       self.make_current_count = 0
       self.max_width = max_width
       self.max_height = max_height
+      self.free_thread = None
 
     def _platform_make_current(self):
       self.make_current_count += 1
@@ -112,6 +113,32 @@ class ContextBaseTests(absltest.TestCase):
 
     self.assertNotIn(id(self.context), base._CURRENT_THREAD_FOR_CONTEXT)
     self.assertNotIn(thread, base._CURRENT_CONTEXT_FOR_THREAD)
+
+  def test_refcounting(self):
+    thread = self.context.thread
+
+    self.assertEqual(self.context._refcount, 0)
+    self.context.increment_refcount()
+    self.assertEqual(self.context._refcount, 1)
+
+    # Context should not be freed yet, since its refcount is still positive.
+    self.context.free()
+    self.assertIsNone(self.context.free_thread)
+    self.assertIs(self.context.thread, thread)
+
+    # Decrement the refcount to zero.
+    self.context.decrement_refcount()
+    self.assertEqual(self.context._refcount, 0)
+
+    # Now the context can be freed.
+    self.context.free()
+    self.assertIs(self.context.free_thread, thread)
+    self.assertIsNone(self.context.thread)
+
+  def test_del(self):
+    self.assertIsNone(self.context.free_thread)
+    self.context.__del__()
+    self.assertIsNotNone(self.context.free_thread)
 
 
 if __name__ == '__main__':
