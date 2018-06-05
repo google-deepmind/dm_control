@@ -150,9 +150,6 @@ class Humanoid(base.Task):
   def initialize_episode(self, physics):
     """Sets the state of the environment at the start of each episode.
 
-    In 'standing' mode, use initial orientation and small velocities.
-    In 'random' mode, randomize joint angles and let fall to the floor.
-
     Args:
       physics: An instance of `Physics`.
 
