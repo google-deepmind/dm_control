@@ -42,12 +42,14 @@ def get_model_and_assets():
 
 
 @SUITE.add('benchmarking', 'easy')
-def catch(time_limit=_DEFAULT_TIME_LIMIT, random=None):
+def catch(time_limit=_DEFAULT_TIME_LIMIT, random=None, environment_kwargs=None):
   """Returns the Ball-in-Cup task."""
   physics = Physics.from_xml_string(*get_model_and_assets())
   task = BallInCup(random=random)
+  environment_kwargs = environment_kwargs or {}
   return control.Environment(
-      physics, task, time_limit=time_limit, control_timestep=_CONTROL_TIMESTEP)
+      physics, task, time_limit=time_limit, control_timestep=_CONTROL_TIMESTEP,
+      **environment_kwargs)
 
 
 class Physics(mujoco.Physics):

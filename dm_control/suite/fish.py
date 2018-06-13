@@ -51,21 +51,26 @@ def get_model_and_assets():
 
 
 @SUITE.add('benchmarking')
-def upright(time_limit=_DEFAULT_TIME_LIMIT, random=None):
+def upright(time_limit=_DEFAULT_TIME_LIMIT, random=None,
+            environment_kwargs=None):
   """Returns the Fish Upright task."""
   physics = Physics.from_xml_string(*get_model_and_assets())
   task = Upright(random=random)
+  environment_kwargs = environment_kwargs or {}
   return control.Environment(
-      physics, task, control_timestep=_CONTROL_TIMESTEP, time_limit=time_limit)
+      physics, task, control_timestep=_CONTROL_TIMESTEP, time_limit=time_limit,
+      **environment_kwargs)
 
 
 @SUITE.add('benchmarking')
-def swim(time_limit=_DEFAULT_TIME_LIMIT, random=None):
+def swim(time_limit=_DEFAULT_TIME_LIMIT, random=None, environment_kwargs=None):
   """Returns the Fish Swim task."""
   physics = Physics.from_xml_string(*get_model_and_assets())
   task = Swim(random=random)
+  environment_kwargs = environment_kwargs or {}
   return control.Environment(
-      physics, task, control_timestep=_CONTROL_TIMESTEP, time_limit=time_limit)
+      physics, task, control_timestep=_CONTROL_TIMESTEP, time_limit=time_limit,
+      **environment_kwargs)
 
 
 class Physics(mujoco.Physics):

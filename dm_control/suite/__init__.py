@@ -89,7 +89,8 @@ EXTRA = tuple(sorted(set(ALL_TASKS) - set(BENCHMARKING)))
 TASKS_BY_DOMAIN = _get_tasks_by_domain(ALL_TASKS)
 
 
-def load(domain_name, task_name, task_kwargs=None, visualize_reward=False):
+def load(domain_name, task_name, task_kwargs=None, environment_kwargs=None,
+         visualize_reward=False):
   """Returns an environment from a domain name, task name and optional settings.
 
   ```python
@@ -100,6 +101,8 @@ def load(domain_name, task_name, task_kwargs=None, visualize_reward=False):
     domain_name: A string containing the name of a domain.
     task_name: A string containing the name of a task.
     task_kwargs: Optional `dict` of keyword arguments for the task.
+    environment_kwargs: Optional `dict` specifying keyword arguments for the
+      environment.
     visualize_reward: Optional `bool`. If `True`, object colours in rendered
       frames are set to indicate the reward at each step. Default `False`.
 
@@ -107,17 +110,19 @@ def load(domain_name, task_name, task_kwargs=None, visualize_reward=False):
     The requested environment.
   """
   return build_environment(domain_name, task_name, task_kwargs,
-                           visualize_reward)
+                           environment_kwargs, visualize_reward)
 
 
 def build_environment(domain_name, task_name, task_kwargs=None,
-                      visualize_reward=False):
+                      environment_kwargs=None, visualize_reward=False):
   """Returns an environment from the suite given a domain name and a task name.
 
   Args:
     domain_name: A string containing the name of a domain.
     task_name: A string containing the name of a task.
     task_kwargs: Optional `dict` specifying keyword arguments for the task.
+    environment_kwargs: Optional `dict` specifying keyword arguments for the
+      environment.
     visualize_reward: Optional `bool`. If `True`, object colours in rendered
       frames are set to indicate the reward at each step. Default `False`.
 
@@ -137,6 +142,9 @@ def build_environment(domain_name, task_name, task_kwargs=None,
         task_name, domain_name))
 
   task_kwargs = task_kwargs or {}
+  if environment_kwargs is not None:
+    task_kwargs = task_kwargs.copy()
+    task_kwargs['environment_kwargs'] = environment_kwargs
   env = domain.SUITE[task_name](**task_kwargs)
   env.task.visualize_reward = visualize_reward
   return env

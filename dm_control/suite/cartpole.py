@@ -45,52 +45,69 @@ def get_model_and_assets(num_poles=1):
 
 
 @SUITE.add('benchmarking')
-def balance(time_limit=_DEFAULT_TIME_LIMIT, random=None):
+def balance(time_limit=_DEFAULT_TIME_LIMIT, random=None,
+            environment_kwargs=None):
   """Returns the Cartpole Balance task."""
   physics = Physics.from_xml_string(*get_model_and_assets())
   task = Balance(swing_up=False, sparse=False, random=random)
-  return control.Environment(physics, task, time_limit=time_limit)
+  environment_kwargs = environment_kwargs or {}
+  return control.Environment(
+      physics, task, time_limit=time_limit, **environment_kwargs)
 
 
 @SUITE.add('benchmarking')
-def balance_sparse(time_limit=_DEFAULT_TIME_LIMIT, random=None):
+def balance_sparse(time_limit=_DEFAULT_TIME_LIMIT, random=None,
+                   environment_kwargs=None):
   """Returns the sparse reward variant of the Cartpole Balance task."""
   physics = Physics.from_xml_string(*get_model_and_assets())
   task = Balance(swing_up=False, sparse=True, random=random)
-  return control.Environment(physics, task, time_limit=time_limit)
+  environment_kwargs = environment_kwargs or {}
+  return control.Environment(
+      physics, task, time_limit=time_limit, **environment_kwargs)
 
 
 @SUITE.add('benchmarking')
-def swingup(time_limit=_DEFAULT_TIME_LIMIT, random=None, **kwargs):
+def swingup(time_limit=_DEFAULT_TIME_LIMIT, random=None,
+            environment_kwargs=None):
   """Returns the Cartpole Swing-Up task."""
   physics = Physics.from_xml_string(*get_model_and_assets())
   task = Balance(swing_up=True, sparse=False, random=random)
-  return control.Environment(physics, task, time_limit=time_limit, **kwargs)
+  environment_kwargs = environment_kwargs or {}
+  return control.Environment(
+      physics, task, time_limit=time_limit, **environment_kwargs)
 
 
 @SUITE.add('benchmarking')
-def swingup_sparse(time_limit=_DEFAULT_TIME_LIMIT, random=None):
+def swingup_sparse(time_limit=_DEFAULT_TIME_LIMIT, random=None,
+                   environment_kwargs=None):
   """Returns the sparse reward variant of teh Cartpole Swing-Up task."""
   physics = Physics.from_xml_string(*get_model_and_assets())
   task = Balance(swing_up=True, sparse=True, random=random)
-  return control.Environment(physics, task, time_limit=time_limit)
+  environment_kwargs = environment_kwargs or {}
+  return control.Environment(
+      physics, task, time_limit=time_limit, **environment_kwargs)
 
 
 @SUITE.add()
-def two_poles(time_limit=_DEFAULT_TIME_LIMIT, random=None):
+def two_poles(time_limit=_DEFAULT_TIME_LIMIT, random=None,
+              environment_kwargs=None):
   """Returns the Cartpole Balance task with two poles."""
   physics = Physics.from_xml_string(*get_model_and_assets(num_poles=2))
   task = Balance(swing_up=True, sparse=False, random=random)
-  return control.Environment(physics, task, time_limit=time_limit)
+  environment_kwargs = environment_kwargs or {}
+  return control.Environment(
+      physics, task, time_limit=time_limit, **environment_kwargs)
 
 
 @SUITE.add()
 def three_poles(time_limit=_DEFAULT_TIME_LIMIT, random=None, num_poles=3,
-                sparse=False):
+                sparse=False, environment_kwargs=None):
   """Returns the Cartpole Balance task with three or more poles."""
   physics = Physics.from_xml_string(*get_model_and_assets(num_poles=num_poles))
   task = Balance(swing_up=True, sparse=sparse, random=random)
-  return control.Environment(physics, task, time_limit=time_limit)
+  environment_kwargs = environment_kwargs or {}
+  return control.Environment(
+      physics, task, time_limit=time_limit, **environment_kwargs)
 
 
 def _make_model(n_poles):
