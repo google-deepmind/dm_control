@@ -31,7 +31,7 @@ from dm_control.mujoco.wrapper import util
 from six.moves import xrange  # pylint: disable=redefined-builtin
 
 _NUM_CALLS = 10000
-_RSS_GROWTH_TOLERANCE = 150  # Bytes
+_RSS_GROWTH_TOLERANCE = 300  # Bytes
 
 
 class UtilTest(absltest.TestCase):
@@ -50,9 +50,11 @@ class UtilTest(absltest.TestCase):
     new_max = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
     growth = new_max - old_max
 
-    if growth > _RSS_GROWTH_TOLERANCE:
-      self.fail("RSS grew by {} bytes, exceeding tolerance of {} bytes."
-                .format(growth, _RSS_GROWTH_TOLERANCE))
+    self.assertLessEqual(
+        growth, _RSS_GROWTH_TOLERANCE,
+        msg=("The Resident Set Size (RSS) of this process grew by {} bytes, "
+             "exceeding the tolerance of {} bytes."
+             .format(growth, _RSS_GROWTH_TOLERANCE)))
 
 if __name__ == "__main__":
   absltest.main()
