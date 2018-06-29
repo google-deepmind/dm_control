@@ -4,10 +4,10 @@
 
 This package contains:
 
-- A set of Python Reinforcement Learning environments powered by the MuJoCo
-  physics engine. See the `suite` subdirectory.
+- [`dm_control.mujoco`](dm_control/mujoco/README.md): Libraries that provide Python bindings to the MuJoCo physics engine.
 
-- Libraries that provide Python bindings to the MuJoCo physics engine.
+- [`dm_control.suite`](dm_control/suite/README.md): A set of Python Reinforcement Learning environments powered by the MuJoCo
+  physics engine.
 
 If you use this package, please cite our accompanying accompanying [tech report](https://arxiv.org/abs/1801.00690).
 
@@ -57,36 +57,3 @@ For example, on Debian and Ubuntu, this can be done by running
 3. Before running, the `DYLD_LIBRARY_PATH` environment variable needs to be
    updated with the path to the GLFW library. This can be done by running
    `export DYLD_LIBRARY_PATH=$(brew --prefix)/lib:$DYLD_LIBRARY_PATH`.
-
-## Control Suite quickstart
-
-```python
-from dm_control import suite
-import numpy as np
-
-# Load one task:
-env = suite.load(domain_name="cartpole", task_name="swingup")
-
-# Iterate over a task set:
-for domain_name, task_name in suite.BENCHMARKING:
-  env = suite.load(domain_name, task_name)
-
-# Step through an episode and print out reward, discount and observation.
-action_spec = env.action_spec()
-time_step = env.reset()
-while not time_step.last():
-  action = np.random.uniform(action_spec.minimum,
-                             action_spec.maximum,
-                             size=action_spec.shape)
-  time_step = env.step(action)
-  print(time_step.reward, time_step.discount, time_step.observation)
-```
-
-See our [tech report](https://arxiv.org/abs/1801.00690) for further details.
-
-## Illustration video
-
-Below is a video montage of solved Control Suite tasks, with reward
-visualisation enabled.
-
-[![Video montage](https://img.youtube.com/vi/rAai4QzcYbs/0.jpg)](https://www.youtube.com/watch?v=rAai4QzcYbs)
