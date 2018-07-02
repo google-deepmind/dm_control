@@ -172,7 +172,7 @@
               <body name="rhumerus" pos="-0.183 0.076 0.01" quat="0.18 0.68 0.68 -0.18">
                 <joint name="rhumerusrz" axis="0 0 1" range="-90 90" class="stiff_low"/>
                 <joint name="rhumerusry" axis="0 1 0" range="-90 90" class="stiff_low"/>
-                <joint name="rhumerusrx" axis="1 0 0" range="-90 60" class="stiff_low"/>
+                <joint name="rhumerusrx" axis="1 0 0" range="-60 90" class="stiff_low"/>
                 <geom name="rhumerus" size="0.035 0.124" pos="0 -0.138 0" quat="0.61 -0.61 -0.35 -0.35"/>
                 <body name="rradius" pos="0 -0.277 0">
                   <joint name="rradiusrx" axis="1 0 0" range="-10 170" class="stiff_low"/>
