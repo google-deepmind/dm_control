@@ -36,7 +36,10 @@ from six.moves import zip  # pylint: disable=redefined-builtin
 DEBUG_IMAGE_DIR = os.environ.get('TEST_UNDECLARED_OUTPUTS_DIR',
                                  absltest.get_default_test_tmpdir())
 
-NUM_THREADS = 4
+if render.BACKEND == 'glfw':
+  NUM_THREADS = 1  # GLFW backend is not threadsafe.
+else:
+  NUM_THREADS = 4
 CALLS_PER_THREAD = 1
 
 

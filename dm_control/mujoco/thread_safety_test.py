@@ -71,6 +71,7 @@ class ThreadSafetyTest(absltest.TestCase):
       physics2.step()
 
   @unittest.skipIf(render.DISABLED, render.DISABLED_MESSAGE)
+  @unittest.skipIf(render.BACKEND == 'glfw', 'GLFW backend is not threadsafe.')
   @decorators.run_threaded(calls_per_thread=5)
   def test_load_physics_and_render(self):
     physics = engine.Physics.from_xml_string(MODEL)
@@ -87,6 +88,7 @@ class ThreadSafetyTest(absltest.TestCase):
     self.assertEqual(NUM_STEPS, len(unique_frames))
 
   @unittest.skipIf(render.DISABLED, render.DISABLED_MESSAGE)
+  @unittest.skipIf(render.BACKEND == 'glfw', 'GLFW backend is not threadsafe.')
   @decorators.run_threaded(calls_per_thread=5)
   def test_render_multiple_physics_instances_per_thread_parallel(self):
     physics1 = engine.Physics.from_xml_string(MODEL)
