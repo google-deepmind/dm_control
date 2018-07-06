@@ -25,6 +25,7 @@ from absl.testing import absltest
 from absl.testing import parameterized
 
 from dm_control import suite
+from dm_control.rl import control
 
 import numpy as np
 import six
@@ -195,6 +196,13 @@ class DomainTest(parameterized.TestCase):
     for _ in range(2):
       env.step(action)
 
+  @parameterized.parameters(*suite.ALL_TASKS)
+  def test_task_supports_environment_kwargs(self, domain, task):
+    env = suite.load(domain, task,
+                     environment_kwargs=dict(flat_observation=True))
+    # Check that the kwargs are actually passed through to the environment.
+    self.assertSetEqual(set(env.observation_spec()),
+                        {control.FLAT_OBSERVATION_KEY})
 
 if __name__ == '__main__':
   absltest.main()

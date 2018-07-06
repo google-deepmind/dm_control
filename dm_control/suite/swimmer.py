@@ -54,30 +54,38 @@ def get_model_and_assets(n_joints):
 
 
 @SUITE.add('benchmarking')
-def swimmer6(time_limit=_DEFAULT_TIME_LIMIT, random=None):
+def swimmer6(time_limit=_DEFAULT_TIME_LIMIT, random=None,
+             environment_kwargs=None):
   """Returns a 6-link swimmer."""
-  return _make_swimmer(6, time_limit, random=random)
+  return _make_swimmer(6, time_limit, random=random,
+                       environment_kwargs=environment_kwargs)
 
 
 @SUITE.add('benchmarking')
-def swimmer15(time_limit=_DEFAULT_TIME_LIMIT, random=None):
+def swimmer15(time_limit=_DEFAULT_TIME_LIMIT, random=None,
+              environment_kwargs=None):
   """Returns a 15-link swimmer."""
-  return _make_swimmer(15, time_limit, random=random)
+  return _make_swimmer(15, time_limit, random=random,
+                       environment_kwargs=environment_kwargs)
 
 
 def swimmer(n_links=3, time_limit=_DEFAULT_TIME_LIMIT,
-            random=None):
+            random=None, environment_kwargs=None):
   """Returns a swimmer with n links."""
-  return _make_swimmer(n_links, time_limit, random=random)
+  return _make_swimmer(n_links, time_limit, random=random,
+                       environment_kwargs=environment_kwargs)
 
 
-def _make_swimmer(n_joints, time_limit=_DEFAULT_TIME_LIMIT, random=None):
+def _make_swimmer(n_joints, time_limit=_DEFAULT_TIME_LIMIT, random=None,
+                  environment_kwargs=None):
   """Returns a swimmer control environment."""
   model_string, assets = get_model_and_assets(n_joints)
   physics = Physics.from_xml_string(model_string, assets=assets)
   task = Swimmer(random=random)
+  environment_kwargs = environment_kwargs or {}
   return control.Environment(
-      physics, task, time_limit=time_limit, control_timestep=_CONTROL_TIMESTEP)
+      physics, task, time_limit=time_limit, control_timestep=_CONTROL_TIMESTEP,
+      **environment_kwargs)
 
 
 def _make_model(n_bodies):

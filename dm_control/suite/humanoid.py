@@ -53,39 +53,48 @@ def get_model_and_assets():
 
 
 @SUITE.add('benchmarking')
-def stand(time_limit=_DEFAULT_TIME_LIMIT, random=None):
+def stand(time_limit=_DEFAULT_TIME_LIMIT, random=None, environment_kwargs=None):
   """Returns the Stand task."""
   physics = Physics.from_xml_string(*get_model_and_assets())
   task = Humanoid(move_speed=0, pure_state=False, random=random)
+  environment_kwargs = environment_kwargs or {}
   return control.Environment(
-      physics, task, time_limit=time_limit, control_timestep=_CONTROL_TIMESTEP)
+      physics, task, time_limit=time_limit, control_timestep=_CONTROL_TIMESTEP,
+      **environment_kwargs)
 
 
 @SUITE.add('benchmarking')
-def walk(time_limit=_DEFAULT_TIME_LIMIT, random=None):
+def walk(time_limit=_DEFAULT_TIME_LIMIT, random=None, environment_kwargs=None):
   """Returns the Walk task."""
   physics = Physics.from_xml_string(*get_model_and_assets())
   task = Humanoid(move_speed=_WALK_SPEED, pure_state=False, random=random)
+  environment_kwargs = environment_kwargs or {}
   return control.Environment(
-      physics, task, time_limit=time_limit, control_timestep=_CONTROL_TIMESTEP)
+      physics, task, time_limit=time_limit, control_timestep=_CONTROL_TIMESTEP,
+      **environment_kwargs)
 
 
 @SUITE.add('benchmarking')
-def run(time_limit=_DEFAULT_TIME_LIMIT, random=None):
+def run(time_limit=_DEFAULT_TIME_LIMIT, random=None, environment_kwargs=None):
   """Returns the Run task."""
   physics = Physics.from_xml_string(*get_model_and_assets())
   task = Humanoid(move_speed=_RUN_SPEED, pure_state=False, random=random)
+  environment_kwargs = environment_kwargs or {}
   return control.Environment(
-      physics, task, time_limit=time_limit, control_timestep=_CONTROL_TIMESTEP)
+      physics, task, time_limit=time_limit, control_timestep=_CONTROL_TIMESTEP,
+      **environment_kwargs)
 
 
 @SUITE.add()
-def run_pure_state(time_limit=_DEFAULT_TIME_LIMIT, random=None):
+def run_pure_state(time_limit=_DEFAULT_TIME_LIMIT, random=None,
+                   environment_kwargs=None):
   """Returns the Run task."""
   physics = Physics.from_xml_string(*get_model_and_assets())
   task = Humanoid(move_speed=_RUN_SPEED, pure_state=True, random=random)
+  environment_kwargs = environment_kwargs or {}
   return control.Environment(
-      physics, task, time_limit=time_limit, control_timestep=_CONTROL_TIMESTEP)
+      physics, task, time_limit=time_limit, control_timestep=_CONTROL_TIMESTEP,
+      **environment_kwargs)
 
 
 class Physics(mujoco.Physics):
