@@ -25,7 +25,7 @@ import contextlib
 
 import numpy as np
 import six
-from six.moves import xrange  # pylint: disable=redefined-builtin
+from six.moves import range
 
 from dm_control.rl import environment
 from dm_control.rl import specs
@@ -106,7 +106,7 @@ class Environment(environment.Base):
       return self.reset()
 
     self._task.before_step(action, self._physics)
-    for _ in xrange(self._n_sub_steps):
+    for _ in range(self._n_sub_steps):
       self._physics.step()
     self._task.after_step(self._physics)
 

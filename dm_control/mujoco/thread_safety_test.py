@@ -29,7 +29,7 @@ from dm_control.mujoco import engine
 from dm_control.mujoco.testing import assets
 from dm_control.mujoco.testing import decorators
 
-from six.moves import xrange  # pylint: disable=redefined-builtin
+from six.moves import range
 
 MODEL = assets.get_contents('cartpole.xml')
 NUM_STEPS = 10
@@ -49,25 +49,25 @@ class ThreadSafetyTest(absltest.TestCase):
   @decorators.run_threaded()
   def test_load_and_step_physics(self):
     physics = engine.Physics.from_xml_string(MODEL)
-    for _ in xrange(NUM_STEPS):
+    for _ in range(NUM_STEPS):
       physics.step()
 
   @decorators.run_threaded()
   def test_load_and_step_multiple_physics_parallel(self):
     physics1 = engine.Physics.from_xml_string(MODEL)
     physics2 = engine.Physics.from_xml_string(MODEL)
-    for _ in xrange(NUM_STEPS):
+    for _ in range(NUM_STEPS):
       physics1.step()
       physics2.step()
 
   @decorators.run_threaded()
   def test_load_and_step_multiple_physics_sequential(self):
     physics1 = engine.Physics.from_xml_string(MODEL)
-    for _ in xrange(NUM_STEPS):
+    for _ in range(NUM_STEPS):
       physics1.step()
     del physics1
     physics2 = engine.Physics.from_xml_string(MODEL)
-    for _ in xrange(NUM_STEPS):
+    for _ in range(NUM_STEPS):
       physics2.step()
 
   @unittest.skipIf(render.DISABLED, render.DISABLED_MESSAGE)
@@ -80,7 +80,7 @@ class ThreadSafetyTest(absltest.TestCase):
     physics.set_control([1.0])
 
     unique_frames = set()
-    for _ in xrange(NUM_STEPS):
+    for _ in range(NUM_STEPS):
       physics.step()
       frame = physics.render(width=320, height=240, camera_id=0)
       unique_frames.add(frame.tostring())
@@ -93,7 +93,7 @@ class ThreadSafetyTest(absltest.TestCase):
   def test_render_multiple_physics_instances_per_thread_parallel(self):
     physics1 = engine.Physics.from_xml_string(MODEL)
     physics2 = engine.Physics.from_xml_string(MODEL)
-    for _ in xrange(NUM_STEPS):
+    for _ in range(NUM_STEPS):
       physics1.step()
       physics1.render(width=320, height=240, camera_id=0)
       physics2.step()

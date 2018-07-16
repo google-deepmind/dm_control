@@ -29,8 +29,8 @@ from dm_control import mujoco
 from dm_control import render
 from dm_control.mujoco.testing import decorators
 from dm_control.mujoco.testing import image_utils
-from six.moves import xrange  # pylint: disable=redefined-builtin
-from six.moves import zip  # pylint: disable=redefined-builtin
+from six.moves import range
+from six.moves import zip
 
 
 DEBUG_IMAGE_DIR = os.environ.get('TEST_UNDECLARED_OUTPUTS_DIR',
@@ -77,7 +77,7 @@ class RenderTest(parameterized.TestCase):
   def test_repeatedly_create_and_destroy_rendering_contexts(self):
     # Tests for errors that may occur due to per-thread GL resource leakage.
     physics = mujoco.Physics.from_xml_string('<mujoco/>')
-    for _ in xrange(500):
+    for _ in range(500):
       physics._make_rendering_contexts()
 
 if __name__ == '__main__':

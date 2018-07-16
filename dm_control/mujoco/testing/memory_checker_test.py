@@ -29,7 +29,7 @@ from absl.testing import absltest
 from dm_control.mujoco.testing import memory_checker
 from dm_control.mujoco.wrapper.mjbindings import mjlib
 
-from six.moves import xrange  # pylint: disable=redefined-builtin
+from six.moves import range
 
 
 class MemoryCheckingContextTest(absltest.TestCase):
@@ -70,7 +70,7 @@ class MemoryCheckingContextTest(absltest.TestCase):
     with memory_checker.assert_mujoco_memory_freed():
       allocated = [
           mjlib.mju_malloc(self.bytes_per_array)
-          for _ in xrange(self.n_arrays)
+          for _ in range(self.n_arrays)
       ]
       for ptr in allocated:
         mjlib.mju_free(ptr)
@@ -79,7 +79,7 @@ class MemoryCheckingContextTest(absltest.TestCase):
     """Allocating outside and freeing inside shouldn't raise any exceptions."""
     allocated = [
         mjlib.mju_malloc(self.bytes_per_array)
-        for _ in xrange(self.n_arrays)
+        for _ in range(self.n_arrays)
     ]
     with memory_checker.assert_mujoco_memory_freed():
       for ptr in allocated:
@@ -94,7 +94,7 @@ class MemoryCheckingContextTest(absltest.TestCase):
       with memory_checker.assert_mujoco_memory_freed():
         allocated = [
             mjlib.mju_malloc(self.bytes_per_array)
-            for _ in xrange(self.n_arrays)
+            for _ in range(self.n_arrays)
         ]
     for ptr in allocated:
       mjlib.mju_free(ptr)

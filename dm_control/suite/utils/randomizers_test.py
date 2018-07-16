@@ -29,7 +29,7 @@ from dm_control.mujoco.wrapper.mjbindings import mjlib
 from dm_control.suite.utils import randomizers
 
 import numpy as np
-from six.moves import xrange  # pylint: disable=redefined-builtin
+from six.moves import range
 
 
 class RandomizeUnlimitedJointsTest(parameterized.TestCase):
@@ -116,7 +116,7 @@ class RandomizeUnlimitedJointsTest(parameterized.TestCase):
           </worldbody>
         </mujoco>""")
 
-    for _ in xrange(10):
+    for _ in range(10):
       randomizers.randomize_limited_and_rotational_joints(physics, self.rand)
       self.assertBetween(physics.named.data.qpos['hinge'], -np.pi, np.pi)
 
@@ -134,7 +134,7 @@ class RandomizeUnlimitedJointsTest(parameterized.TestCase):
           </worldbody>
         </mujoco>""")
 
-    for _ in xrange(10):
+    for _ in range(10):
       randomizers.randomize_limited_and_rotational_joints(physics, self.rand)
       self.assertBetween(physics.named.data.qpos['hinge'],
                          np.deg2rad(0), np.deg2rad(10))
@@ -152,7 +152,7 @@ class RandomizeUnlimitedJointsTest(parameterized.TestCase):
 
     body_axis = np.array([1., 0., 0.])
     joint_axis = np.zeros(3)
-    for _ in xrange(10):
+    for _ in range(10):
       randomizers.randomize_limited_and_rotational_joints(physics, self.rand)
 
       quat = physics.named.data.qpos['ball']

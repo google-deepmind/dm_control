@@ -29,7 +29,7 @@ import numpy as np
 
 from scipy import interpolate
 
-from six.moves import xrange  # pylint: disable=redefined-builtin
+from six.moves import range
 
 mjlib = mjbindings.mjlib
 
@@ -98,7 +98,7 @@ def convert(file_name, physics, timestep):
   while time_vals_new[-1] > time_vals[-1]:
     time_vals_new = time_vals_new[:-1]
 
-  for i in xrange(qpos_values.shape[1]):
+  for i in range(qpos_values.shape[1]):
     f = interpolate.splrep(time_vals, qpos_values[:, i])
     qpos_values_resampled.append(interpolate.splev(time_vals_new, f))
 
@@ -174,8 +174,8 @@ class Amcvals2qpos(object):
         [[1, 0, 0], [0, 0, -1], [0, 1, 0]]) * CONVERSION_LENGTH
     self.qpos_root_quat_ind = [3, 4, 5, 6]
     amc2qpos_transform = np.zeros((len(index2joint), len(joint_order)))
-    for i in xrange(len(index2joint)):
-      for j in xrange(len(joint_order)):
+    for i in range(len(index2joint)):
+      for j in range(len(joint_order)):
         if index2joint[i] == joint_order[j]:
           if 'rx' in index2joint[i]:
             amc2qpos_transform[i][j] = 1

@@ -27,7 +27,7 @@ from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control.render import executor
 import mock
-from six.moves import xrange  # pylint: disable=redefined-builtin
+from six.moves import range
 
 
 def enforce_timeout(timeout):
@@ -88,15 +88,15 @@ class RenderExecutorTest(parameterized.TestCase):
     def fill_list(thread_idx):
       def assign_value(i):
         shared_list[i] = thread_idx
-      for _ in xrange(1000):
+      for _ in range(1000):
         with render_executor.execution_context() as ctx:
-          for i in xrange(list_length):
+          for i in range(list_length):
             ctx.call(assign_value, i)
           # Other threads should be prevented from calling `assign_value` while
           # this thread is inside the `execution_context`.
           self.assertEqual(shared_list, [thread_idx] * list_length)
 
-    threads = [threading.Thread(target=fill_list, args=(i,)) for i in xrange(9)]
+    threads = [threading.Thread(target=fill_list, args=(i,)) for i in range(9)]
     for thread in threads:
       thread.start()
     for thread in threads:

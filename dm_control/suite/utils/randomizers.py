@@ -24,7 +24,7 @@ from __future__ import print_function
 from dm_control.mujoco.wrapper import mjbindings
 
 import numpy as np
-from six.moves import xrange  # pylint: disable=redefined-builtin
+from six.moves import range
 
 
 def random_limited_quaternion(random, limit):
@@ -65,7 +65,7 @@ def randomize_limited_and_rotational_joints(physics, random=None):
 
   qpos = physics.named.data.qpos
 
-  for joint_id in xrange(physics.model.njnt):
+  for joint_id in range(physics.model.njnt):
     joint_name = physics.model.id2name(joint_id, 'joint')
     joint_type = physics.model.jnt_type[joint_id]
     is_limited = physics.model.jnt_limited[joint_id]

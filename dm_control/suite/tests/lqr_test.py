@@ -32,7 +32,7 @@ from dm_control.suite import lqr
 from dm_control.suite import lqr_solver
 
 import numpy as np
-from six.moves import xrange  # pylint: disable=redefined-builtin
+from six.moves import range
 
 
 class LqrTest(parameterized.TestCase):
@@ -71,7 +71,7 @@ class LqrTest(parameterized.TestCase):
     initial_state = np.hstack((timestep.observation['position'],
                                timestep.observation['velocity']))
     logging.info('Measuring total cost over %d steps.', n_steps)
-    for _ in xrange(n_steps):
+    for _ in range(n_steps):
       x = np.hstack((timestep.observation['position'],
                      timestep.observation['velocity']))
       # u = k*x is the optimal policy

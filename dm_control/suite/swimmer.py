@@ -32,7 +32,7 @@ from dm_control.utils import rewards
 
 from lxml import etree
 import numpy as np
-from six.moves import xrange  # pylint: disable=redefined-builtin
+from six.moves import range
 
 _DEFAULT_TIME_LIMIT = 30
 _CONTROL_TIMESTEP = .03  # (Seconds)
@@ -98,7 +98,7 @@ def _make_model(n_bodies):
   sensor = etree.SubElement(mjcf, 'sensor')
 
   parent = head_body
-  for body_index in xrange(n_bodies - 1):
+  for body_index in range(n_bodies - 1):
     site_name = 'site_{}'.format(body_index)
     child = _make_body(body_index=body_index)
     child.append(etree.Element('site', name=site_name))

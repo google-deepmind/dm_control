@@ -32,7 +32,7 @@ from dm_control.utils import rewards
 
 from lxml import etree
 import numpy as np
-from six.moves import xrange  # pylint: disable=redefined-builtin
+from six.moves import range
 
 
 _DEFAULT_TIME_LIMIT = 10
@@ -118,7 +118,7 @@ def _make_model(n_poles):
   mjcf = etree.fromstring(xml_string)
   parent = mjcf.find('./worldbody/body/body')  # Find first pole.
   # Make chain of poles.
-  for pole_index in xrange(2, n_poles+1):
+  for pole_index in range(2, n_poles+1):
     child = etree.Element('body', name='pole_{}'.format(pole_index),
                           pos='0 0 1', childclass='pole')
     etree.SubElement(child, 'joint', name='hinge_{}'.format(pole_index))

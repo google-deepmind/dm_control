@@ -37,7 +37,7 @@ from dm_control.mujoco.wrapper.mjbindings import mjlib
 import mock
 import numpy as np
 from six.moves import cPickle
-from six.moves import xrange  # pylint: disable=redefined-builtin
+from six.moves import range
 
 
 HUMANOID_XML_PATH = assets.get_path("humanoid.xml")
@@ -173,8 +173,8 @@ class CoreTest(parameterized.TestCase):
     t0 = self.data.time
     mjlib.mj_step(self.model.ptr, self.data.ptr)
     self.assertEqual(self.data.time, t0 + self.model.opt.timestep)
-    self.assert_(np.all(np.isfinite(self.data.qpos[:])))
-    self.assert_(np.all(np.isfinite(self.data.qvel[:])))
+    self.assertTrue(np.all(np.isfinite(self.data.qpos[:])))
+    self.assertTrue(np.all(np.isfinite(self.data.qvel[:])))
 
   def testMultipleData(self):
     data2 = core.MjData(self.model)
@@ -210,13 +210,13 @@ class CoreTest(parameterized.TestCase):
       ("_copy", lambda x: x.copy()),
       ("_pickle_unpickle", lambda x: cPickle.loads(cPickle.dumps(x))),)
   def testCopyOrPickleData(self, func):
-    for _ in xrange(10):
+    for _ in range(10):
       mjlib.mj_step(self.model.ptr, self.data.ptr)
     data2 = func(self.data)
     attr_to_compare = ("time", "energy", "qpos", "xpos")
     self.assertNotEqual(data2.ptr, self.data.ptr)
     self._assert_attributes_equal(data2, self.data, attr_to_compare)
-    for _ in xrange(10):
+    for _ in range(10):
       mjlib.mj_step(self.model.ptr, self.data.ptr)
       mjlib.mj_step(data2.model.ptr, data2.ptr)
     self._assert_attributes_equal(data2, self.data, attr_to_compare)
@@ -225,13 +225,13 @@ class CoreTest(parameterized.TestCase):
       ("_copy", lambda x: x.copy()),
       ("_pickle_unpickle", lambda x: cPickle.loads(cPickle.dumps(x))),)
   def testCopyOrPickleStructs(self, func):
-    for _ in xrange(10):
+    for _ in range(10):
       mjlib.mj_step(self.model.ptr, self.data.ptr)
     data2 = func(self.data)
     self.assertNotEqual(data2.ptr, self.data.ptr)
     for name in ["warning", "timer", "solver"]:
       self._assert_structs_equal(getattr(self.data, name), getattr(data2, name))
-    for _ in xrange(10):
+    for _ in range(10):
       mjlib.mj_step(self.model.ptr, self.data.ptr)
       mjlib.mj_step(data2.model.ptr, data2.ptr)
     for expected, actual in zip(self.data.timer, data2.timer):
@@ -358,7 +358,7 @@ class CoreTest(parameterized.TestCase):
     """
     model = core.MjModel.from_xml_string(xml_string)
     data = core.MjData(model)
-    for _ in xrange(100):  # Let the simulation settle for a while.
+    for _ in range(100):  # Let the simulation settle for a while.
       mjlib.mj_step(model.ptr, data.ptr)
 
     # With gravity and contact enabled, the cube should be stationary and the
@@ -376,7 +376,7 @@ class CoreTest(parameterized.TestCase):
     # If we disable contacts but not gravity then the cube should fall through
     # the floor.
     with model.disable(enums.mjtDisableBit.mjDSBL_CONTACT):
-      for _ in xrange(10):
+      for _ in range(10):
         mjlib.mj_step(model.ptr, data.ptr)
     self.assertLess(data.qvel[0], -0.1)
 
@@ -400,7 +400,7 @@ class CoreTest(parameterized.TestCase):
        lambda _: core.MjvScene(),
        "mjv_freeScene"))
   def testFree(self, constructor, destructor_name):
-    for _ in xrange(5):
+    for _ in range(5):
       destructor = getattr(mjlib, destructor_name)
       with mock.patch.object(
           core.mjlib, destructor_name, wraps=destructor) as mock_destructor:
@@ -421,7 +421,7 @@ class CoreTest(parameterized.TestCase):
 
   @absltest.unittest.skipIf(render.DISABLED, render.DISABLED_MESSAGE)
   def testFreeMjrContext(self):
-    for _ in xrange(5):
+    for _ in range(5):
       renderer = render.Renderer(640, 480)
       with mock.patch.object(core.mjlib, "mjr_freeContext",
                              wraps=mjlib.mjr_freeContext) as mock_destructor:
@@ -519,7 +519,7 @@ class AttributesTest(parameterized.TestCase):
     self.data = core.MjData(self.model)
 
   def _take_steps(self, n=5):
-    for _ in xrange(n):
+    for _ in range(n):
       mjlib.mj_step(self.model.ptr, self.data.ptr)
 
 

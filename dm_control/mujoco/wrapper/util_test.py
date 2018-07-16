@@ -28,7 +28,7 @@ from absl.testing import absltest
 from dm_control.mujoco.wrapper import core
 from dm_control.mujoco.wrapper import util
 
-from six.moves import xrange  # pylint: disable=redefined-builtin
+from six.moves import range
 
 _NUM_CALLS = 10000
 _RSS_GROWTH_TOLERANCE = 300  # Bytes
@@ -44,7 +44,7 @@ class UtilTest(absltest.TestCase):
 
     # This uses high water marks to find memory leaks in native code.
     old_max = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
-    for _ in xrange(_NUM_CALLS):
+    for _ in range(_NUM_CALLS):
       buf = util.buf_to_npy(src, shape)
     del buf
     new_max = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss

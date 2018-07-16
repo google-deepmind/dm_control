@@ -29,7 +29,7 @@ from absl import logging
 from dm_control.mujoco import wrapper
 
 import numpy as np
-from six.moves import xrange  # pylint: disable=redefined-builtin
+from six.moves import range
 
 try:
   import scipy.linalg as sp  # pylint: disable=g-import-not-at-top
@@ -60,7 +60,7 @@ def _solve_dare(a, b, q, r):
       positive-definite.
   """
   p = np.eye(len(a))
-  for _ in xrange(1000000):
+  for _ in range(1000000):
     a_p = a.T.dot(p)  # A' * P_t
     a_p_b = np.dot(a_p, b)  # A' * P_t * B
     # Algebraic Riccati Equation.

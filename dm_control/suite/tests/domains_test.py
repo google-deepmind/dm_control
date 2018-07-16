@@ -29,8 +29,8 @@ from dm_control.rl import control
 
 import numpy as np
 import six
-from six.moves import range  # pylint: disable=redefined-builtin
-from six.moves import zip  # pylint: disable=redefined-builtin
+from six.moves import range
+from six.moves import zip
 
 
 def uniform_random_policy(action_spec, random=None):

@@ -37,7 +37,7 @@ from dm_control.rl import control
 import mock
 import numpy as np
 from six.moves import cPickle
-from six.moves import xrange  # pylint: disable=redefined-builtin
+from six.moves import range
 
 MODEL_PATH = assets.get_path('cartpole.xml')
 MODEL_WITH_ASSETS = assets.get_contents('model_with_assets.xml')
@@ -285,7 +285,7 @@ class MujocoEngineTest(parameterized.TestCase):
       ('_pickle_and_unpickle', lambda x: cPickle.loads(cPickle.dumps(x))),
   )
   def testCopyOrPicklePhysics(self, func):
-    for _ in xrange(10):
+    for _ in range(10):
       self._physics.step()
     physics2 = func(self._physics)
     self.assertNotEqual(physics2.model.ptr, self._physics.model.ptr)
@@ -296,7 +296,7 @@ class MujocoEngineTest(parameterized.TestCase):
     data_attr_to_compare = ('time', 'energy', 'qpos', 'xpos')
     self._assert_attributes_equal(
         physics2.data, self._physics.data, data_attr_to_compare)
-    for _ in xrange(10):
+    for _ in range(10):
       self._physics.step()
       physics2.step()
     self._assert_attributes_equal(

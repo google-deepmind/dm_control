@@ -34,7 +34,7 @@ from dm_control.utils import xml_tools
 
 from lxml import etree
 import numpy as np
-from six.moves import xrange  # pylint: disable=redefined-builtin
+from six.moves import range
 
 from dm_control.utils import io as resources
 
@@ -180,7 +180,7 @@ def _make_model(n_bodies,
   actuator = etree.SubElement(mjcf.getroot(), 'actuator')
   tendon = etree.SubElement(mjcf.getroot(), 'tendon')
 
-  for body in xrange(n_bodies):
+  for body in range(n_bodies):
     # Inserting body.
     child = _make_body(body, stiffness_range, damping_range, random)
     site_name = 'site_{}'.format(body)

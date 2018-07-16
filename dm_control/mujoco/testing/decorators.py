@@ -26,7 +26,7 @@ import threading
 # Internal dependencies.
 
 import six
-from six.moves import xrange  # pylint: disable=redefined-builtin
+from six.moves import range
 
 
 def run_threaded(num_threads=4, calls_per_thread=10):
@@ -49,14 +49,14 @@ def run_threaded(num_threads=4, calls_per_thread=10):
       exceptions = []
       def worker():
         try:
-          for _ in xrange(calls_per_thread):
+          for _ in range(calls_per_thread):
             test_method(self, *args, **kwargs)
         except:  # pylint: disable=bare-except
           # Appending to Python list is thread-safe:
           # http://effbot.org/pyfaq/what-kinds-of-global-value-mutation-are-thread-safe.htm
           exceptions.append(sys.exc_info())
       threads = [threading.Thread(target=worker, name='thread_{}'.format(i))
-                 for i in xrange(num_threads)]
+                 for i in range(num_threads)]
       for thread in threads:
         thread.start()
       for thread in threads:

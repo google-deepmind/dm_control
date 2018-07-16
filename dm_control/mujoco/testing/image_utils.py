@@ -30,8 +30,8 @@ from dm_control.mujoco.testing import assets
 import numpy as np
 from PIL import Image
 import six
-from six.moves import xrange  # pylint: disable=redefined-builtin
-from six.moves import zip  # pylint: disable=redefined-builtin
+from six.moves import range
+from six.moves import zip
 
 
 class ImagesNotClose(AssertionError):
@@ -86,8 +86,8 @@ class _FrameSequence(object):
     random_state = np.random.RandomState(self._seed)
     physics = mujoco.Physics.from_xml_string(self._xml_string)
     action_spec = mujoco.action_spec(physics)
-    for _ in xrange(self._num_frames):
-      for _ in xrange(self._steps_per_frame):
+    for _ in range(self._num_frames):
+      for _ in range(self._steps_per_frame):
         actions = random_state.uniform(action_spec.minimum, action_spec.maximum)
         physics.set_control(actions)
         physics.step()
@@ -111,7 +111,7 @@ class _FrameSequence(object):
       _save_pixels(pixels, path)
 
   def _iter_paths(self):
-    for frame_num in xrange(self._num_frames):
+    for frame_num in range(self._num_frames):
       filename = self._FILENAME_TEMPLATE.format(frame_num=frame_num)
       for camera_spec in self._camera_specs:
         subdir_name = self._SUBDIR_TEMPLATE.format(
@@ -192,6 +192,7 @@ def save_images_on_failure(output_dir):
     method_name = test_method.__name__
     @functools.wraps(test_method)
     def decorated_method(*args, **kwargs):
+      """Call test method, save debugging images if ImagesNotClose is raised."""
       try:
         test_method(*args, **kwargs)
       except ImagesNotClose as e:

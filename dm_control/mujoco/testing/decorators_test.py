@@ -25,7 +25,7 @@ from absl.testing import absltest
 
 from dm_control.mujoco.testing import decorators
 import mock
-from six.moves import xrange  # pylint: disable=redefined-builtin
+from six.moves import range
 
 
 class RunThreadedTest(absltest.TestCase):
@@ -34,7 +34,7 @@ class RunThreadedTest(absltest.TestCase):
   def test_number_of_threads(self, mock_threading):
     num_threads = 5
 
-    mock_threads = [mock.MagicMock() for _ in xrange(num_threads)]
+    mock_threads = [mock.MagicMock() for _ in range(num_threads)]
     for thread in mock_threads:
       thread.start = mock.MagicMock()
       thread.join = mock.MagicMock()
