@@ -610,9 +610,10 @@ def struct_indexer(struct, struct_name, size_to_axis_indexer):
 
   for field_name in array_sizes:
 
-    # Skip over fields that have sizes but aren't numpy arrays, such as text
-    # fields and contacts (b/34805932).
-    if not isinstance(getattr(struct, field_name), np.ndarray):
+    # Skip over structured arrays and fields that have sizes but aren't numpy
+    # arrays, such as text fields and contacts (b/34805932).
+    attr = getattr(struct, field_name)
+    if not isinstance(attr, np.ndarray) or attr.dtype.fields:
       continue
 
     size_names = sizes.array_sizes[struct_name][field_name]

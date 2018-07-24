@@ -243,14 +243,12 @@ class Physics(_control.Physics):
   @contextlib.contextmanager
   def check_invalid_state(self):
     """Raises a `base.PhysicsError` if the simulation state is invalid."""
-    warning_counts_before = [warning.number for warning in self.data.warning]
+    warning_counts_before = self.data.warning.number.copy()
     yield
-    warnings_raised = []
-    for i, old_warning_count in enumerate(warning_counts_before):
-      if self.data.warning[i].number > old_warning_count:
-        warnings_raised.append(i)
-    if warnings_raised:
-      warning_names = [enums.mjtWarning._fields[i] for i in warnings_raised]
+    warnings_raised = self.data.warning.number > warning_counts_before
+    if any(warnings_raised):
+      warning_names = [
+          enums.mjtWarning._fields[i] for i in np.where(warnings_raised)[0]]
       raise _control.PhysicsError(
           _INVALID_PHYSICS_STATE.format(warning_names=', '.join(warning_names)))
 

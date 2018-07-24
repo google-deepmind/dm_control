@@ -75,17 +75,6 @@ class CoreTest(parameterized.TestCase):
         self.fail("Attribute '{}' differs from expected value: {}"
                   .format(name, str(e)))
 
-  def _assert_structs_equal(self, expected, actual):
-    for name in set(dir(actual) + dir(expected)):
-      if not name.startswith("_"):
-        expected_value = getattr(expected, name)
-        actual_value = getattr(actual, name)
-        self.assertEqual(
-            expected_value,
-            actual_value,
-            msg="struct field '{}' has value {}, expected {}".format(
-                name, actual_value, expected_value))
-
   def testLoadXML(self):
     with open(HUMANOID_XML_PATH, "r") as f:
       xml_string = f.read()
@@ -229,13 +218,12 @@ class CoreTest(parameterized.TestCase):
       mjlib.mj_step(self.model.ptr, self.data.ptr)
     data2 = func(self.data)
     self.assertNotEqual(data2.ptr, self.data.ptr)
-    for name in ["warning", "timer", "solver"]:
-      self._assert_structs_equal(getattr(self.data, name), getattr(data2, name))
+    attr_to_compare = ("warning", "timer", "solver")
+    self._assert_attributes_equal(self.data, data2, attr_to_compare)
     for _ in range(10):
       mjlib.mj_step(self.model.ptr, self.data.ptr)
       mjlib.mj_step(data2.model.ptr, data2.ptr)
-    for expected, actual in zip(self.data.timer, data2.timer):
-      self._assert_structs_equal(expected, actual)
+    self._assert_attributes_equal(self.data, data2, attr_to_compare)
 
   @parameterized.parameters(
       ("right_foot", "body", 6),
@@ -482,15 +470,24 @@ class AttributesTest(parameterized.TestCase):
       raise TypeError("{}.{} has incorrect type {!r} - must be one of {!r}."
                       .format(parent_name, attr_name, type(attr), ARRAY_TYPES))
     # Check that we can read the contents of the array
-    old_contents = attr[:]
+    _ = attr[:]
+
+    # Write unique values into the array and read them back.
+    self._write_unique_values(attr)
+    self._take_steps()  # Take a few steps, check that we don't get segfaults.
+
+  def _write_unique_values(self, target_array):
+    # If the target array is structured, recursively write unique values into
+    # each subfield.
+    if target_array.dtype.fields is not None:
+      for field_name in target_array.dtype.fields:
+        self._write_unique_values(target_array[field_name])
     # Don't write to integer arrays since these might contain pointers.
-    if not np.issubdtype(old_contents.dtype, int):
-      # Write unique values to the array, check that we can read them back.
-      new_contents = np.arange(old_contents.size, dtype=old_contents.dtype)
-      new_contents.shape = old_contents.shape
-      attr[:] = new_contents
-      np.testing.assert_array_equal(new_contents, attr[:])
-      self._take_steps()  # Take a few steps, check that we don't get segfaults.
+    elif not np.issubdtype(target_array.dtype, int):
+      new_contents = np.arange(target_array.size, dtype=target_array.dtype)
+      new_contents.shape = target_array.shape
+      target_array[:] = new_contents
+      np.testing.assert_array_equal(new_contents, target_array[:])
 
   @parameterized.parameters(*_scalar_args)
   def testReadWriteScalar(self, parent_name, attr_name):

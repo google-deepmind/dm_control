@@ -237,12 +237,13 @@ class BindingGenerator(object):
       # 1D array with size defined at compile time
       if token.size:
         shape = self.get_shape_tuple(token.size)
-        if typename in header_parsing.CTYPES_TO_NUMPY:
-          out = c_declarations.StaticNDArray(name, typename, shape, comment,
-                                             parent, is_const)
+        if typename in {header_parsing.NONE, header_parsing.CTYPES_CHAR}:
+          out = c_declarations.StaticPtrArray(
+              name, typename, shape, comment, parent, is_const)
         else:
-          out = c_declarations.StaticPtrArray(name, typename, shape, comment,
-                                              parent, is_const)
+          out = c_declarations.StaticNDArray(
+              name, typename, shape, comment, parent, is_const)
+
       elif token.ptr:
 
         # Pointer to a numpy-compatible type, could be an array or a scalar
@@ -415,6 +416,7 @@ class BindingGenerator(object):
         [docstring] + _BOILERPLATE_IMPORTS + list(imports) + ["\n"])
 
   def write_consts(self, fname):
+    """Write constants."""
     imports = [
         "# pylint: disable=invalid-name",
     ]
@@ -426,6 +428,7 @@ class BindingGenerator(object):
       f.write("\n" + codegen_util.comment_line("End of generated code"))
 
   def write_enums(self, fname):
+    """Write enum definitions."""
     with open(fname, "w") as f:
       imports = [
           "import collections",
@@ -447,6 +450,7 @@ class BindingGenerator(object):
       f.write("\n" + codegen_util.comment_line("End of generated code"))
 
   def write_types(self, fname):
+    """Write ctypes struct declarations."""
     imports = [
         "import ctypes",
     ]
@@ -458,6 +462,7 @@ class BindingGenerator(object):
       f.write("\n" + codegen_util.comment_line("End of generated code"))
 
   def write_wrappers(self, fname):
+    """Write wrapper classes for ctypes structs."""
     with open(fname, "w") as f:
       imports = [
           "import ctypes",
@@ -516,6 +521,7 @@ class BindingGenerator(object):
       f.write("\n" + codegen_util.comment_line("End of generated code"))
 
   def write_index_dict(self, fname):
+    """Write file containing array shape information for indexing."""
     pp = pprint.PrettyPrinter()
     output_string = pp.pformat(dict(self.index_dict))
     indent = codegen_util.Indenter()

@@ -670,13 +670,7 @@ class MjData(wrappers.MjDataWrapper):
     #      into this)
     struct_fields = {}
     for name in ["solver", "timer", "warning"]:
-      new_structs = []
-      for struct in getattr(self, name):
-        new_struct = type(struct)()
-        ctypes.memmove(ctypes.byref(new_struct), ctypes.byref(struct),
-                       ctypes.sizeof(struct))
-        new_structs.append(new_struct)
-      struct_fields[name] = new_structs
+      struct_fields[name] = getattr(self, name).copy()
     scalar_field_names = ["ncon", "time", "energy"]
     scalar_fields = {name: getattr(self, name) for name in scalar_field_names}
     static_fields = {"struct_fields": struct_fields,
@@ -689,10 +683,7 @@ class MjData(wrappers.MjDataWrapper):
     self._model, static_fields, buffer_contents = state_tuple
     self.__init__(self.model)
     for name, contents in six.iteritems(static_fields["struct_fields"]):
-      target_carray = getattr(self, name)
-      for i, struct in enumerate(contents):
-        ctypes.memmove(ctypes.byref(target_carray[i]), ctypes.byref(struct),
-                       ctypes.sizeof(struct))
+      getattr(self, name)[:] = contents
 
     for name, value in six.iteritems(static_fields["scalar_fields"]):
       # Array and scalar values must be handled separately.
@@ -728,11 +719,17 @@ class MjData(wrappers.MjDataWrapper):
     """The parent MjModel for this MjData instance."""
     return self._model
 
+  @util.CachedProperty
+  def _contact_buffer(self):
+    """Cached structured array containing the full contact buffer."""
+    contact_array = util.buf_to_npy(
+        super(MjData, self).contact, shape=(self._model.nconmax,))
+    return contact_array
+
   @property
   def contact(self):
-    """Iterator over detected contacts."""
-    return (wrappers.MjContactWrapper(ctypes.pointer(c))
-            for c in super(MjData, self).contact[:self.ncon])
+    """Variable-length recarray containing all current contacts."""
+    return self._contact_buffer[:self.ncon]
 
 
 # Docstrings for these subclasses are inherited from their Wrapper parent class.

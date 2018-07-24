@@ -193,6 +193,12 @@ def _as_array(src, shape):
   ptr = ctypes.cast(src, ctypes.POINTER(ctype * size))
   buf = np.frombuffer(ptr.contents, dtype=ctype)
   buf.shape = shape
+
+  # If we are wrapping an array of ctypes structs, return a `numpy.recarray`.
+  # This allows the fields of the struct to be accessed as attributes.
+  if issubclass(ctype, ctypes.Structure):
+    buf = buf.view(np.recarray)
+
   return buf
 
 
