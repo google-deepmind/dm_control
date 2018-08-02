@@ -1,0 +1,21 @@
+<mujoco>
+  <default>
+    <geom type='capsule' size='0.01'/>
+    <site type='sphere' size='0.03'/>
+    <joint type='ball' damping='0.005'/>
+  </default>
+  <worldbody>
+    <body>
+      <geom fromto='0 0 0 0 0 0.1'/>
+      <body pos='0 0 0.1'>
+        <geom fromto='0 0 0 0 0.1 0.1'/>
+        <joint name='joint_1'/>
+        <body pos='0 0.1 0.1'>
+          <geom fromto='0 0 0 0 0.1 0.0'/>
+          <joint name='joint_2'/>
+          <site name='gripsite' pos='0 0.1 0'/>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+</mujoco>
