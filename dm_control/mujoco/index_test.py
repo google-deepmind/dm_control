@@ -33,6 +33,10 @@ import six
 
 MODEL = assets.get_contents('cartpole.xml')
 MODEL_NO_NAMES = assets.get_contents('cartpole_no_names.xml')
+MODEL_3RD_ORDER_ACTUATORS = assets.get_contents(
+    'model_with_third_order_actuators.xml')
+MODEL_INCORRECT_ACTUATOR_ORDER = assets.get_contents(
+    'model_incorrect_actuator_order.xml')
 
 FIELD_REPR = {
     'act': ('FieldIndexer(act):\n'
@@ -144,6 +148,42 @@ class MujocoIndexTest(parameterized.TestCase):
     # Check that the result of named indexing matches the result of numeric
     # indexing.
     np.testing.assert_array_equal(field[numeric_key], indexer[key])
+
+  @parameterized.parameters(
+      # (field name, named index key, expected integer index key)
+      ('act', 'cylinder', 0),
+      ('act_dot', 'general', 1),
+      ('act', ['general', 'cylinder', 'general'], [1, 0, 1]))
+  def testIndexThirdOrderActuators(self, field_name, key, numeric_key):
+    model = wrapper.MjModel.from_xml_string(MODEL_3RD_ORDER_ACTUATORS)
+    data = wrapper.MjData(model)
+    size_to_axis_indexer = index.make_axis_indexers(model)
+    data_indexers = index.struct_indexer(data, 'mjdata', size_to_axis_indexer)
+
+    indexer = getattr(data_indexers, field_name)
+    field = getattr(data, field_name)
+
+    # Explicit check that the converted key matches the numeric key.
+    converted_key = indexer._convert_key(key)
+    self.assertIndexExpressionEqual(numeric_key, converted_key)
+
+    # This writes unique values to the underlying buffer to prevent false
+    # negatives.
+    field.flat[:] = np.arange(field.size)
+
+    # Check that the result of named indexing matches the result of numeric
+    # indexing.
+    np.testing.assert_array_equal(field[numeric_key], indexer[key])
+
+  def testIncorrectActuatorOrder(self):
+    # Our indexing of third-order actuators relies on an undocumented
+    # requirement of MuJoCo's compiler that all third-order actuators come after
+    # all second-order actuators. This test ensures that the rule still holds
+    # (e.g. in future versions of MuJoCo).
+    with self.assertRaisesRegexp(
+        wrapper.Error,
+        '2nd-order actuators must come before 3rd-order'):
+      wrapper.MjModel.from_xml_string(MODEL_INCORRECT_ACTUATOR_ORDER)
 
   @parameterized.parameters(
       # (field name, named index key)

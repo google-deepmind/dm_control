@@ -228,6 +228,13 @@ def _get_size_name_to_element_names(model):
   assert None not in mocap_body_names
   size_name_to_element_names['nmocap'] = mocap_body_names
 
+  # Arrays with dimension `na` correspond to stateful actuators. MuJoCo's
+  # compiler requires that these are always defined after stateless actuators,
+  # so we only need the final `na` elements in the list of all actuator names.
+  if model.na:
+    all_actuator_names = size_name_to_element_names['nu']
+    size_name_to_element_names['na'] = all_actuator_names[-model.na:]
+
   return size_name_to_element_names
 
 
@@ -257,11 +264,10 @@ def make_axis_indexers(model):
   """Returns a dict that maps size names to `Axis` indexers.
 
   Args:
-    model: An instance of `mjbindings.mjModelWrapper`.
+    model: An instance of `mjbindings.MjModelWrapper`.
 
   Returns:
-    A `dict` mapping from a size name (e.g. `'nbody'`) to a `Axis`
-    instance.
+    A `dict` mapping from a size name (e.g. `'nbody'`) to an `Axis` instance.
   """
 
   size_name_to_element_names = _get_size_name_to_element_names(model)
