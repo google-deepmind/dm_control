@@ -340,7 +340,7 @@ class Task(object):
       that describe the shapes, dtypes and elementwise lower and upper bounds
       for the array(s) returned by `self.step`.
     """
-    raise NotImplementedError
+    raise NotImplementedError()
 
   @abc.abstractmethod
   def get_observation(self, physics):
