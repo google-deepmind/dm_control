@@ -20,14 +20,12 @@ from __future__ import division
 from __future__ import print_function
 
 # Internal dependencies.
-
 from absl.testing import absltest
-
 from dm_control.utils import xml_tools
-
-from lxml import etree
-
+import lxml
 import six
+
+etree = lxml.etree
 
 
 class XmlHelperTest(absltest.TestCase):

@@ -21,23 +21,21 @@ from __future__ import print_function
 import unittest
 
 # Internal dependencies.
-
 from absl.testing import absltest
 from absl.testing import parameterized
-
 from dm_control import render
 from dm_control.mujoco import engine
 from dm_control.mujoco import wrapper
 from dm_control.mujoco.testing import assets
+from dm_control.mujoco.wrapper import mjbindings
 from dm_control.mujoco.wrapper.mjbindings import enums
-from dm_control.mujoco.wrapper.mjbindings import mjlib
-
 from dm_control.rl import control
-
 import mock
 import numpy as np
 from six.moves import cPickle
 from six.moves import range
+
+mjlib = mjbindings.mjlib
 
 MODEL_PATH = assets.get_path('cartpole.xml')
 MODEL_WITH_ASSETS = assets.get_contents('model_with_assets.xml')

@@ -26,9 +26,11 @@ from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control import mujoco
 from dm_control.mujoco.testing import assets
-from dm_control.mujoco.wrapper.mjbindings import mjlib
+from dm_control.mujoco.wrapper import mjbindings
 from dm_control.utils import inverse_kinematics as ik
 import numpy as np
+
+mjlib = mjbindings.mjlib
 
 _ARM_XML = assets.get_contents('arm.xml')
 _MODEL_WITH_BALL_JOINTS_XML = assets.get_contents('model_with_ball_joints.xml')

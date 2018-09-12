@@ -23,13 +23,12 @@ from __future__ import print_function
 import ctypes
 
 # Internal dependencies.
-
 from absl.testing import absltest
-
 from dm_control.mujoco.testing import memory_checker
-from dm_control.mujoco.wrapper.mjbindings import mjlib
-
+from dm_control.mujoco.wrapper import mjbindings
 from six.moves import range
+
+mjlib = mjbindings.mjlib
 
 
 class MemoryCheckingContextTest(absltest.TestCase):

@@ -20,16 +20,15 @@ from __future__ import division
 from __future__ import print_function
 
 # Internal dependencies.
-
 from absl.testing import absltest
 from absl.testing import parameterized
-
-from dm_control.mujoco import engine
-from dm_control.mujoco.wrapper.mjbindings import mjlib
+from dm_control import mujoco
+from dm_control.mujoco.wrapper import mjbindings
 from dm_control.suite.utils import randomizers
-
 import numpy as np
 from six.moves import range
+
+mjlib = mjbindings.mjlib
 
 
 class RandomizeUnlimitedJointsTest(parameterized.TestCase):
@@ -38,7 +37,7 @@ class RandomizeUnlimitedJointsTest(parameterized.TestCase):
     self.rand = np.random.RandomState(100)
 
   def test_single_joint_of_each_type(self):
-    physics = engine.Physics.from_xml_string("""<mujoco>
+    physics = mujoco.Physics.from_xml_string("""<mujoco>
           <default>
             <joint range="0 90" />
           </default>
@@ -81,7 +80,7 @@ class RandomizeUnlimitedJointsTest(parameterized.TestCase):
     self.assertEqual(0., np.sum(physics.named.data.qpos['free'][:3]))
 
   def test_multiple_joints_of_same_type(self):
-    physics = engine.Physics.from_xml_string("""<mujoco>
+    physics = mujoco.Physics.from_xml_string("""<mujoco>
           <worldbody>
             <body>
               <geom type="box" size="1 1 1"/>
@@ -107,7 +106,7 @@ class RandomizeUnlimitedJointsTest(parameterized.TestCase):
                         physics.named.data.qpos['hinge_3'])
 
   def test_unlimited_hinge_randomization_range(self):
-    physics = engine.Physics.from_xml_string("""<mujoco>
+    physics = mujoco.Physics.from_xml_string("""<mujoco>
           <worldbody>
             <body>
               <geom type="box" size="1 1 1"/>
@@ -121,7 +120,7 @@ class RandomizeUnlimitedJointsTest(parameterized.TestCase):
       self.assertBetween(physics.named.data.qpos['hinge'], -np.pi, np.pi)
 
   def test_limited_1d_joint_limits_are_respected(self):
-    physics = engine.Physics.from_xml_string("""<mujoco>
+    physics = mujoco.Physics.from_xml_string("""<mujoco>
           <default>
             <joint limited="true"/>
           </default>
@@ -141,7 +140,7 @@ class RandomizeUnlimitedJointsTest(parameterized.TestCase):
       self.assertBetween(physics.named.data.qpos['slide'], 30, 50)
 
   def test_limited_ball_joint_are_respected(self):
-    physics = engine.Physics.from_xml_string("""<mujoco>
+    physics = mujoco.Physics.from_xml_string("""<mujoco>
           <worldbody>
             <body name="body" zaxis="1 0 0">
               <geom type="box" size="1 1 1"/>
