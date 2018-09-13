@@ -2,6 +2,9 @@ from dm_control import suite
 from dm_control.glviz import viz
 import numpy as np
 
+from dm_control.mujoco.wrapper.mjbindings import wrappers
+from dm_control.mujoco.wrapper import util
+
 # Load one task:
 env = suite.load( domain_name = "humanoid", task_name = "walk" )
 visualizer = viz.Visualizer( env.physics )
@@ -23,4 +26,7 @@ while not time_step.last():
   visualizer.render()
   _scene = visualizer.scene()
 
-  print(time_step.reward, time_step.discount, time_step.observation)
+  _geoms = util.buf_to_npy( _scene._ptr.contents.geoms, 
+                            ( _scene.ngeom, ) )
+
+  # print(time_step.reward, time_step.discount, time_step.observation)
