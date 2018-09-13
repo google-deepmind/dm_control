@@ -1,0 +1,15 @@
+[submodule "dm_control/glviz/glengine"]
+	path = dm_control/glviz/glengine
+	url = https://github.com/wpumacay/cat1.git
+[submodule "dm_control/glviz/pybind11"]
+	path = dm_control/glviz/pybind11
+	url = https://github.com/pybind/pybind11.git
+[submodule "dm_control/glviz/ext/glad"]
+	path = dm_control/glviz/ext/glad
+	url = https://github.com/Dav1dde/glad.git
+[submodule "dm_control/glviz/ext/glfw"]
+	path = dm_control/glviz/ext/glfw
+	url = https://github.com/glfw/glfw.git
+[submodule "dm_control/glviz/ext/glm"]
+	path = dm_control/glviz/ext/glm
+	url = https://github.com/g-truc/glm.git

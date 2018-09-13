@@ -44,15 +44,15 @@ if not DISABLED:
   try:
     from dm_control.render.glfw_renderer import GLFWContext as _GLFWRenderer
   except ImportError:
-    pass
+    print( 'could not import glfw renderer' )
   try:
     from dm_control.render.egl_renderer import EGLContext as _EGLRenderer
   except ImportError:
-    pass
+    print( 'could not import egl renderer' )
   try:
     from dm_control.render.osmesa_renderer import OSMesaContext as _OSMesaRenderer
   except ImportError:
-    pass
+    print( 'could not import osmesa renderer' )
 
   if _EGLRenderer:
     Renderer = _EGLRenderer

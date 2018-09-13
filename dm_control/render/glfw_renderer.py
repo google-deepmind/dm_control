@@ -23,21 +23,29 @@ import sys
 
 # Internal dependencies.
 
+print( 'trying to import base' )
+
 from dm_control.render import base
 import six
+
+print( 'trying to import base - OK!' )
 
 # Re-raise any exceptions that occur during module import as `ImportError`s.
 # This simplifies the conditional imports in `render/__init__.py`.
 try:
   import glfw  # pylint: disable=g-import-not-at-top
+  print( 'glfw import-ok!' )
 except (ImportError, IOError, OSError) as exc:
   _, exc, tb = sys.exc_info()
   six.reraise(ImportError, ImportError(str(exc)), tb)
+  print( 'glfw import-problem :(' )
 try:
   glfw.init()
+  print( 'glfw init-ok!' )
 except glfw.GLFWError as exc:
   _, exc, tb = sys.exc_info()
   six.reraise(ImportError, ImportError(str(exc)), tb)
+  print( 'glfw init-problem :(' )
 
 
 class GLFWContext(base.ContextBase):
