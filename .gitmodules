@@ -10,3 +10,6 @@
 [submodule "dm_control/glviz/ext/glm"]
 	path = dm_control/glviz/ext/glm
 	url = https://github.com/g-truc/glm.git
+[submodule "dm_control/glviz/ext/glad"]
+	path = dm_control/glviz/ext/glad
+	url = https://github.com/wpumacay/glad.git
