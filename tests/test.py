@@ -26,7 +26,7 @@ while not time_step.last():
   visualizer.render()
   _scene = visualizer.scene()
 
-  _geoms = util.buf_to_npy( _scene._ptr.contents.geoms, 
-                            ( _scene.ngeom, ) )
+  # _geoms = util.buf_to_npy( _scene._ptr.contents.geoms, 
+  #                           ( _scene.ngeom, ) )
 
   # print(time_step.reward, time_step.discount, time_step.observation)

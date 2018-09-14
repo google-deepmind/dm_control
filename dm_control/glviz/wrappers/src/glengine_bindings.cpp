@@ -103,7 +103,7 @@ glwrapper::Mesh* createMesh()
     return _meshWrapper;
 }
 
-PYBIND11_MODULE( glviz, m )
+PYBIND11_MODULE( enginewrapper, m )
 {
     // mesh wrapper
     py::class_<MeshWrapper>( m, "MeshWrapper" )

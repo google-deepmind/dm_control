@@ -10,6 +10,9 @@ from dm_control.mujoco.wrapper.mjbindings import mjlib
 
 import numpy as np
 
+# rendering engine bindings
+import enginewrapper
+
 INDEX_TYPE = 0
 INDEX_DATA_ID = 1
 INDEX_OBJ_TYPE = 2
@@ -30,6 +33,15 @@ INDEX_REFLECTANCE = 15
 
 OBJ_TYPE_GEOMETRY = 5
 
+GEOMETRY_TYPE_PLANE = 0
+GEOMETRY_TYPE_HFIELD = 1
+GEOMETRY_TYPE_SPHERE = 2
+GEOMETRY_TYPE_CAPSULE = 3
+GEOMETRY_TYPE_ELLIPSOID = 4
+GEOMETRY_TYPE_CYLINDER = 5
+GEOMETRY_TYPE_BOX = 6
+GEOMETRY_TYPE_MESH = 7
+
 class GeometryInfo(object):
 
     def __init__(self, gid, gtype, pos, rot, params ):
@@ -43,6 +55,8 @@ class Visualizer(object):
 
     def __init__(self, physics):
         super(Visualizer, self).__init__()
+        # initialize rendering engine
+        enginewrapper.init()
         # save a reference to the physics
         self._physics = physics
         # create the scene for the abstract visualization stage
@@ -60,6 +74,8 @@ class Visualizer(object):
 
         # a list to store the geometries from the abstract visualization stage
         self._geometries = {}
+        # the meshes wrapped by the bindings
+        self._meshes = {}
 
     def scene(self):
         return self._scene
@@ -71,7 +87,9 @@ class Visualizer(object):
                               self._render_camera.ptr, enums.mjtCatBit.mjCAT_ALL,
                               self._scene.ptr)
         self._collect_geometries()
-        self._render_geometries()
+        self._update_geometries_meshes()
+        # request rendering to the engine backend
+        enginewrapper.update()
 
     def _collect_geometries(self):
         # collect geometries structs
@@ -103,6 +121,30 @@ class Visualizer(object):
                 self._geometries[_id] = GeometryInfo(_id, _type,
                                                      _pos, _rot,
                                                      {'size': _size, 'color': _color})
+                self._meshes[_id] = self._create_geometry_mesh( self._geometries[_id] )
 
-    def _render_geometries(self):
-        pass
+    def _create_geometry_mesh(self, geometry):
+        _mesh = None
+        if geometry.type == GEOMETRY_TYPE_PLANE:
+            _mesh = enginewrapper.createPlane(geometry.params['size'][0],
+                                              geometry.params['size'][1])
+        elif geometry.type == GEOMETRY_TYPE_SPHERE:
+            _mesh = enginewrapper.createSphere(geometry.params['size'][0])
+        elif geometry.type == GEOMETRY_TYPE_CAPSULE:
+            _mesh = enginewrapper.createCapsule(geometry.params['size'][0],
+                                                geometry.params['size'][1])
+        elif geometry.type == GEOMETRY_TYPE_BOX:
+            _mesh = enginewrapper.createBox(geometry.params['size'][0],
+                                            geometry.params['size'][1],
+                                            geometry.params['size'][2])
+        return _mesh
+
+    def _update_geometries_meshes(self):
+        for _id in self._geometries :
+            if _id not in self._meshes :
+                continue
+            if self._meshes[_id] is None :
+                continue
+            self._meshes[_id].setPosition(self._geometries[_id].pos[0],
+                                          self._geometries[_id].pos[1],
+                                          self._geometries[_id].pos[2])
