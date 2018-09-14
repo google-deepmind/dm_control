@@ -11,7 +11,8 @@ set( EXT_INCLUDE_DIRECTORIES
 	 "${CMAKE_SOURCE_DIR}/ext/glfw/include"
      "${CMAKE_BINARY_DIR}/ext/glad/include"
      "${CMAKE_SOURCE_DIR}/ext/glm"
-     "${CMAKE_SOURCE_DIR}/glengine/include" )
+     "${CMAKE_SOURCE_DIR}/glengine/include"
+     "${CMAKE_SOURCE_DIR}/wrappers/include" )
 
 # Avoid building the examples in the libraries
 set( GLFW_BUILD_EXAMPLES OFF CACHE BOOL "Build the GLFW example programs" )

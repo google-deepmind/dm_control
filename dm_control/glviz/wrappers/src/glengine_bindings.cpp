@@ -1,6 +1,8 @@
 
 #include <pybind11/pybind11.h>
 
+#include <glengine_bindings.h>
+
 #include <LApp.h>
 #include <LMeshBuilder.h>
 
@@ -87,6 +89,20 @@ MeshWrapper* addMesh()
     return _meshWrapper;
 }
 
+glwrapper::Mesh* createMesh()
+{
+    auto _app = engine::LApp::GetInstance();
+    auto _scene = _app->scene();
+
+    auto _mesh = engine::LMeshBuilder::createBox( 0.5f, 0.5f, 0.5f );
+    _scene->addRenderable( _mesh );
+
+    auto _meshWrapper = new glwrapper::Mesh();
+    _meshWrapper->setMeshReference( _mesh );
+
+    return _meshWrapper;
+}
+
 PYBIND11_MODULE( glviz, m )
 {
     // mesh wrapper
@@ -99,6 +115,21 @@ PYBIND11_MODULE( glviz, m )
     m.def( "update", &update );
     m.def( "isActive", &isActive );
     m.def( "addMesh", &addMesh, py::return_value_policy::automatic );
+
+    // mesh bindings
+    py::class_<glwrapper::Mesh>( m, "Mesh" )
+        .def( py::init<>() )
+        .def( "setX", &glwrapper::Mesh::setX )
+        .def( "setY", &glwrapper::Mesh::setY )
+        .def( "setZ", &glwrapper::Mesh::setZ )
+        .def( "setPosition", (void (glwrapper::Mesh::*)(float,float,float)) &glwrapper::Mesh::setPosition )
+        .def( "setPosition", (void (glwrapper::Mesh::*)(py::array_t<float>)) &glwrapper::Mesh::setPosition )
+        .def( "getX", &glwrapper::Mesh::getX )
+        .def( "getY", &glwrapper::Mesh::getY )
+        .def( "getZ", &glwrapper::Mesh::getZ )
+        .def( "getPosition", &glwrapper::Mesh::getPosition );
+
+    m.def( "createMesh", &createMesh, py::return_value_policy::automatic );
 
     m.attr( "__version__" ) = "dev";
 }
