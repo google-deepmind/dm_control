@@ -21,6 +21,7 @@ namespace glwrapper
         public :
 
         Mesh();
+        Mesh( engine::LMesh* pMesh );
         ~Mesh();
 
         void setMeshReference( engine::LMesh* pMesh );

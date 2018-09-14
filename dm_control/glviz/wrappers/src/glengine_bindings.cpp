@@ -131,5 +131,11 @@ PYBIND11_MODULE( glviz, m )
 
     m.def( "createMesh", &createMesh, py::return_value_policy::automatic );
 
+    // meshbuilder bindings
+    m.def( "createSphere", &glwrapper::createSphere );
+    m.def( "createBox", &glwrapper::createBox );
+    m.def( "createCapsule", &glwrapper::createCapsule );
+    m.def( "createPlane", &glwrapper::createPlane );
+
     m.attr( "__version__" ) = "dev";
 }
