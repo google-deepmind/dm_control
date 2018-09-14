@@ -1,14 +1,14 @@
 
-import glviz
+import enginewrapper
 
 # initialize viz
-glviz.init()
+enginewrapper.init()
 # create a mesh
-_mesh = glviz.addMesh()
+_mesh = enginewrapper.addMesh()
 
 # # just for fun -> Check TODOs
 # del _mesh
 
 # loop
-while glviz.isActive() :
-    glviz.update()
+while enginewrapper.isActive() :
+    enginewrapper.update()

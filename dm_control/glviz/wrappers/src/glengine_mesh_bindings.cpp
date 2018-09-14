@@ -130,17 +130,17 @@ namespace glwrapper
         auto _buffer = mat.request();
         auto _ptr = ( float* ) _buffer.ptr;
 
-        m_glMeshRef->rotation[0][0] = _ptr[0];
-        m_glMeshRef->rotation[1][0] = _ptr[3];
-        m_glMeshRef->rotation[2][0] = _ptr[6];
+        m_glMeshRef->rotation[0][0] = _ptr[0];//_ptr[0];
+        m_glMeshRef->rotation[1][0] = _ptr[1];//_ptr[3];
+        m_glMeshRef->rotation[2][0] = _ptr[2];//_ptr[6];
 
-        m_glMeshRef->rotation[0][1] = _ptr[1];
-        m_glMeshRef->rotation[1][1] = _ptr[4];
-        m_glMeshRef->rotation[2][1] = _ptr[7];
+        m_glMeshRef->rotation[0][1] = _ptr[3];//_ptr[1];
+        m_glMeshRef->rotation[1][1] = _ptr[4];//_ptr[4];
+        m_glMeshRef->rotation[2][1] = _ptr[5];//_ptr[7];
 
-        m_glMeshRef->rotation[0][2] = _ptr[2];
-        m_glMeshRef->rotation[1][2] = _ptr[5];
-        m_glMeshRef->rotation[2][2] = _ptr[8];
+        m_glMeshRef->rotation[0][2] = _ptr[6];//_ptr[2];
+        m_glMeshRef->rotation[1][2] = _ptr[7];//_ptr[5];
+        m_glMeshRef->rotation[2][2] = _ptr[8];//_ptr[8];
     }
 
 

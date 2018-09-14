@@ -26,10 +26,10 @@ height = 480
 
 
 while not time_step.last():
-  action = np.random.uniform(action_spec.minimum,
-                             action_spec.maximum,
+  action = np.random.uniform(action_spec.minimum*0.25,
+                             action_spec.maximum*0.25,
                              size=action_spec.shape)
-  action = np.zeros( action_spec.shape )
+#   action = np.zeros( action_spec.shape )
   time_step = env.step(action)
 
   visualizer.render()
