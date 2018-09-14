@@ -39,8 +39,10 @@ namespace glwrapper
         float getZ();
         py::array_t<float> getPosition();
 
-        // void setRotation();
+        void setRotation( py::array_t<float> mat );
         // void getRotation();
+
+        void setColor( float r, float g, float b );
 
         // *********************************************************
     };

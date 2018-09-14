@@ -127,7 +127,9 @@ PYBIND11_MODULE( enginewrapper, m )
         .def( "getX", &glwrapper::Mesh::getX )
         .def( "getY", &glwrapper::Mesh::getY )
         .def( "getZ", &glwrapper::Mesh::getZ )
-        .def( "getPosition", &glwrapper::Mesh::getPosition );
+        .def( "getPosition", &glwrapper::Mesh::getPosition )
+        .def( "setRotation", &glwrapper::Mesh::setRotation )
+        .def( "setColor", &glwrapper::Mesh::setColor );
 
     m.def( "createMesh", &createMesh, py::return_value_policy::automatic );
 

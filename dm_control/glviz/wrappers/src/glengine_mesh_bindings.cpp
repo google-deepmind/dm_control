@@ -105,5 +105,44 @@ namespace glwrapper
         return _result;
     }
 
+    void Mesh::setColor( float r, float g, float b )
+    {
+        if ( m_glMeshRef == NULL ) { return; }
+
+        auto _material = m_glMeshRef->getMaterial();
+        _material->ambient.x = r;
+        _material->ambient.y = g;
+        _material->ambient.z = b;
+
+        _material->diffuse.x = r;
+        _material->diffuse.y = g;
+        _material->diffuse.z = b;
+
+        _material->specular.x = r;
+        _material->specular.y = g;
+        _material->specular.z = b;
+    }
+
+    void Mesh::setRotation( py::array_t<float> mat )
+    {
+        if ( m_glMeshRef == NULL ) { return; }
+
+        auto _buffer = mat.request();
+        auto _ptr = ( float* ) _buffer.ptr;
+
+        m_glMeshRef->rotation[0][0] = _ptr[0];
+        m_glMeshRef->rotation[1][0] = _ptr[3];
+        m_glMeshRef->rotation[2][0] = _ptr[6];
+
+        m_glMeshRef->rotation[0][1] = _ptr[1];
+        m_glMeshRef->rotation[1][1] = _ptr[4];
+        m_glMeshRef->rotation[2][1] = _ptr[7];
+
+        m_glMeshRef->rotation[0][2] = _ptr[2];
+        m_glMeshRef->rotation[1][2] = _ptr[5];
+        m_glMeshRef->rotation[2][2] = _ptr[8];
+    }
+
+
     // *********************************************************
 }

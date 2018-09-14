@@ -108,31 +108,34 @@ class Visualizer(object):
             _size = _geo_struct[INDEX_SIZE]
             _color = _geo_struct[INDEX_RGBA]
             # check if the object is a geometry object
-            if _obj_type != OBJ_TYPE_GEOMETRY :
+            if _obj_type != OBJ_TYPE_GEOMETRY:
                 continue
 
-            if _id in self._geometries :
+            if _id in self._geometries:
                 self._geometries[_id].pos = _pos
                 self._geometries[_id].rot = _rot
                 self._geometries[_id].type = _type
                 self._geometries[_id].params = {'size' : _size,
                                                 'color' : _color}
-            else :
+            else:
                 self._geometries[_id] = GeometryInfo(_id, _type,
                                                      _pos, _rot,
                                                      {'size': _size, 'color': _color})
                 self._meshes[_id] = self._create_geometry_mesh( self._geometries[_id] )
+                if self._meshes[_id] is not None:
+                    self._meshes[_id].setColor( _color[0], _color[1], _color[2] )
 
     def _create_geometry_mesh(self, geometry):
         _mesh = None
         if geometry.type == GEOMETRY_TYPE_PLANE:
-            _mesh = enginewrapper.createPlane(geometry.params['size'][0],
-                                              geometry.params['size'][1])
+            # _mesh = enginewrapper.createPlane(geometry.params['size'][0],
+            #                                   geometry.params['size'][1])
+            _mesh = None
         elif geometry.type == GEOMETRY_TYPE_SPHERE:
             _mesh = enginewrapper.createSphere(geometry.params['size'][0])
         elif geometry.type == GEOMETRY_TYPE_CAPSULE:
-            _mesh = enginewrapper.createCapsule(geometry.params['size'][0],
-                                                geometry.params['size'][1])
+            _mesh = enginewrapper.createCapsule(geometry.params['size'][1],
+                                                geometry.params['size'][2])
         elif geometry.type == GEOMETRY_TYPE_BOX:
             _mesh = enginewrapper.createBox(geometry.params['size'][0],
                                             geometry.params['size'][1],
@@ -148,3 +151,4 @@ class Visualizer(object):
             self._meshes[_id].setPosition(self._geometries[_id].pos[0],
                                           self._geometries[_id].pos[1],
                                           self._geometries[_id].pos[2])
+            self._meshes[_id].setRotation(self._geometries[_id].rot)
