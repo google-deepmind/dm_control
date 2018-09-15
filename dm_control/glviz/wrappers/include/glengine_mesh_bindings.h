@@ -47,5 +47,18 @@ namespace glwrapper
         // *********************************************************
     };
 
-
 }
+
+#define GLENGINE_MESH_BINDINGS(m) py::class_<glwrapper::Mesh>( m, "Mesh" ) \
+                                        .def( py::init<>() ) \
+                                        .def( "setX", &glwrapper::Mesh::setX ) \
+                                        .def( "setY", &glwrapper::Mesh::setY ) \
+                                        .def( "setZ", &glwrapper::Mesh::setZ ) \
+                                        .def( "setPosition", (void (glwrapper::Mesh::*)(float,float,float)) &glwrapper::Mesh::setPosition ) \
+                                        .def( "setPosition", (void (glwrapper::Mesh::*)(py::array_t<float>)) &glwrapper::Mesh::setPosition ) \
+                                        .def( "getX", &glwrapper::Mesh::getX ) \
+                                        .def( "getY", &glwrapper::Mesh::getY ) \
+                                        .def( "getZ", &glwrapper::Mesh::getZ ) \
+                                        .def( "getPosition", &glwrapper::Mesh::getPosition ) \
+                                        .def( "setRotation", &glwrapper::Mesh::setRotation ) \
+                                        .def( "setColor", &glwrapper::Mesh::setColor );

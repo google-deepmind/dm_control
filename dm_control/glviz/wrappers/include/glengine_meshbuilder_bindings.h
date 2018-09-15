@@ -20,3 +20,8 @@ namespace glwrapper
     Mesh* createCapsule( float radius, float height );
     Mesh* createPlane( float width, float depth );
 }
+
+#define GLENGINE_MESHBUILDER_BINDINGS(m) m.def( "createSphere", &glwrapper::createSphere );\
+                                         m.def( "createBox", &glwrapper::createBox );\
+                                         m.def( "createCapsule", &glwrapper::createCapsule );\
+                                         m.def( "createPlane", &glwrapper::createPlane );

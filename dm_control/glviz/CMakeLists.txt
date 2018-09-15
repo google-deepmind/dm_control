@@ -4,6 +4,9 @@ project( enginewrapper )
 
 message( "CONFIGURING GLVIZ BINDINGS" )
 
+set( CMAKE_CXX_STANDARD 11 )
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w" )
+
 add_subdirectory( pybind11 )
 
 # Add external libraries ----------------------------------------------

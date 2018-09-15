@@ -128,9 +128,8 @@ class Visualizer(object):
     def _create_geometry_mesh(self, geometry):
         _mesh = None
         if geometry.type == GEOMETRY_TYPE_PLANE:
-            # _mesh = enginewrapper.createPlane(geometry.params['size'][0],
-            #                                   geometry.params['size'][1])
-            _mesh = None
+            _mesh = enginewrapper.createPlane(geometry.params['size'][0],
+                                              geometry.params['size'][1])
         elif geometry.type == GEOMETRY_TYPE_SPHERE:
             _mesh = enginewrapper.createSphere(geometry.params['size'][0])
         elif geometry.type == GEOMETRY_TYPE_CAPSULE:

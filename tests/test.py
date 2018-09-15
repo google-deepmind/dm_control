@@ -8,6 +8,7 @@ from dm_control.mujoco.wrapper.mjbindings import wrappers
 from dm_control.mujoco.wrapper import util
 
 import matplotlib.pyplot as plt
+import enginewrapper
 
 # Load one task:
 env = suite.load( domain_name = "humanoid", task_name = "walk" )
@@ -26,11 +27,16 @@ height = 480
 
 
 while not time_step.last():
-  action = np.random.uniform(action_spec.minimum*0.25,
-                             action_spec.maximum*0.25,
+  action = np.random.uniform(action_spec.minimum,
+                             action_spec.maximum,
                              size=action_spec.shape)
-#   action = np.zeros( action_spec.shape )
+  # action = np.zeros( action_spec.shape )
   time_step = env.step(action)
+
+  # draw axes
+  enginewrapper.drawLine( np.array( [0,0,0] ), np.array( [5, 0, 0] ), np.array( [1,0,0] ) )
+  enginewrapper.drawLine( np.array( [0,0,0] ), np.array( [0, 5, 0] ), np.array( [0,1,0] ) )
+  enginewrapper.drawLine( np.array( [0,0,0] ), np.array( [0, 0, 5] ), np.array( [0,0,1] ) )
 
   visualizer.render()
   _scene = visualizer.scene()
