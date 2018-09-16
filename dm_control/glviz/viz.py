@@ -42,6 +42,58 @@ GEOMETRY_TYPE_CYLINDER = 5
 GEOMETRY_TYPE_BOX = 6
 GEOMETRY_TYPE_MESH = 7
 
+# keycodes from glfw
+KEY_SPACE = 32
+KEY_A = 65
+KEY_B = 66
+KEY_C = 67
+KEY_D = 68
+KEY_E = 69
+KEY_F = 70
+KEY_G = 71
+KEY_H = 72
+KEY_I = 73
+KEY_J = 74
+KEY_K = 75
+KEY_L = 76
+KEY_M = 77
+KEY_N = 78
+KEY_O = 79
+KEY_P = 80
+KEY_Q = 81
+KEY_R = 82
+KEY_S = 83
+KEY_T = 84
+KEY_U = 85
+KEY_V = 86
+KEY_W = 87
+KEY_X = 88
+KEY_Y = 89
+KEY_Z = 90
+KEY_ESCAPE      = 256
+KEY_ENTER       = 257
+KEY_TAB         = 258
+KEY_BACKSPACE   = 259
+KEY_INSERT      = 260
+KEY_DELETE      = 261
+KEY_RIGHT       = 262
+KEY_LEFT        = 263
+KEY_DOWN        = 264
+KEY_UP          = 265
+# mouse button codes from glfw
+MOUSE_BUTTON_1 = 0
+MOUSE_BUTTON_2 = 1
+MOUSE_BUTTON_3 = 2
+MOUSE_BUTTON_4 = 3
+MOUSE_BUTTON_5 = 4
+MOUSE_BUTTON_6 = 5
+MOUSE_BUTTON_7 = 6
+MOUSE_BUTTON_8 = 7
+
+RELEASED = 0
+PRESSED  = 1
+REPEATED = 2
+
 class GeometryInfo(object):
 
     def __init__(self, gid, gtype, pos, rot, params ):
@@ -77,10 +129,13 @@ class Visualizer(object):
         # the meshes wrapped by the bindings
         self._meshes = {}
 
+        # keys
+        self._single_keys = [False for i in range(1024)]
+
     def scene(self):
         return self._scene
 
-    def render(self):
+    def update(self):
         # abstract visualization stage - retrieve the viz data
         mjlib.mjv_updateScene(self._physics.model.ptr, self._physics.data.ptr,
                               self._scene_option.ptr, self._perturb.ptr,
@@ -135,6 +190,7 @@ class Visualizer(object):
         elif geometry.type == GEOMETRY_TYPE_CAPSULE:
             _mesh = enginewrapper.createCapsule(geometry.params['size'][1],
                                                 geometry.params['size'][2])
+            print( 'capsule params: ', geometry.params['size'] )
         elif geometry.type == GEOMETRY_TYPE_BOX:
             _mesh = enginewrapper.createBox(geometry.params['size'][0],
                                             geometry.params['size'][1],
@@ -151,3 +207,20 @@ class Visualizer(object):
                                           self._geometries[_id].pos[1],
                                           self._geometries[_id].pos[2])
             self._meshes[_id].setRotation(self._geometries[_id].rot)
+
+    def is_key_down(self, key):
+        return enginewrapper.isKeyDown(key)
+
+    def is_mouse_down(self, button):
+        return enginewrapper.isMouseDown(button)
+
+    def get_cursor_position(self):
+        return enginewrapper.getCursorPosition()
+
+    def check_single_press(self, key):
+        if not enginewrapper.isKeyDown(key) :
+            self._single_keys[key] = False
+            return False
+        _res = self._single_keys[key] ^ enginewrapper.isKeyDown(key)
+        self._single_keys[key] = enginewrapper.isKeyDown(key)
+        return _res

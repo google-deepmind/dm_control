@@ -68,6 +68,8 @@ PYBIND11_MODULE( enginewrapper, m )
     GLENGINE_MESHBUILDER_BINDINGS(m)
     // debug system bindings
     GLENGINE_DEBUGSYSTEM_BINDINGS(m)
+    // input system bindings
+    GLENGINE_INPUT_BINDINGS(m)
 
     m.attr( "__version__" ) = "dev";
 }
