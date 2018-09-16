@@ -185,16 +185,19 @@ class Visualizer(object):
         if geometry.type == GEOMETRY_TYPE_PLANE:
             _mesh = enginewrapper.createPlane(geometry.params['size'][0],
                                               geometry.params['size'][1])
+            print( 'plane params: ', geometry.params['size'] )
         elif geometry.type == GEOMETRY_TYPE_SPHERE:
             _mesh = enginewrapper.createSphere(geometry.params['size'][0])
+            print( 'sphere params: ', geometry.params['size'] )
         elif geometry.type == GEOMETRY_TYPE_CAPSULE:
             _mesh = enginewrapper.createCapsule(geometry.params['size'][1],
-                                                geometry.params['size'][2])
+                                                2*geometry.params['size'][2])
             print( 'capsule params: ', geometry.params['size'] )
         elif geometry.type == GEOMETRY_TYPE_BOX:
-            _mesh = enginewrapper.createBox(geometry.params['size'][0],
-                                            geometry.params['size'][1],
-                                            geometry.params['size'][2])
+            _mesh = enginewrapper.createBox(2*geometry.params['size'][0],
+                                            2*geometry.params['size'][1],
+                                            2*geometry.params['size'][2])
+            print( 'box params: ', geometry.params['size'] )
         return _mesh
 
     def _update_geometries_meshes(self):

@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import enginewrapper
 
 # Load one task:
-env = suite.load( domain_name = "walker", task_name = "walk" )
+env = suite.load( domain_name = "humanoid", task_name = "walk" )
 visualizer = viz.Visualizer( env.physics )
 
 # Iterate over a task set:
