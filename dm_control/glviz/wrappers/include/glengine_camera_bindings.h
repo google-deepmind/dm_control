@@ -7,6 +7,7 @@
 #include <LICamera.h>
 #include <LFixedCamera3d.h>
 #include <LFpsCamera.h>
+#include <LFollowCamera.h>
 
 #include <LApp.h>
 
@@ -44,10 +45,10 @@ namespace glwrapper
         ~Camera();
 
         void setPosition( py::array_t<float> position );
-        void setTargetDir( py::array_t<float> targetDir );
 
         py::array_t<float> getPosition();
         py::array_t<float> getTargetDir();
+        py::array_t<float> getTargetPoint();
 
         string name();
         string type();
@@ -117,23 +118,57 @@ namespace glwrapper
         void setFollowReference( Mesh* pMeshWrapperObj );
     };
 
-    Camera* createCamera( int type, const string& name,
-                          py::array_t<float> position,
-                          py::array_t<float> targetDir,
-                          int worldUpId,
-                          float fov, float zNear, float zFar );
+    Camera* _createCamera( int type, const string& name,
+                           py::array_t<float> position,
+                           py::array_t<float> targetPoint,
+                           int worldUpId = engine::LICamera::UP_Z,
+                           float fov = 45.0f, 
+                           float zNear = 1.0f, float zFar = 40.0f );
+                           
+    CameraFixed* createFixedCamera( const string& name,
+                                    py::array_t<float> position,
+                                    py::array_t<float> targetPoint,
+                                    int worldUpId = engine::LICamera::UP_Z,
+                                    float fov = 45.0f, 
+                                    float zNear = 1.0f, float zFar = 40.0f );
+
+    CameraFps* createFpsCamera( const string& name,
+                                py::array_t<float> position,
+                                py::array_t<float> targetPoint,
+                                int worldUpId = engine::LICamera::UP_Z,
+                                float fov = 45.0f, 
+                                float zNear = 1.0f, float zFar = 40.0f );
+
+    CameraOrbit* createOrbitCamera( const string& name,
+                                    py::array_t<float> position,
+                                    py::array_t<float> targetPoint,
+                                    int worldUpId = engine::LICamera::UP_Z,
+                                    float fov = 45.0f, 
+                                    float zNear = 1.0f, float zFar = 40.0f );
+
+    CameraFollow* createFollowCamera( const string& name,
+                                      py::array_t<float> position,
+                                      py::array_t<float> targetPoint,
+                                      int worldUpId = engine::LICamera::UP_Z,
+                                      float fov = 45.0f, 
+                                      float zNear = 1.0f, float zFar = 40.0f );
     Camera* getCurrentCamera();
+
+    void changeToCameraByName( const string& name );
 }
 
 #define DefCameraConstructorParams const string& , py::array_t<float>,\
                                     py::array_t<float> , int ,\
                                     float , float , float , float 
+#define DefDefaultCameraParams py::arg( "name" ), py::arg( "position" ), py::arg( "targetPoint" ), \
+                               py::arg( "worldUpId" ) = 2, py::arg( "fov" ) = 45.0f, \
+                               py::arg( "zNear" ) = 1.0f, py::arg( "zFar" ) = 40.0f
 #define GLENGINE_CAMERA_BINDINGS(m) py::class_<glwrapper::Camera>( m, "Camera" ) \
                                         .def( py::init<DefCameraConstructorParams>() ) \
                                         .def( "setPosition", &glwrapper::Camera::setPosition ) \
-                                        .def( "setTargetDir", &glwrapper::Camera::setTargetDir ) \
                                         .def( "getPosition", &glwrapper::Camera::getPosition ) \
                                         .def( "getTargetDir", &glwrapper::Camera::getTargetDir ) \
+                                        .def( "getTargetPoint", &glwrapper::Camera::getTargetPoint ) \
                                         .def( "name", &glwrapper::Camera::name ) \
                                         .def( "type", &glwrapper::Camera::type );\
                                     py::class_<glwrapper::CameraFixed, glwrapper::Camera>( m, "CameraFixed" ) \
@@ -145,5 +180,9 @@ namespace glwrapper
                                     py::class_<glwrapper::CameraFollow, glwrapper::Camera>( m, "CameraFollow" )\
                                         .def( py::init<DefCameraConstructorParams>() ) \
                                         .def( "setFollowReference", &glwrapper::CameraFollow::setFollowReference );\
-                                    m.def( "createCamera", &glwrapper::createCamera );\
-                                    m.def( "getCurrentCamera", &glwrapper::getCurrentCamera );
+                                    m.def( "createFixedCamera", &glwrapper::createFixedCamera, "Creates a fixed-type camera", DefDefaultCameraParams );\
+                                    m.def( "createFpsCamera", &glwrapper::createFpsCamera, "Creates a fps-type camera", DefDefaultCameraParams );\
+                                    m.def( "createOrbitCamera", &glwrapper::createOrbitCamera, "Creates an orbit-type camera", DefDefaultCameraParams );\
+                                    m.def( "createFollowCamera", &glwrapper::createFollowCamera, "Creates a follow-type camera", DefDefaultCameraParams );\
+                                    m.def( "getCurrentCamera", &glwrapper::getCurrentCamera );\
+                                    m.def( "changeToCameraByName", &glwrapper::changeToCameraByName );

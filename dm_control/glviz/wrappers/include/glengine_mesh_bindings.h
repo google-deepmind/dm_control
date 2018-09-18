@@ -44,6 +44,8 @@ namespace glwrapper
 
         void setColor( float r, float g, float b );
 
+        engine::LMesh* ptr() { return m_glMeshRef; }
+
         // *********************************************************
     };
 

@@ -94,6 +94,11 @@ RELEASED = 0
 PRESSED  = 1
 REPEATED = 2
 
+CAMERA_TYPE_FIXED = 0
+CAMERA_TYPE_FPS = 1
+CAMERA_TYPE_ORBIT = 2
+CAMERA_TYPE_FOLLOW = 3
+
 class GeometryInfo(object):
 
     def __init__(self, gid, gtype, pos, rot, params ):
@@ -132,8 +137,39 @@ class Visualizer(object):
         # keys
         self._single_keys = [False for i in range(1024)]
 
+        # make a first update to initialize objects
+        mjlib.mjv_updateScene(self._physics.model.ptr, self._physics.data.ptr,
+                              self._scene_option.ptr, self._perturb.ptr,
+                              self._render_camera.ptr, enums.mjtCatBit.mjCAT_ALL,
+                              self._scene.ptr)
+        self._collect_geometries()
+        self._update_geometries_meshes()
+
     def scene(self):
         return self._scene
+
+    def meshes(self):
+        return self._meshes
+
+    def geometries(self):
+        return self._geometries
+
+    def testMeshesNames(self):
+        for _id in self._geometries :
+            print( 'name: ', self._physics.model.id2name( _id, enums.mjtObj.mjOBJ_GEOM ) )
+
+    def getMeshByName(self, name):
+        try:
+            _id = self._physics.model.name2id( name, enums.mjtObj.mjOBJ_GEOM )
+        except wrapper.core.Error :
+            print( 'WARNING> geometry with name: ', name, ' does not exist' )
+            return enginewrapper.Mesh()
+            
+        if _id not in self._meshes :
+            print( 'WARNING> mesh with name: ', name, ' does not exist' )
+            return enginewrapper.Mesh()
+
+        return self._meshes[_id]
 
     def update(self):
         # abstract visualization stage - retrieve the viz data

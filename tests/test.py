@@ -12,7 +12,8 @@ import matplotlib.pyplot as plt
 import enginewrapper
 
 # Load one task:
-env = suite.load( domain_name = "cartpole", task_name = "swingup" )
+# env = suite.load( domain_name = "humanoid", task_name = "walk" )
+env = suite.load( domain_name = "cartpole", task_name = "balance" )
 visualizer = viz.Visualizer( env.physics )
 env_world = world.World( env.physics )
 
@@ -25,6 +26,21 @@ action_spec = env.action_spec()
 time_step = env.reset()
 
 _paused = False
+
+_mesh = visualizer.getMeshByName( 'cart' )
+# _mesh = visualizer.getMeshByName( 'torso' )
+_camera1 = enginewrapper.createFollowCamera( 'follow',
+                                             np.array( [2.0, 4.0, 2.0] ),
+                                             np.array( [0.0, 0.0, 0.0] ) )
+_camera2 = enginewrapper.createFixedCamera( 'fixed',
+                                            np.array( [2.0, 4.0, 2.0] ),
+                                            np.array( [0.0, 0.0, 0.0] ) )
+# print( _fcamera )
+
+_camera1.setFollowReference( _mesh )
+enginewrapper.changeToCameraByName( 'follow' )
+
+visualizer.testMeshesNames()
 
 while not time_step.last():
   action = np.random.uniform(action_spec.minimum,
@@ -43,13 +59,16 @@ while not time_step.last():
 
   if visualizer.check_single_press( viz.KEY_SPACE ):
     _paused = not _paused
-#   if visualizer.check_single_press( viz.KEY_C ):
+  if visualizer.check_single_press( viz.KEY_M ):
+    enginewrapper.changeToCameraByName( 'main' )
+  if visualizer.check_single_press( viz.KEY_C ):
+    enginewrapper.changeToCameraByName( 'fixed' )
+  if visualizer.check_single_press( viz.KEY_F ):
+    enginewrapper.changeToCameraByName( 'follow' )
 #     # env_world.create_cube()
 #     _cam = enginewrapper.getCurrentCamera()
 #     # _cam.setPosition( _cam.getPosition() + np.array( [0.0, 0.0, 0.1] ) )
 #     # print( 'cam-pos> ', _cam.getPosition() )
-#     _cam.setTargetDir( _cam.getTargetDir() + np.array( [0.0, 0.0, 0.1] ) )
-#     print( 'cam-pos> ', _cam.getTargetDir() )
   if visualizer.check_single_press( viz.KEY_ESCAPE ):
     break
 
