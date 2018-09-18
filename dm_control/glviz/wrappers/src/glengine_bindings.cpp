@@ -14,11 +14,14 @@ void init()
     auto _scene = _app->scene();
 
     // make a sample camera
-    // auto _camera = new engine::LFpsCamera( engine::LVec3( 1.0f, 2.0f, 1.0f ),
-    //                                        engine::LVec3( 0.0f, 0.0f, 1.0f ) );
-    auto _camera = new engine::LFixedCamera3d( engine::LVec3( 2.0f, 4.0f, 2.0f ),
-                                               engine::LVec3( -2.0f, -4.0f, -2.0f ),
-                                               engine::LVec3( 0.0f, 0.0f, 1.0f ) );
+    auto _camera = new engine::LFpsCamera( "fps", 
+                                           engine::LVec3( 1.0f, 2.0f, 1.0f ),
+                                           engine::LVec3( -2.0f, -4.0f, -2.0f ),
+                                           engine::LICamera::UP_Z );
+    // auto _camera = new engine::LFixedCamera3d( "fixed",
+    //                                            engine::LVec3( 2.0f, 4.0f, 2.0f ),
+    //                                            engine::LVec3( -2.0f, -4.0f, -2.0f ),
+    //                                            engine::LICamera::UP_Z );
     // make a sample light source
     auto _light = new engine::LLightDirectional( engine::LVec3( 0.2, 0.2, 0.2 ), engine::LVec3( 0.8, 0.8, 0.8 ),
                                                  engine::LVec3( 0.05, 0.05, 0.05 ), 0, engine::LVec3( -1, -1, 0 ) );
@@ -70,6 +73,8 @@ PYBIND11_MODULE( enginewrapper, m )
     GLENGINE_DEBUGSYSTEM_BINDINGS(m)
     // input system bindings
     GLENGINE_INPUT_BINDINGS(m)
+    // camera bindings
+    GLENGINE_CAMERA_BINDINGS(m)
 
     m.attr( "__version__" ) = "dev";
 }

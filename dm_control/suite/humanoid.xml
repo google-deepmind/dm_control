@@ -115,6 +115,25 @@
     </body>
   </worldbody>
 
+  <!-- <worldbody>
+    <body name="c1" pos="0 0 2.0">
+        <joint name="j1" type="free"/>
+        <geom type="box" size=".25 .25 .25" rgba="0 .9 0 1"/>
+    </body>
+    <body name="c2" pos="0 0 3.0">
+        <joint name="j2" type="free"/>
+        <geom type="box" size=".25 .25 .25" rgba="0 .9 0 1"/>
+    </body>
+    <body name="c3" pos="0 0 4.0">
+        <joint name="j3" type="free"/>
+        <geom type="box" size=".25 .25 .25" rgba="0 .9 0 1"/>
+    </body>
+    <body name="c4" pos="0 0 5.0">
+        <joint name="j4" type="free"/>
+        <geom type="box" size=".25 .25 .25" rgba="0 .9 0 1"/>
+    </body>
+  </worldbody> -->
+
   <actuator>
     <motor name="abdomen_y"       gear="40"  joint="abdomen_y"/>
     <motor name="abdomen_z"       gear="40"  joint="abdomen_z"/>
