@@ -27,7 +27,8 @@ void init()
                                                  engine::LVec3( 0.8, 0.8, 0.8 ),
                                                  engine::LVec3( 0.15, 0.15, 0.15 ), 
                                                  0, 
-                                                 engine::LVec3( -1, -1, 0 ) );
+                                                 engine::LVec3( -1, -1, -1 ) );
+    _light->setVirtualPosition( engine::LVec3( 5, 0, 5 ) );
 
     // add these components to the scene
     _scene->addCamera( _camera );

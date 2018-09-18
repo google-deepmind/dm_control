@@ -27,7 +27,7 @@ time_step = env.reset()
 
 _paused = False
 
-_mesh = visualizer.getMeshByName( 'cart' )
+# _mesh = visualizer.getMeshByName( 'cart' )
 # _mesh = visualizer.getMeshByName( 'torso' )
 _camera1 = enginewrapper.createFollowCamera( 'follow',
                                              np.array( [2.0, 4.0, 2.0] ),
@@ -37,8 +37,8 @@ _camera2 = enginewrapper.createFixedCamera( 'fixed',
                                             np.array( [0.0, 0.0, 0.0] ) )
 # print( _fcamera )
 
-_camera1.setFollowReference( _mesh )
-enginewrapper.changeToCameraByName( 'follow' )
+# _camera1.setFollowReference( _mesh )
+# enginewrapper.changeToCameraByName( 'follow' )
 
 visualizer.testMeshesNames()
 
