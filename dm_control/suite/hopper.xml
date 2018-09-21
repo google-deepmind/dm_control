@@ -22,7 +22,7 @@
   <worldbody>
     <camera name="cam0" pos="0 -2.8 0.8" euler="90 0 0" mode="trackcom"/>
     <camera name="back" pos="-2 -.2 1.2" xyaxes="0.2 -1 0 .5 0 2" mode="trackcom"/>
-    <geom name="floor" type="plane" conaffinity="1" pos="48 0 0" size="50 1 .2" material="grid"/>
+    <geom name="floor" type="plane" conaffinity="1" pos="48 0 0" size="50 1.25 .2" material="grid"/>
     <body name="torso" pos="0 0 1" childclass="hopper">
       <light name="top" pos="0 0 2" mode="trackcom"/>
       <joint name="rootx" type="slide" axis="1 0 0" class="free"/>

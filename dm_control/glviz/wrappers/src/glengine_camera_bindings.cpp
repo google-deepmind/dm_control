@@ -212,28 +212,28 @@ namespace glwrapper
 
         if ( type == CAMERA_TYPE_FIXED )
         {
-            std::cout << "INFO> created fixed camera" << std::endl;
+            // std::cout << "INFO> created fixed camera" << std::endl;
             _camera = new CameraFixed( name, position, targetPoint, worldUpId,
                                        fov, _aspectRatio,
                                        zNear, zFar );
         }
         else if ( type == CAMERA_TYPE_FPS )
         {
-            std::cout << "INFO> created fps camera" << std::endl;
+            // std::cout << "INFO> created fps camera" << std::endl;
             _camera = new CameraFps( name, position, targetPoint, worldUpId,
                                      fov, _aspectRatio,
                                      zNear, zFar );
         }
         else if ( type == CAMERA_TYPE_ORBIT )
         {
-            std::cout << "INFO> created orbit camera" << std::endl;
+            // std::cout << "INFO> created orbit camera" << std::endl;
             _camera = new CameraOrbit( name, position, targetPoint, worldUpId,
                                        fov, _aspectRatio,
                                        zNear, zFar );
         }
         else if ( type == CAMERA_TYPE_FOLLOW )
         {
-            std::cout << "INFO> created follow camera" << std::endl;
+            // std::cout << "INFO> created follow camera" << std::endl;
             _camera = new CameraFollow( name, position, targetPoint, worldUpId,
                                         fov, _aspectRatio,
                                         zNear, zFar );

@@ -1,2 +1,0 @@
-
-print( 'IMPORTING DM_CONTROL.GLVIZ' )

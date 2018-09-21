@@ -101,8 +101,9 @@ CAMERA_TYPE_FOLLOW = 3
 
 class GeometryInfo(object):
 
-    def __init__(self, gid, gtype, pos, rot, params ):
+    def __init__(self, gid, name, gtype, pos, rot, params ):
         self.id = gid
+        self.name = name
         self.type = gtype
         self.pos = pos
         self.rot = rot
@@ -202,14 +203,20 @@ class Visualizer(object):
             if _obj_type != OBJ_TYPE_GEOMETRY:
                 continue
 
+            _name = self._physics.model.id2name( _id, enums.mjtObj.mjOBJ_GEOM )
+
+            if _type == GEOMETRY_TYPE_PLANE :
+                _color = [.2, .3, .4, 1.]
+
             if _id in self._geometries:
                 self._geometries[_id].pos = _pos
                 self._geometries[_id].rot = _rot
                 self._geometries[_id].type = _type
+                self._geometries[_id].name = _name
                 self._geometries[_id].params = {'size' : _size,
                                                 'color' : _color}
             else:
-                self._geometries[_id] = GeometryInfo(_id, _type,
+                self._geometries[_id] = GeometryInfo(_id, _name, _type,
                                                      _pos, _rot,
                                                      {'size': _size, 'color': _color})
                 self._meshes[_id] = self._create_geometry_mesh( self._geometries[_id] )
@@ -219,21 +226,26 @@ class Visualizer(object):
     def _create_geometry_mesh(self, geometry):
         _mesh = None
         if geometry.type == GEOMETRY_TYPE_PLANE:
-            _mesh = enginewrapper.createPlane(geometry.params['size'][0],
-                                              geometry.params['size'][1])
-            print( 'plane params: ', geometry.params )
+            _mesh = enginewrapper.createPlane(2*geometry.params['size'][1],
+                                              2*geometry.params['size'][0],
+                                              2 * geometry.params['size'][1] / 10.0,
+                                              2 * geometry.params['size'][0] / 10.0)
+            # testing texture mapping
+            if geometry.name == 'floor' or geometry.name == 'ground' :
+                _mesh.setBuiltInTexture( 'chessboard' );
+            # print( 'plane params: ', geometry.params )
         elif geometry.type == GEOMETRY_TYPE_SPHERE:
             _mesh = enginewrapper.createSphere(geometry.params['size'][0])
-            print( 'sphere params: ', geometry.params )
+            # print( 'sphere params: ', geometry.params )
         elif geometry.type == GEOMETRY_TYPE_CAPSULE:
             _mesh = enginewrapper.createCapsule(geometry.params['size'][1],
                                                 2*geometry.params['size'][2])
-            print( 'capsule params: ', geometry.params )
+            # print( 'capsule params: ', geometry.params )
         elif geometry.type == GEOMETRY_TYPE_BOX:
             _mesh = enginewrapper.createBox(2*geometry.params['size'][0],
                                             2*geometry.params['size'][1],
                                             2*geometry.params['size'][2])
-            print( 'box params: ', geometry.params )
+            # print( 'box params: ', geometry.params )
         return _mesh
 
     def _update_geometries_meshes(self):

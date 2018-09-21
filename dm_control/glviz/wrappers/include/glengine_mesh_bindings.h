@@ -4,6 +4,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 
+#include <LAssetsManager.h>
 #include <LMesh.h>
 
 namespace py = pybind11;
@@ -42,6 +43,7 @@ namespace glwrapper
         void setRotation( py::array_t<float> mat );
         // void getRotation();
 
+        void setBuiltInTexture( const string& textureId );
         void setColor( float r, float g, float b );
 
         engine::LMesh* ptr() { return m_glMeshRef; }
@@ -63,4 +65,5 @@ namespace glwrapper
                                         .def( "getZ", &glwrapper::Mesh::getZ ) \
                                         .def( "getPosition", &glwrapper::Mesh::getPosition ) \
                                         .def( "setRotation", &glwrapper::Mesh::setRotation ) \
+                                        .def( "setBuiltInTexture", &glwrapper::Mesh::setBuiltInTexture ) \
                                         .def( "setColor", &glwrapper::Mesh::setColor );

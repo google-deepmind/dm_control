@@ -656,7 +656,6 @@ class MjData(wrappers.MjDataWrapper):
 
     # Free resources when the ctypes pointer is garbage collected.
     _create_finalizer(data_ptr, mjlib.mj_deleteData)
-    print('created MjData instance!')
     super(MjData, self).__init__(data_ptr, model)
 
   def __getstate__(self):

@@ -5,8 +5,9 @@
 
    <worldbody>
       <light diffuse=".5 .5 .5" pos="0 0 3" dir="0 0 -1"/>    
-      <geom type="plane" size="1 1 0.1" rgba=".9 0 0 1"/>
+      <geom type="plane" name="floor" size="1.25 1.25 0.1" rgba=".9 0 0 1"/>
       <body pos="0 0 1.0">
+        <camera name="back" pos="-3 0 1" xyaxes="0 -1 0 1 0 2" mode="trackcom"/>
          <joint type="free"/>
          <geom type="capsule" size=".1 .1 .3" rgba="0 .9 0 1"/>
       </body>

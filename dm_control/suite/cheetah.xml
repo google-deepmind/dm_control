@@ -21,7 +21,7 @@
   <option timestep="0.01"/>
 
   <worldbody>
-    <geom name="ground" type="plane" conaffinity="1" pos="98 0 0" size="100 .8 .5" material="grid"/>
+    <geom name="ground" type="plane" conaffinity="1" pos="98 0 0" size="100 1.25 .5" material="grid"/>
     <body name="torso" pos="0 0 .7" childclass="cheetah">
       <light name="light" pos="0 0 2" mode="trackcom"/>
       <camera name="side" pos="0 -3 0" quat="0.707 0.707 0 0" mode="trackcom"/>

@@ -30,9 +30,9 @@ namespace glwrapper
         return new Mesh( _mesh );
     }
 
-    Mesh* createPlane( float width, float depth )
+    Mesh* createPlane( float width, float depth, float texRangeWidth, float texRangeDepth )
     {
-        auto _mesh = engine::LMeshBuilder::createPlane( width, depth );
+        auto _mesh = engine::LMeshBuilder::createPlane( width, depth, texRangeWidth, texRangeDepth );
         auto _scene = engine::LApp::GetInstance()->scene();
         _scene->addRenderable( _mesh );
         return new Mesh( _mesh );

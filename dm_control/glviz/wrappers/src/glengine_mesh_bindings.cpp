@@ -105,6 +105,20 @@ namespace glwrapper
         return _result;
     }
 
+    void Mesh::setBuiltInTexture( const string& textureId )
+    {
+        if ( m_glMeshRef == NULL ) { return; }
+
+        auto _texture = engine::LAssetsManager::getBuiltInTexture( textureId );
+        if ( _texture == NULL )
+        {
+            std::cout << "WARNING> Tried to set non-existent built in texture" << std::endl;
+            return;
+        }
+
+        m_glMeshRef->addTexture( _texture );
+    }
+
     void Mesh::setColor( float r, float g, float b )
     {
         if ( m_glMeshRef == NULL ) { return; }

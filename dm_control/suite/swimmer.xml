@@ -25,7 +25,7 @@
   </default>
 
   <worldbody>
-    <geom name="ground" type="plane" size="2 2 0.1" material="grid"/>
+    <geom name="ground" type="plane" size="2.5 2.5 0.1" material="grid"/>
     <body name="head" pos="0 0 .05" childclass="swimmer">
       <light name="light_1" diffuse=".8 .8 .8" pos="0 0 1.5"/>
       <geom name="head" type="ellipsoid" size=".02 .04 .017" pos="0 -.022 0"  material="self" mass="0"/>

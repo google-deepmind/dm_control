@@ -30,9 +30,12 @@ void init()
                                                  engine::LVec3( -1, -1, -1 ) );
     _light->setVirtualPosition( engine::LVec3( 5, 0, 5 ) );
 
+    auto _skybox = new engine::LSkybox( "starfield" );
+
     // add these components to the scene
     _scene->addCamera( _camera );
     _scene->addLight( _light );
+    _scene->addSkybox( _skybox );
 }
 
 void update()
