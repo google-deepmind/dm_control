@@ -1,7 +1,6 @@
 
 from dm_control import suite
 from dm_control.glviz import viz
-from dm_control.glviz import world
 import numpy as np
 
 # Load one task:
@@ -21,7 +20,6 @@ env = suite.load( domain_name = "humanoid", task_name = "walk" )
 # env = suite.load( domain_name = "primitives", task_name = "test" )
 
 visualizer = viz.Visualizer( env.physics )
-env_world = world.World( env.physics )
 
 # Step through an episode and print out reward, discount and observation.
 action_spec = env.action_spec()

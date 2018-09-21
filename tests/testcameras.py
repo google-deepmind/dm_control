@@ -4,15 +4,12 @@ from dm_control import suite
 from dm_control.glviz import viz
 import numpy as np
 
-from dm_control.mujoco.wrapper.mjbindings import wrappers
-from dm_control.mujoco.wrapper import util
-
-# import matplotlib.pyplot as plt
 import enginewrapper
 
 # Load one task:
-env = suite.load( domain_name = "walker", task_name = "walk" )
-# env = suite.load( domain_name = "cartpole", task_name = "balance" )
+# env = suite.load( domain_name = "humanoid", task_name = "walk" )
+# env = suite.load( domain_name = "walker", task_name = "walk" )
+env = suite.load( domain_name = "cartpole", task_name = "balance" )
 # env = suite.load( domain_name = "acrobot", task_name = "swingup" )
 # env = suite.load( domain_name = "ball_in_cup", task_name = "catch" )
 # env = suite.load( domain_name = "cheetah", task_name = "run" )
@@ -38,25 +35,31 @@ time_step = env.reset()
 
 _paused = False
 
+# Get a mesh for a follow-camera to track
 _mesh = visualizer.getMeshByName( 'cart' )
 # _mesh = visualizer.getMeshByName( 'torso' )
-_camera1 = enginewrapper.createFollowCamera( 'follow',
-                                             np.array( [2.0, 4.0, 2.0] ),
-                                             np.array( [0.0, 0.0, 0.0] ) )
-_camera2 = enginewrapper.createFixedCamera( 'fixed',
-                                            np.array( [2.0, 4.0, 2.0] ),
-                                            np.array( [0.0, 0.0, 0.0] ) )
 
+# Create a follow-type camera and make it follow the previous mesh
+_camera1 = visualizer.createCamera( viz.CAMERA_TYPE_FOLLOW,
+                                    'follow',
+                                    np.array( [2.0, 4.0, 2.0] ),
+                                    np.array( [0.0, 0.0, 0.0] ) )
 _camera1.setFollowReference( _mesh )
-enginewrapper.changeToCameraByName( 'follow' )
 
-# visualizer.testMeshesNames()
+# Create a fixed-type camera pointing in a certain direction
+_camera2 = visualizer.createCamera( viz.CAMERA_TYPE_FIXED,
+                                    'fixed',
+                                    np.array( [2.0, 4.0, 2.0] ),
+                                    np.array( [0.0, 0.0, 0.0] ) )
+
+# Set the current camera to the follow-type one
+visualizer.changeToCameraByName( 'follow' )
 
 while True:
   action = np.random.uniform(action_spec.minimum,
                              action_spec.maximum,
                              size=action_spec.shape)
-  # action = np.zeros( action_spec.shape )
+  
   if not _paused :
     time_step = env.step(action)
 
@@ -70,19 +73,10 @@ while True:
   if visualizer.check_single_press( viz.KEY_SPACE ):
     _paused = not _paused
   if visualizer.check_single_press( viz.KEY_M ):
-    enginewrapper.changeToCameraByName( 'main' )
+    visualizer.changeToCameraByName( 'main' )
   if visualizer.check_single_press( viz.KEY_C ):
-    enginewrapper.changeToCameraByName( 'fixed' )
+    visualizer.changeToCameraByName( 'fixed' )
   if visualizer.check_single_press( viz.KEY_F ):
-    enginewrapper.changeToCameraByName( 'follow' )
-  if visualizer.check_single_press( viz.KEY_Q ):
-    print( 'qpos: ', env.physics.data.qpos[:] )
-  if visualizer.check_single_press( viz.KEY_P ):
-    env.physics.data.qpos[:] = np.asarray( [0., 0., 2., 1., 0., 0., 0.] )
+    visualizer.changeToCameraByName( 'follow' )
   if visualizer.check_single_press( viz.KEY_ESCAPE ):
     break
-
-#   pixels = env.physics.render(480, 480, camera_id = 0)
-#   plt.imshow(pixels)
-#   plt.pause(0.01)
-#   plt.draw()

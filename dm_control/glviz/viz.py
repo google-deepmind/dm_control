@@ -99,6 +99,10 @@ CAMERA_TYPE_FPS = 1
 CAMERA_TYPE_ORBIT = 2
 CAMERA_TYPE_FOLLOW = 3
 
+WORLD_UP_X = 0
+WORLD_UP_Y = 1
+WORLD_UP_Z = 2
+
 class GeometryInfo(object):
 
     def __init__(self, gid, name, gtype, pos, rot, params ):
@@ -146,19 +150,32 @@ class Visualizer(object):
         self._collect_geometries()
         self._update_geometries_meshes()
 
+    """
+        Gets the MuJoCo scene wrapped data structure
+    """
     def scene(self):
         return self._scene
 
+    """
+        Gets the dictionary of meshe-wrapped objects ...
+        collected by the visualizer
+    """
     def meshes(self):
         return self._meshes
 
+    """ 
+        Gets the dictionary of geometries' parameters ...
+        collected by the visualizer 
+    """
     def geometries(self):
         return self._geometries
 
-    def testMeshesNames(self):
+    """ Prints the meshes names from the XML model"""
+    def printMeshesNames(self):
         for _id in self._geometries :
             print( 'name: ', self._physics.model.id2name( _id, enums.mjtObj.mjOBJ_GEOM ) )
 
+    """ Gets a mesh-wrapped object given the mesh name"""
     def getMeshByName(self, name):
         try:
             _id = self._physics.model.name2id( name, enums.mjtObj.mjOBJ_GEOM )
@@ -172,6 +189,31 @@ class Visualizer(object):
 
         return self._meshes[_id]
 
+    """ Checks if key with keycode 'key' is being pressed """
+    def is_key_down(self, key):
+        return enginewrapper.isKeyDown(key)
+
+    """ Checks if a given mouse button has been pressed """
+    def is_mouse_down(self, button):
+        return enginewrapper.isMouseDown(button)
+
+    """ Gets the current cursor's position """
+    def get_cursor_position(self):
+        return enginewrapper.getCursorPosition()
+
+    """ Checks for a single press of a given key """
+    def check_single_press(self, key):
+        if not enginewrapper.isKeyDown(key) :
+            self._single_keys[key] = False
+            return False
+        _res = self._single_keys[key] ^ enginewrapper.isKeyDown(key)
+        self._single_keys[key] = enginewrapper.isKeyDown(key)
+        return _res
+
+    """
+        Updates the scene by collecting MuJoCo ...
+        information and updating the meshes properties 
+    """
     def update(self):
         # abstract visualization stage - retrieve the viz data
         mjlib.mjv_updateScene(self._physics.model.ptr, self._physics.data.ptr,
@@ -182,6 +224,43 @@ class Visualizer(object):
         self._update_geometries_meshes()
         # request rendering to the engine backend
         enginewrapper.update()
+
+    """
+        Creates a camera for the visualizer
+    """
+    def createCamera(self, camera_type, name, position, target_point, 
+                     world_up_id=WORLD_UP_Z,
+                     fov=45.0,
+                     zNear=1.0,
+                     zFar=40.0):
+        
+        if camera_type == CAMERA_TYPE_FIXED :
+            return enginewrapper.createFixedCamera(name, position, 
+                                                   target_point,
+                                                   world_up_id,
+                                                   fov, zNear, zFar)
+        elif camera_type == CAMERA_TYPE_FPS :
+            return enginewrapper.createFpsCamera(name, position,
+                                                 target_point,
+                                                 world_up_id,
+                                                 fov, zNear, zFar)
+        elif camera_type == CAMERA_TYPE_FOLLOW :
+            return enginewrapper.createFollowCamera(name, position,
+                                                    target_point,
+                                                    world_up_id,
+                                                    fov, zNear, zFar)
+        else :
+            # Just to avoid crashes, return a fixed-type camera
+            return enginewrapper.createFixedCamera(name, position,
+                                                   target_point,
+                                                   world_up_id,
+                                                   fov, zNear, zFar)
+
+    """
+        Changes to an existent camera given its name
+    """
+    def changeToCameraByName(self, name):
+        enginewrapper.changeToCameraByName(name)
 
     def _collect_geometries(self):
         # collect geometries structs
@@ -258,20 +337,3 @@ class Visualizer(object):
                                           self._geometries[_id].pos[1],
                                           self._geometries[_id].pos[2])
             self._meshes[_id].setRotation(self._geometries[_id].rot)
-
-    def is_key_down(self, key):
-        return enginewrapper.isKeyDown(key)
-
-    def is_mouse_down(self, button):
-        return enginewrapper.isMouseDown(button)
-
-    def get_cursor_position(self):
-        return enginewrapper.getCursorPosition()
-
-    def check_single_press(self, key):
-        if not enginewrapper.isKeyDown(key) :
-            self._single_keys[key] = False
-            return False
-        _res = self._single_keys[key] ^ enginewrapper.isKeyDown(key)
-        self._single_keys[key] = enginewrapper.isKeyDown(key)
-        return _res
