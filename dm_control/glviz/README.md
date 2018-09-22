@@ -202,6 +202,8 @@ These are some clips from the visualizer in action :
 
 Here are some missing features and fixes. Some other might be missing, so just notify me if you find a bug or need an important feature I haven't listed.
 
+*   **Embedding shaders and image assets** : I've just checked and I overlooked the fact that the resources are not being copied when installing the package. The visualizer still works because of the configured path to the resources folder in the clone repository, so if you cloned and install it as explained in the beginning you would not have issues. Still, I'm working on embedding the assets into the glviz generated library itself to avoid potential issues (like installing from pip in the future).
+
 *   **Integrate with the full XML MuJoCo description** : There are some features missing here, like actually using the cameras tags. Right now we just have a main camera and the user has to programmatically created additional cameras.
 
 *   **Implement missing primitive geometries** : Ellipsoid and cylinder are missing.
