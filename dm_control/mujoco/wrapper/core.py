@@ -656,7 +656,6 @@ class MjData(wrappers.MjDataWrapper):
 
     # Free resources when the ctypes pointer is garbage collected.
     _create_finalizer(data_ptr, mjlib.mj_deleteData)
-
     super(MjData, self).__init__(data_ptr, model)
 
   def __getstate__(self):
@@ -681,6 +680,9 @@ class MjData(wrappers.MjDataWrapper):
     static_fields = {"struct_fields": struct_fields,
                      "scalar_fields": scalar_fields}
     buffer_contents = ctypes.string_at(self.buffer_, self.nbuffer)
+    print('MjData.__set_state__> ****************')
+    print(static_fields)
+    print('**************************************')
     return (self._model, static_fields, buffer_contents)
 
   def __setstate__(self, state_tuple):
@@ -701,6 +703,9 @@ class MjData(wrappers.MjDataWrapper):
         setattr(self, name, value)
     buf_ptr = (ctypes.c_char * self.nbuffer).from_address(self.buffer_)
     buf_ptr[:] = buffer_contents
+    print('MjData.__set_state__> ****************')
+    print(state_tuple)
+    print('**************************************')
 
   def __copy__(self):
     # This makes a shallow copy that shares the same parent MjModel instance.

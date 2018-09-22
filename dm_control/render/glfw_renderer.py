@@ -23,8 +23,10 @@ import sys
 
 # Internal dependencies.
 
+
 from dm_control.render import base
 import six
+
 
 # Re-raise any exceptions that occur during module import as `ImportError`s.
 # This simplifies the conditional imports in `render/__init__.py`.

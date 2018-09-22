@@ -16,15 +16,19 @@
 """Install script for setuptools."""
 
 import os
+import re
 import subprocess
+import platform
 import sys
 
 from distutils import cmd
 from distutils import log
+from distutils.version import LooseVersion
 from setuptools import find_packages
-from setuptools import setup
+from setuptools import setup, Extension
 from setuptools.command import install
 from setuptools.command import test
+from setuptools.command.build_ext import build_ext
 
 DEFAULT_HEADERS_DIR = '~/.mujoco/mjpro150/include'
 
@@ -108,6 +112,44 @@ class BuildMJBindingsCommand(cmd.Command):
     finally:
       os.environ = old_environ
 
+class CMakeExtension(Extension):
+
+  def __init__(self, name, sourcedir=''):
+    super( CMakeExtension, self ).__init__(name,sources=[])
+    self.sourcedir = os.path.abspath(sourcedir)
+
+class BuildVizBindingsCommand(build_ext):
+  """ Runs pybind-cmake generation of the visualizer bindings"""
+
+  def run(self):
+    try:
+      _out = subprocess.check_output(['cmake', '--version'])
+    except OSError:
+      raise RuntimeError('CMake is not install, and it is used to build the viz bindings')
+
+    for _ext in self.extensions:
+      self._build_extension(_ext)
+
+  def _build_extension(self, ext):
+    _ext_dir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
+    _cmake_args = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + _ext_dir,
+                   '-DPYTHON_EXECUTABLE=' + sys.executable]
+
+    _cfg = 'Debug' if self.debug else 'Release'
+    _build_args = ['--config', _cfg]
+
+    _cmake_args += ['-DCMAKE_BUILD_TYPE=' + _cfg]
+
+    _env = os.environ.copy()
+    _env['CXXFLAGS'] = '{} -DVERSION_INFO\\"{}\\"'.format(_env.get('CXXFLAGS', ''),
+                                                          self.distribution.get_version())
+
+    if not os.path.exists(self.build_temp):
+      os.makedirs(self.build_temp)
+        
+    subprocess.check_call( [ 'cmake', ext.sourcedir ] + _cmake_args, cwd = self.build_temp, env = _env )
+    subprocess.check_call( [ 'cmake', '--build', '.' ] + _build_args, cwd = self.build_temp )
+
 
 class InstallCommand(install.install):
   """Runs 'build_mjbindings' before installation."""
@@ -126,10 +168,14 @@ class InstallCommand(install.install):
     _finalize_mjbindings_options(self)
 
   def run(self):
+    # build mujoco bindings
     self.reinitialize_command('build_mjbindings',
                               inplace=self.inplace,
                               headers_dir=self.headers_dir)
     self.run_command('build_mjbindings')
+    # build viz bindings
+    self.run_command('build_vizbindings')
+    # install all
     install.install.run(self)
 
 
@@ -173,8 +219,10 @@ setup(
         'dm_control.suite':
         ['*.xml', 'common/*.xml'],
     },
+    ext_modules=[CMakeExtension('glviz','dm_control/glviz/')],
     cmdclass={
         'build_mjbindings': BuildMJBindingsCommand,
+        'build_vizbindings': BuildVizBindingsCommand,
         'install': InstallCommand,
         'test': TestCommand,
     },

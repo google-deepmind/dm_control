@@ -18,7 +18,7 @@
     <light name="light" pos="0 0 6"/>
     <camera name="fixed" pos="0 -4 1" zaxis="0 -1 0"/>
     <camera name="lookatcart" mode="targetbody" target="cart" pos="0 -2 2" zaxis="0 -1 0"/>
-    <geom name="floor" pos="0 0 -.05" size="4 4 .2" type="plane" material="grid"/>
+    <geom name="floor" pos="0 0 -.05" size="5 5 .2" type="plane" material="grid"/>
     <geom name="rail1" type="capsule" pos="0  .07 1" zaxis="1 0 0" size="0.02 2" material="decoration" />
     <geom name="rail2" type="capsule" pos="0 -.07 1" zaxis="1 0 0" size="0.02 2" material="decoration" />
     <body name="cart" pos="0 0 1">

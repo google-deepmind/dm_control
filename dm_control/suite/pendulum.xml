@@ -9,7 +9,7 @@
 
   <worldbody>
     <light name="light" pos="0 0 2"/>
-    <geom name="floor" size="2 2 .2" type="plane" material="grid"/>
+    <geom name="floor" size="2.5 2.5 .2" type="plane" material="grid"/>
     <camera name="fixed" pos="0 -1.5 2" xyaxes='1 0 0 0 1 1'/>
     <camera name="lookat" mode="targetbodycom" target="pole" pos="0 -2 1"/>
     <body name="pole" pos="0 0 .6">
