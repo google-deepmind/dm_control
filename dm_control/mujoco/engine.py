@@ -579,6 +579,11 @@ class Camera(object):
     """Returns the camera's visualization options."""
     return self._scene_option
 
+  @property
+  def scene(self):
+    """Returns the `mujoco.MjvScene` instance used by the camera."""
+    return self._scene
+
   def update(self, scene_option=None):
     """Updates geometry used for rendering.
 

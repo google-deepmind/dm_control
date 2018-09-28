@@ -116,6 +116,18 @@ class MujocoEngineTest(parameterized.TestCase):
     self.assertFalse(np.all(no_scene_option == with_scene_option),
                      msg='Images are identical with and without scene option.')
 
+  @unittest.skipIf(render.DISABLED, reason=render.DISABLED_MESSAGE)
+  def testRenderFlags(self):
+    height, width = 480, 640
+    cam = engine.Camera(self._physics, height, width, camera_id=0)
+    cam.scene.flags[enums.mjtRndFlag.mjRND_WIREFRAME] = 1  # Enable wireframe
+    enabled = cam.render().copy()
+    cam.scene.flags[enums.mjtRndFlag.mjRND_WIREFRAME] = 0  # Disable wireframe
+    disabled = cam.render().copy()
+    self.assertFalse(
+        np.all(disabled == enabled),
+        msg='Images are identical regardless of whether wireframe is enabled.')
+
   @parameterized.parameters(((0.5, 0.5), (1, 3)),  # pole
                             ((0.5, 0.1), (0, 0)),  # ground
                             ((0.9, 0.9), (None, None)),  # sky
