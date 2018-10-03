@@ -72,7 +72,7 @@ class EnvironmentTest(parameterized.TestCase):
     self._task.after_step.assert_called_with(self._physics)
     self._task.get_termination.assert_called_with(self._physics)
 
-    self.assertEquals(_CONSTANT_REWARD_VALUE, time_step.reward)
+    self.assertEqual(_CONSTANT_REWARD_VALUE, time_step.reward)
 
   @parameterized.parameters(
       {'physics_timestep': .01, 'control_timestep': None,
@@ -131,7 +131,7 @@ class ComputeNStepsTest(parameterized.TestCase):
                             (0.03, 0.005, 6))
   def testComputeNSteps(self, control_timestep, physics_timestep, expected):
     steps = control.compute_n_steps(control_timestep, physics_timestep)
-    self.assertEquals(expected, steps)
+    self.assertEqual(expected, steps)
 
   @parameterized.parameters((3, 2), (.003, .00101))
   def testComputeNStepsFailures(self, control_timestep, physics_timestep):
