@@ -36,7 +36,8 @@ def run_threaded(num_threads=4, calls_per_thread=10):
         thread, so all thread-local setup must be done within the test method.
 
   Args:
-    num_threads: Number of concurrent threads to spawn.
+    num_threads: Number of concurrent threads to spawn. If None then the wrapped
+      method will be executed in the main thread instead.
     calls_per_thread: Number of times each thread should call the test method.
   Returns:
     Decorated test method.
@@ -55,12 +56,15 @@ def run_threaded(num_threads=4, calls_per_thread=10):
           # Appending to Python list is thread-safe:
           # http://effbot.org/pyfaq/what-kinds-of-global-value-mutation-are-thread-safe.htm
           exceptions.append(sys.exc_info())
-      threads = [threading.Thread(target=worker, name='thread_{}'.format(i))
-                 for i in range(num_threads)]
-      for thread in threads:
-        thread.start()
-      for thread in threads:
-        thread.join()
+      if num_threads is not None:
+        threads = [threading.Thread(target=worker, name='thread_{}'.format(i))
+                   for i in range(num_threads)]
+        for thread in threads:
+          thread.start()
+        for thread in threads:
+          thread.join()
+      else:
+        worker()
       for exc_class, old_exc, tb in exceptions:
         six.reraise(exc_class, old_exc, tb)
     return decorated_method

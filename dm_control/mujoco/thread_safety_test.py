@@ -19,7 +19,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import unittest
+import platform
 
 # Internal dependencies.
 
@@ -34,25 +34,35 @@ from six.moves import range
 MODEL = assets.get_contents('cartpole.xml')
 NUM_STEPS = 10
 
+# Context creation with GLFW is not threadsafe.
+if render.BACKEND == 'glfw':
+  # On Linux we are able to create a GLFW window in a single thread that is not
+  # the main thread.
+  # On Mac we are only allowed to create windows on the main thread, so we
+  # disable the `run_threaded` wrapper entirely.
+  NUM_THREADS = None if platform.system() == 'Darwin' else 1
+else:
+  NUM_THREADS = 4
+
 
 class ThreadSafetyTest(absltest.TestCase):
 
-  @decorators.run_threaded()
+  @decorators.run_threaded(num_threads=NUM_THREADS)
   def test_load_physics_from_string(self):
     engine.Physics.from_xml_string(MODEL)
 
-  @decorators.run_threaded()
+  @decorators.run_threaded(num_threads=NUM_THREADS)
   def test_load_and_reload_physics_from_string(self):
     physics = engine.Physics.from_xml_string(MODEL)
     physics.reload_from_xml_string(MODEL)
 
-  @decorators.run_threaded()
+  @decorators.run_threaded(num_threads=NUM_THREADS)
   def test_load_and_step_physics(self):
     physics = engine.Physics.from_xml_string(MODEL)
     for _ in range(NUM_STEPS):
       physics.step()
 
-  @decorators.run_threaded()
+  @decorators.run_threaded(num_threads=NUM_THREADS)
   def test_load_and_step_multiple_physics_parallel(self):
     physics1 = engine.Physics.from_xml_string(MODEL)
     physics2 = engine.Physics.from_xml_string(MODEL)
@@ -60,7 +70,7 @@ class ThreadSafetyTest(absltest.TestCase):
       physics1.step()
       physics2.step()
 
-  @decorators.run_threaded()
+  @decorators.run_threaded(num_threads=NUM_THREADS)
   def test_load_and_step_multiple_physics_sequential(self):
     physics1 = engine.Physics.from_xml_string(MODEL)
     for _ in range(NUM_STEPS):
@@ -70,8 +80,7 @@ class ThreadSafetyTest(absltest.TestCase):
     for _ in range(NUM_STEPS):
       physics2.step()
 
-  @unittest.skipIf(render.BACKEND == 'glfw', 'GLFW backend is not threadsafe.')
-  @decorators.run_threaded(calls_per_thread=5)
+  @decorators.run_threaded(num_threads=NUM_THREADS, calls_per_thread=5)
   def test_load_physics_and_render(self):
     physics = engine.Physics.from_xml_string(MODEL)
 
@@ -86,8 +95,7 @@ class ThreadSafetyTest(absltest.TestCase):
 
     self.assertEqual(NUM_STEPS, len(unique_frames))
 
-  @unittest.skipIf(render.BACKEND == 'glfw', 'GLFW backend is not threadsafe.')
-  @decorators.run_threaded(calls_per_thread=5)
+  @decorators.run_threaded(num_threads=NUM_THREADS, calls_per_thread=5)
   def test_render_multiple_physics_instances_per_thread_parallel(self):
     physics1 = engine.Physics.from_xml_string(MODEL)
     physics2 = engine.Physics.from_xml_string(MODEL)
@@ -100,3 +108,4 @@ class ThreadSafetyTest(absltest.TestCase):
 
 if __name__ == '__main__':
   absltest.main()
+

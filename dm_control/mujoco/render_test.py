@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import print_function
 
 import os
+import platform
 
 # Internal dependencies.
 from absl.testing import absltest
@@ -35,8 +36,13 @@ from six.moves import zip
 DEBUG_IMAGE_DIR = os.environ.get('TEST_UNDECLARED_OUTPUTS_DIR',
                                  absltest.get_default_test_tmpdir())
 
+# Context creation with GLFW is not threadsafe.
 if render.BACKEND == 'glfw':
-  NUM_THREADS = 1  # GLFW backend is not threadsafe.
+  # On Linux we are able to create a GLFW window in a single thread that is not
+  # the main thread.
+  # On Mac we are only allowed to create windows on the main thread, so we
+  # disable the `run_threaded` wrapper entirely.
+  NUM_THREADS = None if platform.system() == 'Darwin' else 1
 else:
   NUM_THREADS = 4
 CALLS_PER_THREAD = 1
