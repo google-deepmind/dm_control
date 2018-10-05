@@ -26,12 +26,16 @@ import sys
 
 # Internal dependencies.
 from dm_control import mujoco
+from dm_control import render
 from dm_control.mujoco.testing import assets
 import numpy as np
 from PIL import Image
 import six
 from six.moves import range
 from six.moves import zip
+
+
+BACKEND_STRING = 'hardware' if render.USING_GPU else 'software'
 
 
 class ImagesNotClose(AssertionError):
@@ -52,7 +56,8 @@ class _FrameSequence(object):
 
   _ASSETS_DIR = 'assets'
   _FRAMES_DIR = 'frames'
-  _SUBDIR_TEMPLATE = '{name}_seed_{seed}_camera_{camera_id}_{width}x{height}'
+  _SUBDIR_TEMPLATE = (
+      '{name}_seed_{seed}_camera_{camera_id}_{width}x{height}_{backend_string}')
   _FILENAME_TEMPLATE = 'frame_{frame_num:03}.png'
 
   def __init__(self,
@@ -111,11 +116,15 @@ class _FrameSequence(object):
       _save_pixels(pixels, path)
 
   def _iter_paths(self):
+    """Returns an iterator over paths to the reference images."""
     for frame_num in range(self._num_frames):
       filename = self._FILENAME_TEMPLATE.format(frame_num=frame_num)
       for camera_spec in self._camera_specs:
         subdir_name = self._SUBDIR_TEMPLATE.format(
-            name=self._name, seed=self._seed, **camera_spec._asdict())
+            name=self._name,
+            seed=self._seed,
+            backend_string=BACKEND_STRING,
+            **camera_spec._asdict())
         directory = os.path.join(self._FRAMES_DIR, subdir_name)
         yield directory, filename
 

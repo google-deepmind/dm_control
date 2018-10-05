@@ -69,3 +69,5 @@ else:
     def Renderer(*args, **kwargs):  # pylint: disable=function-redefined,invalid-name
       del args, kwargs
       raise RuntimeError('No OpenGL rendering backend is available.')
+
+USING_GPU = BACKEND == 'glfw'
