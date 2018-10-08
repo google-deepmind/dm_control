@@ -90,7 +90,7 @@ class Physics(mujoco.Physics):
 
   def center_of_mass_velocity(self):
     """Returns the velocity of the center-of-mass."""
-    return self.named.data.subtree_linvel['thorax']
+    return self.named.data.sensordata['thorax_subtreelinvel']
 
   def torso_vertical_orientation(self):
     """Returns the z-projection of the thorax orientation matrix."""

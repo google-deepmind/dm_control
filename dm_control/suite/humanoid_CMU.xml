@@ -275,6 +275,7 @@
   </actuator>
 
   <sensor>
+    <subtreelinvel name="thorax_subtreelinvel" body="thorax"/>
     <velocimeter name="sensor_root_veloc" site="root"/>
     <gyro name="sensor_root_gyro" site="root"/>
     <accelerometer name="sensor_root_accel" site="root"/>

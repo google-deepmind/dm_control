@@ -60,7 +60,7 @@ class Physics(mujoco.Physics):
 
   def speed(self):
     """Returns the horizontal speed of the Cheetah."""
-    return self.named.data.subtree_linvel['torso', 'x']
+    return self.named.data.sensordata['torso_subtreelinvel'][0]
 
 
 class Cheetah(base.Task):

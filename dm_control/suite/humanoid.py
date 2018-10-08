@@ -114,7 +114,7 @@ class Physics(mujoco.Physics):
 
   def center_of_mass_velocity(self):
     """Returns the velocity of the center-of-mass."""
-    return self.named.data.subtree_linvel['torso']
+    return self.named.data.sensordata['torso_subtreelinvel']
 
   def torso_vertical_orientation(self):
     """Returns the z-projection of the torso orientation matrix."""

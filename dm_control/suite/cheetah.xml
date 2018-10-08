@@ -58,6 +58,10 @@
     </body>
   </worldbody>
 
+  <sensor>
+    <subtreelinvel name="torso_subtreelinvel" body="torso"/>
+  </sensor>
+
   <actuator>
     <motor name="bthigh" joint="bthigh" gear="120" />
     <motor name="bshin" joint="bshin" gear="90" />
@@ -66,5 +70,4 @@
     <motor name="fshin" joint="fshin" gear="60" />
     <motor name="ffoot" joint="ffoot" gear="30" />
   </actuator>
-
 </mujoco>

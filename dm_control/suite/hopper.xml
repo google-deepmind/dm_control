@@ -52,6 +52,7 @@
   </worldbody>
 
   <sensor>
+    <subtreelinvel name="torso_subtreelinvel" body="torso"/>
     <touch name="touch_toe" site="touch_toe"/>
     <touch name="touch_heel" site="touch_heel"/>
   </sensor>

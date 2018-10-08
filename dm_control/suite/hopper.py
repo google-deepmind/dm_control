@@ -85,7 +85,7 @@ class Physics(mujoco.Physics):
 
   def speed(self):
     """Returns horizontal speed of the Hopper."""
-    return self.named.data.subtree_linvel['torso', 'x']
+    return self.named.data.sensordata['torso_subtreelinvel'][0]
 
   def touch(self):
     """Returns the signals from two foot touch sensors."""

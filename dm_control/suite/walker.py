@@ -97,7 +97,7 @@ class Physics(mujoco.Physics):
 
   def horizontal_velocity(self):
     """Returns the horizontal velocity of the center-of-mass."""
-    return self.named.data.subtree_linvel['torso', 'x']
+    return self.named.data.sensordata['torso_subtreelinvel'][0]
 
   def orientations(self):
     """Returns planar orientations of all bodies."""

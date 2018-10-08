@@ -55,6 +55,10 @@
     </body>
   </worldbody>
 
+  <sensor>
+    <subtreelinvel name="torso_subtreelinvel" body="torso"/>
+  </sensor>
+
   <actuator>
     <motor name="right_hip" joint="right_hip" gear="100"/>
     <motor name="right_knee" joint="right_knee" gear="50"/>

@@ -158,6 +158,7 @@
   </actuator>
 
   <sensor>
+    <subtreelinvel name="torso_subtreelinvel" body="torso"/>
     <accelerometer name="torso_accel"    site="root"/>
     <velocimeter name="torso_vel"        site="root"/>
     <gyro name="torso_gyro"              site="root"/>
