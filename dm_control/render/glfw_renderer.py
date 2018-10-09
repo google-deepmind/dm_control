@@ -21,6 +21,7 @@ from __future__ import print_function
 
 import sys
 from dm_control.render import base
+from dm_control.render import executor
 import six
 
 # Re-raise any exceptions that occur during module import as `ImportError`s.
@@ -39,6 +40,13 @@ except glfw.GLFWError as exc:
 
 class GLFWContext(base.ContextBase):
   """An OpenGL context backed by GLFW."""
+
+  def __init__(self, max_width, max_height):
+    # GLFWContext always uses `PassthroughRenderExecutor` rather than offloading
+    # rendering calls to a separate thread because GLFW can only be safely used
+    # from the main thread.
+    super(GLFWContext, self).__init__(max_width, max_height,
+                                      executor.PassthroughRenderExecutor)
 
   def _platform_init(self, max_width, max_height):
     """Initializes this context.
