@@ -170,6 +170,9 @@ setup(
     test_suite='nose.collector',
     packages=find_packages(),
     package_data={
+        'dm_control.composer': [
+            'arena.xml'
+        ],
         'dm_control.mjcf': [
             'schema.xml',
             'test_assets/*.xml',

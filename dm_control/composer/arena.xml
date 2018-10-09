@@ -1,0 +1,11 @@
+<mujoco model="base">
+  <compiler coordinate='local' angle='radian' eulerseq='xyz' boundmass='1e-5' boundinertia='1e-11'/>
+
+  <option cone='elliptic' noslip_iterations='5' noslip_tolerance='0' timestep='0.002'/>
+
+  <visual>
+    <map znear='0.01'/>
+    <headlight diffuse='.6 .6 .6'  ambient='.3 .3 .3' specular='0 0 0'/>
+    <scale forcewidth='0.01' contactwidth='0.06' contactheight='0.01' jointwidth='.01' framewidth='.01' framelength='.3'/>
+  </visual>
+</mujoco>
