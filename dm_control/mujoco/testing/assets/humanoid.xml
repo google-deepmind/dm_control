@@ -9,7 +9,7 @@
     <option integrator="RK4" iterations="50" solver="PGS" timestep="0.003">
         <!-- <flags solverstat="enable" energy="enable"/>-->
     </option>
-    <size nkey="5" nuser_geom="1"/>
+    <size nkey="5" nuser_geom="1" nuserdata="1"/>
     <visual>
         <map fogend="5" fogstart="3"/>
     </visual>
