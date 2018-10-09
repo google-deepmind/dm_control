@@ -9,6 +9,10 @@ This package contains:
 - [`dm_control.suite`](dm_control/suite/README.md): A set of Python Reinforcement Learning environments powered by the MuJoCo
   physics engine.
 
+- [`dm_control.viewer`](dm_control/viewer/README.md): An interactive environment viewer.
+
+If you use this package, please cite our accompanying
+[tech report](https://arxiv.org/abs/1801.00690).
 
 ## Installation and requirements
 
