@@ -36,7 +36,7 @@ from lxml import etree
 import numpy as np
 from six.moves import xrange  # pylint: disable=redefined-builtin
 
-from dm_control.utils import resources
+from dm_control.utils import io as resources
 
 _DEFAULT_TIME_LIMIT = float('inf')
 _CONTROL_COST_COEF = 0.1

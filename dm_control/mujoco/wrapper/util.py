@@ -30,7 +30,7 @@ import threading
 import numpy as np
 import six
 
-from dm_control.utils import resources
+from dm_control.utils import io as resources
 
 # Environment variables that can be used to override the default paths to the
 # MuJoCo shared library and key file.

@@ -17,7 +17,7 @@
 
 import os
 
-from dm_control.utils import resources
+from dm_control.utils import io as resources
 
 _ASSETS_DIR = os.path.dirname(__file__)
 

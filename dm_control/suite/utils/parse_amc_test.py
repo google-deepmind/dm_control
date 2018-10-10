@@ -27,7 +27,7 @@ from absl.testing import absltest
 from dm_control.suite import humanoid_CMU
 from dm_control.suite.utils import parse_amc
 
-from dm_control.utils import resources
+from dm_control.utils import io as resources
 
 _TEST_AMC_PATH = resources.GetResourceFilename(
     os.path.join(os.path.dirname(__file__), '../demos/zeros.amc'))
