@@ -1,0 +1,45 @@
+<mujoco model="test">
+  <compiler texturedir="textures"/>
+  <asset>
+    <texture name="texture" type="cube" file="deepmind.png"/>
+    <material name="mat_texture" texture="texture"/>
+  </asset>
+  <option timestep="0.01" wind="3 2 1">
+    <flag gravity="disable"/>
+  </option>
+  <visual>
+    <map znear="0.01" zfar="100"/>
+  </visual>
+  <default>
+    <site type="sphere" size="0.01 0.01 0.01"/>
+    <geom size="0.1 0.1 0.1" rgba="1 0 0 1"/>
+    <default class="big_and_green">
+      <geom size="1 1 1" rgba="0 1 0 0"/>
+    </default>
+  </default>
+  <worldbody>
+    <body name="b_0">
+      <freejoint name="b_0"/>
+      <inertial pos="0 0 0" mass="1"/>
+      <body name="b_0_0">
+        <joint name="b_0_0" type="ball"/>
+        <geom name="b_0_0" type="sphere" class="big_and_green"/>
+        <site name="attachment" pos="0.1 0.1 0.1" quat="0 1 0 0"/>
+      </body>
+    </body>
+    <body name="b_1" childclass="big_and_green">
+      <freejoint name="b_1"/>
+      <body name="b_1_0">
+        <joint name="b_1_0" type="ball"/>
+        <geom name="b_1_0" type="sphere" material="mat_texture"/>
+      </body>
+    </body>
+  </worldbody>
+  <contact>
+    <exclude body1="b_0" body2="b_1"/>
+  </contact>
+  <actuator>
+    <velocity name="b_0_0" joint="b_0_0"/>
+    <velocity name="b_1_0" joint="b_1_0"/>
+  </actuator>
+</mujoco>

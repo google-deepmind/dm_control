@@ -1,0 +1,11 @@
+<!-- Model with an <include/> tag -->
+<mujoco>
+  <asset>
+    <texture name="deepmind" file="textures/deepmind.png"/>
+    <material name="mat_texture" texture="deepmind"/>
+  </asset>
+  <include file="included.xml"/>
+  <worldbody>
+    <geom name="sphere" type="sphere" size="0.1" material="mat_texture"/>
+  </worldbody>
+</mujoco>

@@ -1,0 +1,33 @@
+<mujoco model="arena">
+  <compiler coordinate='local' angle='radian' eulerseq='yxz'/>
+
+  <option timestep='0.01' viscosity='1e-3' cone='elliptic' />
+
+  <asset>
+    <texture type='skybox' builtin='gradient' rgb1='.4 .6 .8' rgb2='0 0 0' width='100' height='100'/>
+    <texture name='groundplane' type='2d' builtin='checker' rgb1='.2 .3 .4' rgb2='.1 .2 .3' width='300' height='300' mark='edge' markrgb='.8 .8 .8'/>
+    <material name='groundplane' texture='groundplane' texrepeat='5 5' texuniform='true' reflectance='.2'/>
+  </asset>
+
+  <visual>
+    <map znear='0.01'/>
+    <headlight diffuse='.6 .6 .6'  ambient='.3 .3 .3' specular='0 0 0'/>
+    <scale forcewidth='0.01' contactwidth='0.06' contactheight='0.01' jointwidth='.01' framewidth='.01' framelength='.3'/>
+  </visual>
+
+  <worldbody>
+    <!-- Camera mirroring the position of the physical kinect above the arm. -->
+    <camera name='fixed_kinect' pos='0 -0.8 1.2' quat='0.99 0.16 0 0' fovy='50'/>
+
+    <!-- View of the person sitting behind computer operating the robot. -->
+    <camera name='fixed_viewer' pos='0 -1.5 0.5' quat='0.7 0.7 0 0'/>
+
+    <!-- Close-up camera for the standard workspace -->
+    <camera name='fixed_camera_1' pos='0 -0.7 0.1' quat='0.7 0.7 0 0'/>
+    <camera name='fixed_camera_2' pos='0 -1.5 0.5' quat='0.7 0.7 0 0'/>
+    <camera name='fixed_camera_3' pos='0 -1.1 0.8' quat='0.93 0.5 0 0'/>
+
+    <geom name='ground' type='plane' pos='0 0 0.06' size='1 1 1' material='groundplane' margin='0.1' gap='0.1' />
+    <light directional='false' diffuse='.7 .7 .7' pos='0 0 1.5' dir='0 0 -1' specular='.3 .3 .3' castshadow='true'/>
+  </worldbody>
+</mujoco>

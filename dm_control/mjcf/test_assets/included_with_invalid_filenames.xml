@@ -1,0 +1,10 @@
+<!-- Included by `model_with_include.xml` -->
+<mujoco>
+  <compiler meshdir="meshes"/>
+  <asset>
+    <mesh name="cube_mesh" file="invalid_mesh_name.stl"/>
+  </asset>
+  <worldbody>
+    <geom name="cube" type="mesh" mesh="cube_mesh"/>
+  </worldbody>
+</mujoco>

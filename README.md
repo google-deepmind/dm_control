@@ -4,12 +4,16 @@
 
 This package contains:
 
-- [`dm_control.mujoco`](dm_control/mujoco/README.md): Libraries that provide Python bindings to the MuJoCo physics engine.
+-   [`dm_control.mjcf`](dm_control/mjcf/README.md): A library for composing and modifying
+    MuJoCo MJCF models in Python.
 
-- [`dm_control.suite`](dm_control/suite/README.md): A set of Python Reinforcement Learning environments powered by the MuJoCo
-  physics engine.
+-   [`dm_control.mujoco`](dm_control/mujoco/README.md): Libraries that provide Python
+    bindings to the MuJoCo physics engine.
 
-- [`dm_control.viewer`](dm_control/viewer/README.md): An interactive environment viewer.
+-   [`dm_control.suite`](dm_control/suite/README.md): A set of Python Reinforcement
+    Learning environments powered by the MuJoCo physics engine.
+
+-   [`dm_control.viewer`](dm_control/viewer/README.md): An interactive environment viewer.
 
 If you use this package, please cite our accompanying
 [tech report](https://arxiv.org/abs/1801.00690).
@@ -60,9 +64,9 @@ must be available in order to use the bindings.
 
 ## Additional instructions for Homebrew users on macOS
 
-1. The above instructions using `pip` should work, provided that you
-   use a Python interpreter that is installed by Homebrew (rather than the
-   system-default one).
+1.  The above instructions using `pip` should work, provided that you use a
+    Python interpreter that is installed by Homebrew (rather than the
+    system-default one).
 
 2.  Before running, the `DYLD_LIBRARY_PATH` environment variable needs to be
     updated with the path to the GLFW library. This can be done by running

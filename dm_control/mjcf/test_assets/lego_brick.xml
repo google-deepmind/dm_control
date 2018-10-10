@@ -1,0 +1,24 @@
+<mujoco model='brick_model'>
+
+  <asset>
+    <material name='transparent' rgba='0 0 0 0' reflectance='.0'/>
+    <material name='solid_color' rgba='1 0 0 1' reflectance='.0'/>
+  </asset>
+
+  <worldbody>
+    <body name='body' pos='-0.8 -0.8 0.06'>
+      <geom name='main_hull' type='box' pos='0 0 0.0132' size='0.016 0.016 0.013' mass='0.0' friction='1 1' contype='0' material='transparent'/>
+      <geom name='main_t' type='box' pos='0 0 0.01165' size='0.0159 0.0159 0.00765' mass='1e-6' conaffinity='2' contype='2' material='solid_color'/>
+      <geom name='wall_lx' type='box' pos='-0.0144 0 0.002' size='0.0015 0.0159 0.002' mass='0.0' conaffinity='2' contype='0' material='solid_color' />
+      <geom name='wall_rx' type='box' pos='0.0144 0 0.0025' size='0.0015 0.0159 0.002' mass='0.0' conaffinity='2' contype='0' material='solid_color' />
+      <geom name='wall_ly' type='box' pos='0 -0.0144 0.002' size='0.0159 0.0015 0.002' mass='0.0' conaffinity='2' contype='0' material='solid_color' />
+      <geom name='wall_ry' type='box' pos='0 0.0144 0.0025' size='0.0159 0.0015 0.002' mass='0.0' conaffinity='2' contype='0' material='solid_color' />
+      <geom name='knob_ll' type='cylinder' size='0.004 0.002' pos='+0.008 +0.008 0.0213' mass='0.01' conaffinity='0' contype='2' material='solid_color' />
+      <geom name='knob_lr' type='cylinder' size='0.004 0.002' pos='+0.008 -0.008 0.0213' mass='0.01' conaffinity='0' contype='2' material='solid_color' />
+      <geom name='knob_rl' type='cylinder' size='0.004 0.002' pos='-0.008 +0.008 0.0213' mass='0.01' conaffinity='0' contype='2' material='solid_color' />
+      <geom name='knob_rr' type='cylinder' size='0.004 0.002' pos='-0.008 -0.008 0.0213' mass='0.01' conaffinity='0' contype='2' material='solid_color' />
+      <site name='target' type='sphere' pos='0 0 0.01' size='.01' euler='0 0 0'  rgba='.5 .5 .5 .3'/>
+    </body>
+  </worldbody>
+
+</mujoco>

@@ -1,0 +1,98 @@
+<element name="mujoco">
+  <attributes>
+    <attribute name="model" type="string"/>
+  </attributes>
+  <children>
+    <element name="optional">
+      <attributes>
+        <attribute name="float" type="float"/>
+        <attribute name="int" type="int"/>
+        <attribute name="string" type="string"/>
+        <attribute name="float_array" type="array" array_type="float" array_size="3"/>
+        <attribute name="int_array" type="array" array_type="int" array_size="2"/>
+        <attribute name="keyword" type="keyword" valid_values="Alpha Beta Gamma"/>
+        <attribute name="reftype" type="keyword" valid_values="entity optional"/>
+        <attribute name="reference" type="reference" reference_namespace="attrib:reftype"/>
+        <attribute name="fixed_type_ref" type="reference" reference_namespace="optional"/>
+      </attributes>
+    </element>
+    <element name="identified" repeated="true" namespace="optional">
+      <attributes>
+        <attribute name="identifier" type="identifier"/>
+      </attributes>
+    </element>
+    <element name="required" on_demand="true">
+      <attributes>
+        <attribute name="float" required="true" type="float"/>
+        <attribute name="int" required="true" type="int"/>
+        <attribute name="string" required="true" type="string"/>
+        <attribute name="float_array" required="true" type="array" array_type="float"/>
+        <attribute name="int_array" required="true" type="array" array_type="int"/>
+        <attribute name="keyword" required="true" type="keyword" valid_values="alpha beta gamma"/>
+        <attribute name="identifier" required="true" type="identifier"/>
+        <attribute name="reference" required="true" type="reference" reference_namespace="required"/>
+        <attribute name="basepath" required="true" type="basepath" path_namespace="required"/>
+        <attribute name="file" required="true" type="file" path_namespace="required"/>
+      </attributes>
+    </element>
+    <element name="default">
+      <attributes>
+        <attribute name="class" type="identifier"/>
+      </attributes>
+      <children>
+        <element name="default" recursive="true" repeated="true">
+          <attributes>
+            <attribute name="class" required="true" type="identifier"/>
+          </attributes>
+        </element>
+      </children>
+    </element>
+    <element name="worldentity">
+      <children>
+        <element name="entity" recursive="true" repeated="true">
+          <attributes>
+            <attribute name="name" type="identifier"/>
+            <attribute name="childclass" type="reference" reference_namespace="default"/>
+          </attributes>
+          <children>
+            <element name="subentity" repeated="true">
+              <attributes>
+                <attribute name="name" type="identifier"/>
+                <attribute name="class" type="reference" reference_namespace="default"/>
+              </attributes>
+            </element>
+            <element name="subentity_alias" namespace="subentity" repeated="true">
+              <attributes>
+                <attribute name="name" type="identifier"/>
+                <attribute name="class" type="reference" reference_namespace="default"/>
+              </attributes>
+            </element>
+          </children>
+        </element>
+        <element name="body" repeated="true">
+          <attributes>
+            <attribute name="name" type="identifier"/>
+          </attributes>
+        </element>
+      </children>
+    </element>
+    <element name="files">
+      <attributes>
+        <attribute name="text_path" type="basepath" path_namespace="text"/>
+        <attribute name="image_path" type="basepath" path_namespace="image"/>
+      </attributes>
+      <children>
+        <element name="text" repeated="true">
+          <attributes>
+            <attribute name="file" type="file" path_namespace="text"/>
+          </attributes>
+        </element>
+        <element name="image" repeated="true">
+          <attributes>
+            <attribute name="file" type="file" path_namespace="image"/>
+          </attributes>
+        </element>
+      </children>
+    </element>
+  </children>
+</element>
