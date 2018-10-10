@@ -1,4 +1,4 @@
-# Copyright 2017 The dm_control Authors.
+# Copyright 2017-2018 The dm_control Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import platform
 import sys
 import threading
 # Internal dependencies.
+from dm_control import render
 import numpy as np
 import six
 
@@ -105,7 +106,12 @@ def get_mjlib():
         if "undefined symbol" in str(e) and platform.system() == "Linux":
           # This means that we've found MuJoCo but haven't loaded GLEW.
           ctypes.CDLL(ctypes.util.find_library("GL"), ctypes.RTLD_GLOBAL)
-          ctypes.CDLL(ctypes.util.find_library("GLEW"), ctypes.RTLD_GLOBAL)
+          if render.BACKEND == "osmesa":
+            libglew = os.path.join(
+                os.path.dirname(library_path), "libglewosmesa.so")
+          else:
+            libglew = ctypes.util.find_library("GLEW")
+          ctypes.CDLL(libglew, ctypes.RTLD_GLOBAL)
           return ctypes.cdll.LoadLibrary(library_path)
     raw_path = DEFAULT_MJLIB_PATH
   return ctypes.CDLL(_get_full_path(raw_path), ctypes.RTLD_GLOBAL)

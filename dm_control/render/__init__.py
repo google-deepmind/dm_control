@@ -1,4 +1,4 @@
-# Copyright 2017 The dm_control Authors.
+# Copyright 2017-2018 The dm_control Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 """OpenGL context management for rendering MuJoCo scenes.
 
 The `Renderer` class will use one of the following rendering APIs, in order of
-descending priority: EGL > GLFW > OSMesa.
+descending priority: GLFW > OSMesa.
 
 Rendering support can be disabled globally by setting the
 `DISABLE_MUJOCO_RENDERING` environment variable before launching the Python
@@ -34,35 +34,30 @@ DISABLED_MESSAGE = (
     'environment variable')
 
 # pylint: disable=g-import-not-at-top
-# pylint: disable=invalid-name
-
-_GLFWRenderer = None
-_EGLRenderer = None
-_OSMesaRenderer = None
+BACKEND = None
 
 if not DISABLED:
-  try:
-    from dm_control.render.glfw_renderer import GLFWContext as _GLFWRenderer
-  except ImportError:
-    pass
-  try:
-    from dm_control.render.egl_renderer import EGLContext as _EGLRenderer
-  except ImportError:
-    pass
-  try:
-    from dm_control.render.osmesa_renderer import OSMesaContext as _OSMesaRenderer
-  except ImportError:
-    pass
 
-  if _EGLRenderer:
-    Renderer = _EGLRenderer
-  elif _GLFWRenderer:
-    Renderer = _GLFWRenderer
-  elif _OSMesaRenderer:
-    Renderer = _OSMesaRenderer
-  else:
-    raise ImportError(
-        'No OpenGL rendering backend could be imported. To use '
-        '`dm_control.mujoco` without rendering support, set the '
-        '`DISABLE_MUJOCO_RENDERING` environment variable before launching your '
-        'interpreter.')
+  if not BACKEND:
+    try:
+      from dm_control.render.glfw_renderer import GLFWContext as Renderer
+      BACKEND = 'glfw'
+    except ImportError:
+      pass
+
+  if not BACKEND:
+    try:
+      from dm_control.render.pyopengl.osmesa_renderer import OSMesaContext as Renderer
+      BACKEND = 'osmesa'
+    except ImportError:
+      pass
+
+  if not BACKEND:
+
+    def Renderer(*args, **kwargs):  # pylint: disable=function-redefined,invalid-name
+      del args, kwargs
+      raise RuntimeError(
+          'No OpenGL rendering backend is available. To use '
+          '`dm_control.mujoco` without rendering support, set the '
+          '`DISABLE_MUJOCO_RENDERING` environment variable before '
+          'launching your interpreter.')
