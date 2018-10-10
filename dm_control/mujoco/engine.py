@@ -36,8 +36,10 @@ from __future__ import division
 from __future__ import print_function
 
 import collections
+import contextlib
 
 # Internal dependencies.
+from absl import logging
 
 from dm_control import render
 from dm_control.mujoco import index
@@ -132,16 +134,15 @@ class Physics(_control.Physics):
     # (most of) mjData is in sync with qpos and qvel. In the case of non-Euler
     # integrators (e.g. RK4) an additional mj_step1 must be called after the
     # last mj_step to ensure mjData syncing.
-    if self.model.opt.integrator == enums.mjtIntegrator.mjINT_EULER:
-      mjlib.mj_step2(self.model.ptr, self.data.ptr)
-      mjlib.mj_step1(self.model.ptr, self.data.ptr)
-    else:
-      mjlib.mj_step(self.model.ptr, self.data.ptr)
+    with self.check_invalid_state():
+      if self.model.opt.integrator == enums.mjtIntegrator.mjINT_EULER:
+        mjlib.mj_step2(self.model.ptr, self.data.ptr)
+        mjlib.mj_step1(self.model.ptr, self.data.ptr)
+      else:
+        mjlib.mj_step(self.model.ptr, self.data.ptr)
 
-    if self.model.opt.integrator != enums.mjtIntegrator.mjINT_EULER:
-      mjlib.mj_step1(self.model.ptr, self.data.ptr)
-
-    self.check_invalid_state()
+      if self.model.opt.integrator != enums.mjtIntegrator.mjINT_EULER:
+        mjlib.mj_step1(self.model.ptr, self.data.ptr)
 
   def render(self, height=240, width=320, camera_id=-1, overlays=(),
              depth=False, scene_option=None):
@@ -243,15 +244,21 @@ class Physics(_control.Physics):
     # controls). For example `mj_forward` updates accelerometer and gyro
     # readings, whereas `mj_step1` does not.
     # http://www.mujoco.org/book/programming.html#siForward
-    mjlib.mj_forward(self.model.ptr, self.data.ptr)
+    with self.check_invalid_state():
+      mjlib.mj_forward(self.model.ptr, self.data.ptr)
 
+  @contextlib.contextmanager
   def check_invalid_state(self):
     """Raises a `base.PhysicsError` if the simulation state is invalid."""
-    warning_counts = [self.data.warning[i].number for i in
-                      xrange(enums.mjtWarning.mjNWARNING)]
-    if any(warning_counts):
+    warning_counts_before = [self.data.warning[i].number for i in
+                             xrange(enums.mjtWarning.mjNWARNING)]
+    yield
+    warning_counts_increased = np.greater(
+        [self.data.warning[i].number for i in
+         xrange(enums.mjtWarning.mjNWARNING)], warning_counts_before)
+    if np.any(warning_counts_increased):
       warning_names = []
-      for i in np.where(warning_counts)[0]:
+      for i in np.where(warning_counts_increased)[0]:
         warning_names.append(enums.mjtWarning._fields[i])
       raise _control.PhysicsError(
           'Physics state is invalid. Warning(s) raised: {}'.format(
@@ -293,7 +300,10 @@ class Physics(_control.Physics):
       self._make_rendering_contexts()
 
     # Call kinematics update to enable rendering.
-    self.after_reset()
+    try:
+      self.after_reset()
+    except _control.PhysicsError as e:
+      logging.warn(str(e))
 
     # Set up named indexing.
     axis_indexers = index.make_axis_indexers(self.model)

@@ -236,40 +236,39 @@ class MujocoEngineTest(parameterized.TestCase):
     self.assertIsNone(self._physics.model.ptr)
     self.assertIsNone(self._physics.data.ptr)
 
-  @parameterized.parameters(
-      'mjWARN_INERTIA',
-      'mjWARN_BADQPOS',
-      'mjWARN_BADQVEL',
-      'mjWARN_BADQACC',
-  )
+  @parameterized.parameters(*enums.mjtWarning._fields[:-1])
   def testDivergenceException(self, warning_name):
     warning_enum = getattr(enums.mjtWarning, warning_name)
-    with self._physics.reset_context():
-      self._physics.data.warning[warning_enum].number = 1
     with self.assertRaisesRegexp(control.PhysicsError, warning_name):
-      self._physics.check_invalid_state()
+      with self._physics.check_invalid_state():
+        self._physics.data.warning[warning_enum].number = 1
+    # Existing warnings should not raise an exception.
+    with self._physics.check_invalid_state():
+      pass
     self._physics.reset()
-    self._physics.check_invalid_state()
+    with self._physics.check_invalid_state():
+      pass
 
   @parameterized.parameters(float('inf'), float('nan'), 1e15)
   def testBadQpos(self, bad_value):
     with self._physics.reset_context():
       self._physics.data.qpos[0] = bad_value
-    mjlib.mj_checkPos(self._physics.model.ptr, self._physics.data.ptr)
     with self.assertRaises(control.PhysicsError):
-      self._physics.check_invalid_state()
+      with self._physics.check_invalid_state():
+        mjlib.mj_checkPos(self._physics.model.ptr, self._physics.data.ptr)
     self._physics.reset()
-    mjlib.mj_checkPos(self._physics.model.ptr, self._physics.data.ptr)
-    self._physics.check_invalid_state()
+    with self._physics.check_invalid_state():
+      mjlib.mj_checkPos(self._physics.model.ptr, self._physics.data.ptr)
 
   def testNanControl(self):
     with self._physics.reset_context():
-      self._physics.data.ctrl[0] = float('nan')
+      pass
 
     # Apply the controls.
-    mjlib.mj_step(self._physics.model.ptr, self._physics.data.ptr)
     with self.assertRaisesRegexp(control.PhysicsError, 'mjWARN_BADCTRL'):
-      self._physics.check_invalid_state()
+      with self._physics.check_invalid_state():
+        self._physics.data.ctrl[0] = float('nan')
+        self._physics.step()
 
   @parameterized.named_parameters(
       ('_copy', lambda x: x.copy()),
