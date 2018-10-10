@@ -56,11 +56,6 @@ class ContextBase(object):
                max_height,
                render_executor_class=executor.RenderExecutor):
     """Initializes this context."""
-    self._max_width = max_width
-    self._max_height = max_height
-    self._current_width = None
-    self._current_height = None
-    self._must_explicitly_resize_framebuffer = True
     self._render_executor = render_executor_class()
 
     self_weakref = weakref.ref(self)
@@ -90,12 +85,8 @@ class ContextBase(object):
     self._render_executor.terminate(self._free_on_executor_thread, async=True)
 
   @contextlib.contextmanager
-  def make_current(self, width, height):
+  def make_current(self):
     """Context manager that makes this Renderer's OpenGL context current.
-
-    Args:
-      width: Integer specifying the new framebuffer width in pixels.
-      height: Integer specifying the new framebuffer height in pixels.t
 
     Yields:
       An object that exposes a `call` method that can be used to call a
@@ -121,11 +112,6 @@ class ContextBase(object):
           _CURRENT_THREAD_FOR_CONTEXT[id(self)] = self._render_executor.thread
           _CURRENT_CONTEXT_FOR_THREAD[self._render_executor.thread] = id(self)
           ctx.call(self._platform_make_current)
-      if (self._must_explicitly_resize_framebuffer and
-          (width, height) != (self._current_width, self._current_height)):
-        ctx.call(self._platform_resize_framebuffer, width, height)
-        self._current_width = width
-        self._current_height = height
       yield ctx
 
   @abc.abstractmethod
@@ -135,15 +121,6 @@ class ContextBase(object):
   @abc.abstractmethod
   def _platform_make_current(self):
     """Make the OpenGL context current on the executing thread."""
-
-  @abc.abstractmethod
-  def _platform_resize_framebuffer(self, width, height):
-    """Called when entering the `make_current` context manager.
-
-    Args:
-      width: Integer specifying the new framebuffer width in pixels.
-      height: Integer specifying the new framebuffer height in pixels.
-    """
 
   @abc.abstractmethod
   def _platform_free(self):

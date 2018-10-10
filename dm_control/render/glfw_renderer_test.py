@@ -54,10 +54,9 @@ class GLFWContextTest(absltest.TestCase):
     with mock.patch(CONTEXT_PATH) as mock_glfw:
       mock_glfw.create_window.return_value = mock_context
       renderer = glfw_renderer.GLFWContext(MAX_WIDTH, MAX_HEIGHT)
-      with renderer.make_current(MAX_WIDTH, MAX_HEIGHT):
+      with renderer.make_current():
         pass
-    mock_glfw.set_window_size.assert_called_once_with(
-        mock_context, MAX_WIDTH, MAX_HEIGHT)
+    mock_glfw.make_context_current.assert_called_once_with(mock_context)
 
   def test_freeing(self):
     mock_context = mock.MagicMock()

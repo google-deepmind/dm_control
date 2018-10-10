@@ -36,15 +36,12 @@ class ContextBaseTests(absltest.TestCase):
     def _platform_init(self, max_width, max_height):
       self.init_thread = threading.current_thread()
       self.make_current_count = 0
-      self.resize_count = 0
+      self.max_width = max_width
+      self.max_height = max_height
 
     def _platform_make_current(self):
       self.make_current_count += 1
       self.make_current_thread = threading.current_thread()
-
-    def _platform_resize_framebuffer(self, width, height):
-      self.resize_count += 1
-      self.resize_thread = threading.current_thread()
 
     def _platform_free(self):
       self.free_thread = threading.current_thread()
@@ -54,37 +51,22 @@ class ContextBaseTests(absltest.TestCase):
 
   def test_init(self):
     self.assertIs(self.context.init_thread, self.context.thread)
-    self.assertEqual(self.context._max_width, WIDTH)
-    self.assertEqual(self.context._max_height, HEIGHT)
+    self.assertEqual(self.context.max_width, WIDTH)
+    self.assertEqual(self.context.max_height, HEIGHT)
 
   def test_make_current(self):
     self.assertEqual(self.context.make_current_count, 0)
-    self.assertEqual(self.context.resize_count, 0)
 
-    with self.context.make_current(WIDTH, HEIGHT):
+    with self.context.make_current():
       pass
     self.assertEqual(self.context.make_current_count, 1)
     self.assertIs(self.context.make_current_thread, self.context.thread)
-    self.assertEqual(self.context.resize_count, 1)
-    self.assertIs(self.context.resize_thread, self.context.thread)
-    self.assertEqual(self.context._current_width, WIDTH)
-    self.assertEqual(self.context._current_height, HEIGHT)
 
-    # Same size, shouldn't trigger a resize.
-    with self.context.make_current(WIDTH, HEIGHT):
+    # Already current, shouldn't trigger a call to `_platform_make_current`.
+    with self.context.make_current():
       pass
-    self.assertEqual(self.context.resize_count, 1)
-    self.assertIs(self.context.resize_thread, self.context.thread)
-    self.assertEqual(self.context._current_width, WIDTH)
-    self.assertEqual(self.context._current_height, HEIGHT)
-
-    # New size, should trigger a resize.
-    with self.context.make_current(WIDTH // 2, HEIGHT // 2):
-      pass
-    self.assertEqual(self.context.resize_count, 2)
-    self.assertIs(self.context.resize_thread, self.context.thread)
-    self.assertEqual(self.context._current_width, WIDTH // 2)
-    self.assertEqual(self.context._current_height, HEIGHT // 2)
+    self.assertEqual(self.context.make_current_count, 1)
+    self.assertIs(self.context.make_current_thread, self.context.thread)
 
   def test_thread_sharing(self):
     first_context = ContextBaseTests.ContextMock(
@@ -92,32 +74,32 @@ class ContextBaseTests(absltest.TestCase):
     second_context = ContextBaseTests.ContextMock(
         WIDTH, HEIGHT, executor.PassthroughRenderExecutor)
 
-    with first_context.make_current(WIDTH, HEIGHT):
+    with first_context.make_current():
       pass
     self.assertEqual(first_context.make_current_count, 1)
 
-    with first_context.make_current(WIDTH, HEIGHT):
+    with first_context.make_current():
       pass
     self.assertEqual(first_context.make_current_count, 1)
 
-    with second_context.make_current(WIDTH, HEIGHT):
+    with second_context.make_current():
       pass
     self.assertEqual(second_context.make_current_count, 1)
 
-    with second_context.make_current(WIDTH, HEIGHT):
+    with second_context.make_current():
       pass
     self.assertEqual(second_context.make_current_count, 1)
 
-    with first_context.make_current(WIDTH, HEIGHT):
+    with first_context.make_current():
       pass
     self.assertEqual(first_context.make_current_count, 2)
 
-    with second_context.make_current(WIDTH, HEIGHT):
+    with second_context.make_current():
       pass
     self.assertEqual(second_context.make_current_count, 2)
 
   def test_free(self):
-    with self.context.make_current(WIDTH, HEIGHT):
+    with self.context.make_current():
       pass
 
     thread = self.context.thread

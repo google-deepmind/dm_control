@@ -423,11 +423,9 @@ class CoreTest(parameterized.TestCase):
   def testFreeMjrContext(self):
     for _ in xrange(5):
       renderer = render.Renderer(640, 480)
-      def gl_make_current(renderer=renderer):
-        return renderer.make_current(640, 480)
       with mock.patch.object(core.mjlib, "mjr_freeContext",
                              wraps=mjlib.mjr_freeContext) as mock_destructor:
-        mjr_context = core.MjrContext(self.model, gl_make_current)
+        mjr_context = core.MjrContext(self.model, renderer)
         expected_address = ctypes.addressof(mjr_context.ptr.contents)
         mjr_context.free()
 
@@ -439,7 +437,6 @@ class CoreTest(parameterized.TestCase):
 
       # Explicit freeing should not break any automatic GC triggered later.
       del mjr_context
-      del gl_make_current
       renderer.free()
       del renderer
       gc.collect()

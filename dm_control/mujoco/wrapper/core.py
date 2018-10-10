@@ -24,8 +24,6 @@ import ctypes
 import os
 import weakref
 
-# Internal dependencies.
-
 from absl import logging
 
 from dm_control.mujoco.wrapper import util
@@ -772,26 +770,23 @@ class UnmanagedMjrContext(wrappers.MjrContextWrapper):
 
 class MjrContext(wrappers.MjrContextWrapper):  # pylint: disable=missing-docstring
 
-  def __init__(self, model, gl_make_current):
+  def __init__(self, model, gl_context):
     """Initializes this MjrContext instance.
 
     Args:
       model: An `MjModel` instance.
-      gl_make_current: A callable that takes no argument and returns a context
-        manager that yields an object exposing a `call` method for executing
-        OpenGL calls on an appropriate thread. See the docstring of
-        `dm_control.render.ContextBase` for more detail.
+      gl_context: A `render.ContextBase` instance.
     """
     ptr = ctypes.pointer(types.MJRCONTEXT())
     mjlib.mjr_defaultContext(ptr)
 
-    with gl_make_current() as ctx:
+    with gl_context.make_current() as ctx:
       ctx.call(mjlib.mjr_makeContext, model.ptr, ptr, _FONT_SCALE)
       ctx.call(mjlib.mjr_setBuffer, enums.mjtFramebuffer.mjFB_OFFSCREEN, ptr)
 
     # Free resources when the ctypes pointer is garbage collected.
     def finalize_mjr_context(ptr):
-      with gl_make_current() as ctx:
+      with gl_context.make_current() as ctx:
         ctx.call(mjlib.mjr_freeContext, ptr)
     _create_finalizer(ptr, finalize_mjr_context)
 

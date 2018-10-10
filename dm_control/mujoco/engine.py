@@ -38,18 +38,15 @@ from __future__ import print_function
 import collections
 import contextlib
 
-# Internal dependencies.
 from absl import logging
 
 from dm_control import render
 from dm_control.mujoco import index
-
 from dm_control.mujoco import wrapper
 from dm_control.mujoco.wrapper import util
 from dm_control.mujoco.wrapper.mjbindings import enums
 from dm_control.mujoco.wrapper.mjbindings import mjlib
 from dm_control.mujoco.wrapper.mjbindings import types
-
 from dm_control.rl import control as _control
 
 import numpy as np
@@ -57,9 +54,6 @@ import six
 from six.moves import xrange  # pylint: disable=redefined-builtin
 
 from dm_control.rl import specs
-
-_MAX_WIDTH = 1024
-_MAX_HEIGHT = 1024
 
 _FONT_STYLES = {
     'normal': enums.mjtFont.mjFONT_NORMAL,
@@ -419,12 +413,13 @@ class Physics(_control.Physics):
     if self._contexts:
       self._contexts.mujoco.free()
       self._contexts.gl.free()
+    # Get the offscreen framebuffer size, as specified in the model XML.
+    max_width = self.model.vis.global_.offwidth
+    max_height = self.model.vis.global_.offheight
     # Create the OpenGL context.
-    render_context = render.Renderer(_MAX_WIDTH, _MAX_HEIGHT)
+    render_context = render.Renderer(max_width=max_width, max_height=max_height)
     # Create the MuJoCo context.
-    def gl_make_current(render_context=render_context):
-      return render_context.make_current(_MAX_WIDTH, _MAX_HEIGHT)
-    mujoco_context = wrapper.MjrContext(self.model, gl_make_current)
+    mujoco_context = wrapper.MjrContext(self.model, render_context)
     self._contexts = Contexts(gl=render_context, mujoco=mujoco_context)
 
   @property
@@ -569,8 +564,7 @@ class Camera(object):
     self._depth_buffer = np.empty((self._height, self._width), dtype=np.float32)
 
     if self._physics.contexts.mujoco is not None:
-      width, height = self._width, self._height
-      with self._physics.contexts.gl.make_current(width, height) as ctx:
+      with self._physics.contexts.gl.make_current() as ctx:
         ctx.call(mjlib.mjr_setBuffer,
                  enums.mjtFramebuffer.mjFB_OFFSCREEN,
                  self._physics.contexts.mujoco.ptr)
@@ -650,8 +644,7 @@ class Camera(object):
     if depth and overlays:
       raise ValueError('Overlays are not supported with depth rendering.')
 
-    width, height = self._width, self._height
-    with self._physics.contexts.gl.make_current(width, height) as ctx:
+    with self._physics.contexts.gl.make_current() as ctx:
       ctx.call(self._render_on_gl_thread, overlays, depth, scene_option)
     return np.flipud(self._depth_buffer if depth else self._rgb_buffer)
 
