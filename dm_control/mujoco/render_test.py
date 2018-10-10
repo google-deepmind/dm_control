@@ -20,7 +20,6 @@ from __future__ import division
 from __future__ import print_function
 
 import os
-import unittest
 
 # Internal dependencies.
 from absl.testing import absltest
@@ -43,7 +42,6 @@ else:
 CALLS_PER_THREAD = 1
 
 
-@unittest.skipIf(render.DISABLED, render.DISABLED_MESSAGE)
 class RenderTest(parameterized.TestCase):
 
   @parameterized.named_parameters(image_utils.SEQUENCES.items())

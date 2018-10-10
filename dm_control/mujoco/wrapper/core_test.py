@@ -405,7 +405,6 @@ class CoreTest(parameterized.TestCase):
       del wrapper
       gc.collect()
 
-  @absltest.unittest.skipIf(render.DISABLED, render.DISABLED_MESSAGE)
   def testFreeMjrContext(self):
     for _ in range(5):
       renderer = render.Renderer(640, 480)

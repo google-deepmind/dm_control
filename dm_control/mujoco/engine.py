@@ -283,9 +283,7 @@ class Physics(_control.Physics):
       data: Instance of `wrapper.MjData`.
     """
     self._data = data
-
-    if not render.DISABLED:
-      self._make_rendering_contexts()
+    self._make_rendering_contexts()
 
     # Call kinematics update to enable rendering.
     try:
@@ -420,8 +418,6 @@ class Physics(_control.Physics):
   @property
   def contexts(self):
     """Returns a `Contexts` namedtuple, used in `Camera`s and rendering code."""
-    if render.DISABLED:
-      raise RuntimeError(render.DISABLED_MESSAGE)
     return self._contexts
 
   @property

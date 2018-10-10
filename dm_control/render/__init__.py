@@ -15,49 +15,57 @@
 
 """OpenGL context management for rendering MuJoCo scenes.
 
-The `Renderer` class will use one of the following rendering APIs, in order of
-descending priority: GLFW > OSMesa.
+By default, the `Renderer` class will try to load one of the following rendering
+APIs, in descending order of priority: GLFW > OSMesa.
 
-Rendering support can be disabled globally by setting the
-`DISABLE_MUJOCO_RENDERING` environment variable before launching the Python
-interpreter. This allows the MuJoCo bindings in `dm_control.mujoco` to be used
-on platforms where an OpenGL context cannot be created. Attempting to render
-when rendering has been disabled will result in a `RuntimeError`.
+It is also possible to select a specific backend by setting the `MUJOCO_GL=`
+environment variable to 'glfw' or 'osmesa'.
 """
 
+import collections
 import os
-DISABLED = bool(os.environ.get('DISABLE_MUJOCO_RENDERING', ''))
-del os
 
-DISABLED_MESSAGE = (
-    'Rendering support has been disabled by the `DISABLE_MUJOCO_RENDERING` '
-    'environment variable')
+BACKEND = os.environ.get('MUJOCO_GL')
+
 
 # pylint: disable=g-import-not-at-top
-BACKEND = None
+def _import_glfw():
+  from dm_control.render.glfw_renderer import GLFWContext
+  return GLFWContext
 
-if not DISABLED:
 
-  if not BACKEND:
+def _import_osmesa():
+  from dm_control.render.pyopengl.osmesa_renderer import OSMesaContext
+  return OSMesaContext
+# pylint: enable=g-import-not-at-top
+
+_ALL_RENDERERS = collections.OrderedDict([
+    # (name, import_func)
+    ('glfw', _import_glfw),
+    ('osmesa', _import_osmesa),
+])
+
+
+if BACKEND is not None:
+  # If a backend was specified, try importing it and error if unsuccessful.
+  try:
+    import_func = _ALL_RENDERERS[BACKEND]
+  except KeyError:
+    raise RuntimeError('MUJOCO_GL= must be one of {!r}, got {!r}.'
+                       .format(_ALL_RENDERERS.keys(), BACKEND))
+  Renderer = import_func()  # pylint: disable=invalid-name
+else:
+  # Otherwise try importing them in descending order of priority until
+  # successful.
+  for name, import_func in _ALL_RENDERERS.items():
     try:
-      from dm_control.render.glfw_renderer import GLFWContext as Renderer
-      BACKEND = 'glfw'
+      Renderer = import_func()
+      BACKEND = name
+      break
     except ImportError:
       pass
-
-  if not BACKEND:
-    try:
-      from dm_control.render.pyopengl.osmesa_renderer import OSMesaContext as Renderer
-      BACKEND = 'osmesa'
-    except ImportError:
-      pass
-
-  if not BACKEND:
+  if BACKEND is None:
 
     def Renderer(*args, **kwargs):  # pylint: disable=function-redefined,invalid-name
       del args, kwargs
-      raise RuntimeError(
-          'No OpenGL rendering backend is available. To use '
-          '`dm_control.mujoco` without rendering support, set the '
-          '`DISABLE_MUJOCO_RENDERING` environment variable before '
-          'launching your interpreter.')
+      raise RuntimeError('No OpenGL rendering backend is available.')
