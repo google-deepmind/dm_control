@@ -11,7 +11,7 @@ from dm_control import suite
 from dm_control import viewer
 
 # Load an environment from the Control Suite.
-env = suite.load(domain_name="cartpole", task_name="swingup")
+env = suite.load(domain_name="humanoid", task_name="stand")
 
 # Launch the viewer application.
 viewer.launch(env)
@@ -33,7 +33,7 @@ from dm_control import suite
 from dm_control import viewer
 import numpy as np
 
-env = suite.load(domain_name="cartpole", task_name="swingup")
+env = suite.load(domain_name="humanoid", task_name="stand")
 action_spec = env.action_spec()
 
 # Define a uniform random policy.
