@@ -15,6 +15,8 @@ env = suite.load(domain_name="cartpole", task_name="swingup")
 # Iterate over a task set:
 for domain_name, task_name in suite.BENCHMARKING:
   env = suite.load(domain_name, task_name)
+  # TODO(b/117645013): This is a temporary workaround for issue #48.
+  env.physics.contexts.mujoco.free()
 
 # Step through an episode and print out reward, discount and observation.
 action_spec = env.action_spec()
