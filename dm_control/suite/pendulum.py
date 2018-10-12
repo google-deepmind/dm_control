@@ -64,7 +64,7 @@ class Physics(mujoco.Physics):
 
   def angular_velocity(self):
     """Returns the angular velocity of the pole."""
-    return self.named.data.qvel['hinge']
+    return self.named.data.qvel['hinge'].copy()
 
   def pole_orientation(self):
     """Returns both horizontal and vertical components of pole frame."""

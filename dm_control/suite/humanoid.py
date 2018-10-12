@@ -110,11 +110,11 @@ class Physics(mujoco.Physics):
 
   def center_of_mass_position(self):
     """Returns position of the center-of-mass."""
-    return self.named.data.subtree_com['torso']
+    return self.named.data.subtree_com['torso'].copy()
 
   def center_of_mass_velocity(self):
     """Returns the velocity of the center-of-mass."""
-    return self.named.data.sensordata['torso_subtreelinvel']
+    return self.named.data.sensordata['torso_subtreelinvel'].copy()
 
   def torso_vertical_orientation(self):
     """Returns the z-projection of the torso orientation matrix."""
@@ -122,7 +122,7 @@ class Physics(mujoco.Physics):
 
   def joint_angles(self):
     """Returns the state without global orientation or position."""
-    return self.data.qpos[7:]  # Skip the 7 DoFs of the free root joint.
+    return self.data.qpos[7:].copy()  # Skip the 7 DoFs of the free root joint.
 
   def extremities(self):
     """Returns end effector positions in egocentric frame."""

@@ -442,11 +442,11 @@ class Physics(_control.Physics):
   # Named views of simulation data.
 
   def control(self):
-    """Returns MuJoCo actuation vector as defined in the model."""
-    return self.data.ctrl[:]
+    """Returns a copy of the control signals for the actuators."""
+    return self.data.ctrl[:].copy()
 
   def activation(self):
-    """Returns the internal states of 'filter' or 'integrator' actuators.
+    """Returns a copy of the internal states of actuators.
 
     For details, please refer to
     http://www.mujoco.org/book/computation.html#geActuation
@@ -454,19 +454,19 @@ class Physics(_control.Physics):
     Returns:
       Activations in a numpy array.
     """
-    return self.data.act[:]
+    return self.data.act[:].copy()
 
   def state(self):
     """Returns the full physics state. Alias for `get_physics_state`."""
     return np.concatenate(self._physics_state_items())
 
   def position(self):
-    """Returns generalized positions (system configuration)."""
-    return self.data.qpos[:]
+    """Returns a copy of the generalized positions (system configuration)."""
+    return self.data.qpos[:].copy()
 
   def velocity(self):
-    """Returns generalized velocities."""
-    return self.data.qvel[:]
+    """Returns a copy of the generalized velocities."""
+    return self.data.qvel[:].copy()
 
   def timestep(self):
     """Returns the simulation timestep."""

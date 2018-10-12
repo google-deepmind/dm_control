@@ -204,5 +204,17 @@ class DomainTest(parameterized.TestCase):
     self.assertSetEqual(set(env.observation_spec()),
                         {control.FLAT_OBSERVATION_KEY})
 
+  @parameterized.parameters(*suite.ALL_TASKS)
+  def test_observation_arrays_dont_share_memory(self, domain, task):
+    env = suite.load(domain, task)
+    first_timestep = env.reset()
+    action = np.zeros(env.action_spec().shape)
+    second_timestep = env.step(action)
+    for name, first_array in six.iteritems(first_timestep.observation):
+      second_array = second_timestep.observation[name]
+      self.assertFalse(
+          np.may_share_memory(first_array, second_array),
+          msg='Consecutive observations of {!r} may share memory.'.format(name))
+
 if __name__ == '__main__':
   absltest.main()

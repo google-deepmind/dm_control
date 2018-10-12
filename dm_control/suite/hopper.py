@@ -117,7 +117,7 @@ class Hopper(base.Task):
     """Returns an observation of positions, velocities and touch sensors."""
     obs = collections.OrderedDict()
     # Ignores horizontal position to maintain translational invariance:
-    obs['position'] = physics.data.qpos[1:]
+    obs['position'] = physics.data.qpos[1:].copy()
     obs['velocity'] = physics.velocity()
     obs['touch'] = physics.touch()
     return obs

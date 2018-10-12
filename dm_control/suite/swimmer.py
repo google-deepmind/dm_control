@@ -163,7 +163,7 @@ class Physics(mujoco.Physics):
 
   def joints(self):
     """Returns all internal joint angles (excluding root joints)."""
-    return self.data.qpos[3:]
+    return self.data.qpos[3:].copy()
 
 
 class Swimmer(base.Task):
