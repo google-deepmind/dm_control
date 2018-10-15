@@ -38,7 +38,7 @@ from dm_control.utils import io as resources
 ENV_MJLIB_PATH = "MJLIB_PATH"
 ENV_MJKEY_PATH = "MJKEY_PATH"
 
-MJLIB_NAME = "mujoco150"
+MJLIB_NAME = "mujoco200"
 
 
 def _get_shared_library_filename():
@@ -59,7 +59,7 @@ def _get_shared_library_filename():
 
 
 DEFAULT_MJLIB_PATH = os.path.join(
-    "~/.mujoco/mjpro150/bin", _get_shared_library_filename())
+    "~/.mujoco/mujoco200_{}/bin".format(_PLATFORM_SUFFIX), _get_shared_library_filename())
 DEFAULT_MJKEY_PATH = "~/.mujoco/mjkey.txt"
 
 
