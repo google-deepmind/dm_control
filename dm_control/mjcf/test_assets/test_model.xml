@@ -36,7 +36,7 @@
     </body>
   </worldbody>
   <contact>
-    <exclude body1="b_0" body2="b_1"/>
+    <exclude name="exclude" body1="b_0" body2="b_1"/>
   </contact>
   <actuator>
     <velocity name="b_0_0" joint="b_0_0"/>

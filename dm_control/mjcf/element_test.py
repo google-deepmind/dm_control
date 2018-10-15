@@ -373,7 +373,8 @@ class ElementTest(parameterized.TestCase):
         self.assertIn(grandchild, getattr(mujoco, child_name).all_children())
         self.assertIn(grandchild, getattr(submujoco, child_name).all_children())
 
-    base_contact_content = '<exclude body1="{0}b_0" body2="{0}b_1"/>'
+    base_contact_content = (
+        '<exclude name="{0}exclude" body1="{0}b_0" body2="{0}b_1"/>')
     self.assertEqual(
         mujoco.contact.to_xml_string(pretty_print=False),
         '<contact>' +
