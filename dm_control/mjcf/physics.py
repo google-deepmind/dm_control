@@ -519,8 +519,8 @@ class Physics(mujoco.Physics):
     ```
 
     Note that the binding takes into account the type of element. This allows us
-    to remove prefixes for from certain common attributes in order to unify
-    access. For example, we can use:
+    to remove prefixes from certain common attributes in order to unify access.
+    For example, we can use:
 
     ```python
     physics.bind(geom_element).pos = [1, 2, 3]
@@ -544,22 +544,42 @@ class Physics(mujoco.Physics):
     done lazily when an updated value is required, so repeated value
     modifications do not incur a performance penalty.
 
-    It is also possible to bind a sequence containing multiple elements,
-    provided they are all of the same type. However, note that for a sequence of
-    elements the returned array will always be a copy, so writing into it will
-    not affect the underlying `Physics` instance:
+    It is also possible to bind a sequence containing one or more elements,
+    provided they are all of the same type. In this case the binding exposes
+    `_SynchronizingArrayWrapper`s, which are array-like objects that provide
+    writeable views onto the corresponding memory addresses in MuJoCo. Writing
+    into a `_SynchronizingArrayWrapper` causes the underlying values in MuJoCo
+    to be updated, and if necessary causes derived values to be recalculated.
+    Note that in order to trigger recalculation it is necessary to reference a
+    derived attribute of a binding.
 
     ```python
-    physics.bind([geom1, geom2]).pos  # Returns a copy.
-    physics.bind([geom1, geom2]).pos[:] = [[1, 2, 3], [4, 5, 6]]  # No effect!
+    bound_joints = physics.bind([joint1, joint2])
+    bound_bodies = physics.bind([body1, body2])
+    # `qpos_view` and `xpos_view` are `_SynchronizingArrayWrapper`s providing
+    # views onto `physics.data.qpos` and `physics.data.xpos` respectively.
+    qpos_view = bound_joints.qpos
+    xpos_view = bound_bodies.xpos
+    # This updates the corresponding values in `physics.data.qpos`, and marks
+    # derived values (such as `physics.data.xpos`) as needing recalculation.
+    qpos_view[0] += 1.
+    # Note: at this point `xpos_view` still contains the old values, since we
+    # need to actually read the value of a derived attribute in order to
+    # trigger recalculation.
+    another_xpos_view = bound_bodies.xpos  # Triggers recalculation of `xpos`.
+    # Now both `xpos_view` and `another_xpos_view` will contain the updated
+    # values.
     ```
 
-    To allow for assignment into multiple elements, bindings also support
-    numpy-style square bracket indexing. The first element in the indexing
-    expression should be an attribute name, and the second element (if present)
-    is used to index into the columns of the underlying array. Named indexing
-    into columns is also allowed, provided that the corresponding field in
-    `physics.named` supports it.
+    Warning: it is unsafe to copy or serialize a `_SynchronizingArrayWrapper`.
+    We also do not recommend holding references to them - instead hold a
+    reference to the binding object, or call `physics.bind` again.
+
+    Bindings also support numpy-style square bracket indexing. The first element
+    in the indexing expression should be an attribute name, and the second
+    element (if present) is used to index into the columns of the underlying
+    array. Named indexing into columns is also allowed, provided that the
+    corresponding field in `physics.named` supports it.
 
     ```python
     physics.bind([geom1, geom2])['pos'] = [[1, 2, 3], [4, 5, 6]]
