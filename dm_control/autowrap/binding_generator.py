@@ -23,14 +23,10 @@ import os
 import pprint
 import textwrap
 
-# Internal dependencies.
-
 from absl import logging
-
 from dm_control.autowrap import c_declarations
 from dm_control.autowrap import codegen_util
 from dm_control.autowrap import header_parsing
-
 import pyparsing
 import six
 
@@ -70,15 +66,15 @@ class BindingGenerator(object):
     contents of the headers.
 
     Args:
-      enums_dict: nested mappings from {enum_name: {member_name: value}}
-      consts_dict: mapping from {const_name: value}
-      typedefs_dict: mapping from {type_name: ctypes_typename}
-      hints_dict: mapping from {var_name: shape_tuple}
-      structs_dict: mapping from {struct_name: Struct_instance}
-      funcs_dict: mapping from {func_name: Function_instance}
-      strings_dict: mapping from {var_name: StaticStringArray_instance}
-      func_ptrs_dict: mapping from {var_name: FunctionPtr_instance}
-      index_dict: mapping from {lowercase_struct_name: {var_name: shape_tuple}}
+      enums_dict: Nested mappings from {enum_name: {member_name: value}}.
+      consts_dict: Mapping from {const_name: value}.
+      typedefs_dict: Mapping from {type_name: ctypes_typename}.
+      hints_dict: Mapping from {var_name: shape_tuple}.
+      structs_dict: Mapping from {struct_name: Struct_instance}.
+      funcs_dict: Mapping from {func_name: Function_instance}.
+      strings_dict: Mapping from {var_name: StaticStringArray_instance}.
+      func_ptrs_dict: Mapping from {var_name: FunctionPtr_instance}.
+      index_dict: Mapping from {lowercase_struct_name: {var_name: shape_tuple}}.
     """
     self.enums_dict = (enums_dict if enums_dict is not None
                        else codegen_util.UniqueOrderedDict())
@@ -507,7 +503,6 @@ class BindingGenerator(object):
     with open(fname, "w") as f:
       imports = [
           "import ctypes",
-          "# Internal dependencies.",
           "# pylint: disable=undefined-variable",
           "# pylint: disable=wildcard-import",
           "from {} import util".format(_MODULE),
@@ -525,7 +520,6 @@ class BindingGenerator(object):
     imports = [
         "import collections",
         "import ctypes",
-        "# Internal dependencies.",
         "# pylint: disable=undefined-variable",
         "# pylint: disable=wildcard-import",
         "from {} import util".format(_MODULE),
