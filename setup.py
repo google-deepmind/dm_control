@@ -16,6 +16,7 @@
 """Install script for setuptools."""
 
 import os
+import platform
 import subprocess
 import sys
 
@@ -26,7 +27,13 @@ from setuptools import setup
 from setuptools.command import install
 from setuptools.command import test
 
-DEFAULT_HEADERS_DIR = '~/.mujoco/mjpro150/include'
+PLATFORM_SUFFIXES = {
+    'Linux': 'linux',
+    'Windows': 'win64',
+    'Darwin': 'macos',
+}
+DEFAULT_HEADERS_DIR = '~/.mujoco/mujoco200_{}/include'.format(
+    PLATFORM_SUFFIXES[platform.system()])
 
 # Relative paths to the binding generator script and the output directory.
 AUTOWRAP_PATH = 'dm_control/autowrap/autowrap.py'
@@ -39,6 +46,7 @@ HEADER_FILENAMES = [
     'mjdata.h',
     'mjmodel.h',
     'mjrender.h',
+    'mjui.h',
     'mjvisualize.h',
     'mjxmacro.h',
     'mujoco.h',

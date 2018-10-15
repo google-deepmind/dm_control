@@ -36,8 +36,8 @@ class ImageUtilsTest(parameterized.TestCase):
 
   @parameterized.parameters(
       (0, 0, 0.0),
-      (0, 2, 23.208),
-      (0, 18, 53.881))
+      (0, 2, 23.241),
+      (0, 18, 55.666))
   def test_compute_rms(self, index1, index2, expected_rms):
     # Force loading of the software rendering reference images regardless of the
     # actual GL backend, since these should match the expected RMS values.

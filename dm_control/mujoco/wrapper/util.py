@@ -33,33 +33,44 @@ import six
 
 from dm_control.utils import io as resources
 
+_PLATFORM = platform.system()
+try:
+  _PLATFORM_SUFFIX = {
+      "Linux": "linux",
+      "Darwin": "macos",
+      "Windows": "win64"
+  }[_PLATFORM]
+except KeyError:
+  raise OSError("Unsupported platform: {}".format(_PLATFORM))
+
 # Environment variables that can be used to override the default paths to the
 # MuJoCo shared library and key file.
 ENV_MJLIB_PATH = "MJLIB_PATH"
 ENV_MJKEY_PATH = "MJKEY_PATH"
+
 
 MJLIB_NAME = "mujoco200"
 
 
 def _get_shared_library_filename():
   """Get platform-dependent prefix and extension of MuJoCo shared library."""
-  platform_name = platform.system()
-  if platform_name == "Linux":
+  if _PLATFORM == "Linux":
     prefix = "lib"
     extension = "so"
-  elif platform_name == "Darwin":
+  elif _PLATFORM == "Darwin":
     prefix = "lib"
     extension = "dylib"
-  elif platform_name == "Windows":
+  elif _PLATFORM == "Windows":
     prefix = ""
     extension = "dll"
   else:
-    raise OSError("Unsupported platform: {}".format(platform_name))
+    raise OSError("Unsupported platform: {}".format(_PLATFORM))
   return "{}{}.{}".format(prefix, MJLIB_NAME, extension)
 
 
+DEFAULT_MJLIB_DIR = "~/.mujoco/mujoco200_{}/bin".format(_PLATFORM_SUFFIX)
 DEFAULT_MJLIB_PATH = os.path.join(
-    "~/.mujoco/mujoco200_{}/bin".format(_PLATFORM_SUFFIX), _get_shared_library_filename())
+    DEFAULT_MJLIB_DIR, _get_shared_library_filename())
 DEFAULT_MJKEY_PATH = "~/.mujoco/mjkey.txt"
 
 

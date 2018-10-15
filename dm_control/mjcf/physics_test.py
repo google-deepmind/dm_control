@@ -26,8 +26,11 @@ import os
 from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control import mjcf
+from dm_control.mujoco.wrapper import mjbindings
 import mock
 import numpy as np
+
+mjlib = mjbindings.mjlib
 
 ARM_MODEL = os.path.join(os.path.dirname(__file__), 'test_assets/robot_arm.xml')
 
@@ -383,6 +386,147 @@ class PhysicsTest(parameterized.TestCase):
     # `act` should be an empty array if there are no stateful actuators.
     physics = mjcf.Physics.from_mjcf_model(root)
     self.assertEqual(physics.bind(actuators).act.shape, (0,))
+
+  def make_simple_model(self):
+    def add_submodel(root):
+      body = root.worldbody.add('body')
+      geom = body.add('geom', type='ellipsoid', size=[0.1, 0.2, 0.3])
+      site = body.add('site', type='sphere', size=[0.1])
+      return body, geom, site
+    root = mjcf.RootElement()
+    add_submodel(root)
+    add_submodel(root)
+    return root
+
+  def quat2mat(self, quat):
+    result = np.empty(9, dtype=np.double)
+    mjlib.mju_quat2Mat(result, np.asarray(quat))
+    return result
+
+  @parameterized.parameters(['body', 'geom', 'site'])
+  def test_write_to_pos(self, entity_type):
+    root = self.make_simple_model()
+    entity1, entity2 = root.find_all(entity_type)
+    physics = mjcf.Physics.from_mjcf_model(root)
+    first = physics.bind(entity1)
+    second = physics.bind(entity2)
+
+    # Initially both entities should be 'sameframe'
+    self.assertEqual(first.sameframe, 1)
+    self.assertEqual(second.sameframe, 1)
+
+    # Assigning to `pos` should disable 'sameframe' only for that entity.
+    new_pos = (0., 0., 0.1)
+    first.pos = new_pos
+    self.assertEqual(first.sameframe, 0)
+    self.assertEqual(second.sameframe, 1)
+    # `xpos` should reflect the new position.
+    np.testing.assert_array_equal(first.xpos, new_pos)
+
+    # Writing into the `pos` array should also disable 'sameframe'.
+    new_x = -0.1
+    pos_array = second.pos
+    pos_array[0] = new_x
+    self.assertEqual(second.sameframe, 0)
+    # `xpos` should reflect the new position.
+    self.assertEqual(second.xpos[0], new_x)
+
+  @parameterized.parameters(['body', 'geom', 'site'])
+  def test_write_to_quat(self, entity_type):
+    root = self.make_simple_model()
+    entity1, entity2 = root.find_all(entity_type)
+    physics = mjcf.Physics.from_mjcf_model(root)
+    first = physics.bind(entity1)
+    second = physics.bind(entity2)
+
+    # Initially both entities should be 'sameframe'
+    self.assertEqual(first.sameframe, 1)
+    self.assertEqual(second.sameframe, 1)
+
+    # Assigning to `quat` should disable 'sameframe' only for that entity.
+    new_quat = (0., 0., 0., 1.)
+    first.quat = new_quat
+    self.assertEqual(first.sameframe, 0)
+    self.assertEqual(second.sameframe, 1)
+    # `xmat` should reflect the new quaternion.
+    np.testing.assert_allclose(first.xmat, self.quat2mat(new_quat))
+
+    # Writing into the `quat` array should also disable 'sameframe'.
+    new_w = -1.
+    quat_array = second.quat
+    quat_array[0] = new_w
+    self.assertEqual(second.sameframe, 0)
+    # `xmat` should reflect the new quaternion.
+    np.testing.assert_allclose(second.xmat, self.quat2mat(quat_array))
+
+  def test_write_to_ipos(self):
+    root = self.make_simple_model()
+    entity1, entity2 = root.find_all('body')
+    physics = mjcf.Physics.from_mjcf_model(root)
+    first = physics.bind(entity1)
+    second = physics.bind(entity2)
+
+    # Initially both bodies should be 'simple' and 'sameframe'
+    self.assertEqual(first.simple, 1)
+    self.assertEqual(first.sameframe, 1)
+    self.assertEqual(second.simple, 1)
+    self.assertEqual(second.sameframe, 1)
+
+    # Assigning to `ipos` should disable 'simple' and 'sameframe' only for that
+    # body.
+    new_ipos = (0., 0., 0.1)
+    first.ipos = new_ipos
+    self.assertEqual(first.simple, 0)
+    self.assertEqual(first.sameframe, 0)
+    self.assertEqual(second.simple, 1)
+    self.assertEqual(second.sameframe, 1)
+    # `xipos` should reflect the new position.
+    np.testing.assert_array_equal(first.xipos, new_ipos)
+
+    # Writing into the `ipos` array should also disable 'simple' and
+    # 'sameframe'.
+    new_x = -0.1
+    ipos_array = second.ipos
+    ipos_array[0] = new_x
+    self.assertEqual(second.simple, 0)
+    self.assertEqual(second.sameframe, 0)
+    # `xipos` should reflect the new position.
+    self.assertEqual(second.xipos[0], new_x)
+
+  def test_write_to_iquat(self):
+    root = self.make_simple_model()
+    entity1, entity2 = root.find_all('body')
+    physics = mjcf.Physics.from_mjcf_model(root)
+    first = physics.bind(entity1)
+    second = physics.bind(entity2)
+
+    # Initially both bodies should be 'simple' and 'sameframe'
+    self.assertEqual(first.simple, 1)
+    self.assertEqual(first.sameframe, 1)
+    self.assertEqual(second.simple, 1)
+    self.assertEqual(second.sameframe, 1)
+
+    # Assigning to `iquat` should disable 'simple' and 'sameframe' only for that
+    # body.
+    new_iquat = (0., 0., 0., 1.)
+    first.iquat = new_iquat
+    self.assertEqual(first.simple, 0)
+    self.assertEqual(first.sameframe, 0)
+    self.assertEqual(second.simple, 1)
+    self.assertEqual(second.sameframe, 1)
+    # `ximat` should reflect the new quaternion.
+    np.testing.assert_allclose(first.ximat, self.quat2mat(new_iquat))
+
+    # Writing into the `iquat` array should also disable 'simple' and
+    # 'sameframe'.
+    new_w = -0.1
+    iquat_array = second.iquat
+    iquat_array[0] = new_w
+    self.assertEqual(second.simple, 0)
+    self.assertEqual(second.sameframe, 0)
+    # `ximat` should reflect the new quaternion.
+    np.testing.assert_allclose(second.ximat, self.quat2mat(iquat_array))
+
 
 if __name__ == '__main__':
   absltest.main()

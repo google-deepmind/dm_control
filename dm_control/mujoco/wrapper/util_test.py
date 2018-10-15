@@ -22,12 +22,9 @@ from __future__ import print_function
 import resource
 
 # Internal dependencies.
-
 from absl.testing import absltest
-
-from dm_control.mujoco.wrapper import core
+from dm_control.mujoco import wrapper
 from dm_control.mujoco.wrapper import util
-
 from six.moves import range
 
 _NUM_CALLS = 10000
@@ -38,7 +35,7 @@ class UtilTest(absltest.TestCase):
 
   def test_buf_to_npy_no_memory_leak(self):
     """Ensures we can call buf_to_npy without leaking memory."""
-    model = core.MjModel.from_xml_string("<mujoco/>")
+    model = wrapper.MjModel.from_xml_string("<mujoco/>")
     src = model._ptr.contents.name_geomadr
     shape = (model.ngeom,)
 

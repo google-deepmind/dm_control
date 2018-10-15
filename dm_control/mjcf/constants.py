@@ -46,6 +46,23 @@ MJDATA_TRIGGERS_DIRTY = [
 MJMODEL_DOESNT_TRIGGER_DIRTY = [
     'rgba', 'matid', 'emission', 'specular', 'shininess', 'reflectance']
 
+# When writing into `model.{body,geom,site}_{pos,quat}` we must ensure that the
+# corresponding rows in `model.{body,geom,site}_sameframe` are set to zero,
+# otherwise MuJoCo will use the body or inertial frame instead of our modified
+# pos/quat values. We must do the same for `body_{ipos,iquat}` and
+# `body_simple`.
+MJMODEL_DISABLE_ON_WRITE = {
+    # Field name in MjModel: (attribute names of Binding instance to be zeroed)
+    'body_pos': ('sameframe',),
+    'body_quat': ('sameframe',),
+    'geom_pos': ('sameframe',),
+    'geom_quat': ('sameframe',),
+    'site_pos': ('sameframe',),
+    'site_quat': ('sameframe',),
+    'body_ipos': ('simple', 'sameframe'),
+    'body_iquat': ('simple', 'sameframe'),
+}
+
 # This is the actual upper limit on VFS filename length, despite what it says
 # in the header file (100) or the error message (99).
 MAX_VFS_FILENAME_LENGTH = 98

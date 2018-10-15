@@ -85,22 +85,32 @@ class Struct(CDeclBase):
                                  is_const=is_const)
 
   @property
-  def ctypes_struct_decl(self):
+  def ctypes_decl(self):
     """Generates a ctypes.Structure declaration for self."""
     indent = codegen_util.Indenter()
-    s = textwrap.dedent("""
+    lines = []
+    lines.append(textwrap.dedent("""
     class {0.ctypes_typename:}(ctypes.Structure):
-      \"\"\"{0.docstring:}\"\"\"
-    """.format(self))
+      \"\"\"{0.docstring:}\"\"\"""".format(self)))
+    anonymous_fields = [member.name for member in six.itervalues(self.members)
+                        if isinstance(member, AnonymousUnion)]
     with indent:
-      if self.members:
-        s += indent("\n_fields_ = [\n")
+      if anonymous_fields:
+        lines.append(indent("_anonymous_ = ["))
         with indent:
           with indent:
-            s += ",\n".join(indent(m.ctypes_field_decl)
-                            for m in six.itervalues(self.members))
-        s += indent("\n]\n")
-    return s
+            for name in anonymous_fields:
+              lines.append(indent("'" + name + "',"))
+        lines.append(indent("]"))
+
+      if self.members:
+        lines.append(indent("_fields_ = ["))
+        with indent:
+          with indent:
+            for member in six.itervalues(self.members):
+              lines.append(indent(member.ctypes_field_decl + ","))
+        lines.append(indent("]\n"))
+    return "\n".join(lines)
 
   @property
   def ctypes_typename(self):
@@ -120,13 +130,18 @@ class Struct(CDeclBase):
   def wrapper_class(self):
     """Generates a Python class containing getter/setter methods for members."""
     indent = codegen_util.Indenter()
+    # TODO(b/117487842): Avoid repeated string concatenation.
     s = textwrap.dedent("""
     class {0.wrapper_name}(util.WrapperBase):
       \"\"\"{0.docstring:}\"\"\"
     """.format(self))
     with indent:
-      s += "".join(indent(m.getters_setters)
-                   for m in six.itervalues(self.members))
+      for member in six.itervalues(self.members):
+        if isinstance(member, AnonymousUnion):
+          for submember in six.itervalues(member.members):
+            s += indent(submember.getters_setters)
+        else:
+          s += indent(member.getters_setters)
     return s
 
   @property
@@ -143,6 +158,45 @@ class Struct(CDeclBase):
   def arg(self):
     """String representation of self as a ctypes function argument."""
     return self.ctypes_typename
+
+
+class AnonymousUnion(CDeclBase):
+  """Anonymous union declaration."""
+
+  def __init__(self, name, members, sub_structs, comment="", parent=None):
+    super(AnonymousUnion, self).__init__(name=name,
+                                         members=members,
+                                         sub_structs=sub_structs,
+                                         comment=comment,
+                                         parent=parent)
+
+  @property
+  def ctypes_decl(self):
+    """Generates a ctypes.Union declaration for self."""
+    indent = codegen_util.Indenter()
+    lines = []
+    lines.append(textwrap.dedent("""
+    class {0.ctypes_typename:}(ctypes.Union):
+      \"\"\"{0.docstring:}\"\"\"""".format(self)))
+    with indent:
+      if self.members:
+        lines.append(indent("_fields_ = ["))
+        with indent:
+          with indent:
+            for member in six.itervalues(self.members):
+              lines.append(indent(member.ctypes_field_decl + ","))
+        lines.append(indent("]\n"))
+    return "\n".join(lines)
+
+  @property
+  def ctypes_typename(self):
+    """Mangles ctypes.Union typenames to distinguish them from wrappers."""
+    return codegen_util.mangle_struct_typename(self.name)
+
+  @property
+  def ctypes_field_decl(self):
+    """Generates a declaration for self as a field of a ctypes.Structure."""
+    return "('{0.name:}', {0.ctypes_typename:})".format(self)   # pylint: disable=missing-format-attribute
 
 
 class ScalarPrimitive(CDeclBase):
@@ -312,7 +366,7 @@ class DynamicNDArray(CDeclBase):
     rs = []
     for d in self.shape:
       # dynamically-sized dimension
-      if isinstance(d, str):
+      if isinstance(d, six.string_types):
         if self.parent and d in self.parent.members:
           rs.append("self.{}".format(d))
         else:

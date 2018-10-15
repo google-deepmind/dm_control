@@ -403,11 +403,13 @@ class RaycastsTest(absltest.TestCase):
     gl_camera.frustum_far = 2 if enable else 0
 
   def test_raycast_mapping_geom_to_body_id(self):
-    def build_mjv_select(geom_id, position):
-      def mock_select(m, d, vopt, aspectratio, relx, rely, scn, selpnt):
-        del m, d, vopt, aspectratio, relx, rely, scn  # Unused.
-        selpnt[:] = position
-        return geom_id
+    def build_mjv_select(mock_body_id, mock_geom_id, mock_position):
+      def mock_select(
+          m, d, vopt, aspectratio, relx, rely, scn, selpnt, geomid, skinid):
+        del m, d, vopt, aspectratio, relx, rely, scn, skinid  # Unused.
+        selpnt[:] = mock_position
+        geomid[:] = mock_geom_id
+        return mock_body_id
       return mock_select
 
     geom_id = 0
@@ -415,7 +417,7 @@ class RaycastsTest(absltest.TestCase):
     world_pos = [1, 2, 3]
     self.model.geom_bodyid = np.zeros(10)
     self.model.geom_bodyid[geom_id] = body_id
-    mock_select = build_mjv_select(geom_id, world_pos)
+    mock_select = build_mjv_select(body_id, geom_id, world_pos)
 
     with mock.patch(renderer.__name__ + '.mjlib') as mock_mjlib:
       mock_mjlib.mjv_select = mock.MagicMock(side_effect=mock_select)
@@ -424,9 +426,12 @@ class RaycastsTest(absltest.TestCase):
       np.testing.assert_array_equal(hit_world_pos, world_pos)
 
   def test_raycast_hitting_empty_space(self):
-    def mock_select(m, d, vopt, aspectratio, relx, rely, scn, selpnt):
-      del m, d, vopt, aspectratio, relx, rely, scn, selpnt  # Unused.
-      return -1
+    def mock_select(
+        m, d, vopt, aspectratio, relx, rely, scn, selpnt, geomid, skinid):
+      del (m, d, vopt, aspectratio, relx, rely, scn, selpnt, geomid,
+           skinid)  # Unused.
+      mock_body_id = -1  # Nothing selected.
+      return mock_body_id
     with mock.patch(renderer.__name__ + '.mjlib') as mock_mjlib:
       mock_mjlib.mjv_select = mock.MagicMock(side_effect=mock_select)
       hit_body_id, hit_world_pos = self.camera.raycast(self.viewport, [0, 0])
@@ -435,11 +440,13 @@ class RaycastsTest(absltest.TestCase):
 
   def test_raycast_maps_coordinates_to_viewport_space(self):
     def build_mjv_select(expected_aspect_ratio, expected_viewport_pos):
-      def mock_select(m, d, vopt, aspectratio, relx, rely, scn, selpnt):
-        del m, d, vopt, scn, selpnt  # Unused.
+      def mock_select(
+          m, d, vopt, aspectratio, relx, rely, scn, selpnt, geomid, skinid):
+        del m, d, vopt, scn, selpnt, geomid, skinid  # Unused.
         self.assertEqual(expected_aspect_ratio, aspectratio)
         np.testing.assert_array_equal(expected_viewport_pos, [relx, rely])
-        return 0
+        mock_body_id = 0
+        return mock_body_id
       return mock_select
 
     viewport_pos = [.5, .5]

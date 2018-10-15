@@ -35,7 +35,6 @@ class MjbindingsTest(parameterized.TestCase):
       ('mjmodel', 'geom_type', ('ngeom',)),
       # Fields with identifiers in mjxmacro that are resolved at compile-time.
       ('mjmodel', 'actuator_dynprm', ('nu', constants.mjNDYN)),
-      ('mjdata', 'efc_solref', ('njmax', constants.mjNREF)),
       # Fields with multiple named indices.
       ('mjmodel', 'key_qpos', ('nkey', 'nq')),
   )

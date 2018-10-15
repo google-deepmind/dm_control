@@ -42,7 +42,8 @@ flags.DEFINE_boolean('pymjcf_log_xml', False,
 _XML_PRINT_SHARD_SIZE = 100
 
 _Attribute = collections.namedtuple(
-    'Attribute', ('name', 'get_named_indexer', 'triggers_dirty'))
+    'Attribute',
+    ('name', 'get_named_indexer', 'triggers_dirty', 'disable_on_write'))
 
 
 def _pymjcf_log_xml():
@@ -65,15 +66,22 @@ def _get_attributes(size_names, strip_prefixes):
           lambda physics, name=name: getattr(physics.named.data, name))
       triggers_dirty = attrib_name in constants.MJDATA_TRIGGERS_DIRTY
       out[attrib_name] = _Attribute(
-          attrib_name, named_indexer_getter, triggers_dirty)
+          name=attrib_name,
+          get_named_indexer=named_indexer_getter,
+          triggers_dirty=triggers_dirty,
+          disable_on_write=())
   for name, size in six.iteritems(sizes.array_sizes['mjmodel']):
     if size[0] in size_names:
       attrib_name = strip(name)
       named_indexer_getter = (
           lambda physics, name=name: getattr(physics.named.model, name))
       triggers_dirty = attrib_name not in constants.MJMODEL_DOESNT_TRIGGER_DIRTY
+      disable_on_write = constants.MJMODEL_DISABLE_ON_WRITE.get(name, ())
       out[attrib_name] = _Attribute(
-          attrib_name, named_indexer_getter, triggers_dirty)
+          name=attrib_name,
+          get_named_indexer=named_indexer_getter,
+          triggers_dirty=triggers_dirty,
+          disable_on_write=disable_on_write)
   return out
 
 
@@ -168,14 +176,19 @@ def names_from_elements(mjcf_elements):
 class _SynchronizingArrayWrapper(np.ndarray):
   """A non-contiguous view of an ndarray that synchronizes with the original."""
 
-  def __new__(cls, backing_array, backing_index,
-              physics, triggers_dirty):
+  def __new__(cls,
+              backing_array,
+              backing_index,
+              physics,
+              triggers_dirty,
+              disable_on_write):
     obj = backing_array[backing_index].view(_SynchronizingArrayWrapper)
     # pylint: disable=protected-access
     obj._backing_array = backing_array
     obj._backing_index = backing_index
     obj._physics = physics
     obj._triggers_dirty = triggers_dirty
+    obj._disable_on_write = disable_on_write
     # pylint: enable=protected-access
     return obj
 
@@ -201,6 +214,20 @@ class _SynchronizingArrayWrapper(np.ndarray):
       else:
         resolved_index = self._backing_index[index]
       self._backing_array[resolved_index] = value
+
+    for backing_array, backing_index in self._disable_on_write:
+      if isinstance(index, collections.Iterable):
+        # We only need the row component of the index.
+        if isinstance(index, tuple):
+          resolved_index = backing_index[index[0]]
+        else:
+          resolved_index = backing_index[index]
+      else:
+        # If it is only an index into the columns of the backing array then we
+        # just discard it and use the backing index.
+        resolved_index = backing_index
+      backing_array[resolved_index] = 0
+
     if self._triggers_dirty:
       self._physics.mark_as_dirty()
 
@@ -283,13 +310,35 @@ class Binding(object):
       except KeyError:
         array, index = self._get_cached_array_and_index(name)
         triggers_dirty = self._attributes[name].triggers_dirty
+
+        # A list of (array, index) tuples specifying other addresses that need
+        # to be zeroed out when this array attribute is written to.
+        disable_on_write = []
+        for name_to_disable in self._attributes[name].disable_on_write:
+          array_to_disable, index_to_disable = self._get_cached_array_and_index(
+              name_to_disable)
+          # Ensure that the result of indexing is a `_SynchronizingArrayWrapper`
+          # rather than a scalar, otherwise we won't be able to write into it.
+          if array_to_disable.ndim == 1:
+            if isinstance(index_to_disable, np.ndarray):
+              index_to_disable = index_to_disable.copy().reshape(-1, 1)
+            else:
+              index_to_disable = [index_to_disable]
+          disable_on_write.append((array_to_disable, index_to_disable))
+
         if self._physics.is_dirty and not triggers_dirty:
           self._physics.forward()
-        if isinstance(index, int):
+        if isinstance(index, int) and array.ndim == 1:
+          # Case where indexing results in a scalar.
           out = array[index]
         else:
-          out = _SynchronizingArrayWrapper(array, index,
-                                           self._physics, triggers_dirty)
+          # Case where indexing results in an array.
+          out = _SynchronizingArrayWrapper(
+              backing_array=array,
+              backing_index=index,
+              physics=self._physics,
+              triggers_dirty=triggers_dirty,
+              disable_on_write=disable_on_write)
           self._getattr_cache[name] = out
       return out
 
@@ -301,6 +350,10 @@ class Binding(object):
         self._physics.forward()
       array, index = self._get_cached_array_and_index(name)
       array[index] = value
+      for name_to_disable in self._attributes[name].disable_on_write:
+        disable_array, disable_index = self._get_cached_array_and_index(
+            name_to_disable)
+        disable_array[disable_index] = 0
       if self._attributes[name].triggers_dirty:
         self._physics.mark_as_dirty()
 

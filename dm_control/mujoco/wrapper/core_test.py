@@ -96,11 +96,16 @@ class CoreTest(parameterized.TestCase):
               </body>
             </worldbody>
         </mujoco>"""
+
+    # This model should compile successfully, but raise a warning on the first
+    # simulation step.
+    model = core.MjModel.from_xml_string(xml_with_warning)
+    data = core.MjData(model)
     with mock.patch.object(core, "logging") as mock_logging:
-      core.MjModel.from_xml_string(xml_with_warning)
-      mock_logging.warn.assert_called_once_with(
-          "Error: Pre-allocated constraint buffer is full. "
-          "Increase njmax above 2. Time = 0.0000.")
+      mjlib.mj_step(model.ptr, data.ptr)
+    mock_logging.warn.assert_called_once_with(
+        "Pre-allocated constraint buffer is full. Increase njmax above 2. "
+        "Time = 0.0000.")
 
   def testLoadXMLWithAssetsFromString(self):
     core.MjModel.from_xml_string(MODEL_WITH_ASSETS, assets=ASSETS)
@@ -470,17 +475,19 @@ class AttributesTest(parameterized.TestCase):
     _ = attr[:]
 
     # Write unique values into the array and read them back.
-    self._write_unique_values(attr)
+    self._write_unique_values(attr_name, attr)
     self._take_steps()  # Take a few steps, check that we don't get segfaults.
 
-  def _write_unique_values(self, target_array):
+  def _write_unique_values(self, attr_name, target_array):
     # If the target array is structured, recursively write unique values into
     # each subfield.
     if target_array.dtype.fields is not None:
       for field_name in target_array.dtype.fields:
-        self._write_unique_values(target_array[field_name])
-    # Don't write to integer arrays since these might contain pointers.
-    elif not np.issubdtype(target_array.dtype, int):
+        self._write_unique_values(attr_name, target_array[field_name])
+    # Don't write to integer arrays since these might contain pointers. Also
+    # don't write directly into the stack.
+    elif (attr_name != "stack"
+          and not np.issubdtype(target_array.dtype, int)):
       new_contents = np.arange(target_array.size, dtype=target_array.dtype)
       new_contents.shape = target_array.shape
       target_array[:] = new_contents

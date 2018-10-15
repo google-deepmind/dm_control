@@ -37,14 +37,13 @@ from __future__ import division
 from __future__ import print_function
 
 import collections
+import io
 import os
 
 # Internal dependencies.
-
 from absl import app
 from absl import flags
 from absl import logging
-
 from dm_control.autowrap import binding_generator
 from dm_control.autowrap import codegen_util
 
@@ -72,7 +71,7 @@ def main(unused_argv):
 
   srcs = codegen_util.UniqueOrderedDict()
   for p in sorted(FLAGS.header_paths):
-    with open(p, "r") as f:
+    with io.open(p, "r", errors="ignore") as f:
       srcs[p] = f.read()
 
   # consts_dict should be a codegen_util.UniqueOrderedDict.

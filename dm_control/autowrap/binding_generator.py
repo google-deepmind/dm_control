@@ -52,9 +52,16 @@ class Error(Exception):
 class BindingGenerator(object):
   """Parses declarations from MuJoCo headers and generates Python bindings."""
 
-  def __init__(self, enums_dict=None, consts_dict=None, typedefs_dict=None,
-               hints_dict=None, structs_dict=None, funcs_dict=None,
-               strings_dict=None, func_ptrs_dict=None, index_dict=None):
+  def __init__(self,
+               enums_dict=None,
+               consts_dict=None,
+               typedefs_dict=None,
+               hints_dict=None,
+               structs_dict=None,
+               funcs_dict=None,
+               strings_dict=None,
+               func_ptrs_dict=None,
+               index_dict=None):
     """Constructs a new HeaderParser instance.
 
     The optional arguments listed below can be used to passing in dict-like
@@ -182,8 +189,36 @@ class BindingGenerator(object):
     comment = codegen_util.mangle_comment(token.comment)
     is_const = token.is_const == "const"
 
-    # A new struct declaration
-    if token.members:
+    # An anonymous union declaration
+    if token.anonymous_union:
+      if not parent and parent.name:
+        raise Error(
+            "Anonymous unions must be members of a named struct or union.")
+
+      # Generate a name based on the name of the parent.
+      name = codegen_util.mangle_varname(parent.name + "_anon_union")
+
+      members = codegen_util.UniqueOrderedDict()
+      sub_structs = codegen_util.UniqueOrderedDict()
+      out = c_declarations.AnonymousUnion(
+          name, members, sub_structs, comment, parent)
+
+      # Add members
+      for sub_token in token.members:
+
+        # Recurse into nested structs
+        member = self.get_type_from_token(sub_token, parent=out)
+        out.members[member.name] = member
+
+        # Nested sub-structures need special treatment
+        if isinstance(member, c_declarations.Struct):
+          out.sub_structs[member.name] = member
+
+      # Add to dict of unions
+      self.structs_dict[out.ctypes_typename] = out
+
+    # A struct declaration
+    elif token.members:
 
       name = token.name
 
@@ -254,7 +289,7 @@ class BindingGenerator(object):
 
             # Dynamically-sized dimensions have string identifiers
             shape = self.hints_dict[name]
-            if any(isinstance(d, str) for d in shape):
+            if any(isinstance(d, six.string_types) for d in shape):
               out = c_declarations.DynamicNDArray(name, typename, shape,
                                                   comment, parent, is_const)
             else:
@@ -326,7 +361,9 @@ class BindingGenerator(object):
 
   def parse_consts_typedefs(self, src):
     """Updates self.consts_dict, self.typedefs_dict."""
-    parser = (header_parsing.COND_DECL | header_parsing.UNCOND_DECL)
+    parser = (header_parsing.COND_DECL |
+              header_parsing.UNCOND_DECL |
+              header_parsing.FUNCTION_PTR_TYPE_DECL)
     for tokens, _, _ in parser.scanString(src):
       self.recurse_into_conditionals(tokens)
 
@@ -342,12 +379,16 @@ class BindingGenerator(object):
           self.recurse_into_conditionals(token.if_false)
       # One or more declarations
       else:
-        if token.typename:
+        # A type declaration for a function pointer.
+        if token.arguments:
+          self.typedefs_dict.update(
+              {token.typename: header_parsing.CTYPES_FUNCTION_PTR})
+        elif token.typename:
           self.typedefs_dict.update({token.name: token.typename})
         elif token.value:
           value = codegen_util.try_coerce_to_num(token.value)
           # Avoid adding function aliases.
-          if isinstance(value, str):
+          if isinstance(value, six.string_types):
             continue
           else:
             self.consts_dict.update({token.name: value})
@@ -456,9 +497,9 @@ class BindingGenerator(object):
     ]
     with open(fname, "w") as f:
       f.write(self.make_header(imports))
-      f.write(codegen_util.comment_line("ctypes struct declarations"))
+      f.write(codegen_util.comment_line("ctypes struct and union declarations"))
       for struct in six.itervalues(self.structs_dict):
-        f.write("\n" + struct.ctypes_struct_decl)
+        f.write("\n" + struct.ctypes_decl)
       f.write("\n" + codegen_util.comment_line("End of generated code"))
 
   def write_wrappers(self, fname):
@@ -474,8 +515,9 @@ class BindingGenerator(object):
       ]
       f.write(self.make_header(imports))
       f.write(codegen_util.comment_line("Low-level wrapper classes"))
-      for struct in six.itervalues(self.structs_dict):
-        f.write("\n" + struct.wrapper_class)
+      for struct_or_union in six.itervalues(self.structs_dict):
+        if isinstance(struct_or_union, c_declarations.Struct):
+          f.write("\n" + struct_or_union.wrapper_class)
       f.write("\n" + codegen_util.comment_line("End of generated code"))
 
   def write_funcs_and_globals(self, fname):

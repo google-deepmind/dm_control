@@ -344,9 +344,10 @@ def _get_model_ptr_from_xml(xml_path=None, xml_string=None, assets=None):
   """Parses a model XML file, compiles it, and returns a pointer to an mjModel.
 
   Args:
-    xml_path: Path to a model XML file in MJCF or URDF format.
-    xml_string: XML string containing an MJCF or URDF model description.
-    assets: Optional dict containing external assets referenced by the model
+    xml_path: None or a path to a model XML file in MJCF or URDF format.
+    xml_string: None or an XML string containing an MJCF or URDF model
+      description.
+    assets: None or a dict containing external assets referenced by the model
       (such as additional XML files, textures, meshes etc.), in the form of
       `{filename: contents_string}` pairs. The keys should correspond to the
       filenames specified in the model XML. Ignored if `xml_string` is None.
@@ -805,17 +806,19 @@ class MjrContext(wrappers.MjrContextWrapper):  # pylint: disable=missing-docstri
 
 class MjvScene(wrappers.MjvSceneWrapper):  # pylint: disable=missing-docstring
 
-  def __init__(self, max_geom=1000):
+  def __init__(self, model=None, max_geom=1000):
     """Initializes a new `MjvScene` instance.
 
     Args:
+      model: (optional) An `MjModel` instance.
       max_geom: (optional) An integer specifying the maximum number of geoms
         that can be represented in the scene.
     """
+    model_ptr = model.ptr if model is not None else None
     scene_ptr = ctypes.pointer(types.MJVSCENE())
 
     # Allocate and initialize resources for the abstract scene.
-    mjlib.mjv_makeScene(scene_ptr, max_geom)
+    mjlib.mjv_makeScene(model_ptr, scene_ptr, max_geom)
 
     # Free resources when the ctypes pointer is garbage collected.
     _create_finalizer(scene_ptr, mjlib.mjv_freeScene)

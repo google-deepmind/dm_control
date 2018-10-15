@@ -29,6 +29,7 @@ import six
 
 NONE = "None"
 CTYPES_CHAR = "ctypes.c_char"
+CTYPES_FUNCTION_PTR = "ctypes.c_void_p"
 
 C_TO_CTYPES = {
     # integers
@@ -170,7 +171,8 @@ XMACRO = pp.Group(
 # Type/variable declarations.
 # ------------------------------------------------------------------------------
 TYPEDEF = pp.Keyword("typedef").suppress()
-STRUCT = pp.Keyword("struct").suppress()
+STRUCT = pp.Keyword("struct")
+UNION = pp.Keyword("union")
 ENUM = pp.Keyword("enum").suppress()
 
 # e.g. "typedef unsigned char mjtByte;      // used for true/false"
@@ -200,13 +202,21 @@ STRUCT_MEMBER = pp.Group(
     pp.Optional(COMMENT("comment")))
 
 STRUCT_DECL = pp.Group(
-    STRUCT +
+    STRUCT("struct") +
     pp.Optional(NAME("typename")) +
     pp.Optional(COMMENT("comment")) +
     LBRACE +
     pp.OneOrMore(STRUCT_MEMBER)("members") +
     RBRACE +
     pp.Optional(NAME("name")) +
+    SEMI)
+
+ANONYMOUS_UNION_DECL = pp.Group(
+    pp.Optional(MULTILINE_COMMENT("comment")) +
+    UNION("anonymous_union") +
+    LBRACE +
+    pp.OneOrMore(STRUCT_DECL | STRUCT_MEMBER | COMMENT.suppress())("members") +
+    RBRACE +
     SEMI)
 
 # Multiple (possibly nested) struct declarations.
@@ -217,7 +227,10 @@ NESTED_STRUCTS = _nested_scopes(
              LBRACE),
     closing=(RBRACE + pp.Optional(NAME("name")) + SEMI),
     body=pp.OneOrMore(
-        STRUCT_MEMBER | STRUCT_DECL | COMMENT.suppress())("members"))
+        STRUCT_MEMBER |
+        ANONYMOUS_UNION_DECL |
+        STRUCT_DECL |
+        COMMENT.suppress())("members"))
 
 BIT_LSHIFT = INT("bit_lshift_a") + pp.Suppress("<<") + INT("bit_lshift_b")
 
@@ -266,8 +279,25 @@ FUNCTION_DECL = (
 
 MJAPI_FUNCTION_DECL = pp.Group(
     pp.Optional(MULTILINE_COMMENT("comment")) +
+    pp.LineStart() +
     MJAPI +
     FUNCTION_DECL)
+
+# e.g.
+# // predicate function: set enable/disable based on item category
+# typedef int (*mjfItemEnable)(int category, void* data);
+FUNCTION_PTR_TYPE_DECL = pp.Group(
+    pp.Optional(MULTILINE_COMMENT("comment")) +
+    TYPEDEF +
+    (NATIVE_TYPENAME | NAME)("return_typename") +
+    LPAREN +
+    PTR +
+    NAME("typename") +
+    RPAREN +
+    LPAREN +
+    (VOID | pp.delimitedList(ARG, delim=COMMA)("arguments")) +
+    RPAREN +
+    SEMI)
 
 # Global variables.
 # ------------------------------------------------------------------------------
