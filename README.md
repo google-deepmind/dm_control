@@ -22,21 +22,22 @@ If you use this package, please cite our accompanying
 
 Follow these steps to install `dm_control`:
 
-1.  Download MuJoCo Pro 1.50 from the download page on the
+1.  Download MuJoCo Pro 2.00 from the download page on the
     [MuJoCo website](http://www.mujoco.org/). MuJoCo Pro must be installed
     before `dm_control`, since `dm_control`'s install script generates Python
     [`ctypes`](https://docs.python.org/2/library/ctypes.html) bindings based on
     MuJoCo's header files. By default, `dm_control` assumes that the MuJoCo Zip
-    archive is extracted as `~/.mujoco/mjpro150`.
+    archive is extracted as `~/.mujoco/mujoco200_$PLATFORM` where `$PLATFORM` is
+    either `linux`, `win64`, or `macos`.
 
 2.  Install the `dm_control` Python package by running `pip install
     git+git://github.com/deepmind/dm_control.git` (PyPI package coming soon) or
     by cloning the repository and running `pip install /path/to/dm_control/`. We
     recommend `pip install`ing into a `virtualenv`, or with the `--user` flag to
     avoid interfering with system packages. At installation time, `dm_control`
-    looks for the MuJoCo headers from Step 1 in `~/.mujoco/mjpro150/include`,
-    however this path can be configured with the `headers-dir` command line
-    argument.
+    looks for the MuJoCo headers from Step 1 in
+    `~/.mujoco/mujoco200_$PLATFORM/include`, however this path can be configured
+    with the `headers-dir` command line argument.
 
 3.  Install a license key for MuJoCo, required by `dm_control` at runtime. See
     the [MuJoCo license key page](https://www.roboti.us/license.html) for
@@ -44,7 +45,7 @@ Follow these steps to install `dm_control`:
     file at `~/.mujoco/mjkey.txt`.
 
 4.  If the license key (e.g. `mjkey.txt`) or the shared library provided by
-    MuJoCo Pro (e.g. `libmujoco150.so` or `libmujoco150.dylib`) are installed at
+    MuJoCo Pro (e.g. `libmujoco200.so` or `libmujoco200.dylib`) are installed at
     non-default paths, specify their locations using the `MJKEY_PATH` and
     `MJLIB_PATH` environment variables respectively.
 
