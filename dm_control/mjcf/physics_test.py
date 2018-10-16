@@ -26,9 +26,13 @@ import os
 from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control import mjcf
+from dm_control.mjcf import physics as mjcf_physics
 from dm_control.mujoco.wrapper import mjbindings
 import mock
 import numpy as np
+from six.moves import cPickle
+from six.moves import range
+from six.moves import zip
 
 mjlib = mjbindings.mjlib
 
@@ -527,6 +531,40 @@ class PhysicsTest(parameterized.TestCase):
     # `ximat` should reflect the new quaternion.
     np.testing.assert_allclose(second.ximat, self.quat2mat(iquat_array))
 
+  @parameterized.parameters([dict(order='C'), dict(order='F')])
+  def test_copy_synchronizing_array_wrapper(self, order):
+    root = self.make_simple_model()
+    physics = mjcf.Physics.from_mjcf_model(root)
+    xpos_view = physics.bind(root.find_all('body')).xpos
+    xpos_view_copy = xpos_view.copy(order=order)
+
+    np.testing.assert_array_equal(xpos_view, xpos_view_copy)
+    self.assertFalse(np.may_share_memory(xpos_view, xpos_view_copy),
+                     msg='Original and copy should not share memory.')
+    self.assertIs(type(xpos_view_copy), np.ndarray)
+
+    # Check that `order=` is respected.
+    if order == 'C':
+      self.assertTrue(xpos_view_copy.flags.c_contiguous)
+      self.assertFalse(xpos_view_copy.flags.f_contiguous)
+    elif order == 'F':
+      self.assertFalse(xpos_view_copy.flags.c_contiguous)
+      self.assertTrue(xpos_view_copy.flags.f_contiguous)
+
+    # The copy should be writeable.
+    self.assertTrue(xpos_view_copy.flags.writeable)
+    new_value = 99.
+    xpos_view_copy[0, -1] = new_value
+    self.assertEqual(xpos_view_copy[0, -1], new_value)
+
+  def test_error_when_pickling_synchronizing_array_wrapper(self):
+    root = self.make_simple_model()
+    physics = mjcf.Physics.from_mjcf_model(root)
+    xpos_view = physics.bind(root.find_all('body')).xpos
+    with self.assertRaisesWithLiteralMatch(
+        NotImplementedError,
+        mjcf_physics._PICKLING_NOT_SUPPORTED.format(type=type(xpos_view))):
+      cPickle.dumps(xpos_view)
 
 if __name__ == '__main__':
   absltest.main()

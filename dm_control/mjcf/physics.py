@@ -20,7 +20,6 @@ from __future__ import division
 from __future__ import print_function
 
 import collections
-import copy
 import re
 import weakref
 
@@ -40,6 +39,7 @@ flags.DEFINE_boolean('pymjcf_log_xml', False,
                      'Whether to log the generated XML on model compilation.')
 
 _XML_PRINT_SHARD_SIZE = 100
+_PICKLING_NOT_SUPPORTED = 'Objects of type {type} cannot be pickled.'
 
 _Attribute = collections.namedtuple(
     'Attribute',
@@ -173,8 +173,18 @@ def names_from_elements(mjcf_elements):
   return namespace, named_index
 
 
-class _SynchronizingArrayWrapper(np.ndarray):
-  """A non-contiguous view of an ndarray that synchronizes with the original."""
+class SynchronizingArrayWrapper(np.ndarray):
+  """A non-contiguous view of an ndarray that synchronizes with the original.
+
+  Note: this class should not be instantiated directly.
+  """
+  __slots__ = (
+      '_backing_array',
+      '_backing_index',
+      '_physics',
+      '_triggers_dirty',
+      '_disable_on_write',
+  )
 
   def __new__(cls,
               backing_array,
@@ -182,7 +192,7 @@ class _SynchronizingArrayWrapper(np.ndarray):
               physics,
               triggers_dirty,
               disable_on_write):
-    obj = backing_array[backing_index].view(_SynchronizingArrayWrapper)
+    obj = backing_array[backing_index].view(SynchronizingArrayWrapper)
     # pylint: disable=protected-access
     obj._backing_array = backing_array
     obj._backing_index = backing_index
@@ -195,19 +205,25 @@ class _SynchronizingArrayWrapper(np.ndarray):
   def _synchronize_from_backing_array(self):
     if self._physics.is_dirty and not self._triggers_dirty:
       self._physics.forward()
-    super(_SynchronizingArrayWrapper, self).__setitem__(
+    super(SynchronizingArrayWrapper, self).__setitem__(
         slice(None, None, None), self._backing_array[self._backing_index])
 
+  def copy(self, order='C'):
+    return np.copy(self, order=order)
+
   def __copy__(self):
-    return copy.copy(self.view(np.ndarray))
+    return self.copy()
 
   def __deepcopy__(self, memo):
-    return copy.deepcopy(self.view(np.ndarray))
+    return self.copy()
+
+  def __reduce__(self):
+    raise NotImplementedError(_PICKLING_NOT_SUPPORTED.format(type=type(self)))
 
   def __setitem__(self, index, value):
     if self._physics.is_dirty and not self._triggers_dirty:
       self._physics.forward()
-    super(_SynchronizingArrayWrapper, self).__setitem__(index, value)
+    super(SynchronizingArrayWrapper, self).__setitem__(index, value)
     if isinstance(self._backing_index, collections.Iterable):
       if isinstance(index, tuple):
         resolved_index = (self._backing_index[index[0]],) + index[1:]
@@ -242,10 +258,15 @@ class Binding(object):
   where `physics` is an instance of `mjcf.Physics`. See docstring for that
   function for details.
   """
-
-  __slots__ = ['_attributes', '_physics', '_namespace',
-               '_named_index', '_named_indexers',
-               '_getattr_cache', '_array_index_cache']
+  __slots__ = (
+      '_attributes',
+      '_physics',
+      '_namespace',
+      '_named_index',
+      '_named_indexers',
+      '_getattr_cache',
+      '_array_index_cache',
+  )
 
   def __init__(self, physics, namespace, named_index):
     try:
@@ -317,7 +338,7 @@ class Binding(object):
         for name_to_disable in self._attributes[name].disable_on_write:
           array_to_disable, index_to_disable = self._get_cached_array_and_index(
               name_to_disable)
-          # Ensure that the result of indexing is a `_SynchronizingArrayWrapper`
+          # Ensure that the result of indexing is a `SynchronizingArrayWrapper`
           # rather than a scalar, otherwise we won't be able to write into it.
           if array_to_disable.ndim == 1:
             if isinstance(index_to_disable, np.ndarray):
@@ -333,7 +354,7 @@ class Binding(object):
           out = array[index]
         else:
           # Case where indexing results in an array.
-          out = _SynchronizingArrayWrapper(
+          out = SynchronizingArrayWrapper(
               backing_array=array,
               backing_index=index,
               physics=self._physics,
@@ -546,9 +567,9 @@ class Physics(mujoco.Physics):
 
     It is also possible to bind a sequence containing one or more elements,
     provided they are all of the same type. In this case the binding exposes
-    `_SynchronizingArrayWrapper`s, which are array-like objects that provide
+    `SynchronizingArrayWrapper`s, which are array-like objects that provide
     writeable views onto the corresponding memory addresses in MuJoCo. Writing
-    into a `_SynchronizingArrayWrapper` causes the underlying values in MuJoCo
+    into a `SynchronizingArrayWrapper` causes the underlying values in MuJoCo
     to be updated, and if necessary causes derived values to be recalculated.
     Note that in order to trigger recalculation it is necessary to reference a
     derived attribute of a binding.
@@ -556,7 +577,7 @@ class Physics(mujoco.Physics):
     ```python
     bound_joints = physics.bind([joint1, joint2])
     bound_bodies = physics.bind([body1, body2])
-    # `qpos_view` and `xpos_view` are `_SynchronizingArrayWrapper`s providing
+    # `qpos_view` and `xpos_view` are `SynchronizingArrayWrapper`s providing
     # views onto `physics.data.qpos` and `physics.data.xpos` respectively.
     qpos_view = bound_joints.qpos
     xpos_view = bound_bodies.xpos
@@ -571,9 +592,9 @@ class Physics(mujoco.Physics):
     # values.
     ```
 
-    Warning: it is unsafe to copy or serialize a `_SynchronizingArrayWrapper`.
-    We also do not recommend holding references to them - instead hold a
-    reference to the binding object, or call `physics.bind` again.
+    Note that `SynchronizingArrayWrapper`s cannot be pickled. We also do not
+    recommend holding references to them - instead hold a reference to the
+    binding object, or call `physics.bind` again.
 
     Bindings also support numpy-style square bracket indexing. The first element
     in the indexing expression should be an attribute name, and the second
