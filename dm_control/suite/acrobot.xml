@@ -24,7 +24,7 @@ Based on Coulomb's [1] rather than Spong's [2] model.
     <geom name="floor" size="3 3 .2" type="plane" material="grid"/>
     <site name="target" type="sphere" pos="0 0 4" size="0.2" material="target" group="3"/>
     <camera name="fixed" pos="0 -6 2" zaxis="0 -1 0"/>
-    <camera name="lookat" mode="targetbodycom" target="upper_arm" pos="0 -2 3" zaxis="0 -1 0"/>
+    <camera name="lookat" mode="targetbodycom" target="upper_arm" pos="0 -2 3"/>
     <body name="upper_arm" pos="0 0 2">
       <joint name="shoulder" type="hinge" axis="0 1 0"/>
       <geom name="upper_arm_decoration" material="decoration" type="cylinder" fromto="0 -.06 0 0 .06 0" size="0.051" mass="0"/>
