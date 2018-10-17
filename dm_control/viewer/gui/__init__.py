@@ -20,12 +20,14 @@ from dm_control import render
 # pylint: disable=invalid-name
 
 RenderWindow = None
-try:
-  from dm_control.viewer.gui import glfw_gui
-  RenderWindow = glfw_gui.GlfwWindow
-except ImportError:
-  pass
-if not RenderWindow:
+
+if render.BACKEND == 'glfw':
+  try:
+    from dm_control.viewer.gui import glfw_gui
+    RenderWindow = glfw_gui.GlfwWindow
+  except ImportError:
+    pass
+else:
 
   def ErrorRenderWindow(*args, **kwargs):
     del args, kwargs
