@@ -31,6 +31,7 @@ from dm_control.mujoco.wrapper.mjbindings import wrappers
 try:
   from dm_control.mujoco.wrapper.mjbindings import functions
   from dm_control.mujoco.wrapper.mjbindings.functions import mjlib
+  logging.info('MuJoCo library version is: %d', mjlib.mj_version())
 except (IOError, OSError):
   logging.warn('mjbindings failed to import mjlib and other functions. '
                'libmujoco.so may not be accessible.')
