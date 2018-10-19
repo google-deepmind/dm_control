@@ -21,10 +21,7 @@ from __future__ import print_function
 
 import collections
 
-# Internal dependencies.
-
 from dm_control import mujoco
-from dm_control.mujoco.wrapper.mjbindings import enums
 from dm_control.rl import control
 from dm_control.suite import base
 from dm_control.suite import common
@@ -73,13 +70,14 @@ def make_model(use_peg, insert):
 
 
 @SUITE.add('benchmarking', 'hard')
-def bring_ball(observe_target=True, time_limit=_TIME_LIMIT, random=None,
+def bring_ball(fully_observable=True, time_limit=_TIME_LIMIT, random=None,
                environment_kwargs=None):
   """Returns manipulator bring task with the ball prop."""
   use_peg = False
   insert = False
   physics = Physics.from_xml_string(*make_model(use_peg, insert))
-  task = Bring(use_peg, insert, observe_target, random=random)
+  task = Bring(use_peg=use_peg, insert=insert,
+               fully_observable=fully_observable, random=random)
   environment_kwargs = environment_kwargs or {}
   return control.Environment(
       physics, task, control_timestep=_CONTROL_TIMESTEP, time_limit=time_limit,
@@ -87,13 +85,14 @@ def bring_ball(observe_target=True, time_limit=_TIME_LIMIT, random=None,
 
 
 @SUITE.add('hard')
-def bring_peg(observe_target=True, time_limit=_TIME_LIMIT, random=None,
+def bring_peg(fully_observable=True, time_limit=_TIME_LIMIT, random=None,
               environment_kwargs=None):
   """Returns manipulator bring task with the peg prop."""
   use_peg = True
   insert = False
   physics = Physics.from_xml_string(*make_model(use_peg, insert))
-  task = Bring(use_peg, insert, observe_target, random=random)
+  task = Bring(use_peg=use_peg, insert=insert,
+               fully_observable=fully_observable, random=random)
   environment_kwargs = environment_kwargs or {}
   return control.Environment(
       physics, task, control_timestep=_CONTROL_TIMESTEP, time_limit=time_limit,
@@ -101,13 +100,14 @@ def bring_peg(observe_target=True, time_limit=_TIME_LIMIT, random=None,
 
 
 @SUITE.add('hard')
-def insert_ball(observe_target=True, time_limit=_TIME_LIMIT, random=None,
+def insert_ball(fully_observable=True, time_limit=_TIME_LIMIT, random=None,
                 environment_kwargs=None):
   """Returns manipulator insert task with the ball prop."""
   use_peg = False
   insert = True
   physics = Physics.from_xml_string(*make_model(use_peg, insert))
-  task = Bring(use_peg, insert, observe_target, random=random)
+  task = Bring(use_peg=use_peg, insert=insert,
+               fully_observable=fully_observable, random=random)
   environment_kwargs = environment_kwargs or {}
   return control.Environment(
       physics, task, control_timestep=_CONTROL_TIMESTEP, time_limit=time_limit,
@@ -115,13 +115,14 @@ def insert_ball(observe_target=True, time_limit=_TIME_LIMIT, random=None,
 
 
 @SUITE.add('hard')
-def insert_peg(observe_target=True, time_limit=_TIME_LIMIT, random=None,
+def insert_peg(fully_observable=True, time_limit=_TIME_LIMIT, random=None,
                environment_kwargs=None):
   """Returns manipulator insert task with the peg prop."""
   use_peg = True
   insert = True
   physics = Physics.from_xml_string(*make_model(use_peg, insert))
-  task = Bring(use_peg, insert, observe_target, random=random)
+  task = Bring(use_peg=use_peg, insert=insert,
+               fully_observable=fully_observable, random=random)
   environment_kwargs = environment_kwargs or {}
   return control.Environment(
       physics, task, control_timestep=_CONTROL_TIMESTEP, time_limit=time_limit,
@@ -131,35 +132,25 @@ def insert_peg(observe_target=True, time_limit=_TIME_LIMIT, random=None,
 class Physics(mujoco.Physics):
   """Physics with additional features for the Planar Manipulator domain."""
 
-  def bounded_position(self):
-    """Returns the position, with unbounded angles as sine/cosine."""
-    state = []
-    hinge_joint = enums.mjtJoint.mjJNT_HINGE
-    for joint_id in range(self.model.njnt):
-      joint_value = self.named.data.qpos[joint_id]
-      if (not self.model.jnt_limited[joint_id] and
-          self.model.jnt_type[joint_id] == hinge_joint):  # Unbounded hinge.
-        state += [np.sin(joint_value), np.cos(joint_value)]
-      else:
-        state.append(joint_value)
-    return np.asarray(state)
+  def bounded_joint_pos(self, joint_names):
+    """Returns joint positions as (sin, cos) values."""
+    joint_pos = self.named.data.qpos[joint_names]
+    return np.vstack([np.sin(joint_pos), np.cos(joint_pos)]).T
 
-  def body_location(self, body):
-    """Returns the x,z position and y orientation of a body."""
-    body_position = self.named.model.body_pos[body, ['x', 'z']]
-    body_orientation = self.named.model.body_quat[body, ['qw', 'qy']]
-    return np.hstack((body_position, body_orientation))
+  def joint_vel(self, joint_names):
+    """Returns joint velocities."""
+    return self.named.data.qvel[joint_names]
 
-  def proprioception(self):
-    """Returns the arm state, with unbounded angles as sine/cosine."""
-    arm = []
-    for joint in _ARM_JOINTS:
-      joint_value = self.named.data.qpos[joint]
-      if not self.named.model.jnt_limited[joint]:
-        arm += [np.sin(joint_value), np.cos(joint_value)]
-      else:
-        arm.append(joint_value)
-    return np.hstack(arm + [self.named.data.qvel[_ARM_JOINTS]])
+  def body_2d_pose(self, body_names, orientation=True):
+    """Returns positions and/or orientations of bodies."""
+    if not isinstance(body_names, str):
+      body_names = np.array(body_names).reshape(-1, 1)  # Broadcast indices.
+    pos = self.named.data.xpos[body_names, ['x', 'z']]
+    if orientation:
+      ori = self.named.data.xquat[body_names, ['qw', 'qy']]
+      return np.hstack([pos, ori])
+    else:
+      return pos
 
   def touch(self):
     return np.log1p(self.data.sensordata)
@@ -172,13 +163,15 @@ class Physics(mujoco.Physics):
 class Bring(base.Task):
   """A Bring `Task`: bring the prop to the target."""
 
-  def __init__(self, use_peg, insert, observe_target, random=None):
+  def __init__(self, use_peg, insert, fully_observable, random=None):
     """Initialize an instance of the `Bring` task.
 
     Args:
       use_peg: A `bool`, whether to replace the ball prop with the peg prop.
       insert: A `bool`, whether to insert the prop in a receptacle.
-      observe_target: A `bool`, whether the observation contains target info.
+      fully_observable: A `bool`, whether the observation should contain the
+        position and velocity of the object being manipulated and the target
+        location.
       random: Optional, either a `numpy.random.RandomState` instance, an
         integer seed for creating a new `RandomState`, or None to select a seed
         automatically (default).
@@ -186,9 +179,10 @@ class Bring(base.Task):
     self._use_peg = use_peg
     self._target = 'target_peg' if use_peg else 'target_ball'
     self._object = 'peg' if self._use_peg else 'ball'
+    self._object_joints = ['_'.join([self._object, dim]) for dim in 'xzy']
     self._receptacle = 'slot' if self._use_peg else 'cup'
     self._insert = insert
-    self._observe_target = observe_target
+    self._fully_observable = fully_observable
     super(Bring, self).__init__(random=random)
 
   def initialize_episode(self, physics):
@@ -249,9 +243,7 @@ class Bring(base.Task):
         object_angle = uniform(0, 2*np.pi)
         data.qvel[self._object + '_x'] = uniform(-5, 5)
 
-      data.qpos[self._object + '_x'] = object_x
-      data.qpos[self._object + '_z'] = object_z
-      data.qpos[self._object + '_y'] = object_angle
+      data.qpos[self._object_joints] = object_x, object_z, object_angle
 
       # Check for collisions.
       physics.after_reset()
@@ -260,15 +252,14 @@ class Bring(base.Task):
   def get_observation(self, physics):
     """Returns either features or only sensors (to be used with pixels)."""
     obs = collections.OrderedDict()
-    if self._observe_target:
-      obs['position'] = physics.bounded_position()
-      obs['hand'] = physics.body_location('hand')
-      obs['target'] = physics.body_location(self._target)
-      obs['velocity'] = physics.velocity()
-      obs['touch'] = physics.touch()
-    else:
-      obs['proprioception'] = physics.proprioception()
-      obs['touch'] = physics.touch()
+    obs['arm_pos'] = physics.bounded_joint_pos(_ARM_JOINTS)
+    obs['arm_vel'] = physics.joint_vel(_ARM_JOINTS)
+    obs['touch'] = physics.touch()
+    if self._fully_observable:
+      obs['hand_pos'] = physics.body_2d_pose('hand')
+      obs['object_pos'] = physics.body_2d_pose(self._object)
+      obs['object_vel'] = physics.joint_vel(self._object_joints)
+      obs['target_pos'] = physics.body_2d_pose(self._target)
     return obs
 
   def _is_close(self, distance):

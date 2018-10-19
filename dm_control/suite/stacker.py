@@ -21,10 +21,7 @@ from __future__ import print_function
 
 import collections
 
-# Internal dependencies.
-
 from dm_control import mujoco
-from dm_control.mujoco.wrapper.mjbindings import enums
 from dm_control.rl import control
 from dm_control.suite import base
 from dm_control.suite import common
@@ -60,12 +57,14 @@ def make_model(n_boxes):
 
 
 @SUITE.add('hard')
-def stack_2(observable=True, time_limit=_TIME_LIMIT, random=None,
+def stack_2(fully_observable=True, time_limit=_TIME_LIMIT, random=None,
             environment_kwargs=None):
   """Returns stacker task with 2 boxes."""
   n_boxes = 2
   physics = Physics.from_xml_string(*make_model(n_boxes=n_boxes))
-  task = Stack(n_boxes, observable, random=random)
+  task = Stack(n_boxes=n_boxes,
+               fully_observable=fully_observable,
+               random=random)
   environment_kwargs = environment_kwargs or {}
   return control.Environment(
       physics, task, control_timestep=_CONTROL_TIMESTEP, time_limit=time_limit,
@@ -73,12 +72,14 @@ def stack_2(observable=True, time_limit=_TIME_LIMIT, random=None,
 
 
 @SUITE.add('hard')
-def stack_4(observable=True, time_limit=_TIME_LIMIT, random=None,
+def stack_4(fully_observable=True, time_limit=_TIME_LIMIT, random=None,
             environment_kwargs=None):
   """Returns stacker task with 4 boxes."""
   n_boxes = 4
   physics = Physics.from_xml_string(*make_model(n_boxes=n_boxes))
-  task = Stack(n_boxes, observable, random=random)
+  task = Stack(n_boxes=n_boxes,
+               fully_observable=fully_observable,
+               random=random)
   environment_kwargs = environment_kwargs or {}
   return control.Environment(
       physics, task, control_timestep=_CONTROL_TIMESTEP, time_limit=time_limit,
@@ -88,35 +89,25 @@ def stack_4(observable=True, time_limit=_TIME_LIMIT, random=None,
 class Physics(mujoco.Physics):
   """Physics with additional features for the Planar Manipulator domain."""
 
-  def bounded_position(self):
-    """Returns the state, with unbounded angles as sine/cosine."""
-    state = []
-    hinge_joint = enums.mjtJoint.mjJNT_HINGE
-    for joint_id in range(self.model.njnt):
-      joint_value = self.named.data.qpos[joint_id]
-      if (not self.model.jnt_limited[joint_id] and
-          self.model.jnt_type[joint_id] == hinge_joint):  # Unbounded hinge.
-        state += [np.sin(joint_value), np.cos(joint_value)]
-      else:
-        state.append(joint_value)
-    return np.asarray(state)
+  def bounded_joint_pos(self, joint_names):
+    """Returns joint positions as (sin, cos) values."""
+    joint_pos = self.named.data.qpos[joint_names]
+    return np.vstack([np.sin(joint_pos), np.cos(joint_pos)]).T
 
-  def body_location(self, body):
-    """Returns the x,z position and y orientation of a body."""
-    body_position = self.named.model.body_pos[body, ['x', 'z']]
-    body_orientation = self.named.model.body_quat[body, ['qw', 'qy']]
-    return np.hstack((body_position, body_orientation))
+  def joint_vel(self, joint_names):
+    """Returns joint velocities."""
+    return self.named.data.qvel[joint_names]
 
-  def proprioception(self):
-    """Returns the arm state, with unbounded angles as sine/cosine."""
-    arm = []
-    for joint in _ARM_JOINTS:
-      joint_value = self.named.data.qpos[joint]
-      if not self.named.model.jnt_limited[joint]:
-        arm += [np.sin(joint_value), np.cos(joint_value)]
-      else:
-        arm.append(joint_value)
-    return np.hstack(arm + [self.named.data.qvel[_ARM_JOINTS]])
+  def body_2d_pose(self, body_names, orientation=True):
+    """Returns positions and/or orientations of bodies."""
+    if not isinstance(body_names, str):
+      body_names = np.array(body_names).reshape(-1, 1)  # Broadcast indices.
+    pos = self.named.data.xpos[body_names, ['x', 'z']]
+    if orientation:
+      ori = self.named.data.xquat[body_names, ['qw', 'qy']]
+      return np.hstack([pos, ori])
+    else:
+      return pos
 
   def touch(self):
     return np.log1p(self.data.sensordata)
@@ -129,18 +120,23 @@ class Physics(mujoco.Physics):
 class Stack(base.Task):
   """A Stack `Task`: stack the boxes."""
 
-  def __init__(self, n_boxes, observable, random=None):
+  def __init__(self, n_boxes, fully_observable, random=None):
     """Initialize an instance of the `Stack` task.
 
     Args:
       n_boxes: An `int`, number of boxes to stack.
-      observable: A `bool`, whether the observation contains target info.
+      fully_observable: A `bool`, whether the observation should contain the
+        positions and velocities of the boxes and the location of the target.
       random: Optional, either a `numpy.random.RandomState` instance, an
         integer seed for creating a new `RandomState`, or None to select a seed
         automatically (default).
     """
     self._n_boxes = n_boxes
-    self._observable = observable
+    self._box_names = ['box' + str(b) for b in range(n_boxes)]
+    self._box_joint_names = ['_'.join([name, dim])
+                             for name in self._box_names
+                             for dim in 'xzy']
+    self._fully_observable = fully_observable
     super(Stack, self).__init__(random=random)
 
   def initialize_episode(self, physics):
@@ -173,11 +169,10 @@ class Stack(base.Task):
       model.body_pos['target', 'x'] = uniform(-.37, .37)
 
       # Randomise box locations.
-      for b in range(self._n_boxes):
-        box = 'box' + str(b)
-        data.qpos[box + '_x'] = uniform(.1, .3)
-        data.qpos[box + '_z'] = uniform(0, .7)
-        data.qpos[box + '_y'] = uniform(0, 2*np.pi)
+      for name in self._box_names:
+        data.qpos[name + '_x'] = uniform(.1, .3)
+        data.qpos[name + '_z'] = uniform(0, .7)
+        data.qpos[name + '_y'] = uniform(0, 2*np.pi)
 
       # Check for collisions.
       physics.after_reset()
@@ -186,26 +181,25 @@ class Stack(base.Task):
   def get_observation(self, physics):
     """Returns either features or only sensors (to be used with pixels)."""
     obs = collections.OrderedDict()
-    if self._observable:
-      box_locations = [physics.body_location('box' + str(b))
-                       for b in range(self._n_boxes)]
-      obs['position'] = physics.bounded_position()
-      obs['hand'] = physics.body_location('hand')
-      obs['boxes'] = np.hstack(box_locations)
-      obs['velocity'] = physics.velocity()
-      obs['touch'] = physics.touch()
-    else:
-      obs['proprioception'] = physics.proprioception()
-      obs['touch'] = physics.touch()
+    obs['arm_pos'] = physics.bounded_joint_pos(_ARM_JOINTS)
+    obs['arm_vel'] = physics.joint_vel(_ARM_JOINTS)
+    obs['touch'] = physics.touch()
+    if self._fully_observable:
+      obs['hand_pos'] = physics.body_2d_pose('hand')
+      obs['box_pos'] = physics.body_2d_pose(self._box_names)
+      obs['box_vel'] = physics.joint_vel(self._box_joint_names)
+      obs['target_pos'] = physics.body_2d_pose('target', orientation=False)
     return obs
 
   def get_reward(self, physics):
     """Returns a reward to the agent."""
     box_size = physics.named.model.geom_size['target', 0]
-    def target_to_box(b):
-      return rewards.tolerance(physics.site_distance('box' + str(b), 'target'),
-                               margin=2*box_size)
-    box_is_close = max(target_to_box(b) for b in range(self._n_boxes))
-    hand_to_target = physics.site_distance('grasp', 'target')
-    hand_is_far = rewards.tolerance(hand_to_target, (.1, float('inf')), _CLOSE)
+    min_box_to_target_distance = min(physics.site_distance(name, 'target')
+                                     for name in self._box_names)
+    box_is_close = rewards.tolerance(min_box_to_target_distance,
+                                     margin=2*box_size)
+    hand_to_target_distance = physics.site_distance('grasp', 'target')
+    hand_is_far = rewards.tolerance(hand_to_target_distance,
+                                    bounds=(.1, float('inf')),
+                                    margin=_CLOSE)
     return box_is_close * hand_is_far
