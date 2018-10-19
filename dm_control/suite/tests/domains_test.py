@@ -20,13 +20,10 @@ from __future__ import division
 from __future__ import print_function
 
 # Internal dependencies.
-
 from absl.testing import absltest
 from absl.testing import parameterized
-
 from dm_control import suite
 from dm_control.rl import control
-
 import numpy as np
 import six
 from six.moves import range
@@ -58,6 +55,12 @@ def step_environment(env, policy, num_episodes=5, max_steps_per_episode=10):
       yield time_step
       if step_count >= max_steps_per_episode:
         break
+
+
+def make_trajectory(domain, task, seed, **trajectory_kwargs):
+  env = suite.load(domain, task, task_kwargs={'random': seed})
+  policy = uniform_random_policy(env.action_spec(), random=seed)
+  return step_environment(env, policy, **trajectory_kwargs)
 
 
 class DomainTest(parameterized.TestCase):
@@ -167,17 +170,11 @@ class DomainTest(parameterized.TestCase):
   def test_environment_is_deterministic(self, domain, task):
     """Tests that identical seeds and actions produce identical trajectories."""
     seed = 0
-
-    def make_trajectory():
-      env = suite.load(domain, task, task_kwargs={'random': seed})
-      policy = uniform_random_policy(env.action_spec(), random=seed)
-      return step_environment(env, policy)
-
     # Iterate over two trajectories generated using identical sequences of
     # random actions, and with identical task random states. Check that the
     # observations, rewards, discounts and step types are identical.
-    trajectory1 = make_trajectory()
-    trajectory2 = make_trajectory()
+    trajectory1 = make_trajectory(domain=domain, task=task, seed=seed)
+    trajectory2 = make_trajectory(domain=domain, task=task, seed=seed)
     for time_step1, time_step2 in zip(trajectory1, trajectory2):
       self.assertEqual(time_step1.step_type, time_step2.step_type)
       self.assertEqual(time_step1.reward, time_step2.reward)
@@ -215,6 +212,36 @@ class DomainTest(parameterized.TestCase):
       self.assertFalse(
           np.may_share_memory(first_array, second_array),
           msg='Consecutive observations of {!r} may share memory.'.format(name))
+
+  @parameterized.parameters(*suite.ALL_TASKS)
+  def test_observations_dont_contain_constant_elements(self, domain, task):
+    env = suite.load(domain, task)
+    trajectory = make_trajectory(domain=domain, task=task, seed=0,
+                                 num_episodes=2, max_steps_per_episode=1000)
+    observations = {name: [] for name in env.observation_spec()}
+    for time_step in trajectory:
+      for name, array in six.iteritems(time_step.observation):
+        observations[name].append(array)
+
+    failures = []
+
+    for name, array_list in six.iteritems(observations):
+      # Sampling random uniform actions generally isn't sufficient to trigger
+      # these touch sensors.
+      if domain in ('manipulator', 'stacker') and name == 'touch':
+        continue
+      stacked_arrays = np.array(array_list)
+      is_constant = np.all(stacked_arrays == stacked_arrays[0], axis=0)
+      has_constant_elements = (
+          is_constant if np.isscalar(is_constant) else np.any(is_constant))
+      if has_constant_elements:
+        failures.append((name, is_constant))
+
+    self.assertEmpty(
+        failures,
+        msg='The following observation(s) contain constant elements:\n{}'
+        .format('\n'.join(':\t'.join([name, str(is_constant)])
+                          for (name, is_constant) in failures)))
 
 if __name__ == '__main__':
   absltest.main()
