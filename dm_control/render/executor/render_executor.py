@@ -140,9 +140,9 @@ class PassthroughRenderExecutor(BaseRenderExecutor):
   def terminate(self, cleanup_callable=None):
     with self._lock_if_necessary:
       if not self._terminated:
-        self._terminated = True
         if cleanup_callable:
           return cleanup_callable()
+        self._terminated = True
 
 
 class _ThreadPoolExecutorPool(object):
@@ -210,7 +210,6 @@ class OffloadingRenderExecutor(BaseRenderExecutor):
       return
     with self._lock_if_necessary:
       if not self._terminated:
-        self._terminated = True
         if cleanup_callable:
           result = self._call_locked(cleanup_callable)
         else:
@@ -218,4 +217,5 @@ class OffloadingRenderExecutor(BaseRenderExecutor):
         _THREAD_POOL_EXECUTOR_POOL.release(self._executor)
         self._executor = None
         self._thread = None
+        self._terminated = True
         return result

@@ -23,6 +23,8 @@ import unittest
 
 # Internal dependencies.
 from absl.testing import absltest
+from dm_control.mujoco import wrapper
+from dm_control.mujoco.testing import decorators
 
 try:
   from dm_control.render import glfw_renderer  # pylint: disable=g-import-not-at-top
@@ -67,6 +69,10 @@ class GLFWContextTest(absltest.TestCase):
     mock_glfw.destroy_window.assert_called_once_with(mock_context)
     self.assertIsNone(renderer._context)
 
+  @decorators.run_threaded(num_threads=1, calls_per_thread=20)
+  def test_repeatedly_create_and_destroy_context(self):
+    renderer = glfw_renderer.GLFWContext(MAX_WIDTH, MAX_HEIGHT)
+    wrapper.MjrContext(wrapper.MjModel.from_xml_string('<mujoco/>'), renderer)
 
 if __name__ == '__main__':
   absltest.main()

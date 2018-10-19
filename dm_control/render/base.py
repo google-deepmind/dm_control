@@ -36,6 +36,7 @@ import collections
 import contextlib
 import weakref
 
+from absl import logging
 from dm_control.render import executor
 import six
 
@@ -52,6 +53,8 @@ class ContextBase(object):
                max_height,
                render_executor_class=executor.RenderExecutor):
     """Initializes this context."""
+    logging.debug('Using render executor class: %s',
+                  render_executor_class.__name__)
     self._render_executor = render_executor_class()
     self._refcount = 0
 
