@@ -18,13 +18,15 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from dm_control.mujoco.wrapper.mjbindings import constants
-from dm_control.mujoco.wrapper.mjbindings import enums
-from dm_control.mujoco.wrapper.mjbindings import functions
+from dm_control.mujoco.wrapper import mjbindings
 from dm_control.viewer import renderer
 from dm_control.viewer import user_input
 from dm_control.viewer import util
 from six.moves import range
+
+constants = mjbindings.constants
+enums = mjbindings.enums
+functions = mjbindings.functions
 
 _NUM_GROUP_KEYS = 10
 

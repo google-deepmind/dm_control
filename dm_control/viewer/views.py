@@ -20,14 +20,16 @@ from __future__ import print_function
 
 import abc
 
+from dm_control.mujoco.wrapper import mjbindings
 from dm_control.mujoco.wrapper import util
-from dm_control.mujoco.wrapper.mjbindings import enums
-from dm_control.mujoco.wrapper.mjbindings import mjlib
-from dm_control.mujoco.wrapper.mjbindings import types
 from dm_control.viewer import renderer
 import enum
 import numpy as np
 import six
+
+enums = mjbindings.enums
+mjlib = mjbindings.mjlib
+types = mjbindings.types
 
 
 class PanelLocation(enum.Enum):

@@ -18,10 +18,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from dm_control.mujoco.wrapper.mjbindings import mjlib
+from dm_control.mujoco.wrapper import mjbindings
 from dm_control.viewer import util
 import enum
 import numpy as np
+
+mjlib = mjbindings.mjlib
 
 
 # Pause interval between simulation steps.

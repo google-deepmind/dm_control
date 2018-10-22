@@ -22,14 +22,15 @@ import abc
 import contextlib
 
 from dm_control.mujoco import wrapper
-from dm_control.mujoco.wrapper.mjbindings import enums
-from dm_control.mujoco.wrapper.mjbindings import mjlib
-from dm_control.mujoco.wrapper.mjbindings import types
+from dm_control.mujoco.wrapper import mjbindings
 from dm_control.viewer import util
 import numpy as np
 import six
 from six.moves import range
 
+enums = mjbindings.enums
+mjlib = mjbindings.mjlib
+types = mjbindings.types
 
 # Fixed camera -1 is the free (unfixed) camera, and each fixed camera has
 # a positive index in range (0, self._model.ncam).
