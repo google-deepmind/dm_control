@@ -52,7 +52,7 @@
         <attribute name="impratio" type="float"/>
         <attribute name="o_margin" type="float"/>
         <attribute name="o_solref" type="array" array_type="float" array_size="2"/>
-        <attribute name="o_solimp" type="array" array_type="float" array_size="3"/>
+        <attribute name="o_solimp" type="array" array_type="float" array_size="5"/>
         <attribute name="integrator" type="keyword" valid_values="Euler RK4"/>
         <attribute name="collision" type="keyword" valid_values="all predefined dynamic"/>
         <attribute name="cone" type="keyword" valid_values="pyramidal elliptic"/>
@@ -239,9 +239,9 @@
             <attribute name="springdamper" type="array" array_type="float" array_size="2"/>
             <attribute name="limited" type="keyword" valid_values="false true"/>
             <attribute name="solreflimit" type="array" array_type="float" array_size="2"/>
-            <attribute name="solimplimit" type="array" array_type="float" array_size="3"/>
+            <attribute name="solimplimit" type="array" array_type="float" array_size="5"/>
             <attribute name="solreffriction" type="array" array_type="float" array_size="2"/>
-            <attribute name="solimpfriction" type="array" array_type="float" array_size="3"/>
+            <attribute name="solimpfriction" type="array" array_type="float" array_size="5"/>
             <attribute name="stiffness" type="float"/>
             <attribute name="range" type="array" array_type="float" array_size="2"/>
             <attribute name="margin" type="float"/>
@@ -269,7 +269,7 @@
             <attribute name="density" type="float"/>
             <attribute name="solmix" type="float"/>
             <attribute name="solref" type="array" array_type="float" array_size="2"/>
-            <attribute name="solimp" type="array" array_type="float" array_size="3"/>
+            <attribute name="solimp" type="array" array_type="float" array_size="5"/>
             <attribute name="margin" type="float"/>
             <attribute name="gap" type="float"/>
             <attribute name="fromto" type="array" array_type="float" array_size="6"/>
@@ -339,7 +339,7 @@
             <attribute name="condim" type="int"/>
             <attribute name="friction" type="array" array_type="float" array_size="5"/>
             <attribute name="solref" type="array" array_type="float" array_size="2"/>
-            <attribute name="solimp" type="array" array_type="float" array_size="3"/>
+            <attribute name="solimp" type="array" array_type="float" array_size="5"/>
             <attribute name="margin" type="float"/>
             <attribute name="gap" type="float"/>
           </attributes>
@@ -348,7 +348,7 @@
           <attributes>
             <attribute name="active" type="keyword" valid_values="false true"/>
             <attribute name="solref" type="array" array_type="float" array_size="2"/>
-            <attribute name="solimp" type="array" array_type="float" array_size="3"/>
+            <attribute name="solimp" type="array" array_type="float" array_size="5"/>
           </attributes>
         </element>
         <element name="tendon">
@@ -357,9 +357,9 @@
             <attribute name="limited" type="keyword" valid_values="false true"/>
             <attribute name="range" type="array" array_type="float" array_size="2"/>
             <attribute name="solreflimit" type="array" array_type="float" array_size="2"/>
-            <attribute name="solimplimit" type="array" array_type="float" array_size="3"/>
+            <attribute name="solimplimit" type="array" array_type="float" array_size="5"/>
             <attribute name="solreffriction" type="array" array_type="float" array_size="2"/>
-            <attribute name="solimpfriction" type="array" array_type="float" array_size="3"/>
+            <attribute name="solimpfriction" type="array" array_type="float" array_size="5"/>
             <attribute name="margin" type="float"/>
             <attribute name="frictionloss" type="float"/>
             <attribute name="width" type="float"/>
@@ -497,9 +497,9 @@
                 <attribute name="springdamper" type="array" array_type="float" array_size="2"/>
                 <attribute name="limited" type="keyword" valid_values="false true"/>
                 <attribute name="solreflimit" type="array" array_type="float" array_size="2"/>
-                <attribute name="solimplimit" type="array" array_type="float" array_size="3"/>
+                <attribute name="solimplimit" type="array" array_type="float" array_size="5"/>
                 <attribute name="solreffriction" type="array" array_type="float" array_size="2"/>
-                <attribute name="solimpfriction" type="array" array_type="float" array_size="3"/>
+                <attribute name="solimpfriction" type="array" array_type="float" array_size="5"/>
                 <attribute name="stiffness" type="float"/>
                 <attribute name="range" type="array" array_type="float" array_size="2"/>
                 <attribute name="margin" type="float"/>
@@ -526,7 +526,7 @@
                 <attribute name="density" type="float"/>
                 <attribute name="solmix" type="float"/>
                 <attribute name="solref" type="array" array_type="float" array_size="2"/>
-                <attribute name="solimp" type="array" array_type="float" array_size="3"/>
+                <attribute name="solimp" type="array" array_type="float" array_size="5"/>
                 <attribute name="margin" type="float"/>
                 <attribute name="gap" type="float"/>
                 <attribute name="fromto" type="array" array_type="float" array_size="6"/>
@@ -595,7 +595,7 @@
                 <attribute name="condim" type="int"/>
                 <attribute name="friction" type="array" array_type="float" array_size="5"/>
                 <attribute name="solref" type="array" array_type="float" array_size="2"/>
-                <attribute name="solimp" type="array" array_type="float" array_size="3"/>
+                <attribute name="solimp" type="array" array_type="float" array_size="5"/>
                 <attribute name="margin" type="float"/>
                 <attribute name="gap" type="float"/>
               </attributes>
@@ -604,7 +604,7 @@
               <attributes>
                 <attribute name="active" type="keyword" valid_values="false true"/>
                 <attribute name="solref" type="array" array_type="float" array_size="2"/>
-                <attribute name="solimp" type="array" array_type="float" array_size="3"/>
+                <attribute name="solimp" type="array" array_type="float" array_size="5"/>
               </attributes>
             </element>
             <element name="tendon">
@@ -612,9 +612,9 @@
                 <attribute name="limited" type="keyword" valid_values="false true"/>
                 <attribute name="range" type="array" array_type="float" array_size="2"/>
                 <attribute name="solreflimit" type="array" array_type="float" array_size="2"/>
-                <attribute name="solimplimit" type="array" array_type="float" array_size="3"/>
+                <attribute name="solimplimit" type="array" array_type="float" array_size="5"/>
                 <attribute name="solreffriction" type="array" array_type="float" array_size="2"/>
-                <attribute name="solimpfriction" type="array" array_type="float" array_size="3"/>
+                <attribute name="solimpfriction" type="array" array_type="float" array_size="5"/>
                 <attribute name="margin" type="float"/>
                 <attribute name="frictionloss" type="float"/>
                 <attribute name="width" type="float"/>
@@ -840,7 +840,7 @@
             <attribute name="density" type="float"/>
             <attribute name="solmix" type="float"/>
             <attribute name="solref" type="array" array_type="float" array_size="2"/>
-            <attribute name="solimp" type="array" array_type="float" array_size="3"/>
+            <attribute name="solimp" type="array" array_type="float" array_size="5"/>
             <attribute name="margin" type="float"/>
             <attribute name="gap" type="float"/>
             <attribute name="fromto" type="array" array_type="float" array_size="6"/>
@@ -920,14 +920,14 @@
             <attribute name="offset" type="array" array_type="float" array_size="3"/>
             <attribute name="flatinertia" type="float"/>
             <attribute name="solrefsmooth" type="array" array_type="float" array_size="2"/>
-            <attribute name="solimpsmooth" type="array" array_type="float" array_size="3"/>
+            <attribute name="solimpsmooth" type="array" array_type="float" array_size="5"/>
           </attributes>
           <children>
             <element name="joint" repeated="true">
               <attributes>
                 <attribute name="kind" type="keyword" valid_values="main twist stretch" required="true"/>
                 <attribute name="solreffix" type="array" array_type="float" array_size="2"/>
-                <attribute name="solimpfix" type="array" array_type="float" array_size="3"/>
+                <attribute name="solimpfix" type="array" array_type="float" array_size="5"/>
                 <attribute name="group" type="int"/>
                 <attribute name="stiffness" type="float"/>
                 <attribute name="damping" type="float"/>
@@ -936,17 +936,17 @@
                 <attribute name="range" type="array" array_type="float" array_size="2"/>
                 <attribute name="margin" type="float"/>
                 <attribute name="solreflimit" type="array" array_type="float" array_size="2"/>
-                <attribute name="solimplimit" type="array" array_type="float" array_size="3"/>
+                <attribute name="solimplimit" type="array" array_type="float" array_size="5"/>
                 <attribute name="frictionloss" type="float"/>
                 <attribute name="solreffriction" type="array" array_type="float" array_size="2"/>
-                <attribute name="solimpfriction" type="array" array_type="float" array_size="3"/>
+                <attribute name="solimpfriction" type="array" array_type="float" array_size="5"/>
               </attributes>
             </element>
             <element name="tendon" repeated="true">
               <attributes>
                 <attribute name="kind" type="keyword" valid_values="main shear" required="true"/>
                 <attribute name="solreffix" type="array" array_type="float" array_size="2"/>
-                <attribute name="solimpfix" type="array" array_type="float" array_size="3"/>
+                <attribute name="solimpfix" type="array" array_type="float" array_size="5"/>
                 <attribute name="group" type="int"/>
                 <attribute name="stiffness" type="float"/>
                 <attribute name="damping" type="float"/>
@@ -954,10 +954,10 @@
                 <attribute name="range" type="array" array_type="float" array_size="2"/>
                 <attribute name="margin" type="float"/>
                 <attribute name="solreflimit" type="array" array_type="float" array_size="2"/>
-                <attribute name="solimplimit" type="array" array_type="float" array_size="3"/>
+                <attribute name="solimplimit" type="array" array_type="float" array_size="5"/>
                 <attribute name="frictionloss" type="float"/>
                 <attribute name="solreffriction" type="array" array_type="float" array_size="2"/>
-                <attribute name="solimpfriction" type="array" array_type="float" array_size="3"/>
+                <attribute name="solimpfriction" type="array" array_type="float" array_size="5"/>
                 <attribute name="material" type="reference"/>
                 <attribute name="rgba" type="array" array_type="float" array_size="4"/>
                 <attribute name="width" type="float"/>
@@ -979,7 +979,7 @@
                 <attribute name="density" type="float"/>
                 <attribute name="solmix" type="float"/>
                 <attribute name="solref" type="array" array_type="float" array_size="2"/>
-                <attribute name="solimp" type="array" array_type="float" array_size="3"/>
+                <attribute name="solimp" type="array" array_type="float" array_size="5"/>
                 <attribute name="margin" type="float"/>
                 <attribute name="gap" type="float"/>
               </attributes>
@@ -1045,9 +1045,9 @@
                 <attribute name="springdamper" type="array" array_type="float" array_size="2"/>
                 <attribute name="limited" type="keyword" valid_values="false true"/>
                 <attribute name="solreflimit" type="array" array_type="float" array_size="2"/>
-                <attribute name="solimplimit" type="array" array_type="float" array_size="3"/>
+                <attribute name="solimplimit" type="array" array_type="float" array_size="5"/>
                 <attribute name="solreffriction" type="array" array_type="float" array_size="2"/>
-                <attribute name="solimpfriction" type="array" array_type="float" array_size="3"/>
+                <attribute name="solimpfriction" type="array" array_type="float" array_size="5"/>
                 <attribute name="stiffness" type="float"/>
                 <attribute name="range" type="array" array_type="float" array_size="2"/>
                 <attribute name="margin" type="float"/>
@@ -1083,7 +1083,7 @@
                 <attribute name="density" type="float"/>
                 <attribute name="solmix" type="float"/>
                 <attribute name="solref" type="array" array_type="float" array_size="2"/>
-                <attribute name="solimp" type="array" array_type="float" array_size="3"/>
+                <attribute name="solimp" type="array" array_type="float" array_size="5"/>
                 <attribute name="margin" type="float"/>
                 <attribute name="gap" type="float"/>
                 <attribute name="fromto" type="array" array_type="float" array_size="6"/>
@@ -1163,14 +1163,14 @@
                 <attribute name="offset" type="array" array_type="float" array_size="3"/>
                 <attribute name="flatinertia" type="float"/>
                 <attribute name="solrefsmooth" type="array" array_type="float" array_size="2"/>
-                <attribute name="solimpsmooth" type="array" array_type="float" array_size="3"/>
+                <attribute name="solimpsmooth" type="array" array_type="float" array_size="5"/>
               </attributes>
               <children>
                 <element name="joint" repeated="true">
                   <attributes>
                     <attribute name="kind" type="keyword" valid_values="main twist stretch" required="true"/>
                     <attribute name="solreffix" type="array" array_type="float" array_size="2"/>
-                    <attribute name="solimpfix" type="array" array_type="float" array_size="3"/>
+                    <attribute name="solimpfix" type="array" array_type="float" array_size="5"/>
                     <attribute name="group" type="int"/>
                     <attribute name="stiffness" type="float"/>
                     <attribute name="damping" type="float"/>
@@ -1179,17 +1179,17 @@
                     <attribute name="range" type="array" array_type="float" array_size="2"/>
                     <attribute name="margin" type="float"/>
                     <attribute name="solreflimit" type="array" array_type="float" array_size="2"/>
-                    <attribute name="solimplimit" type="array" array_type="float" array_size="3"/>
+                    <attribute name="solimplimit" type="array" array_type="float" array_size="5"/>
                     <attribute name="frictionloss" type="float"/>
                     <attribute name="solreffriction" type="array" array_type="float" array_size="2"/>
-                    <attribute name="solimpfriction" type="array" array_type="float" array_size="3"/>
+                    <attribute name="solimpfriction" type="array" array_type="float" array_size="5"/>
                   </attributes>
                 </element>
                 <element name="tendon" repeated="true">
                   <attributes>
                     <attribute name="kind" type="keyword" valid_values="main shear" required="true"/>
                     <attribute name="solreffix" type="array" array_type="float" array_size="2"/>
-                    <attribute name="solimpfix" type="array" array_type="float" array_size="3"/>
+                    <attribute name="solimpfix" type="array" array_type="float" array_size="5"/>
                     <attribute name="group" type="int"/>
                     <attribute name="stiffness" type="float"/>
                     <attribute name="damping" type="float"/>
@@ -1197,10 +1197,10 @@
                     <attribute name="range" type="array" array_type="float" array_size="2"/>
                     <attribute name="margin" type="float"/>
                     <attribute name="solreflimit" type="array" array_type="float" array_size="2"/>
-                    <attribute name="solimplimit" type="array" array_type="float" array_size="3"/>
+                    <attribute name="solimplimit" type="array" array_type="float" array_size="5"/>
                     <attribute name="frictionloss" type="float"/>
                     <attribute name="solreffriction" type="array" array_type="float" array_size="2"/>
-                    <attribute name="solimpfriction" type="array" array_type="float" array_size="3"/>
+                    <attribute name="solimpfriction" type="array" array_type="float" array_size="5"/>
                     <attribute name="material" type="reference"/>
                     <attribute name="rgba" type="array" array_type="float" array_size="4"/>
                     <attribute name="width" type="float"/>
@@ -1222,7 +1222,7 @@
                     <attribute name="density" type="float"/>
                     <attribute name="solmix" type="float"/>
                     <attribute name="solref" type="array" array_type="float" array_size="2"/>
-                    <attribute name="solimp" type="array" array_type="float" array_size="3"/>
+                    <attribute name="solimp" type="array" array_type="float" array_size="5"/>
                     <attribute name="margin" type="float"/>
                     <attribute name="gap" type="float"/>
                   </attributes>
@@ -1266,7 +1266,7 @@
             <attribute name="condim" type="int"/>
             <attribute name="friction" type="array" array_type="float" array_size="5"/>
             <attribute name="solref" type="array" array_type="float" array_size="2"/>
-            <attribute name="solimp" type="array" array_type="float" array_size="3"/>
+            <attribute name="solimp" type="array" array_type="float" array_size="5"/>
             <attribute name="margin" type="float"/>
             <attribute name="gap" type="float"/>
           </attributes>
@@ -1288,7 +1288,7 @@
             <attribute name="class" type="reference" reference_namespace="default"/>
             <attribute name="active" type="keyword" valid_values="false true"/>
             <attribute name="solref" type="array" array_type="float" array_size="2"/>
-            <attribute name="solimp" type="array" array_type="float" array_size="3"/>
+            <attribute name="solimp" type="array" array_type="float" array_size="5"/>
             <attribute name="body1" type="reference" required="true" reference_namespace="body"/>
             <attribute name="body2" type="reference" reference_namespace="body"/>
             <attribute name="anchor" type="array" required="true" array_type="float" array_size="3"/>
@@ -1300,7 +1300,7 @@
             <attribute name="class" type="reference" reference_namespace="default"/>
             <attribute name="active" type="keyword" valid_values="false true"/>
             <attribute name="solref" type="array" array_type="float" array_size="2"/>
-            <attribute name="solimp" type="array" array_type="float" array_size="3"/>
+            <attribute name="solimp" type="array" array_type="float" array_size="5"/>
             <attribute name="body1" type="reference" required="true" reference_namespace="body"/>
             <attribute name="body2" type="reference" reference_namespace="body"/>
             <attribute name="relpose" type="array" array_type="float" array_size="7"/>
@@ -1312,7 +1312,7 @@
             <attribute name="class" type="reference" reference_namespace="default"/>
             <attribute name="active" type="keyword" valid_values="false true"/>
             <attribute name="solref" type="array" array_type="float" array_size="2"/>
-            <attribute name="solimp" type="array" array_type="float" array_size="3"/>
+            <attribute name="solimp" type="array" array_type="float" array_size="5"/>
             <attribute name="joint1" type="reference" required="true" reference_namespace="joint"/>
             <attribute name="joint2" type="reference" reference_namespace="joint"/>
             <attribute name="polycoef" type="array" array_type="float" array_size="5"/>
@@ -1324,7 +1324,7 @@
             <attribute name="class" type="reference" reference_namespace="default"/>
             <attribute name="active" type="keyword" valid_values="false true"/>
             <attribute name="solref" type="array" array_type="float" array_size="2"/>
-            <attribute name="solimp" type="array" array_type="float" array_size="3"/>
+            <attribute name="solimp" type="array" array_type="float" array_size="5"/>
             <attribute name="tendon1" type="reference" required="true" reference_namespace="tendon"/>
             <attribute name="tendon2" type="reference" reference_namespace="tendon"/>
             <attribute name="polycoef" type="array" array_type="float" array_size="4"/>
@@ -1336,7 +1336,7 @@
             <attribute name="class" type="reference" reference_namespace="default"/>
             <attribute name="active" type="keyword" valid_values="false true"/>
             <attribute name="solref" type="array" array_type="float" array_size="2"/>
-            <attribute name="solimp" type="array" array_type="float" array_size="3"/>
+            <attribute name="solimp" type="array" array_type="float" array_size="5"/>
             <attribute name="geom1" type="reference" required="true" reference_namespace="geom"/>
             <attribute name="geom2" type="reference" required="true" reference_namespace="geom"/>
             <attribute name="distance" type="float"/>
@@ -1354,9 +1354,9 @@
             <attribute name="limited" type="keyword" valid_values="false true"/>
             <attribute name="range" type="array" array_type="float" array_size="2"/>
             <attribute name="solreflimit" type="array" array_type="float" array_size="2"/>
-            <attribute name="solimplimit" type="array" array_type="float" array_size="3"/>
+            <attribute name="solimplimit" type="array" array_type="float" array_size="5"/>
             <attribute name="solreffriction" type="array" array_type="float" array_size="2"/>
-            <attribute name="solimpfriction" type="array" array_type="float" array_size="3"/>
+            <attribute name="solimpfriction" type="array" array_type="float" array_size="5"/>
             <attribute name="margin" type="float"/>
             <attribute name="frictionloss" type="float"/>
             <attribute name="width" type="float"/>
@@ -1399,9 +1399,9 @@
             <attribute name="damping" type="float"/>
             <attribute name="user" type="array" array_type="float"/>
             <attribute name="solreflimit" type="array" array_type="float" array_size="2"/>
-            <attribute name="solimplimit" type="array" array_type="float" array_size="3"/>
+            <attribute name="solimplimit" type="array" array_type="float" array_size="5"/>
             <attribute name="solreffriction" type="array" array_type="float" array_size="2"/>
-            <attribute name="solimpfriction" type="array" array_type="float" array_size="3"/>
+            <attribute name="solimpfriction" type="array" array_type="float" array_size="5"/>
             <attribute name="springlength" type="float"/>
           </attributes>
           <children>
