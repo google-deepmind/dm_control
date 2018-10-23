@@ -22,9 +22,11 @@ from __future__ import print_function
 import collections
 
 from absl import logging
-from dm_control.mujoco.wrapper.mjbindings import mjlib
+from dm_control.mujoco.wrapper import mjbindings
 import numpy as np
 from six.moves import range
+
+mjlib = mjbindings.mjlib
 
 
 _INVALID_JOINT_NAMES_TYPE = (

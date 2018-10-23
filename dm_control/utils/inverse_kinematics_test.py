@@ -21,7 +21,6 @@ from __future__ import print_function
 
 import itertools
 
-# Internal dependencies.
 from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control import mujoco
