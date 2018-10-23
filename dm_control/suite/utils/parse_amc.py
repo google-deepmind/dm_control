@@ -21,14 +21,9 @@ from __future__ import print_function
 
 import collections
 
-# Internal dependencies.
-
 from dm_control.mujoco.wrapper import mjbindings
-
 import numpy as np
-
 from scipy import interpolate
-
 from six.moves import range
 
 mjlib = mjbindings.mjlib

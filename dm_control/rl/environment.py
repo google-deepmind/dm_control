@@ -22,8 +22,6 @@ from __future__ import print_function
 import abc
 import collections
 
-# Internal dependencies.
-
 import enum
 import six
 

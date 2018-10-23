@@ -23,7 +23,6 @@ import collections
 import keyword
 import re
 
-# Internal dependencies.
 import six
 from six.moves import builtins
 

@@ -20,8 +20,6 @@ from __future__ import print_function
 
 import collections
 
-# Internal dependencies.
-
 from dm_control import mujoco
 from dm_control.rl import control
 from dm_control.suite import base
@@ -29,7 +27,6 @@ from dm_control.suite import common
 from dm_control.suite.utils import randomizers
 from dm_control.utils import containers
 from dm_control.utils import rewards
-
 from lxml import etree
 import numpy as np
 from six.moves import range

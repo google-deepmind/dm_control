@@ -26,7 +26,6 @@ import os
 import platform
 import sys
 import threading
-# Internal dependencies.
 from dm_control import render
 import numpy as np
 import six

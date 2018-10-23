@@ -23,8 +23,6 @@ import functools
 import sys
 import threading
 
-# Internal dependencies.
-
 import six
 from six.moves import range
 

@@ -89,8 +89,6 @@ import abc
 import collections
 import weakref
 
-# Internal dependencies.
-
 from dm_control.mujoco.wrapper import util
 from dm_control.mujoco.wrapper.mjbindings import sizes
 import numpy as np

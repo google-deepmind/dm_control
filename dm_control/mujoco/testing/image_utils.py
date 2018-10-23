@@ -24,7 +24,6 @@ import functools
 import os
 import sys
 
-# Internal dependencies.
 from dm_control import mujoco
 from dm_control import render
 from dm_control.mujoco.testing import assets

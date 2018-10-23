@@ -19,7 +19,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-# Internal dependencies.
 import numpy as np
 
 # The value returned by tolerance() at `margin` distance from `bounds` interval.

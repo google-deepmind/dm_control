@@ -19,10 +19,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-# Internal dependencies.
-
 from dm_control.mujoco.wrapper import mjbindings
-
 import numpy as np
 from six.moves import range
 
