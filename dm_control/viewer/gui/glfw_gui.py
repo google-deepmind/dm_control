@@ -301,9 +301,8 @@ class GlfwWindow(object):
   def close(self):
     """Closes the window and releases associated resources."""
     if self._context is not None:
-      with self._context.make_current() as ctx:
-        ctx.call(glfw.destroy_window, self._context.window)
-        self._context = None
+      self._context.free()
+    self._context = None
 
   def _handle_file_drop(self, window, paths):
     """Handles events of user dropping files onto the window.

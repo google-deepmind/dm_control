@@ -182,7 +182,7 @@ class GlfwWindowTest(absltest.TestCase):
 
   def test_close(self):
     self.window.close()
-    _GLFW_MOCK.destroy_window.assert_called_once()
+    self.context.free.assert_called_once()
     self.assertIsNone(self.window._context)
 
   def test_closing_window_that_has_already_been_closed(self):
