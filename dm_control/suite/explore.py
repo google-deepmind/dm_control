@@ -21,6 +21,7 @@ from __future__ import print_function
 from absl import app
 from absl import flags
 from dm_control import suite
+from dm_control.suite.wrappers import action_noise
 from six.moves import input
 
 from dm_control import viewer
@@ -36,6 +37,10 @@ flags.DEFINE_bool('timeout', True, 'Whether episodes should have a time limit.')
 flags.DEFINE_bool('visualize_reward', True,
                   'Whether to vary the colors of geoms according to the '
                   'current reward value.')
+flags.DEFINE_float('action_noise', 0.,
+                   'Standard deviation of Gaussian noise to apply to actions, '
+                   'expressed as a fraction of the max-min range for each '
+                   'action dimension. Defaults to 0, i.e. no noise.')
 FLAGS = flags.FLAGS
 
 
@@ -68,6 +73,8 @@ def main(argv):
     env = suite.load(
         domain_name=domain_name, task_name=task_name, task_kwargs=task_kwargs)
     env.task.visualize_reward = FLAGS.visualize_reward
+    if FLAGS.action_noise > 0:
+      env = action_noise.Wrapper(env, scale=FLAGS.action_noise)
     return env
 
   viewer.launch(loader)
