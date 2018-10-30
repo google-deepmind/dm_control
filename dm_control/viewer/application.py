@@ -302,7 +302,7 @@ class Application(object):
       self._runtime.single_step()
 
   def launch(self, environment_loader, policy=None):
-    """Starts the viewer with the specified agent and environment.
+    """Starts the viewer with the specified policy and environment.
 
     Args:
       environment_loader: Either a callable that takes no arguments and returns
