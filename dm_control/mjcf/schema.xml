@@ -1327,7 +1327,7 @@
             <attribute name="solimp" type="array" array_type="float" array_size="5"/>
             <attribute name="tendon1" type="reference" required="true" reference_namespace="tendon"/>
             <attribute name="tendon2" type="reference" reference_namespace="tendon"/>
-            <attribute name="polycoef" type="array" array_type="float" array_size="4"/>
+            <attribute name="polycoef" type="array" array_type="float" array_size="5"/>
           </attributes>
         </element>
         <element name="distance" repeated="true" namespace="equality">
