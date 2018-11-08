@@ -224,9 +224,7 @@ class _CommonEnvironment(object):
     self._physics_proxy = weakref.proxy(self._physics)
     self._hooks.refresh_entity_hooks()
 
-    self._observation_updater = observation.Updater(
-        self._task.observables, self._task.physics_steps_per_control_step,
-        self._strip_singleton_obs_buffer_dim)
+    self._observation_updater = self._make_observation_updater()
     self._observation_updater.reset(self._physics_proxy, self._random_state)
 
     # NB: `physics.after_reset()` is called after `task.after_compile()` so
@@ -239,6 +237,11 @@ class _CommonEnvironment(object):
 
   def _make_physics(self):
     return mjcf.Physics.from_mjcf_model(self._task.root_entity.mjcf_model)
+
+  def _make_observation_updater(self):
+    return observation.Updater(
+        self._task.observables, self._task.physics_steps_per_control_step,
+        self._strip_singleton_obs_buffer_dim)
 
   @property
   def physics(self):
