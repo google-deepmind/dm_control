@@ -340,7 +340,10 @@ class ElementTest(parameterized.TestCase):
                           parent=attachment_site.parent, root=submujoco)
     self.assertEqual(
         subsubmodel_frame.to_xml_string().split('\n')[0],
-        '<body pos="0.1 0.1 0.1" quat="0. 1. 0. 0." name="subsubmodel/">')
+        '<body '
+        'pos="0.10000000000000001 0.10000000000000001 0.10000000000000001" '
+        'quat="0 1 0 0" '
+        'name="subsubmodel/">')
     self.assertEqual(subsubmodel_frame.all_children(),
                      subsubmujoco.worldbody.all_children())
 
@@ -485,9 +488,12 @@ class ElementTest(parameterized.TestCase):
     subsubmujoco_frame = submujoco.find('attachment_frame', 'subsubmodel')
     subsubmujoco_frame_xml = subsubmujoco_frame.to_xml_string(
         pretty_print=False, prefix_root=mujoco.namescope)
-    self.assertStartsWith(subsubmujoco_frame_xml,
-                          '<body pos="0.1 0.1 0.1" quat="0. 1. 0. 0." '
-                          'name="submodel/subsubmodel/">')
+    self.assertStartsWith(
+        subsubmujoco_frame_xml,
+        '<body '
+        'pos="0.10000000000000001 0.10000000000000001 0.10000000000000001" '
+        'quat="0 1 0 0" '
+        'name="submodel/subsubmodel/">')
     self.assertEqual(subsubmujoco_frame.full_identifier,
                      'submodel/subsubmodel/')
     with self.assertRaisesRegexp(AttributeError, 'not a valid child'):
@@ -497,7 +503,7 @@ class ElementTest(parameterized.TestCase):
         pretty_print=False, prefix_root=mujoco.namescope)
     self.assertEqual(
         hinge_joint_xml,
-        '<joint class="submodel/" type="hinge" axis="1. 2. 3." '
+        '<joint class="submodel/" type="hinge" axis="1 2 3" '
         'name="submodel/subsubmodel/"/>')
     self.assertEqual(hinge_joint.full_identifier, 'submodel/subsubmodel/')
 
@@ -737,7 +743,7 @@ class ElementTest(parameterized.TestCase):
     mujoco.attach(submujoco)
 
     geoms = mujoco.find_all('geom')
-    self.assertEqual(len(geoms), 6)
+    self.assertLen(geoms, 6)
     self.assertEqual(geoms[0].root, mujoco)
     self.assertEqual(geoms[1].root, mujoco)
     self.assertEqual(geoms[2].root, submujoco)
@@ -746,11 +752,9 @@ class ElementTest(parameterized.TestCase):
     self.assertEqual(geoms[5].root, submujoco)
 
     b_0 = submujoco.find('body', 'b_0')
-    self.assertEqual(len(b_0.find_all('joint')), 6)
-    self.assertEqual(
-        len(b_0.find_all('joint', immediate_children_only=True)), 1)
-    self.assertEqual(
-        len(b_0.find_all('joint', exclude_attachments=True)), 2)
+    self.assertLen(b_0.find_all('joint'), 6)
+    self.assertLen(b_0.find_all('joint', immediate_children_only=True), 1)
+    self.assertLen(b_0.find_all('joint', exclude_attachments=True), 2)
 
   def testFindAllFrameJoints(self):
     root_model = parser.from_path(_TEST_MODEL_XML)

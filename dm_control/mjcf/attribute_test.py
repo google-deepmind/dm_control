@@ -191,10 +191,21 @@ class AttributeTest(parameterized.TestCase):
     # XML string should not be affected by global print options
     np.set_printoptions(precision=3, suppress=True)
     mujoco.optional.float_array = [np.pi, 2, 1e-16]
-    self.assertXMLStringEqual(
-        mujoco.optional, 'float_array',
-        '3.141592653589793e+00 2.000000000000000e+00 1.000000000000000e-16')
+    self.assertXMLStringEqual(mujoco.optional, 'float_array',
+                              '3.1415926535897931 2 9.9999999999999998e-17')
     self.assertCanBeCleared(mujoco.optional, 'float_array')
+
+  def testFormatVeryLargeArray(self):
+    mujoco = self._mujoco
+    array = np.arange(2000, dtype=np.double)
+    mujoco.optional.huge_float_array = array
+    xml_string = mujoco.optional.get_attribute_xml_string('huge_float_array')
+    self.assertNotIn('...', xml_string)
+    # Check that array <--> string conversion is a round trip.
+    mujoco.optional.huge_float_array = None
+    self.assertIsNone(mujoco.optional.huge_float_array)
+    mujoco.optional.huge_float_array = xml_string
+    np.testing.assert_array_equal(mujoco.optional.huge_float_array, array)
 
   def testIntArray(self):
     mujoco = self._mujoco
@@ -393,7 +404,7 @@ class AttributeTest(parameterized.TestCase):
     asset = attribute.Asset(
         contents='', extension=extension, prefix=original_filename)
     vfs_filename = asset.get_vfs_filename()
-    self.assertEqual(len(vfs_filename), constants.MAX_VFS_FILENAME_LENGTH)
+    self.assertLen(vfs_filename, constants.MAX_VFS_FILENAME_LENGTH)
 
     vfs = types.MJVFS()
     mjlib.mj_defaultVFS(vfs)

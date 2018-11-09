@@ -23,7 +23,6 @@ import abc
 import collections
 import hashlib
 import os
-import re
 
 from dm_control.mjcf import base
 from dm_control.mjcf import constants
@@ -31,6 +30,7 @@ from dm_control.mjcf import debugging
 from dm_control.mujoco.wrapper import util
 import numpy as np
 import six
+
 from dm_control.utils import io as resources
 
 
@@ -190,10 +190,12 @@ class Array(_Attribute):
     if self._value is None:
       return None
     else:
-      return re.sub(r'\s+', r' ',
-                    np.array2string(
-                        self._value, precision=15,
-                        suppress_small=False, max_line_width=999)[1:-1].strip())
+      out = six.BytesIO()
+      # 17 decimal digits is sufficient to represent a double float without loss
+      # of precision.
+      # https://en.wikipedia.org/wiki/IEEE_754#Character_representation
+      np.savetxt(out, self._value, fmt='%.17g', newline=' ')
+      return util.to_native_string(out.getvalue())[:-1]  # Strip trailing space.
 
   def _check_shape(self, array):
     actual_length = array.shape[0]
