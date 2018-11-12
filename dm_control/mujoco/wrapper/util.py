@@ -98,33 +98,32 @@ def _get_full_path(path):
   return resources.GetResourceFilename(expanded_path)
 
 
+def _maybe_load_linux_dynamic_deps(library_dir):
+  """Ensures that GL and GLEW symbols are available on Linux."""
+  interpreter_symbols = ctypes.cdll.LoadLibrary("")
+  if not hasattr(interpreter_symbols, "glewInit"):
+    # This means our interpreter is not yet linked against GLEW.
+    if render.BACKEND == "osmesa":
+      libglew_path = os.path.join(library_dir, "libglewosmesa.so")
+    else:
+      libglew_path = ctypes.util.find_library("GLEW")
+    ctypes.CDLL(libglew_path, ctypes.RTLD_GLOBAL)  # Also loads GL implicitly.
+
+
 def get_mjlib():
   """Loads `libmujoco.so` and returns it as a `ctypes.CDLL` object."""
   try:
     # Use the MJLIB_PATH environment variable if it has been set.
-    raw_path = os.environ[ENV_MJLIB_PATH]
+    library_path = _get_full_path(os.environ[ENV_MJLIB_PATH])
   except KeyError:
-    paths_to_try = [
-        # If libmujoco is in LD_LIBRARY_PATH then ctypes only needs its name.
-        os.path.basename(DEFAULT_MJLIB_PATH),
-        _get_full_path(DEFAULT_MJLIB_PATH),
-    ]
-    for library_path in paths_to_try:
-      try:
-        return ctypes.cdll.LoadLibrary(library_path)
-      except OSError as e:
-        if "undefined symbol" in str(e) and platform.system() == "Linux":
-          # This means that we've found MuJoCo but haven't loaded GLEW.
-          ctypes.CDLL(ctypes.util.find_library("GL"), ctypes.RTLD_GLOBAL)
-          if render.BACKEND == "osmesa":
-            libglew = os.path.join(
-                os.path.dirname(library_path), "libglewosmesa.so")
-          else:
-            libglew = ctypes.util.find_library("GLEW")
-          ctypes.CDLL(libglew, ctypes.RTLD_GLOBAL)
-          return ctypes.cdll.LoadLibrary(library_path)
-    raw_path = DEFAULT_MJLIB_PATH
-  return ctypes.CDLL(_get_full_path(raw_path), ctypes.RTLD_GLOBAL)
+    library_path = ctypes.util.find_library(MJLIB_NAME)
+    if not library_path:
+      library_path = _get_full_path(DEFAULT_MJLIB_PATH)
+  if not os.path.isfile(library_path):
+    raise OSError("Cannot find MuJoCo library at {}.".format(library_path))
+  if platform.system() == "Linux":
+    _maybe_load_linux_dynamic_deps(os.path.dirname(library_path))
+  return ctypes.cdll.LoadLibrary(library_path)
 
 
 def get_mjkey_path():
