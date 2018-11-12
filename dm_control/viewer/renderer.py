@@ -45,11 +45,21 @@ _INVALID_BODY_INDEX = -1
 # Zoom factor used when zooming in on the entire scene.
 _FULL_SCENE_ZOOM_FACTOR = 1.5
 
-# Default render flag settings.
+# Default values for `MjvScene.flags`. These are the same as the defaults set by
+# `mjv_defaultScene`, except that we disable `mjRND_HAZE`.
 _DEFAULT_RENDER_FLAGS = np.zeros(enums.mjtRndFlag.mjNRNDFLAG, dtype=np.ubyte)
 _DEFAULT_RENDER_FLAGS[enums.mjtRndFlag.mjRND_SHADOW] = 1
 _DEFAULT_RENDER_FLAGS[enums.mjtRndFlag.mjRND_REFLECTION] = 1
 _DEFAULT_RENDER_FLAGS[enums.mjtRndFlag.mjRND_SKYBOX] = 1
+
+# Default values for `MjvOption.flags`. These are the same as the defaults set
+# by `mjv_defaultOption`, except that we disable `mjVIS_RANGEFINDER`.
+_DEFAULT_VIS_FLAGS = np.zeros(enums.mjtVisFlag.mjNVISFLAG, dtype=np.ubyte)
+_DEFAULT_VIS_FLAGS[enums.mjtVisFlag.mjVIS_TEXTURE] = 1
+_DEFAULT_VIS_FLAGS[enums.mjtVisFlag.mjVIS_TENDON] = 1
+_DEFAULT_VIS_FLAGS[enums.mjtVisFlag.mjVIS_PERTOBJ] = 1
+_DEFAULT_VIS_FLAGS[enums.mjtVisFlag.mjVIS_STATIC] = 1
+_DEFAULT_VIS_FLAGS[enums.mjtVisFlag.mjVIS_SKIN] = 1
 
 
 @six.add_metaclass(abc.ABCMeta)
@@ -289,6 +299,7 @@ class RenderSettings(object):
 
   def __init__(self):
     self._visualization_options = wrapper.MjvOption()
+    self._visualization_options.flags[:] = _DEFAULT_VIS_FLAGS
     self._stereo_mode = enums.mjtStereo.mjSTEREO_NONE
     self._render_flags = _DEFAULT_RENDER_FLAGS
 
