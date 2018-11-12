@@ -491,6 +491,7 @@
             </element>
             <element name="joint">
               <attributes>
+                <attribute name="group" type="int"/>
                 <attribute name="type" type="keyword" valid_values="free ball slide hinge"/>
                 <attribute name="pos" type="array" array_type="float" array_size="3"/>
                 <attribute name="axis" type="array" array_type="float" array_size="3"/>
