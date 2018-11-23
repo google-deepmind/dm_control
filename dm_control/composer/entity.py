@@ -234,15 +234,21 @@ class Entity(object):
     """
     return Observables(self)
 
-  def iter_entities(self):
+  def iter_entities(self, exclude_self=False):
     """An iterator that recursively iterates through all attached entities.
 
+    Args:
+      exclude_self: (optional) Whether to exclude this `Entity` itself from the
+        iterator.
+
     Yields:
-      The first value yielded is this Entity itself. The following Entities are
-      then yielded recursively in a depth-first fashion, following the order in
-      which the Entities are attached.
+      If `exclude_self` is `False`, the first value yielded is this Entity
+      itself. The following Entities are then yielded recursively in a
+      depth-first fashion, following the order in which the Entities are
+      attached.
     """
-    yield self
+    if not exclude_self:
+      yield self
     for attached_entity in self._attached:
       for attached_entity_of_attached_entity in attached_entity.iter_entities():
         yield attached_entity_of_attached_entity

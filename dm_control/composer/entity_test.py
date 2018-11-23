@@ -58,11 +58,12 @@ class TestEntityObservables(entity.Observables):
 class EntityTest(absltest.TestCase):
 
   def setUp(self):
+    super(EntityTest, self).setUp()
     self.entity = TestEntity()
 
   def testNumObservables(self):
     """Tests that the observables dict has the right number of entries."""
-    self.assertEqual(2, len(self.entity.observables.as_dict()))
+    self.assertLen(self.entity.observables.as_dict(), 2)
 
   def testObservableNames(self):
     """Tests that the observables dict keys correspond to the observable names.
@@ -251,6 +252,14 @@ class EntityTest(absltest.TestCase):
 
     self.assertEqual(list(entities[0].iter_entities()),
                      [entities[0], entities[3]])
+
+  def testIterEntitiesExcludeSelf(self):
+    entities = [TestEntity() for _ in range(4)]
+    entities[0].attach(entities[1])
+    entities[1].attach(entities[2])
+    entities[0].attach(entities[3])
+    self.assertEqual(
+        list(entities[0].iter_entities(exclude_self=True)), entities[1:])
 
 
 if __name__ == '__main__':
