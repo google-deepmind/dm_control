@@ -141,7 +141,7 @@ class PassthroughRenderExecutor(BaseRenderExecutor):
     with self._lock_if_necessary:
       if not self._terminated:
         if cleanup_callable:
-          return cleanup_callable()
+          cleanup_callable()
         self._terminated = True
 
 
@@ -211,11 +211,8 @@ class OffloadingRenderExecutor(BaseRenderExecutor):
     with self._lock_if_necessary:
       if not self._terminated:
         if cleanup_callable:
-          result = self._call_locked(cleanup_callable)
-        else:
-          result = None
+          self._call_locked(cleanup_callable)
         _THREAD_POOL_EXECUTOR_POOL.release(self._executor)
         self._executor = None
         self._thread = None
         self._terminated = True
-        return result

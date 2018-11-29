@@ -105,6 +105,8 @@ def _maybe_load_linux_dynamic_deps(library_dir):
     # This means our interpreter is not yet linked against GLEW.
     if render.BACKEND == "osmesa":
       libglew_path = os.path.join(library_dir, "libglewosmesa.so")
+    elif render.BACKEND == "egl":
+      libglew_path = os.path.join(library_dir, "libglewegl.so")
     else:
       libglew_path = ctypes.util.find_library("GLEW")
     ctypes.CDLL(libglew_path, ctypes.RTLD_GLOBAL)  # Also loads GL implicitly.
