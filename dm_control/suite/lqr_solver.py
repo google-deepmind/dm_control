@@ -69,7 +69,7 @@ def _solve_dare(a, b, q, r):
       break
     p = p_next
   else:
-    logging.warn('DARE solver did not converge')
+    logging.warning('DARE solver did not converge')
   try:
     # Check that the result is symmetric and positive-definite.
     np.linalg.cholesky(p_next)

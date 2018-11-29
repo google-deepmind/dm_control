@@ -57,6 +57,7 @@ if not os.path.exists(OUT_DIR):
 class CoreTest(parameterized.TestCase):
 
   def setUp(self):
+    super(CoreTest, self).setUp()
     self.model = core.MjModel.from_xml_path(HUMANOID_XML_PATH)
     self.data = core.MjData(self.model)
 
@@ -103,7 +104,7 @@ class CoreTest(parameterized.TestCase):
     data = core.MjData(model)
     with mock.patch.object(core, "logging") as mock_logging:
       mjlib.mj_step(model.ptr, data.ptr)
-    mock_logging.warn.assert_called_once_with(
+    mock_logging.warning.assert_called_once_with(
         "Pre-allocated constraint buffer is full. Increase njmax above 2. "
         "Time = 0.0000.")
 
@@ -254,7 +255,7 @@ class CoreTest(parameterized.TestCase):
     self.data.qpos[0] = np.inf
     with mock.patch.object(core, "logging") as mock_logging:
       mjlib.mj_step(self.model.ptr, self.data.ptr)
-    mock_logging.warn.assert_called_once_with(
+    mock_logging.warning.assert_called_once_with(
         "Nan, Inf or huge value in QPOS at DOF 0. The simulation is unstable. "
         "Time = 0.0000.")
 
@@ -516,6 +517,7 @@ class AttributesTest(parameterized.TestCase):
     pass
 
   def setUp(self):
+    super(AttributesTest, self).setUp()
     self.model = core.MjModel.from_xml_path(HUMANOID_XML_PATH)
     self.data = core.MjData(self.model)
 

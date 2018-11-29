@@ -175,7 +175,7 @@ class BindingGenerator(object):
         new_ctypes_typename, new_ctypes_typename)
 
     if new_ctypes_typename == old_ctypes_typename:
-      logging.warn("Could not resolve typename '%s'", old_ctypes_typename)
+      logging.warning("Could not resolve typename '%s'", old_ctypes_typename)
 
     return new_ctypes_typename
 

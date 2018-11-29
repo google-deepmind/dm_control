@@ -289,7 +289,7 @@ class Physics(_control.Physics):
     try:
       self.after_reset()
     except _control.PhysicsError as e:
-      logging.warn(str(e))
+      logging.warning(e)
 
     # Set up named indexing.
     axis_indexers = index.make_axis_indexers(self.model)

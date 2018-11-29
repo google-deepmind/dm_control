@@ -233,7 +233,7 @@ class _CommonEnvironment(object):
       with self._physics.reset_context():
         self._hooks.after_compile(self._physics_proxy, self._random_state)
     except control.PhysicsError as e:
-      logging.warn(e)
+      logging.warning(e)
 
   def _make_physics(self):
     return mjcf.Physics.from_mjcf_model(self._task.root_entity.mjcf_model)
@@ -355,7 +355,7 @@ class Environment(_CommonEnvironment, environment.Base):
       physics_is_divergent = False
     except control.PhysicsError as e:
       if not self._raise_exception_on_physics_error:
-        logging.warn(e)
+        logging.warning(e)
         physics_is_divergent = True
       else:
         raise

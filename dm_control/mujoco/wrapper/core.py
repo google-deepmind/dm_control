@@ -85,7 +85,7 @@ _NOT_LAST_PARSED_ERROR = (
 # ensure they won't be garbage-collected before they are called.
 @ctypes.CFUNCTYPE(None, ctypes.c_char_p)
 def _warning_callback(message):
-  logging.warn(util.to_native_string(message))
+  logging.warning(util.to_native_string(message))
 
 
 @ctypes.CFUNCTYPE(None, ctypes.c_char_p)
@@ -332,7 +332,7 @@ def _load_xml(filename, vfs_or_none):
   if not model_ptr:
     raise Error(util.to_native_string(error_buf.value))
   elif error_buf.value:
-    logging.warn(util.to_native_string(error_buf.value))
+    logging.warning(util.to_native_string(error_buf.value))
 
   # Free resources when the ctypes pointer is garbage collected.
   _create_finalizer(model_ptr, mjlib.mj_deleteModel)
