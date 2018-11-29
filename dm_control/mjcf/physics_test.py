@@ -30,6 +30,7 @@ from dm_control.mjcf import physics as mjcf_physics
 from dm_control.mujoco.wrapper import mjbindings
 import mock
 import numpy as np
+import six
 from six.moves import cPickle
 from six.moves import range
 from six.moves import zip
@@ -43,6 +44,7 @@ class PhysicsTest(parameterized.TestCase):
   """Tests for `mjcf.Physics`."""
 
   def setUp(self):
+    super(PhysicsTest, self).setUp()
     self.model = mjcf.from_path(ARM_MODEL)
     self.physics = mjcf.Physics.from_xml_string(
         self.model.to_xml_string(), assets=self.model.get_assets())
@@ -195,7 +197,8 @@ class PhysicsTest(parameterized.TestCase):
     with self.assertRaises(AttributeError):
       _ = physics.bind(normal_body).mocap_pos
 
-    with self.assertRaisesRegexp(
+    with six.assertRaisesRegex(
+        self,
         ValueError,
         'Cannot bind to a collection containing multiple element types'):
       physics.bind([mocap_body, normal_body])
@@ -228,16 +231,17 @@ class PhysicsTest(parameterized.TestCase):
   def test_exceptions(self):
     joint = self.model.find_all('joint')[0]
     geom = self.model.find_all('geom')[0]
-    with self.assertRaisesRegexp(
+    with six.assertRaisesRegex(
+        self,
         ValueError,
         'Cannot bind to a collection containing multiple element types'):
       self.physics.bind([joint, geom])
 
-    with self.assertRaisesRegexp(ValueError, 'cannot be bound to physics'):
+    with six.assertRaisesRegex(self, ValueError, 'cannot be bound to physics'):
       mjcf.physics.Binding(self.physics, 'invalid_namespace', 'whatever')
 
     binding = self.physics.bind(joint)
-    with self.assertRaisesRegexp(AttributeError, 'does not have attribute'):
+    with six.assertRaisesRegex(self, AttributeError, 'does not have attribute'):
       getattr(binding, 'invalid_attribute')
 
   def test_dirty(self):

@@ -31,6 +31,7 @@ from dm_control.rl import specs
 class ApplicationTest(parameterized.TestCase):
 
   def setUp(self):
+    super(ApplicationTest, self).setUp()
     with mock.patch(application.__name__ + '.gui'):
       self.app = application.Application()
 

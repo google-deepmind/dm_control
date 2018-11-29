@@ -93,7 +93,7 @@ class ThreadSafetyTest(absltest.TestCase):
       frame = physics.render(width=320, height=240, camera_id=0)
       unique_frames.add(frame.tostring())
 
-    self.assertEqual(NUM_STEPS, len(unique_frames))
+    self.assertLen(unique_frames, NUM_STEPS)
 
   @decorators.run_threaded(num_threads=NUM_THREADS, calls_per_thread=5)
   def test_render_multiple_physics_instances_per_thread_parallel(self):
@@ -108,4 +108,3 @@ class ThreadSafetyTest(absltest.TestCase):
 
 if __name__ == '__main__':
   absltest.main()
-

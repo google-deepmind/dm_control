@@ -63,6 +63,7 @@ FIELD_REPR = {
 class MujocoIndexTest(parameterized.TestCase):
 
   def setUp(self):
+    super(MujocoIndexTest, self).setUp()
     self._model = wrapper.MjModel.from_xml_string(MODEL)
     self._data = wrapper.MjData(self._model)
 
@@ -77,7 +78,7 @@ class MujocoIndexTest(parameterized.TestCase):
   def assertIndexExpressionEqual(self, expected, actual):
     try:
       if isinstance(expected, tuple):
-        self.assertEqual(len(expected), len(actual))
+        self.assertLen(actual, len(expected))
         for expected_item, actual_item in zip(expected, actual):
           self.assertIndexExpressionEqual(expected_item, actual_item)
       elif isinstance(expected, (list, np.ndarray)):
@@ -180,9 +181,8 @@ class MujocoIndexTest(parameterized.TestCase):
     # requirement of MuJoCo's compiler that all third-order actuators come after
     # all second-order actuators. This test ensures that the rule still holds
     # (e.g. in future versions of MuJoCo).
-    with self.assertRaisesRegexp(
-        wrapper.Error,
-        '2nd-order actuators must come before 3rd-order'):
+    with six.assertRaisesRegex(
+        self, wrapper.Error, '2nd-order actuators must come before 3rd-order'):
       wrapper.MjModel.from_xml_string(MODEL_INCORRECT_ACTUATOR_ORDER)
 
   @parameterized.parameters(
@@ -251,7 +251,7 @@ class MujocoIndexTest(parameterized.TestCase):
   @parameterized.parameters('xpos', 'xmat')  # field name
   def testTooManyIndices(self, field_name):
     indexer = getattr(self._data_indexers, field_name)
-    with self.assertRaisesRegexp(IndexError, 'Index tuple'):
+    with six.assertRaisesRegex(self, IndexError, 'Index tuple'):
       _ = indexer[:, :, :, 'too', 'many', 'elements']
 
   @parameterized.parameters(
@@ -275,7 +275,7 @@ class MujocoIndexTest(parameterized.TestCase):
         (0, np.array([[bad_index_item]]))
     ]
     for expression in expressions:
-      with self.assertRaisesRegexp(IndexError, exception_regexp):
+      with six.assertRaisesRegex(self, IndexError, exception_regexp):
         _ = indexer[expression]
 
   @parameterized.parameters('act', 'qM', 'sensordata', 'xpos')  # field name
@@ -316,7 +316,7 @@ class MujocoIndexTest(parameterized.TestCase):
       self.assertEqual(actual, expected)
 
     # FieldIndexer attributes should be read-only
-    with self.assertRaisesRegexp(AttributeError, name):
+    with six.assertRaisesRegex(self, AttributeError, name):
       setattr(field_indexer, name, expected)
 
   def testFieldIndexerDir(self):

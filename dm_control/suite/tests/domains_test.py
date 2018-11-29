@@ -70,7 +70,7 @@ class DomainTest(parameterized.TestCase):
     num_tasks = sum(len(tasks) for tasks in
                     six.itervalues(suite.TASKS_BY_DOMAIN))
 
-    self.assertEqual(len(suite.ALL_TASKS), num_tasks)
+    self.assertLen(suite.ALL_TASKS, num_tasks)
 
   def _validate_observation(self, observation_dict, observation_spec):
     obs = observation_dict.copy()

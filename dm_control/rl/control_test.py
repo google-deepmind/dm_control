@@ -42,6 +42,7 @@ _OBSERVATION_SPEC = {'observations': specs.ArraySpec(shape=(), dtype=np.float)}
 class EnvironmentTest(parameterized.TestCase):
 
   def setUp(self):
+    super(EnvironmentTest, self).setUp()
     self._task = mock.Mock(spec=control.Task)
     self._task.initialize_episode = mock.Mock()
     self._task.get_observation = mock.Mock(return_value=_CONSTANT_OBSERVATION)
@@ -120,7 +121,7 @@ class EnvironmentTest(parameterized.TestCase):
     env = control.Environment(
         physics=self._physics, task=self._task, flat_observation=True)
     timestep = env.reset()
-    self.assertEqual(len(timestep.observation), 1)
+    self.assertLen(timestep.observation, 1)
     self.assertEqual(timestep.observation[control.FLAT_OBSERVATION_KEY].size,
                      1 + 7)
 

@@ -25,6 +25,7 @@ from absl.testing import absltest
 from dm_control import mjcf
 from dm_control.composer.observation.observable import mjcf as mjcf_observable
 import numpy as np
+import six
 
 _MJCF = """
 <mujoco>
@@ -73,9 +74,9 @@ class ObservableTest(absltest.TestCase):
         physics.named.data.geom_xpos[[my_box.full_identifier,
                                       small_sphere.full_identifier]])
 
-    with self.assertRaisesRegexp(ValueError, 'expected an `mjcf.Element`'):
+    with six.assertRaisesRegex(self, ValueError, 'expected an `mjcf.Element`'):
       mjcf_observable.MJCFFeature('qpos', 'my_hinge')
-    with self.assertRaisesRegexp(ValueError, 'expected an `mjcf.Element`'):
+    with six.assertRaisesRegex(self, ValueError, 'expected an `mjcf.Element`'):
       mjcf_observable.MJCFFeature('geom_xpos', [my_box, 'small_sphere'])
 
   def testMJCFCamera(self):
@@ -106,11 +107,11 @@ class ObservableTest(absltest.TestCase):
     self.assertEqual(camera_observation.dtype,
                      camera_observable.array_spec.dtype)
 
-    with self.assertRaisesRegexp(ValueError, 'expected an `mjcf.Element`'):
+    with six.assertRaisesRegex(self, ValueError, 'expected an `mjcf.Element`'):
       mjcf_observable.MJCFCamera('world')
-    with self.assertRaisesRegexp(ValueError, 'expected an `mjcf.Element`'):
+    with six.assertRaisesRegex(self, ValueError, 'expected an `mjcf.Element`'):
       mjcf_observable.MJCFCamera([camera])
-    with self.assertRaisesRegexp(ValueError, 'expected a <camera>'):
+    with six.assertRaisesRegex(self, ValueError, 'expected a <camera>'):
       mjcf_observable.MJCFCamera(mjcf_root.find('body', 'body'))
 
 if __name__ == '__main__':

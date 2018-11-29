@@ -28,6 +28,7 @@ from absl.testing import parameterized
 from dm_control import mjcf
 from dm_control.mujoco import wrapper
 from dm_control.mujoco.wrapper import util
+import six
 
 _ASSETS_DIR = os.path.join(os.path.dirname(__file__), 'test_assets')
 _TEST_MODEL_WITH_ASSETS = os.path.join(_ASSETS_DIR, 'model_with_assets.xml')
@@ -38,6 +39,7 @@ _OUT_DIR = os.path.join(absltest.get_default_test_tmpdir(), 'export')
 class ExportWithAssetsTest(parameterized.TestCase):
 
   def setUp(self):
+    super(ExportWithAssetsTest, self).setUp()
     # Remove any existing export directory and its contents between tests.
     shutil.rmtree(_OUT_DIR, ignore_errors=True)
 
@@ -88,7 +90,7 @@ class ExportWithAssetsTest(parameterized.TestCase):
 
   def test_exceptions(self):
     mjcf_model = mjcf.from_path(_TEST_MODEL_WITH_ASSETS)
-    with self.assertRaisesRegexp(ValueError, 'must end with \'.xml\''):
+    with six.assertRaisesRegex(self, ValueError, 'must end with \'.xml\''):
       mjcf.export_with_assets(mjcf_model, _OUT_DIR,
                               out_file_name='invalid_extension.png')
 

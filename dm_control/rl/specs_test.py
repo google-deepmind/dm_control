@@ -23,6 +23,7 @@ from __future__ import print_function
 from absl.testing import absltest
 from dm_control.rl import specs as array_spec
 import numpy as np
+import six
 
 
 class ArraySpecTest(absltest.TestCase):
@@ -95,11 +96,11 @@ class ArraySpecTest(absltest.TestCase):
 class BoundedArraySpecTest(absltest.TestCase):
 
   def testInvalidMinimum(self):
-    with self.assertRaisesRegexp(ValueError, "not compatible"):
+    with six.assertRaisesRegex(self, ValueError, "not compatible"):
       array_spec.BoundedArraySpec((3, 5), np.uint8, (0, 0, 0), (1, 1))
 
   def testInvalidMaximum(self):
-    with self.assertRaisesRegexp(ValueError, "not compatible"):
+    with six.assertRaisesRegex(self, ValueError, "not compatible"):
       array_spec.BoundedArraySpec((3, 5), np.uint8, 0, (1, 1, 1))
 
   def testMinMaxAttributes(self):
@@ -109,9 +110,9 @@ class BoundedArraySpecTest(absltest.TestCase):
 
   def testNotWriteable(self):
     spec = array_spec.BoundedArraySpec((1, 2, 3), np.float32, 0, (5, 5, 5))
-    with self.assertRaisesRegexp(ValueError, "read-only"):
+    with six.assertRaisesRegex(self, ValueError, "read-only"):
       spec.minimum[0] = -1
-    with self.assertRaisesRegexp(ValueError, "read-only"):
+    with six.assertRaisesRegex(self, ValueError, "read-only"):
       spec.maximum[0] = 100
 
   def testEqualBroadcastingBounds(self):

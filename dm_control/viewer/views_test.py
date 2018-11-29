@@ -29,6 +29,7 @@ from six.moves import range
 class ColumnTextViewTest(absltest.TestCase):
 
   def setUp(self):
+    super(ColumnTextViewTest, self).setUp()
     self.model = mock.MagicMock()
     self.view = views.ColumnTextView(self.model)
 
@@ -52,6 +53,7 @@ class ColumnTextViewTest(absltest.TestCase):
 class MujocoDepthBufferTests(absltest.TestCase):
 
   def setUp(self):
+    super(MujocoDepthBufferTests, self).setUp()
     self.component = views.MujocoDepthBuffer()
 
     self.context = mock.MagicMock()
@@ -89,6 +91,7 @@ class MujocoDepthBufferTests(absltest.TestCase):
 class ViewportLayoutTest(absltest.TestCase):
 
   def setUp(self):
+    super(ViewportLayoutTest, self).setUp()
     self.layout = views.ViewportLayout()
 
     self.context = mock.MagicMock()
@@ -102,7 +105,7 @@ class ViewportLayoutTest(absltest.TestCase):
   def test_adding_component(self):
     self.element = mock.MagicMock(spec=views.BaseViewportView)
     self.layout.add(self.element, views.PanelLocation.TOP_LEFT)
-    self.assertEqual(1, len(self.layout))
+    self.assertLen(self.layout, 1)
 
   def test_adding_same_component_twice_updates_location(self):
     self.element = mock.MagicMock(spec=views.BaseViewportView)
@@ -115,7 +118,7 @@ class ViewportLayoutTest(absltest.TestCase):
     self.element = mock.MagicMock(spec=views.BaseViewportView)
     self.layout._views[self.element] = views.PanelLocation.TOP_LEFT
     self.layout.remove(self.element)
-    self.assertEqual(0, len(self.layout))
+    self.assertEmpty(self.layout)
 
   def test_removing_unregistered_component(self):
     self.element = mock.MagicMock(spec=views.BaseViewportView)
@@ -126,7 +129,7 @@ class ViewportLayoutTest(absltest.TestCase):
     self.layout._views = {mock.MagicMock(spec=views.BaseViewportView): pos
                           for _ in range(3)}
     self.layout.clear()
-    self.assertEqual(0, len(self.layout))
+    self.assertEmpty(self.layout)
 
   def test_rendering_layout(self):
     positions = [

@@ -30,6 +30,7 @@ from dm_control.mujoco.wrapper.mjbindings import enums
 from dm_control.rl import control
 import mock
 import numpy as np
+import six
 from six.moves import cPickle
 from six.moves import range
 
@@ -47,6 +48,7 @@ ASSETS = {
 class MujocoEngineTest(parameterized.TestCase):
 
   def setUp(self):
+    super(MujocoEngineTest, self).setUp()
     self._physics = engine.Physics.from_xml_path(MODEL_PATH)
 
   def _assert_attributes_equal(self, actual_obj, expected_obj, attr_to_compare):
@@ -168,13 +170,13 @@ class MujocoEngineTest(parameterized.TestCase):
     max_width = self._physics.model.vis.global_.offwidth
     max_height = self._physics.model.vis.global_.offheight
     max_camid = self._physics.model.ncam - 1
-    with self.assertRaisesRegexp(ValueError, 'width'):
+    with six.assertRaisesRegex(self, ValueError, 'width'):
       self._physics.render(max_height, max_width + 1, camera_id=max_camid)
-    with self.assertRaisesRegexp(ValueError, 'height'):
+    with six.assertRaisesRegex(self, ValueError, 'height'):
       self._physics.render(max_height + 1, max_width, camera_id=max_camid)
-    with self.assertRaisesRegexp(ValueError, 'camera_id'):
+    with six.assertRaisesRegex(self, ValueError, 'camera_id'):
       self._physics.render(max_height, max_width, camera_id=max_camid + 1)
-    with self.assertRaisesRegexp(ValueError, 'camera_id'):
+    with six.assertRaisesRegex(self, ValueError, 'camera_id'):
       self._physics.render(max_height, max_width, camera_id=-2)
 
   def testPhysicsRenderMethod(self):

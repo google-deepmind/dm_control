@@ -34,27 +34,27 @@ class QuietSetTest(absltest.TestCase):
     listeners = [object() for _ in range(5)]
     for listener in listeners:
       subject += listener
-    self.assertEqual(5, len(subject))
+    self.assertLen(subject, 5)
 
   def test_add_collection_of_listeners(self):
     subject = util.QuietSet()
     subject += [object() for _ in range(5)]
-    self.assertEqual(5, len(subject))
+    self.assertLen(subject, 5)
 
   def test_add_collection_and_individual_listeners(self):
     subject = util.QuietSet()
     subject += object()
     subject += [object() for _ in range(5)]
     subject += object()
-    self.assertEqual(7, len(subject))
+    self.assertLen(subject, 7)
 
   def test_add_duplicate_listeners(self):
     subject = util.QuietSet()
     listener = object()
     subject += listener
-    self.assertEqual(1, len(subject))
+    self.assertLen(subject, 1)
     subject += listener
-    self.assertEqual(1, len(subject))
+    self.assertLen(subject, 1)
 
   def test_remove_listeners(self):
     subject = util.QuietSet()
@@ -63,7 +63,7 @@ class QuietSetTest(absltest.TestCase):
       subject += listener
 
     subject -= listeners[1]
-    self.assertEqual(2, len(subject))
+    self.assertLen(subject, 2)
 
   def test_remove_unregistered_listener(self):
     subject = util.QuietSet()
@@ -72,7 +72,7 @@ class QuietSetTest(absltest.TestCase):
       subject += listener
 
     subject -= object()
-    self.assertEqual(3, len(subject))
+    self.assertLen(subject, 3)
 
 
 class ToIterableTest(parameterized.TestCase):
@@ -82,7 +82,7 @@ class ToIterableTest(parameterized.TestCase):
 
     result = util.to_iterable(original_value)
     self.assertIsInstance(result, collections.Iterable)
-    self.assertEqual(1, len(result))
+    self.assertLen(result, 1)
     self.assertEqual(original_value, result[0])
 
   def test_strings_wrappe_by_list(self):
@@ -90,7 +90,7 @@ class ToIterableTest(parameterized.TestCase):
 
     result = util.to_iterable(original_value)
     self.assertIsInstance(result, collections.Iterable)
-    self.assertEqual(1, len(result))
+    self.assertLen(result, 1)
     self.assertEqual(original_value, result[0])
 
   @parameterized.named_parameters(
@@ -121,6 +121,7 @@ class InterleaveTest(absltest.TestCase):
 class TimeMultiplierTests(absltest.TestCase):
 
   def setUp(self):
+    super(TimeMultiplierTests, self).setUp()
     self.factor = util.TimeMultiplier(initial_time_multiplier=1.0)
 
   def custom_initial_factor(self):
@@ -175,6 +176,7 @@ class TimeMultiplierTests(absltest.TestCase):
 class IntegratorTests(absltest.TestCase):
 
   def setUp(self):
+    super(IntegratorTests, self).setUp()
     self.integration_step = 1
     self.integrator = util.Integrator(self.integration_step)
     self.integrator._sampling_timestamp = 0.0
@@ -202,6 +204,7 @@ class IntegratorTests(absltest.TestCase):
 class AtomicActionTests(absltest.TestCase):
 
   def setUp(self):
+    super(AtomicActionTests, self).setUp()
     self.callback = mock.MagicMock()
     self.action = util.AtomicAction(self.callback)
 
@@ -262,6 +265,7 @@ class ObservableFlagTest(absltest.TestCase):
 class TimerTest(absltest.TestCase):
 
   def setUp(self):
+    super(TimerTest, self).setUp()
     self.timer = util.Timer()
 
   def test_time_elapsed(self):
@@ -282,6 +286,7 @@ class TimerTest(absltest.TestCase):
 class ErrorLoggerTest(absltest.TestCase):
 
   def setUp(self):
+    super(ErrorLoggerTest, self).setUp()
     self.callback = mock.MagicMock()
     self.logger = util.ErrorLogger([self.callback])
 
@@ -308,6 +313,7 @@ class ErrorLoggerTest(absltest.TestCase):
 class NullErrorLoggerTest(absltest.TestCase):
 
   def setUp(self):
+    super(NullErrorLoggerTest, self).setUp()
     self.logger = util.NullErrorLogger()
 
   def test_thrown_errors_are_not_being_intercepted(self):

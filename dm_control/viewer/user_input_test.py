@@ -26,6 +26,7 @@ import mock
 class InputMapTests(absltest.TestCase):
 
   def setUp(self):
+    super(InputMapTests, self).setUp()
     self.mouse = mock.MagicMock()
     self.keyboard = mock.MagicMock()
     self.input_map = user_input.InputMap(self.mouse, self.keyboard)
@@ -41,10 +42,10 @@ class InputMapTests(absltest.TestCase):
 
     self.input_map.clear_bindings()
 
-    self.assertEqual(0, len(self.input_map._action_callbacks))
-    self.assertEqual(0, len(self.input_map._double_click_callbacks))
-    self.assertEqual(0, len(self.input_map._plane_callback))
-    self.assertEqual(0, len(self.input_map._z_axis_callback))
+    self.assertEmpty(self.input_map._action_callbacks)
+    self.assertEmpty(self.input_map._double_click_callbacks)
+    self.assertEmpty(self.input_map._plane_callback)
+    self.assertEmpty(self.input_map._z_axis_callback)
     self.assertEqual(
         user_input._NO_EXCLUSIVE_KEY, self.input_map._active_exclusive)
 
@@ -75,12 +76,12 @@ class InputMapTests(absltest.TestCase):
 
   def test_binding_planar_action(self):
     self.input_map.bind_plane(self.callback)
-    self.assertEqual(1, len(self.input_map._plane_callback))
+    self.assertLen(self.input_map._plane_callback, 1)
     self.assertEqual(self.callback, self.input_map._plane_callback[0])
 
   def test_binding_z_axis_action(self):
     self.input_map.bind_z_axis(self.callback)
-    self.assertEqual(1, len(self.input_map._z_axis_callback))
+    self.assertLen(self.input_map._z_axis_callback, 1)
     self.assertEqual(self.callback, self.input_map._z_axis_callback[0])
 
   def test_invoking_regular_action_in_response_to_click(self):

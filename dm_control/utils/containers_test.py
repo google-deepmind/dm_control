@@ -47,14 +47,14 @@ class TaggedTaskTest(absltest.TestCase):
     def test_factory4():  # pylint: disable=unused-variable
       return 'executed 4'
 
-    self.assertEqual(4, len(tasks))
+    self.assertLen(tasks, 4)
     self.assertEqual(set(['basic', 'expert', 'stable', 'unstable']),
                      set(tasks.tags()))
 
-    self.assertEqual(1, len(tasks.tagged('basic')))
-    self.assertEqual(2, len(tasks.tagged('expert')))
-    self.assertEqual(2, len(tasks.tagged('stable')))
-    self.assertEqual(1, len(tasks.tagged('unstable')))
+    self.assertLen(tasks.tagged('basic'), 1)
+    self.assertLen(tasks.tagged('expert'), 2)
+    self.assertLen(tasks.tagged('stable'), 2)
+    self.assertLen(tasks.tagged('unstable'), 1)
 
     self.assertEqual('executed 2', tasks['test_factory2']())
 

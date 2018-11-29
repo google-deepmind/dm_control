@@ -26,6 +26,7 @@ from dm_control import mjcf
 from dm_control.composer import define
 from dm_control.composer import entity
 from dm_control.composer.observation.observable import base as observable
+import six
 from six.moves import range
 
 
@@ -131,13 +132,14 @@ class EntityTest(absltest.TestCase):
 
   def testObservableOptionsInvalidName(self):
     options = {'asdf': None}
-    with self.assertRaisesRegexp(KeyError, 'No observable with name \'asdf\''):
+    with six.assertRaisesRegex(
+        self, KeyError, 'No observable with name \'asdf\''):
       self.entity.observables.set_options(options)
 
   def testObservableInvalidOptions(self):
     options = {'observable0': {'asdf': 2}}
-    with self.assertRaisesRegexp(AttributeError,
-                                 'Cannot add attribute asdf in configure.'):
+    with six.assertRaisesRegex(self, AttributeError,
+                               'Cannot add attribute asdf in configure.'):
       self.entity.observables.set_options(options)
 
   def testObservableOptions(self):
@@ -237,7 +239,7 @@ class EntityTest(absltest.TestCase):
     entities[0].attach(entities[3])
 
     entities[1].detach()
-    with self.assertRaisesRegexp(RuntimeError, 'not attached'):
+    with six.assertRaisesRegex(self, RuntimeError, 'not attached'):
       entities[1].detach()
 
     self.assertIsNone(entities[0].parent)

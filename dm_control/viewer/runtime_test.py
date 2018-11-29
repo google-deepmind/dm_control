@@ -30,6 +30,7 @@ from dm_control.rl import specs
 class RuntimeStateMachineTest(parameterized.TestCase):
 
   def setUp(self):
+    super(RuntimeStateMachineTest, self).setUp()
     env = mock.MagicMock()
     env.action_spec.return_value = specs.BoundedArraySpec(
         (1,), np.float64, -1, 1)
@@ -110,6 +111,7 @@ class RuntimeStateMachineTest(parameterized.TestCase):
 class RuntimeSingleStepTest(parameterized.TestCase):
 
   def setUp(self):
+    super(RuntimeSingleStepTest, self).setUp()
     env = mock.MagicMock(spec=environment.Base)
     env.action_spec.return_value = specs.BoundedArraySpec(
         (1,), np.float64, -1, 1)
@@ -144,6 +146,7 @@ class RuntimeSingleStepTest(parameterized.TestCase):
 class RuntimeTest(absltest.TestCase):
 
   def setUp(self):
+    super(RuntimeTest, self).setUp()
     env = mock.MagicMock(spec=environment.Base)
     env.action_spec.return_value = specs.BoundedArraySpec(
         (1,), np.float64, -1, 1)
@@ -255,6 +258,7 @@ class RuntimeTest(absltest.TestCase):
 class EnvironmentRuntimeTest(parameterized.TestCase):
 
   def setUp(self):
+    super(EnvironmentRuntimeTest, self).setUp()
     self.observation = mock.MagicMock()
     self.env = mock.MagicMock(spec=environment.Base)
     self.env.physics = mock.MagicMock()

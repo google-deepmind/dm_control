@@ -33,6 +33,7 @@ from dm_control.mujoco.wrapper import mjbindings
 from dm_control.mujoco.wrapper.mjbindings import enums
 import mock
 import numpy as np
+import six
 from six.moves import cPickle
 from six.moves import range
 
@@ -241,9 +242,9 @@ class CoreTest(parameterized.TestCase):
     self.assertEqual(name, output_name)
 
   def testNamesIdsExceptions(self):
-    with self.assertRaisesRegexp(core.Error, "does not exist"):
+    with six.assertRaisesRegex(self, core.Error, "does not exist"):
       self.model.name2id("nonexistent_body_name", "body")
-    with self.assertRaisesRegexp(core.Error, "is not a valid object type"):
+    with six.assertRaisesRegex(self, core.Error, "is not a valid object type"):
       self.model.name2id("right_foot", "nonexistent_type_name")
 
   def testNamelessObject(self):
@@ -373,11 +374,11 @@ class CoreTest(parameterized.TestCase):
     self.assertLess(data.qvel[0], -0.1)
 
   def testDisableFlagsExceptions(self):
-    with self.assertRaisesRegexp(ValueError, "not a valid flag name"):
+    with six.assertRaisesRegex(self, ValueError, "not a valid flag name"):
       with self.model.disable("invalid_flag_name"):
         pass
-    with self.assertRaisesRegexp(ValueError,
-                                 "not a value in `enums.mjtDisableBit`"):
+    with six.assertRaisesRegex(self, ValueError,
+                               "not a value in `enums.mjtDisableBit`"):
       with self.model.disable(-99):
         pass
 

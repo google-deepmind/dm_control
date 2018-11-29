@@ -97,7 +97,7 @@ class UpdaterTest(parameterized.TestCase):
     self.assertIs(type(actual_values), type(expected_values))
     for actual_dict, expected_dict in zip(actual_values, expected_values):
       self.assertIs(type(actual_dict), type(expected_dict))
-      self.assertEqual(len(actual_dict), len(expected_dict))
+      self.assertLen(actual_dict, len(expected_dict))
       for actual, expected in zip(six.iteritems(actual_dict),
                                   six.iteritems(expected_dict)):
         actual_name, actual_value = actual

@@ -54,6 +54,7 @@ class BaseRendererTest(absltest.TestCase):
       return self._call_order
 
   def setUp(self):
+    super(BaseRendererTest, self).setUp()
     self.renderer = BaseRendererTest.MockRenderer()
     self.context = mock.MagicMock()
     self.viewport = mock.MagicMock()
@@ -71,6 +72,7 @@ class BaseRendererTest(absltest.TestCase):
 class OffScreenRendererTest(absltest.TestCase):
 
   def setUp(self):
+    super(OffScreenRendererTest, self).setUp()
     self.model = mock.MagicMock()
     self.model.vis.global_.offwidth = _SCREEN_SIZE.width
     self.model.vis.global_.offheight = _SCREEN_SIZE.height
@@ -109,6 +111,7 @@ class OffScreenRendererTest(absltest.TestCase):
 class PerturbationTest(absltest.TestCase):
 
   def setUp(self):
+    super(PerturbationTest, self).setUp()
     self.model = mock.MagicMock()
     self.data = mock.MagicMock()
     self.scene = mock.MagicMock()
@@ -204,6 +207,7 @@ class PerturbationTest(absltest.TestCase):
 class RenderSettingsTest(absltest.TestCase):
 
   def setUp(self):
+    super(RenderSettingsTest, self).setUp()
     self.settings = renderer.RenderSettings()
     self.scene = wrapper.MjvScene()
 
@@ -292,6 +296,7 @@ class RenderSettingsTest(absltest.TestCase):
 class SceneCameraTest(parameterized.TestCase):
 
   def setUp(self):
+    super(SceneCameraTest, self).setUp()
     self.model = mock.MagicMock()
     self.data = mock.MagicMock()
     self.options = mock.MagicMock()
@@ -387,6 +392,7 @@ class SceneCameraTest(parameterized.TestCase):
 class RaycastsTest(absltest.TestCase):
 
   def setUp(self):
+    super(RaycastsTest, self).setUp()
     self.model = mock.MagicMock()
     self.data = mock.MagicMock()
     self.options = mock.MagicMock()
@@ -467,6 +473,7 @@ class RaycastsTest(absltest.TestCase):
 class ViewportTest(parameterized.TestCase):
 
   def setUp(self):
+    super(ViewportTest, self).setUp()
     self.viewport = renderer.Viewport()
     self.viewport.set_size(100, 100)
 

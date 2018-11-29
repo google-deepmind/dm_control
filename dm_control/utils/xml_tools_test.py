@@ -68,10 +68,10 @@ class XmlHelperTest(absltest.TestCase):
     self.assertEqual(geom.tag, 'geom')
     self.assertEqual(geom.attrib['name'], 'geom_name')
 
-    with self.assertRaisesRegexp(ValueError, 'Element with tag'):
+    with six.assertRaisesRegex(self, ValueError, 'Element with tag'):
       xml_tools.find_element(root=tree, tag='does_not_exist', name='name')
 
-    with self.assertRaisesRegexp(ValueError, 'Element with tag'):
+    with six.assertRaisesRegex(self, ValueError, 'Element with tag'):
       xml_tools.find_element(root=tree, tag='world', name='does_not_exist')
 
 
