@@ -519,6 +519,7 @@
                 <attribute name="conaffinity" type="int"/>
                 <attribute name="condim" type="int"/>
                 <attribute name="group" type="int"/>
+                <attribute name="priority" type="int"/>
                 <attribute name="size" type="array" array_type="float" array_size="3"/>
                 <attribute name="material" type="reference"/>
                 <attribute name="rgba" type="array" array_type="float" array_size="4"/>
