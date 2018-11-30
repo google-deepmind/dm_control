@@ -51,17 +51,30 @@ Follow these steps to install `dm_control`:
 
 ## Additional instructions for Linux
 
-The MuJoCo Python bindings support two different OpenGL rendering backends: GLFW
-(hardware-based) and OSMesa (software-based). At least one of these two backends
-must be available in order to use the bindings.
+The MuJoCo Python bindings support three different OpenGL rendering backends:
+EGL (headless, hardware-accelerated), GLFW (windowed, hardware-accelerated),
+and OSMesa (purely software-based). At least one of these three backends
+must be available in order render through `dm_control`.
 
-*   Hardware rendering requires GLFW and GLEW, which can be installed via your
-    Linux distribution's package manager. For example, on Debian and Ubuntu,
-    this can be done by running `sudo apt-get install libglfw3 libglew2.0`.
-    **Note:** hardware rendering is not supported on headless machines.
+*   "Headless" hardware rendering (i.e. without a windowing system such as X11)
+    requires [EXT_platform_device]
+    (https://www.khronos.org/registry/EGL/extensions/EXT/EGL_EXT_platform_device.txt)
+    support in the EGL driver. Recent Nvidia drivers support this. You will also
+    need GLEW. On Debian and Ubuntu, this can be installed via
+    `sudo apt-get install libglew2.0`.
+
+*   Hardware rendering with a windowing system is also supported via GLFW and
+    GLEW, which can be installed via your Linux distribution's package manager.
+    For example, on Debian and Ubuntu, this can be done by running
+    `sudo apt-get install libglfw3 libglew2.0`.
 
 *   Software rendering requires GLX and OSMesa. On Debian and Ubuntu these can
     be installed using `sudo apt-get install libgl1-mesa-glx libosmesa6`.
+
+By default, `dm_control` will attempt to use EGL first, then GLFW, then OSMesa.
+You can also specify a particular backend to use by setting the
+`MUJOCO_GL=` environment variable to `"egl"`, `"glfw"`, or `"osmesa"`,
+respectively.
 
 ## Additional instructions for Homebrew users on macOS
 
