@@ -25,7 +25,9 @@ environment variable to 'egl', 'glfw' or 'osmesa'.
 import collections
 import os
 
-BACKEND = os.environ.get('MUJOCO_GL')
+from dm_control.render import constants
+
+BACKEND = os.environ.get(constants.MUJOCO_GL)
 
 
 # pylint: disable=g-import-not-at-top
@@ -45,9 +47,9 @@ def _import_osmesa():
 # pylint: enable=g-import-not-at-top
 
 _ALL_RENDERERS = collections.OrderedDict([
-    ('egl', _import_egl),
-    ('glfw', _import_glfw),
-    ('osmesa', _import_osmesa),
+    (constants.EGL, _import_egl),
+    (constants.GLFW, _import_glfw),
+    (constants.OSMESA, _import_osmesa),
 ])
 
 
@@ -56,8 +58,9 @@ if BACKEND is not None:
   try:
     import_func = _ALL_RENDERERS[BACKEND]
   except KeyError:
-    raise RuntimeError('MUJOCO_GL= must be one of {!r}, got {!r}.'
-                       .format(_ALL_RENDERERS.keys(), BACKEND))
+    raise RuntimeError(
+        'Environment variable {} must be one of {!r}: got {!r}.'
+        .format(constants.MUJOCO_GL, _ALL_RENDERERS.keys(), BACKEND))
   Renderer = import_func()  # pylint: disable=invalid-name
 else:
   # Otherwise try importing them in descending order of priority until
@@ -75,4 +78,4 @@ else:
       del args, kwargs
       raise RuntimeError('No OpenGL rendering backend is available.')
 
-USING_GPU = BACKEND in ('egl', 'glfw')
+USING_GPU = BACKEND in (constants.EGL, constants.GLFW)

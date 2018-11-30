@@ -21,23 +21,21 @@ from __future__ import print_function
 
 import os
 
-_PYOPENGL_PLATFORM = 'PYOPENGL_PLATFORM'
-_OSMESA_PLATFORM = 'osmesa'
-_CURRENT_PLATFORM = os.environ.get(_PYOPENGL_PLATFORM)
+from dm_control.render import base
+from dm_control.render import constants
 
-if not _CURRENT_PLATFORM:
-  os.environ[_PYOPENGL_PLATFORM] = _OSMESA_PLATFORM
-elif _CURRENT_PLATFORM != _OSMESA_PLATFORM:
-  raise RuntimeError(
+PYOPENGL_PLATFORM = os.environ.get(constants.PYOPENGL_PLATFORM)
+
+if not PYOPENGL_PLATFORM:
+  os.environ[constants.PYOPENGL_PLATFORM] = constants.OSMESA
+elif PYOPENGL_PLATFORM != constants.OSMESA:
+  raise ImportError(
       'Cannot use OSMesa rendering platform. '
       'The PYOPENGL_PLATFORM environment variable is set to {!r} '
       '(should be either unset or {!r}).'
-      .format(_CURRENT_PLATFORM, _OSMESA_PLATFORM))
-
-del _PYOPENGL_PLATFORM, _OSMESA_PLATFORM, _CURRENT_PLATFORM
+      .format(PYOPENGL_PLATFORM, constants.OSMESA))
 
 # pylint: disable=g-import-not-at-top
-from dm_control.render import base
 from OpenGL import GL
 from OpenGL import osmesa
 from OpenGL.GL import arrays

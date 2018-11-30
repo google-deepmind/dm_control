@@ -23,31 +23,26 @@ import unittest
 
 # Internal dependencies.
 from absl.testing import absltest
-
-try:
-  from dm_control.render.pyopengl import osmesa_renderer  # pylint: disable=g-import-not-at-top
-except (ImportError, IOError, OSError):
-  osmesa_renderer = None
-
-import mock  # pylint: disable=g-import-not-at-top
+from dm_control import render
+import mock
+from OpenGL import GL
 
 MAX_WIDTH = 640
 MAX_HEIGHT = 480
 
-if osmesa_renderer:
-  CONTEXT_PATH = osmesa_renderer.__name__ + '.osmesa'
-  GL_ARRAYS_PATH = osmesa_renderer.__name__ + '.arrays'
+CONTEXT_PATH = render.__name__ + '.pyopengl.osmesa_renderer.osmesa'
+GL_ARRAYS_PATH = render.__name__ + '.pyopengl.osmesa_renderer.arrays'
 
 
-@unittest.skipUnless(osmesa_renderer,
-                     reason='OSMesa renderer could not be imported.')
+@unittest.skipUnless(render.BACKEND == render.constants.OSMESA,
+                     reason='OSMesa backend not selected.')
 class OSMesaContextTest(absltest.TestCase):
 
   def test_init(self):
     mock_context = mock.MagicMock()
     with mock.patch(CONTEXT_PATH) as mock_osmesa:
       mock_osmesa.OSMesaCreateContextExt.return_value = mock_context
-      renderer = osmesa_renderer.OSMesaContext(MAX_WIDTH, MAX_HEIGHT)
+      renderer = render.Renderer(MAX_WIDTH, MAX_HEIGHT)
       self.assertIs(renderer._context, mock_context)
       renderer.free()
 
@@ -58,19 +53,18 @@ class OSMesaContextTest(absltest.TestCase):
       with mock.patch(GL_ARRAYS_PATH) as mock_glarrays:
         mock_osmesa.OSMesaCreateContextExt.return_value = mock_context
         mock_glarrays.GLfloatArray.zeros.return_value = mock_buffer
-        renderer = osmesa_renderer.OSMesaContext(MAX_WIDTH, MAX_HEIGHT)
+        renderer = render.Renderer(MAX_WIDTH, MAX_HEIGHT)
         with renderer.make_current():
           pass
         mock_osmesa.OSMesaMakeCurrent.assert_called_once_with(
-            mock_context, mock_buffer,
-            osmesa_renderer.GL.GL_FLOAT, MAX_WIDTH, MAX_HEIGHT)
+            mock_context, mock_buffer, GL.GL_FLOAT, MAX_WIDTH, MAX_HEIGHT)
         renderer.free()
 
   def test_freeing(self):
     mock_context = mock.MagicMock()
     with mock.patch(CONTEXT_PATH) as mock_osmesa:
       mock_osmesa.OSMesaCreateContextExt.return_value = mock_context
-      renderer = osmesa_renderer.OSMesaContext(MAX_WIDTH, MAX_HEIGHT)
+      renderer = render.Renderer(MAX_WIDTH, MAX_HEIGHT)
       renderer.free()
       mock_osmesa.OSMesaDestroyContext.assert_called_once_with(mock_context)
       self.assertIsNone(renderer._context)
