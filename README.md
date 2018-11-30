@@ -57,8 +57,7 @@ and OSMesa (purely software-based). At least one of these three backends
 must be available in order render through `dm_control`.
 
 *   "Headless" hardware rendering (i.e. without a windowing system such as X11)
-    requires [EXT_platform_device]
-    (https://www.khronos.org/registry/EGL/extensions/EXT/EGL_EXT_platform_device.txt)
+    requires [EXT_platform_device](https://www.khronos.org/registry/EGL/extensions/EXT/EGL_EXT_platform_device.txt)
     support in the EGL driver. Recent Nvidia drivers support this. You will also
     need GLEW. On Debian and Ubuntu, this can be installed via
     `sudo apt-get install libglew2.0`.
