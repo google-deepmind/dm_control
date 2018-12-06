@@ -92,6 +92,7 @@ class MujocoIndexTest(parameterized.TestCase):
   @parameterized.parameters(
       # (field name, named index key, expected integer index key)
       ('actuator_gear', 'slide', 0),
+      ('geom_rgba', ('mocap_sphere', 'g'), (6, 1)),
       ('dof_armature', 'slider', slice(0, 1, None)),
       ('dof_armature', ['slider', 'hinge'], [0, 1]),
       ('numeric_data', 'three_numbers', slice(1, 4, None)),
