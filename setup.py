@@ -177,28 +177,7 @@ setup(
     ],
     test_suite='nose.collector',
     packages=find_packages(),
-    package_data={
-        'dm_control.composer': [
-            'arena.xml'
-        ],
-        'dm_control.mjcf': [
-            'schema.xml',
-            'test_assets/*.xml',
-            'test_assets/meshes/*.stl',
-            'test_assets/meshes/more_meshes/*.stl',
-            'test_assets/textures/*.png',
-        ],
-        'dm_control.mujoco.testing': [
-            'assets/*.png',
-            'assets/*.stl',
-            'assets/*.xml'
-            'assets/frames/*.png',
-        ],
-        'dm_control.suite': [
-            '*.xml',
-            'common/*.xml'
-        ],
-    },
+    package_data={'': ['*.png', '*.stl', '*.xml']},
     cmdclass={
         'build_mjbindings': BuildMJBindingsCommand,
         'install': InstallCommand,
