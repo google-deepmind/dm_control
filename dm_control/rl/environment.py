@@ -46,6 +46,8 @@ class TimeStep(collections.namedtuple(
     discount: A discount value in the range `[0, 1]`, or `None` if `step_type`
       is `StepType.FIRST`, i.e. at the start of a sequence.
     observation: A NumPy array, or a nested dict, list or tuple of arrays.
+      Scalar values that can be cast to NumPy arrays (e.g. Python floats) are
+      also valid in place of a scalar array.
   """
   __slots__ = ()
 
@@ -95,8 +97,10 @@ class Base(object):
         step_type: A `StepType` of `FIRST`.
         reward: `None`, indicating the reward is undefined.
         discount: `None`, indicating the discount is undefined.
-        observation: A NumPy array, or a nested dict, list or tuple of arrays
-          corresponding to `observation_spec()`.
+        observation: A NumPy array, or a nested dict, list or tuple of arrays.
+          Scalar values that can be cast to NumPy arrays (e.g. Python floats)
+          are also valid in place of a scalar array. Must conform to the
+          specification returned by `observation_spec()`.
     """
 
   @abc.abstractmethod
@@ -122,8 +126,10 @@ class Base(object):
           `StepType.FIRST`.
         discount: A discount in the range [0, 1], or None if step_type is
           `StepType.FIRST`.
-        observation: A NumPy array, or a nested dict, list or tuple of arrays
-          corresponding to `observation_spec()`.
+        observation: A NumPy array, or a nested dict, list or tuple of arrays.
+          Scalar values that can be cast to NumPy arrays (e.g. Python floats)
+          are also valid in place of a scalar array. Must conform to the
+          specification returned by `observation_spec()`.
     """
 
   @abc.abstractmethod
