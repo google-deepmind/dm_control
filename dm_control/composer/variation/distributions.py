@@ -30,7 +30,7 @@ import six
 
 @six.add_metaclass(abc.ABCMeta)
 class Distribution(base.Variation):
-  """ Base Distribution class for sampling a parametrized distribution.
+  """Base Distribution class for sampling a parametrized distribution.
 
   Subclasses need to implement `_callable`, which needs to return a callable
   based on the random_state passed as arg. This callable then gets called using
@@ -38,7 +38,8 @@ class Distribution(base.Variation):
   the distribution parameters themselves to be instances of `base.Variation`.
   By default samples are drawn in the shape of `initial_value`, unless the
   optional `single_sample` constructor arg is set to `True`, in which case only
-  a single sample is drawn."""
+  a single sample is drawn.
+  """
 
   def __init__(self, *args, **kwargs):
     self._single_sample = kwargs.pop('single_sample', False)
@@ -47,7 +48,7 @@ class Distribution(base.Variation):
 
   def __call__(self, initial_value=None, current_value=None, random_state=None):
     local_random_state = random_state or np.random
-    size = (None if self._single_sample or initial_value is None
+    size = (None if self._single_sample or initial_value is None  # pylint: disable=g-long-ternary
             else np.shape(initial_value))
     local_args = variation.evaluate(self._args,
                                     initial_value=initial_value,
@@ -100,7 +101,7 @@ class UniformPointOnSphere(base.Variation):
   def __call__(self, initial_value=None,
                current_value=None, random_state=None):
     random_state = random_state or np.random
-    axis = random_state.normal(size=3 if initial_value is None
+    axis = random_state.normal(size=3 if initial_value is None  # pylint: disable=g-long-ternary
                                else np.append(np.shape(initial_value), 3))
     axis /= np.linalg.norm(axis, axis=-1, keepdims=True)
     return axis
@@ -151,3 +152,33 @@ class Bernoulli(Distribution):
 
   def _callable(self, random_state):
     return functools.partial(random_state.binomial, 1)
+
+
+class BiasedRandomWalk(base.Variation):
+  """A Class for generating noise from a zero-mean Ornstein-Uhlenbeck process.
+
+  Let
+  `retain = np.exp(-1. / timescale)`
+  and
+  `scale = stdev * sqrt(1 - (retain * retain))`
+  Then the discete-time first-order filtered diffusion process
+  `x_next = retain * x + N(0, scale))`
+  has standard deviation `stdev` and characteristic timescale `timescale`.
+
+  Args:
+    stdev: Float. Standard deviation of the output sequence.
+    timescale: Integer. Number of timesteps characteristic of the random walk.
+      After `timescale` steps the correlation is reduced by exp(-1). Larger
+      or equal to 0, where a value of 0 is an uncorrelated normal distribution.
+  """
+
+  def __init__(self, stdev=0.1, timescale=10.):
+    self._retain = np.exp(np.divide(-1., timescale))
+    self._scale = stdev * np.sqrt(1 - (self._retain * self._retain))
+    self._value = 0.0
+
+  def __call__(self, initial_value=None, current_value=None, random_state=None):
+    random_state = random_state or np.random
+    self._value = (self._retain * self._value +
+                   random_state.normal(loc=0.0, scale=self._scale))
+    return self._value
