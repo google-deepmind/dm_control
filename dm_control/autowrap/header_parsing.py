@@ -193,6 +193,7 @@ COND_DECL = _nested_if_else(IFDEF, NAME, ELSE, ENDIF, UNCOND_DECL, UNCOND_DECL)
 
 # e.g. "mjtNum gravity[3];              // gravitational acceleration"
 STRUCT_MEMBER = pp.Group(
+    pp.Optional(STRUCT("struct")) +
     (NATIVE_TYPENAME | NAME)("typename") +
     pp.Optional(PTR("ptr")) +
     NAME("name") +
@@ -200,7 +201,8 @@ STRUCT_MEMBER = pp.Group(
     SEMI +
     pp.Optional(COMMENT("comment")))
 
-STRUCT_DECL = pp.Group(
+# Struct declaration within a union (non-nested).
+UNION_STRUCT_DECL = pp.Group(
     STRUCT("struct") +
     pp.Optional(NAME("typename")) +
     pp.Optional(COMMENT("comment")) +
@@ -214,7 +216,10 @@ ANONYMOUS_UNION_DECL = pp.Group(
     pp.Optional(MULTILINE_COMMENT("comment")) +
     UNION("anonymous_union") +
     LBRACE +
-    pp.OneOrMore(STRUCT_DECL | STRUCT_MEMBER | COMMENT.suppress())("members") +
+    pp.OneOrMore(
+        UNION_STRUCT_DECL |
+        STRUCT_MEMBER |
+        COMMENT.suppress())("members") +
     RBRACE +
     SEMI)
 
@@ -228,7 +233,6 @@ NESTED_STRUCTS = _nested_scopes(
     body=pp.OneOrMore(
         STRUCT_MEMBER |
         ANONYMOUS_UNION_DECL |
-        STRUCT_DECL |
         COMMENT.suppress())("members"))
 
 BIT_LSHIFT = INT("bit_lshift_a") + pp.Suppress("<<") + INT("bit_lshift_b")
