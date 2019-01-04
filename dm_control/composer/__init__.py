@@ -1,4 +1,4 @@
-# Copyright 2018 The dm_control Authors.
+# Copyright 2018-2019 The dm_control Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ from dm_control.composer.entity import FreePropObservableMixin
 from dm_control.composer.entity import ModelWrapperEntity
 from dm_control.composer.entity import Observables
 from dm_control.composer.environment import Environment
+from dm_control.composer.environment import EpisodeInitializationError
 from dm_control.composer.environment import HOOK_NAMES
 from dm_control.composer.initializer import Initializer
 from dm_control.composer.robot import Robot

@@ -1,4 +1,4 @@
-# Copyright 2018 The dm_control Authors.
+# Copyright 2018-2019 The dm_control Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -56,6 +56,10 @@ _EMPTY_WITH_DOCSTRING_CODE = _empty_function_with_docstring.__code__.co_code
 def _callable_is_trivial(f):
   return (f.__code__.co_code == _EMPTY_CODE or
           f.__code__.co_code == _EMPTY_WITH_DOCSTRING_CODE)
+
+
+class EpisodeInitializationError(RuntimeError):
+  """Raised by a `composer.Task` when it fails to initialize an episode."""
 
 
 class _Hook(object):
@@ -165,7 +169,7 @@ class _CommonEnvironment(object):
                n_sub_steps=None, name=None,
                raise_exception_on_physics_error=True,
                strip_singleton_obs_buffer_dim=False):
-    """Constructs base task class.
+    """Initializes an instance of `_CommonEnvironment`.
 
     Args:
       task: Instance of `composer.base.Task`.
@@ -280,8 +284,9 @@ class Environment(_CommonEnvironment, environment.Base):
   def __init__(self, task, time_limit=float('inf'), random_state=None,
                n_sub_steps=None, name=None,
                raise_exception_on_physics_error=True,
-               strip_singleton_obs_buffer_dim=False):
-    """Constructs base task class.
+               strip_singleton_obs_buffer_dim=False,
+               max_reset_attempts=1):
+    """Initializes an instance of `Environment`.
 
     Args:
       task: Instance of `composer.base.Task`.
@@ -299,14 +304,33 @@ class Environment(_CommonEnvironment, environment.Base):
       strip_singleton_obs_buffer_dim: (optional) A boolean, if `True`,
         the array shape of observations with `buffer_size == 1` will not have a
         leading buffer dimension.
+      max_reset_attempts: (optional) Maximum number of times to try resetting
+        the environment. If an `EpisodeInitializationError` is raised
+        during this process, an environment reset is reattempted up to this
+        number of times. If this count is exceeded then the most recent
+        exception will be allowed to propagate. Defaults to 1, i.e. no failure
+        is allowed.
     """
     super(Environment, self).__init__(task, time_limit, random_state,
                                       n_sub_steps, name,
                                       raise_exception_on_physics_error,
                                       strip_singleton_obs_buffer_dim)
+    self._max_reset_attempts = max_reset_attempts
     self._reset_next_step = True
 
   def reset(self):
+    failed_attempts = 0
+    while True:
+      try:
+        return self._reset_attempt()
+      except EpisodeInitializationError as e:
+        failed_attempts += 1
+        if failed_attempts < self._max_reset_attempts:
+          logging.error('Error during episode reset: %s', repr(e))
+        else:
+          raise
+
+  def _reset_attempt(self):
     self._hooks.initialize_episode_mjcf(self._random_state)
     self._recompile_physics()
     with self._physics.reset_context():
