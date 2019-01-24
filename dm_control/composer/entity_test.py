@@ -19,15 +19,37 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import itertools
 # Internal dependencies.
 
 from absl.testing import absltest
+from absl.testing import parameterized
 from dm_control import mjcf
+from dm_control.composer import arena
 from dm_control.composer import define
 from dm_control.composer import entity
 from dm_control.composer.observation.observable import base as observable
+import numpy as np
 import six
 from six.moves import range
+
+_NO_ROTATION = np.array([1., 0., 0., 0])
+_NINETY_DEGREES_ABOUT_X = np.array(
+    [np.cos(np.pi / 4), np.sin(np.pi / 4), 0., 0.])
+_NINETY_DEGREES_ABOUT_Y = np.array(
+    [np.cos(np.pi / 4), 0., np.sin(np.pi / 4), 0.])
+_NINETY_DEGREES_ABOUT_Z = np.array(
+    [np.cos(np.pi / 4), 0., 0., np.sin(np.pi / 4)])
+_FORTYFIVE_DEGREES_ABOUT_X = np.array(
+    [np.cos(np.pi / 8), np.sin(np.pi / 8), 0., 0.])
+
+_TEST_ROTATIONS = [
+    # Triplets of original rotation, new rotation and final rotation.
+    (None, _NO_ROTATION, _NO_ROTATION),
+    (_NO_ROTATION, _NINETY_DEGREES_ABOUT_Z, _NINETY_DEGREES_ABOUT_Z),
+    (_FORTYFIVE_DEGREES_ABOUT_X, _NINETY_DEGREES_ABOUT_Y,
+     np.array([0.65328, 0.2706, 0.65328, -0.2706])),
+]
 
 
 class TestEntity(entity.Entity):
@@ -35,6 +57,7 @@ class TestEntity(entity.Entity):
 
   def _build(self, name='test_entity'):
     self._mjcf_root = mjcf.element.RootElement(model=name)
+    self._mjcf_root.worldbody.add('geom', type='sphere', size=(0.1,))
 
   def _build_observables(self):
     return TestEntityObservables(self)
@@ -56,7 +79,7 @@ class TestEntityObservables(entity.Observables):
     return observable.Generic(lambda phys: 1.0)
 
 
-class EntityTest(absltest.TestCase):
+class EntityTest(parameterized.TestCase):
 
   def setUp(self):
     super(EntityTest, self).setUp()
@@ -262,6 +285,83 @@ class EntityTest(absltest.TestCase):
     entities[0].attach(entities[3])
     self.assertEqual(
         list(entities[0].iter_entities(exclude_self=True)), entities[1:])
+
+  @parameterized.parameters(
+      dict(position=position, quaternion=quaternion, freejoint=freejoint)
+      for position, quaternion, freejoint in itertools.product(
+          [None, [1., 0., -1.]],  # position
+          [
+              None,
+              _FORTYFIVE_DEGREES_ABOUT_X,
+              _NINETY_DEGREES_ABOUT_Z,
+          ],  # quaternion
+          [False, True],  # freejoint
+      ))
+  def testSetPose(self, position, quaternion, freejoint):
+    # Setup entity.
+    test_arena = arena.Arena()
+    subentity = TestEntity(name='subentity')
+    frame = test_arena.attach(subentity)
+    if freejoint:
+      frame.add('freejoint')
+
+    physics = mjcf.Physics.from_mjcf_model(test_arena.mjcf_model)
+
+    if quaternion is None:
+      ground_truth_quat = _NO_ROTATION
+    else:
+      ground_truth_quat = quaternion
+
+    if position is None:
+      ground_truth_pos = np.zeros(shape=(3,))
+    else:
+      ground_truth_pos = position
+
+    subentity.set_pose(physics, position=position, quaternion=quaternion)
+
+    np.testing.assert_array_equal(physics.bind(frame).xpos, ground_truth_pos)
+    np.testing.assert_array_equal(physics.bind(frame).xquat, ground_truth_quat)
+
+  @parameterized.parameters(
+      dict(
+          original_position=original_position,
+          position=position,
+          original_quaternion=test_rotation[0],
+          quaternion=test_rotation[1],
+          expected_quaternion=test_rotation[2],
+          freejoint=freejoint)
+      for (original_position, position, test_rotation,
+           freejoint) in itertools.product(
+               [[-2, -1, -1.], [1., 0., -1.]],  # original_position
+               [None, [1., 0., -1.]],  # position
+               _TEST_ROTATIONS,  # (original_quat, quat, expected_quat)
+               [False, True],  # freejoint
+           ))
+  def testShiftPose(self, original_position, position, original_quaternion,
+                    quaternion, expected_quaternion, freejoint):
+    # Setup entity.
+    test_arena = arena.Arena()
+    subentity = TestEntity(name='subentity')
+    frame = test_arena.attach(subentity)
+    if freejoint:
+      frame.add('freejoint')
+
+    physics = mjcf.Physics.from_mjcf_model(test_arena.mjcf_model)
+
+    # Set the original position
+    subentity.set_pose(
+        physics, position=original_position, quaternion=original_quaternion)
+
+    if position is None:
+      ground_truth_pos = original_position
+    else:
+      ground_truth_pos = original_position + np.array(position)
+    subentity.shift_pose(physics, position=position, quaternion=quaternion)
+    np.testing.assert_array_equal(physics.bind(frame).xpos, ground_truth_pos)
+
+    updated_quat = physics.bind(frame).xquat
+    np.testing.assert_array_almost_equal(updated_quat, expected_quaternion,
+                                         1e-4)
 
 
 if __name__ == '__main__':
