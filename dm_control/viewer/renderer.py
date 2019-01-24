@@ -401,7 +401,7 @@ class SceneCamera(object):
     # We need to recreate the camera for each new model, because each model
     # defines different fixed cameras and objects to track, and therefore
     # severely the parameters of this class.
-    self._scene = wrapper.MjvScene()
+    self._scene = wrapper.MjvScene(model)
     self._data = data
     self._model = model
     self._options = options

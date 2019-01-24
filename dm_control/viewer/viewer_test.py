@@ -48,7 +48,8 @@ class ViewerTest(absltest.TestCase):
     return call_args
 
   def test_initialize_creates_components(self):
-    self.viewer.initialize(self.physics, self.renderer, touchpad=False)
+    with mock.patch(viewer.__name__ + '.renderer'):
+      self.viewer.initialize(self.physics, self.renderer, touchpad=False)
     self.assertIsNotNone(self.viewer._camera)
     self.assertIsNotNone(self.viewer._manipulator)
     self.assertIsNotNone(self.viewer._free_camera)
@@ -57,7 +58,8 @@ class ViewerTest(absltest.TestCase):
 
   def test_initialize_creates_touchpad_specific_input_mapping(self):
     self.viewer._input_map = mock.MagicMock()
-    self.viewer.initialize(self.physics, self.renderer, touchpad=True)
+    with mock.patch(viewer.__name__ + '.renderer'):
+      self.viewer.initialize(self.physics, self.renderer, touchpad=True)
     call_args = self._extract_bind_call_args(self.viewer._input_map.bind)
     self.assertIn(viewer._MOVE_OBJECT_VERTICAL_TOUCHPAD, call_args)
     self.assertIn(viewer._MOVE_OBJECT_HORIZONTAL_TOUCHPAD, call_args)
@@ -67,7 +69,8 @@ class ViewerTest(absltest.TestCase):
 
   def test_initialize_create_mouse_specific_input_mapping(self):
     self.viewer._input_map = mock.MagicMock()
-    self.viewer.initialize(self.physics, self.renderer, touchpad=False)
+    with mock.patch(viewer.__name__ + '.renderer'):
+      self.viewer.initialize(self.physics, self.renderer, touchpad=False)
     call_args = self._extract_bind_call_args(self.viewer._input_map.bind)
     self.assertIn(viewer._MOVE_OBJECT_VERTICAL_MOUSE, call_args)
     self.assertIn(viewer._MOVE_OBJECT_HORIZONTAL_MOUSE, call_args)
@@ -77,7 +80,8 @@ class ViewerTest(absltest.TestCase):
 
   def test_initialization_flushes_old_input_map(self):
     self.viewer._input_map = mock.MagicMock()
-    self.viewer.initialize(self.physics, self.renderer, touchpad=False)
+    with mock.patch(viewer.__name__ + '.renderer'):
+      self.viewer.initialize(self.physics, self.renderer, touchpad=False)
     self.viewer._input_map.clear_bindings.assert_called_once()
 
   def test_deinitialization_deletes_components(self):

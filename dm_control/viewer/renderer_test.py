@@ -300,7 +300,10 @@ class SceneCameraTest(parameterized.TestCase):
     self.model = mock.MagicMock()
     self.data = mock.MagicMock()
     self.options = mock.MagicMock()
-    self.camera = renderer.SceneCamera(self.model, self.data, self.options)
+    with mock.patch.object(renderer.wrapper.core.mjlib,
+                           'mjv_makeScene') as mock_make_scene:
+      self.camera = renderer.SceneCamera(self.model, self.data, self.options)
+    mock_make_scene.assert_called_once()
 
   def test_freelook_mode(self):
     self.camera.set_freelook_mode()
@@ -398,7 +401,10 @@ class RaycastsTest(absltest.TestCase):
     self.options = mock.MagicMock()
 
     self.viewport = mock.MagicMock()
-    self.camera = renderer.SceneCamera(self.model, self.data, self.options)
+    with mock.patch.object(renderer.wrapper.core.mjlib,
+                           'mjv_makeScene') as mock_make_scene:
+      self.camera = renderer.SceneCamera(self.model, self.data, self.options)
+    mock_make_scene.assert_called_once()
     self.initialize_camera(True)
 
   def initialize_camera(self, enable):
