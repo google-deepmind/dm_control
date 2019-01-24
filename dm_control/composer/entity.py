@@ -27,6 +27,7 @@ import weakref
 from absl import logging
 from dm_control import mjcf
 from dm_control.composer import define
+from dm_control.mujoco.wrapper import mjbindings
 import numpy as np
 import six
 
@@ -38,12 +39,16 @@ _NO_ATTACHMENT_FRAME = 'No attachment frame found.'
 
 # The component order differs from that used by the open-source `tf` package.
 def _multiply_quaternions(quat1, quat2):
-  """Multiplies two quaternions, expressed as [w, i, j, k]."""
-  return np.array([
-      [+quat1[0], -quat1[1], -quat1[2], -quat1[3]],
-      [+quat1[1], +quat1[0], -quat1[3], +quat1[2]],
-      [+quat1[2], +quat1[3], +quat1[0], -quat1[1]],
-      [+quat1[3], -quat1[2], +quat1[1], +quat1[0]]]).dot(quat2)
+  result = np.empty_like(quat1)
+  mjbindings.mjlib.mju_mulQuat(result, quat1, quat2)
+  return result
+
+
+def _rotate_vector(vec, quat):
+  """Rotates a vector by the given quaternion."""
+  result = np.empty_like(vec)
+  mjbindings.mjlib.mju_rotVecQuat(result, vec, quat)
+  return result
 
 
 class _ObservableKeys(object):
@@ -407,7 +412,11 @@ class Entity(object):
         normalised_quaternion = quaternion / np.linalg.norm(quaternion)
         physics.bind(attachment_frame).quat = normalised_quaternion
 
-  def shift_pose(self, physics, position=None, quaternion=None):
+  def shift_pose(self,
+                 physics,
+                 position=None,
+                 quaternion=None,
+                 rotate_velocity=False):
     """Shifts the position and/or orientation from its current configuration.
 
     This is a convenience function that performs the same operation as
@@ -419,6 +428,11 @@ class Entity(object):
       physics: An instance of `mjcf.Physics`.
       position: (optional) A NumPy array of size 3.
       quaternion: (optional) A NumPy array of size 4.
+      rotate_velocity: (optional) A bool, whether to shift the current linear
+        velocity along with the pose. This will rotate the current linear
+        velocity, which is expressed relative to the world frame. The angular
+        velocity, which is expressed relative to the local frame is left
+        unchanged.
 
     Raises:
       RuntimeError: If the entity is not attached.
@@ -428,7 +442,17 @@ class Entity(object):
     if position is not None:
       new_position = current_position + position
     if quaternion is not None:
+      quaternion = np.array(quaternion, copy=False)
       new_quaternion = _multiply_quaternions(quaternion, current_quaternion)
+      root_joint = mjcf.get_frame_freejoint(self.mjcf_model)
+      if root_joint and rotate_velocity:
+        # Rotate the linear velocity. The angular velocity (qvel[3:)
+        # is left unchanged, as it is expressed in the local frame.
+        # When rotatating the body frame the angular velocity already
+        # tracks the rotation but the linear velocity does not.
+        velocity = physics.bind(root_joint).qvel[:3]
+        rotated_velocity = _rotate_vector(velocity, quaternion)
+        self.set_velocity(physics, rotated_velocity)
     self.set_pose(physics, new_position, new_quaternion)
 
   def set_velocity(self, physics, velocity=None, angular_velocity=None):

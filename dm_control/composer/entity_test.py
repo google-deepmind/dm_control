@@ -363,6 +363,35 @@ class EntityTest(parameterized.TestCase):
     np.testing.assert_array_almost_equal(updated_quat, expected_quaternion,
                                          1e-4)
 
+  @parameterized.parameters(False, True)
+  def testShiftPoseWithVelocity(self, rotate_velocity):
+    # Setup entity.
+    test_arena = arena.Arena()
+    subentity = TestEntity(name='subentity')
+    frame = test_arena.attach(subentity)
+    frame.add('freejoint')
+
+    physics = mjcf.Physics.from_mjcf_model(test_arena.mjcf_model)
+
+    # Set the original position
+    subentity.set_pose(physics, position=[0., 0., 0.])
+
+    # Set velocity in y dim.
+    subentity.set_velocity(physics, [0., 1., 0.])
+
+    # Rotate the entity around the z axis.
+    subentity.shift_pose(
+        physics, quaternion=[0., 0., 0., 1.], rotate_velocity=rotate_velocity)
+
+    physics.forward()
+    updated_position, _ = subentity.get_pose(physics)
+    if rotate_velocity:
+      # Should not have moved in the y dim.
+      np.testing.assert_array_almost_equal(updated_position[1], 0.)
+    else:
+      # Should not have moved in the x dim.
+      np.testing.assert_array_almost_equal(updated_position[0], 0.)
+
 
 if __name__ == '__main__':
   absltest.main()
