@@ -1,4 +1,4 @@
-# Copyright 2018 The dm_control Authors.
+# Copyright 2018-2019 The dm_control Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -42,11 +42,16 @@ def _get_default_action(action_spec):
   * For unbounded intervals this will be zero.
 
   Args:
-    action_spec: An instance of `BoundedArraySpec`.
+    action_spec: An instance of `BoundedArraySpec` or a list or tuple
+      containing these.
 
   Returns:
-    A numpy array of actions.
+    A numpy array of actions if `action_spec` is a single `BoundedArraySpec`, or
+    a tuple of such arrays if `action_spec` is a list or tuple.
   """
+  if isinstance(action_spec, (list, tuple)):
+    return tuple(_get_default_action(spec) for spec in action_spec)
+
   minimum = np.broadcast_to(action_spec.minimum, action_spec.shape)
   maximum = np.broadcast_to(action_spec.maximum, action_spec.shape)
   left_bounded = np.isfinite(minimum)
@@ -55,7 +60,9 @@ def _get_default_action(action_spec):
       condlist=[left_bounded & right_bounded, left_bounded, right_bounded],
       choicelist=[0.5 * (minimum + maximum), minimum, maximum],
       default=0.)
-  return action.astype(action_spec.dtype, copy=False)
+  action = action.astype(action_spec.dtype, copy=False)
+  action.flags.writeable = False
+  return action
 
 
 class State(enum.Enum):
@@ -233,7 +240,7 @@ class Runtime(object):
       if self._policy:
         action = self._policy(self._time_step)
       else:
-        action = self._default_action.copy()
+        action = self._default_action
       self._time_step = self._env.step(action)
       self._last_action = action
       finished = self._time_step.last()

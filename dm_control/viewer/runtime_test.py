@@ -1,4 +1,4 @@
-# Copyright 2018 The dm_control Authors.
+# Copyright 2018-2019 The dm_control Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ from absl.testing import parameterized
 from dm_control.viewer import runtime
 import mock
 import numpy as np
+from six.moves import zip
 from dm_control.rl import environment
 from dm_control.rl import specs
 
@@ -288,8 +289,7 @@ class EnvironmentRuntimeTest(parameterized.TestCase):
         runtime.__name__ + '._get_default_action') as mock_get_default_action:
       this_runtime = runtime.Runtime(environment=self.env, policy=None)
     this_runtime._step()
-    self.env.step.assert_called_once_with(
-        mock_get_default_action.return_value.copy())
+    self.env.step.assert_called_once_with(mock_get_default_action.return_value)
 
   def test_stepping_paused(self):
     with mock.patch(runtime.__name__ + '.mjlib') as mjlib:
@@ -334,6 +334,49 @@ class EnvironmentRuntimeTest(parameterized.TestCase):
     self.runtime._env.step.side_effect = raise_exception
     finished = self.runtime._step()
     self.assertTrue(finished)
+
+
+class DefaultActionFromSpecTest(parameterized.TestCase):
+
+  def assertNestedArraysEqual(self, expected, actual):
+    """Asserts that two potentially nested structures of arrays are equal."""
+    if isinstance(expected, (list, tuple)):
+      self.assertIsInstance(actual, (list, tuple))
+      self.assertLen(actual, len(expected))
+      for expected_item, actual_item in zip(expected, actual):
+        self.assertNestedArraysEqual(expected_item, actual_item)
+    else:
+      np.testing.assert_array_equal(expected, actual)
+
+  _SHAPE = (2,)
+  _DTYPE = np.float64
+  _ACTION = np.zeros(_SHAPE)
+  _ACTION_SPEC = specs.BoundedArraySpec(_SHAPE, np.float64, -1, 1)
+
+  @parameterized.named_parameters(
+      ('single_array', _ACTION_SPEC, _ACTION),
+      ('tuple', (_ACTION_SPEC, _ACTION_SPEC), (_ACTION, _ACTION)),
+      ('list', [_ACTION_SPEC, _ACTION_SPEC], (_ACTION, _ACTION)))
+  def test_action_structure(self, action_spec, expected_action):
+    self.assertNestedArraysEqual(expected_action,
+                                 runtime._get_default_action(action_spec))
+
+  @parameterized.named_parameters(
+      ('closed',
+       specs.BoundedArraySpec(_SHAPE, _DTYPE, minimum=1., maximum=2.),
+       np.full(_SHAPE, fill_value=1.5, dtype=_DTYPE)),
+      ('left_open',
+       specs.BoundedArraySpec(_SHAPE, _DTYPE, minimum=-np.inf, maximum=2.),
+       np.full(_SHAPE, fill_value=2., dtype=_DTYPE)),
+      ('right_open',
+       specs.BoundedArraySpec(_SHAPE, _DTYPE, minimum=1., maximum=np.inf),
+       np.full(_SHAPE, fill_value=1., dtype=_DTYPE)),
+      ('unbounded',
+       specs.BoundedArraySpec(_SHAPE, _DTYPE, minimum=-np.inf, maximum=np.inf),
+       np.full(_SHAPE, fill_value=0., dtype=_DTYPE)))
+  def test_action_spec_interval(self, action_spec, expected_action):
+    self.assertNestedArraysEqual(expected_action,
+                                 runtime._get_default_action(action_spec))
 
 
 if __name__ == '__main__':
