@@ -62,7 +62,7 @@ def main(argv):
     environment_name = prompt_environment_name(
         'Please select an environment name: ', _ALL_NAMES)
 
-  index = _ALL_NAMES.index(environment_name.lower())
+  index = _ALL_NAMES.index(environment_name)
   domain_name, task_name = suite.ALL_TASKS[index]
 
   task_kwargs = {}
