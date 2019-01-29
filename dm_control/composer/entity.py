@@ -333,7 +333,7 @@ class Entity(object):
 
   @property
   def attachment_site(self):
-    return self._mjcf_root
+    return self.mjcf_model
 
   def get_pose(self, physics):
     """Get the position and orientation of this entity relative to its parent.
