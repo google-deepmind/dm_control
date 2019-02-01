@@ -433,6 +433,19 @@ class CoreTest(parameterized.TestCase):
       del renderer
       gc.collect()
 
+  def testSceneGeomsAttribute(self):
+    scene = core.MjvScene(model=self.model)
+    self.assertEqual(scene.ngeom, 0)
+    self.assertEmpty(scene.geoms)
+    geom_types = (enums.mjtObj.mjOBJ_BODY,
+                  enums.mjtObj.mjOBJ_GEOM,
+                  enums.mjtObj.mjOBJ_SITE)
+    for geom_type in geom_types:
+      scene.ngeom += 1
+      scene.ptr.contents.geoms[scene.ngeom - 1].objtype = geom_type
+    self.assertLen(scene.geoms, len(geom_types))
+    np.testing.assert_array_equal(scene.geoms.objtype, geom_types)
+
 
 def _get_attributes_test_params():
   model = core.MjModel.from_xml_path(HUMANOID_XML_PATH)

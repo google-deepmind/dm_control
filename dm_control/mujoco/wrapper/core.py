@@ -835,6 +835,16 @@ class MjvScene(wrappers.MjvSceneWrapper):  # pylint: disable=missing-docstring
     _finalize(self._ptr)
     del self._ptr
 
+  @util.CachedProperty
+  def _geoms_buffer(self):
+    """Cached recarray containing the full geom buffer."""
+    return util.buf_to_npy(super(MjvScene, self).geoms, shape=(self.maxgeom,))
+
+  @property
+  def geoms(self):
+    """Variable-length recarray containing all geoms currently in the buffer."""
+    return self._geoms_buffer[:self.ngeom]
+
 
 class MjvPerturb(wrappers.MjvPerturbWrapper):
 
