@@ -87,6 +87,58 @@ class MujocoEngineTest(parameterized.TestCase):
     # Furthest pixels should be 3m away (depth is orthographic)
     np.testing.assert_approx_equal(pixels.max(), 3.0, 3)
 
+  @parameterized.parameters([True, False])
+  def testSegmentationRender(self, enable_geom_frame_rendering):
+    box_four_corners = """
+    <mujoco>
+      <visual>
+        <scale framelength="2"/>
+      </visual>
+      <worldbody>
+        <geom name="box0" type="box" size=".2 .2 .2" pos="-1 1 .1"/>
+        <geom name="box1" type="box" size=".2 .2 .2" pos="1 1 .1"/>
+        <site name="box2" type="box" size=".2 .2 .2" pos="1 -1 .1"/>
+        <site name="box3" type="box" size=".2 .2 .2" pos="-1 -1 .1"/>
+        <camera name="top" pos="0 0 3"/>
+      </worldbody>
+    </mujoco>
+    """
+    physics = engine.Physics.from_xml_string(box_four_corners)
+    obj_type_geom = enums.mjtObj.mjOBJ_GEOM  # Geom object type
+    obj_type_site = enums.mjtObj.mjOBJ_SITE  # Site object type
+    obj_type_decor = enums.mjtObj.mjOBJ_UNKNOWN  # Decor object type
+    scene_options = wrapper.MjvOption()
+    if enable_geom_frame_rendering:
+      scene_options.frame = wrapper.mjbindings.enums.mjtFrame.mjFRAME_GEOM
+    pixels = physics.render(height=200, width=200, camera_id='top',
+                            segmentation=True, scene_option=scene_options)
+
+    # The pixel indices below were chosen so that toggling the frame decors do
+    # not affect the segmentation results.
+    with self.subTest('Center pixels should have background label'):
+      np.testing.assert_equal(pixels[95:105, 95:105, 0], -1)
+      np.testing.assert_equal(pixels[95:105, 95:105, 1], -1)
+    with self.subTest('Geoms have correct object type'):
+      np.testing.assert_equal(pixels[15:25, 0:10, 1], obj_type_geom)
+      np.testing.assert_equal(pixels[15:25, 190:200, 1], obj_type_geom)
+    with self.subTest('Sites have correct object type'):
+      np.testing.assert_equal(pixels[190:200, 190:200, 1], obj_type_site)
+      np.testing.assert_equal(pixels[190:200, 0:10, 1], obj_type_site)
+    with self.subTest('Geoms have correct object IDs'):
+      np.testing.assert_equal(pixels[15:25, 0:10, 0],
+                              physics.model.name2id('box0', obj_type_geom))
+      np.testing.assert_equal(pixels[15:25, 190:200, 0],
+                              physics.model.name2id('box1', obj_type_geom))
+    with self.subTest('Sites have correct object IDs'):
+      np.testing.assert_equal(pixels[190:200, 190:200, 0],
+                              physics.model.name2id('box2', obj_type_site))
+      np.testing.assert_equal(pixels[190:200, 0:10, 0],
+                              physics.model.name2id('box3', obj_type_site))
+    with self.subTest('Decor elements present if and only if geom frames are '
+                      'enabled'):
+      contains_decor = np.any(pixels[:, :, 1] == obj_type_decor)
+      self.assertEqual(contains_decor, enable_geom_frame_rendering)
+
   def testTextOverlay(self):
     height, width = 480, 640
     overlay = engine.TextOverlay(title='Title', body='Body', style='big',
@@ -185,6 +237,23 @@ class MujocoEngineTest(parameterized.TestCase):
     self.assertEqual(image.shape, (height, width, 3))
     depth = self._physics.render(height=height, width=width, depth=True)
     self.assertEqual(depth.shape, (height, width))
+    segmentation = self._physics.render(height=height, width=width,
+                                        segmentation=True)
+    self.assertEqual(segmentation.shape, (height, width, 2))
+
+  def testExceptionIfBothDepthAndSegmentation(self):
+    with self.assertRaisesWithLiteralMatch(
+        ValueError, engine._BOTH_SEGMENTATION_AND_DEPTH_ENABLED):
+      self._physics.render(depth=True, segmentation=True)
+
+  def testExceptionIfOverlaysAndDepthOrSegmentation(self):
+    overlay = engine.TextOverlay()
+    with self.assertRaisesWithLiteralMatch(
+        ValueError, engine._OVERLAYS_NOT_SUPPORTED_FOR_DEPTH_OR_SEGMENTATION):
+      self._physics.render(depth=True, overlays=[overlay])
+    with self.assertRaisesWithLiteralMatch(
+        ValueError, engine._OVERLAYS_NOT_SUPPORTED_FOR_DEPTH_OR_SEGMENTATION):
+      self._physics.render(segmentation=True, overlays=[overlay])
 
   def testNamedViews(self):
     self.assertEqual((1,), self._physics.control().shape)

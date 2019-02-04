@@ -74,8 +74,12 @@ NamedIndexStructs = collections.namedtuple(
 Pose = collections.namedtuple(
     'Pose', ['lookat', 'distance', 'azimuth', 'elevation'])
 
+_BOTH_SEGMENTATION_AND_DEPTH_ENABLED = (
+    '`segmentation` and `depth` cannot both be `True`.')
 _INVALID_PHYSICS_STATE = (
     'Physics state is invalid. Warning(s) raised: {warning_names}')
+_OVERLAYS_NOT_SUPPORTED_FOR_DEPTH_OR_SEGMENTATION = (
+    'Overlays are not supported with depth or segmentation rendering.')
 
 
 class Physics(_control.Physics):
@@ -138,7 +142,7 @@ class Physics(_control.Physics):
       mjlib.mj_step1(self.model.ptr, self.data.ptr)
 
   def render(self, height=240, width=320, camera_id=-1, overlays=(),
-             depth=False, scene_option=None):
+             depth=False, segmentation=False, scene_option=None):
     """Returns a camera view as a NumPy array of pixel values.
 
     Args:
@@ -152,17 +156,22 @@ class Physics(_control.Physics):
         supported if `depth` is False.
       depth: If `True`, this method returns a NumPy float array of depth values
         (in meters). Defaults to `False`, which results in an RGB image.
+      segmentation: If `True`, this method returns a 2-channel NumPy int32 array
+        of label values where the pixels of each object are labeled with the
+        pair (mjModel ID, mjtObj enum object type). Background pixels are
+        labeled (-1, -1). Defaults to `False`, which returns an RGB image.
       scene_option: An optional `wrapper.MjvOption` instance that can be used to
         render the scene with custom visualization options. If None then the
         default options will be used.
 
     Returns:
-      The rendered RGB or depth image.
+      The rendered RGB, depth or segmentation image.
     """
     camera = Camera(
         physics=self, height=height, width=width, camera_id=camera_id)
     image = camera.render(
-        overlays=overlays, depth=depth, scene_option=scene_option)
+        overlays=overlays, depth=depth, segmentation=segmentation,
+        scene_option=scene_option)
     camera._scene.free()  # pylint: disable=protected-access
     return image
 
@@ -612,26 +621,48 @@ class Camera(object):
         self._rect,
         self._physics.contexts.mujoco.ptr)
 
-  def render(self, overlays=(), depth=False, scene_option=None):
+  def render(self, overlays=(), depth=False, segmentation=False,
+             scene_option=None):
     """Renders the camera view as a numpy array of pixel values.
 
     Args:
       overlays: An optional sequence of `TextOverlay` instances to draw. Only
-        supported if `depth` is False.
-      depth: An optional boolean. If True make the camera measure depth
+        supported if `depth` and `segmentation` are both False.
+      depth: An optional boolean. If True, makes the camera return depth
+        measurements. Cannot be enabled if `segmentation` is True.
+      segmentation: An optional boolean. If True, make the camera return a
+        pixel-wise segmentation of the scene. Cannot be enabled if `depth` is
+        True.
       scene_option: A custom `wrapper.MjvOption` instance to use to render
         the scene instead of the default.  If None, will use the default.
 
     Returns:
-      The rendered scene. If `depth` is False this is a NumPy uint8 array of RGB
-        values, otherwise it is a float NumPy array of depth values (in meters).
+      The rendered scene.
+        * If `depth` and `segmentation` are both False (default), this is a
+          (height, width, 3) uint8 numpy array containing RGB values.
+        * If `depth` is True, this is a (height, width) float32 numpy array
+          containing depth values (in meters).
+        * If `segmentation` is True, this is a (height, width, 2) int32 numpy
+          array where the first channel contains the integer ID of the object at
+          each pixel, and the second channel contains the corresponding object
+          type (a value in the `mjtObj` enum). Background pixels are labeled
+          (-1, -1).
 
     Raises:
       ValueError: If overlays are requested with depth rendering.
+      ValueError: If both depth and segmentation flags are set together.
     """
 
-    if depth and overlays:
-      raise ValueError('Overlays are not supported with depth rendering.')
+    if overlays and (depth or segmentation):
+      raise ValueError(_OVERLAYS_NOT_SUPPORTED_FOR_DEPTH_OR_SEGMENTATION)
+
+    if depth and segmentation:
+      raise ValueError(_BOTH_SEGMENTATION_AND_DEPTH_ENABLED)
+
+    # Enable flags to compute segmentation labels
+    if segmentation:
+      self._scene.flags[enums.mjtRndFlag.mjRND_SEGMENT] = True
+      self._scene.flags[enums.mjtRndFlag.mjRND_IDCOLOR] = True
 
     # Update scene geometry.
     self.update(scene_option=scene_option)
@@ -649,6 +680,20 @@ class Camera(object):
       # http://stackoverflow.com/a/6657284/1461210
       # https://www.khronos.org/opengl/wiki/Depth_Buffer_Precision
       image = near / (1 - self._depth_buffer * (1 - near / far))
+    elif segmentation:
+      # Convert 3-channel uint8 to 1-channel uint32.
+      image3 = self._rgb_buffer.astype(np.uint32)
+      segimage = (image3[:, :, 0] +
+                  image3[:, :, 1] * (2**8) +
+                  image3[:, :, 2] * (2**16))
+      # Remap segid to 2-channel (object ID, object type) pair.
+      # Seg ID 0 is background -- will be remapped to (-1, -1).
+      segid2output = np.full((self._scene.ngeom + 1, 2), fill_value=-1,
+                             dtype=np.int32)  # Seg id cannot be > ngeom + 1.
+      visible_geoms = self._scene.geoms[self._scene.geoms.segid != -1]
+      segid2output[visible_geoms.segid + 1, 0] = visible_geoms.objid
+      segid2output[visible_geoms.segid + 1, 1] = visible_geoms.objtype
+      image = segid2output[segimage]
     else:
       image = self._rgb_buffer
 

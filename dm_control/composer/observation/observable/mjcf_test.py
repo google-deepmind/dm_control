@@ -114,5 +114,26 @@ class ObservableTest(absltest.TestCase):
     with six.assertRaisesRegex(self, ValueError, 'expected a <camera>'):
       mjcf_observable.MJCFCamera(mjcf_root.find('body', 'body'))
 
+  def testMJCFSegCamera(self):
+    mjcf_root = mjcf.from_xml_string(_MJCF)
+    physics = mjcf.Physics.from_mjcf_model(mjcf_root)
+    camera = mjcf_root.find('camera', 'world')
+    camera_observable = mjcf_observable.MJCFCamera(
+        mjcf_element=camera, height=480, width=640, update_interval=7,
+        segmentation=True)
+    self.assertEqual(camera_observable.update_interval, 7)
+    camera_observation = camera_observable.observation_callable(physics)()
+    np.testing.assert_array_equal(
+        camera_observation,
+        physics.render(480, 640, 'world', segmentation=True))
+    camera_observable.array_spec.validate(camera_observation)
+
+  def testErrorIfSegmentationAndDepthBothEnabled(self):
+    camera = mjcf.from_xml_string(_MJCF).find('camera', 'world')
+    with self.assertRaisesWithLiteralMatch(
+        ValueError, mjcf_observable._BOTH_SEGMENTATION_AND_DEPTH_ENABLED):
+      mjcf_observable.MJCFCamera(mjcf_element=camera, segmentation=True,
+                                 depth=True)
+
 if __name__ == '__main__':
   absltest.main()

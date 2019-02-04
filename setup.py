@@ -157,7 +157,7 @@ setup(
     license='Apache License, Version 2.0',
     keywords='machine learning control physics MuJoCo AI',
     install_requires=[
-        'absl-py',
+        'absl-py>=0.7.0',
         'enum34',
         'future',
         'futures',

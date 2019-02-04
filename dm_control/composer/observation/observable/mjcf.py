@@ -27,6 +27,10 @@ import numpy as np
 from dm_control.rl import specs
 
 
+_BOTH_SEGMENTATION_AND_DEPTH_ENABLED = (
+    '`segmentation` and `depth` cannot both be `True`.')
+
+
 def _check_mjcf_element(obj):
   if not isinstance(obj, mjcf.Element):
     raise ValueError(
@@ -99,6 +103,7 @@ class MJCFCamera(base.Observable):
                aggregator=None,
                corruptor=None,
                depth=False,
+               segmentation=False,
                scene_option=None):
     """Initializes this observable.
 
@@ -128,12 +133,17 @@ class MJCFCamera(base.Observable):
         operates on corrupted observations.
       depth: (optional) A boolean. If `True`, renders a depth image (1-channel)
         instead of RGB (3-channel).
+      segmentation: (optional) A boolean. If `True`, renders a segmentation mask
+        (2-channel, int32) labeling the objects in the scene with their
+        (mjModel ID, mjtObj enum object type) pair. Background pixels are
+        set to (-1, -1).
       scene_option: An optional `wrapper.MjvOption` instance that can be used to
         render the scene with custom visualization options. If None then the
         default options will be used.
 
     Raises:
       ValueError: if `mjcf_element` is not a <camera> element.
+      ValueError: if segmentation and depth flags are both set to True.
     """
     _check_mjcf_element(mjcf_element)
     if mjcf_element.tag != 'camera':
@@ -143,9 +153,19 @@ class MJCFCamera(base.Observable):
     self._height = height
     self._width = width
 
-    self._n_channels = 1 if depth else 3
-    self._dtype = np.float32 if depth else np.uint8
+    if segmentation and depth:
+      raise ValueError(_BOTH_SEGMENTATION_AND_DEPTH_ENABLED)
+    if segmentation:
+      self._dtype = np.int32
+      self._n_channels = 2
+    elif depth:
+      self._dtype = np.float32
+      self._n_channels = 1
+    else:
+      self._dtype = np.uint8
+      self._n_channels = 3
     self._depth = depth
+    self._segmentation = segmentation
     self._scene_option = scene_option
     super(MJCFCamera, self).__init__(
         update_interval, buffer_size, delay, aggregator, corruptor)
@@ -167,6 +187,22 @@ class MJCFCamera(base.Observable):
     self._width = value
 
   @property
+  def depth(self):
+    return self._depth
+
+  @depth.setter
+  def depth(self, value):
+    self._depth = value
+
+  @property
+  def segmentation(self):
+    return self._segmentation
+
+  @segmentation.setter
+  def segmentation(self, value):
+    self._segmentation = value
+
+  @property
   def array_spec(self):
     return specs.ArraySpec(
         shape=(self._height, self._width, self._n_channels), dtype=self._dtype)
@@ -179,6 +215,7 @@ class MJCFCamera(base.Observable):
           width=self._width,
           camera_id=self._mjcf_element.full_identifier,
           depth=self._depth,
+          segmentation=self._segmentation,
           scene_option=self._scene_option)
       return np.atleast_3d(pixels)
 
