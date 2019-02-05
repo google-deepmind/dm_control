@@ -18,7 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-
+import unittest
 # Internal dependencies.
 from absl.testing import absltest
 from absl.testing import parameterized
@@ -411,6 +411,31 @@ class MujocoEngineTest(parameterized.TestCase):
     np.testing.assert_array_equal(spec.minimum, [-np.inf, -1.0])
     np.testing.assert_array_equal(spec.maximum, [np.inf, 2.0])
 
+  def _check_valid_rotation_matrix(self, data_field_name):
+    name = 'foo'
+    quat = '0.5 0.7 0 0'  # Not normalized.
+    xml_string = """
+    <mujoco>
+      <worldbody>
+        <body name='{name}' quat='{quat}'/>
+        <camera name='{name}' quat='{quat}'/>
+        <geom name='{name}' quat='{quat}' size='0.1'/>
+        <site name='{name}' quat='{quat}' size='0.1'/>
+      </worldbody>
+    </mujoco>
+    """.format(name=name, quat=quat)
+    physics = engine.Physics.from_xml_string(xml_string)
+    rotation_matrix = getattr(physics.named.data, data_field_name)[name]
+    self.assertAlmostEqual(np.linalg.det(rotation_matrix.reshape(3, 3)), 1)
+
+  @parameterized.parameters(['xmat', 'geom_xmat', 'site_xmat'])
+  def testValidRotationMatrixIfQuatNotNormalizedInXML(self, field_name):
+    self._check_valid_rotation_matrix(field_name)
+
+  # TODO(b/123918714): Update this once the bug has been fixed in MuJoCo.
+  @unittest.expectedFailure
+  def testValidCameraRotationMatrixIfQuatNotNormalizedInXML(self):
+    self._check_valid_rotation_matrix('cam_xmat')
 
 if __name__ == '__main__':
   absltest.main()
