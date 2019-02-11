@@ -166,7 +166,7 @@ class _CommonEnvironment(object):
   """Common components for RL environments."""
 
   def __init__(self, task, time_limit=float('inf'), random_state=None,
-               n_sub_steps=None, name=None,
+               n_sub_steps=None,
                raise_exception_on_physics_error=True,
                strip_singleton_obs_buffer_dim=False):
     """Initializes an instance of `_CommonEnvironment`.
@@ -181,7 +181,6 @@ class _CommonEnvironment(object):
       n_sub_steps: (DEPRECATED) An integer, number of physics steps to take per
         agent control step. New code should instead override the
         `control_substep` property of the task.
-      name: (optional) A string, the name of this task.
       raise_exception_on_physics_error: (optional) A boolean, indicating whether
         `PhysicsError` should be raised as an exception. If `False`, physics
         errors will result in the current episode being terminated with a
@@ -207,7 +206,6 @@ class _CommonEnvironment(object):
                     DeprecationWarning)
     self._overridden_n_sub_steps = n_sub_steps
 
-    self._name = name or self._task.name
     self._physics = None
     self._recompile_physics()
 
@@ -266,10 +264,6 @@ class _CommonEnvironment(object):
   def random_state(self):
     return self._random_state
 
-  @property
-  def name(self):
-    return self._name
-
   def control_timestep(self):
     """Returns the interval between agent actions in seconds."""
     if self._overridden_n_sub_steps is not None:
@@ -282,7 +276,7 @@ class Environment(_CommonEnvironment, environment.Base):
   """Reinforcement learning environment for Composer tasks."""
 
   def __init__(self, task, time_limit=float('inf'), random_state=None,
-               n_sub_steps=None, name=None,
+               n_sub_steps=None,
                raise_exception_on_physics_error=True,
                strip_singleton_obs_buffer_dim=False,
                max_reset_attempts=1):
@@ -296,7 +290,6 @@ class Environment(_CommonEnvironment, environment.Base):
       n_sub_steps: (DEPRECATED) An integer, number of physics steps to take per
         agent control step. New code should instead override the
         `control_substep` property of the task.
-      name: (optional) A string, the name of this task.
       raise_exception_on_physics_error: (optional) A boolean, indicating whether
         `PhysicsError` should be raised as an exception. If `False`, physics
         errors will result in the current episode being terminated with a
@@ -311,10 +304,13 @@ class Environment(_CommonEnvironment, environment.Base):
         exception will be allowed to propagate. Defaults to 1, i.e. no failure
         is allowed.
     """
-    super(Environment, self).__init__(task, time_limit, random_state,
-                                      n_sub_steps, name,
-                                      raise_exception_on_physics_error,
-                                      strip_singleton_obs_buffer_dim)
+    super(Environment, self).__init__(
+        task=task,
+        time_limit=time_limit,
+        random_state=random_state,
+        n_sub_steps=n_sub_steps,
+        raise_exception_on_physics_error=raise_exception_on_physics_error,
+        strip_singleton_obs_buffer_dim=strip_singleton_obs_buffer_dim)
     self._max_reset_attempts = max_reset_attempts
     self._reset_next_step = True
 

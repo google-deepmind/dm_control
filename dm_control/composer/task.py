@@ -46,11 +46,6 @@ class Task(object):
   """Abstract base class for a Composer task."""
 
   @abc.abstractproperty
-  def name(self):
-    """The name of this task."""
-    raise NotImplementedError
-
-  @abc.abstractproperty
   def root_entity(self):
     """A `base.Entity` instance for this task."""
     raise NotImplementedError
@@ -327,17 +322,12 @@ class Task(object):
 class NullTask(Task):
   """A class that wraps a single `Entity` into a `Task` with no reward."""
 
-  def __init__(self, root_entity, name='null_task'):
+  def __init__(self, root_entity):
     self._root_entity = root_entity
-    self._name = name
 
   @property
   def root_entity(self):
     return self._root_entity
-
-  @property
-  def name(self):
-    return self._name
 
   def get_reward(self, physics):
     return 0.0

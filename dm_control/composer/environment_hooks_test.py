@@ -43,7 +43,7 @@ class HooksTracker(object):
         round(int(control_timestep / physics_timestep)))
 
   def assertEqual(self, actual, expected, msg=''):
-    msg = '{}: {}: {!r} != {!r}'.format(self.name, msg, actual, expected)
+    msg = '{}: {}: {!r} != {!r}'.format(type(self), msg, actual, expected)
     self._test_case.assertEqual(actual, expected, msg)
 
   def assertHooksNotCalled(self, *hook_names):
@@ -243,10 +243,6 @@ class TrackedTask(HooksTracker, composer.NullTask):
 
 class TrackedExtraHooks(HooksTracker):
 
-  def __init__(self, *args, **kwargs):
-    super(TrackedExtraHooks, self).__init__(*args, **kwargs)
-    self.name = 'extra_hooks'
-
   def before_step(self, physics, unused_actions, random_state):
     super(TrackedExtraHooks, self).before_step(physics, random_state)
 
@@ -293,8 +289,7 @@ class HooksTestMixin(object):
 
     self.entities[0].attach(self.entities[3])
 
-    self.task = TrackedTask(name='task',
-                            root_entity=self.entities[0],
+    self.task = TrackedTask(root_entity=self.entities[0],
                             physics_timestep=self.physics_timestep,
                             control_timestep=self.control_timestep,
                             test_case=self)
