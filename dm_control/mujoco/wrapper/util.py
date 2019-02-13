@@ -245,3 +245,31 @@ def ndptr(*args, **kwargs):
       return base.from_param(obj)
 
   return type(base.__name__, (base,), {"from_param": classmethod(from_param)})
+
+
+_INVALID_CALLBACK_TYPE = "value must be callable, c_void_p, or None: got {!r}"
+
+
+def cast_func_to_c_void_p(func, cfunctype):
+  """Casts a native function pointer or a Python callable into `c_void_p`.
+
+  Args:
+    func: A callable, or a `c_void_p` pointing to a native function, or `None`.
+    cfunctype: A `CFUNCTYPE` prototype that is used to wrap `func` if it is
+      a Python callable.
+
+  Returns:
+    A tuple `(func_ptr, wrapped_pyfunc)`, where `func_ptr` is a `c_void_p`
+    object, and `wrapped_pyfunc` is a `CFUNCTYPE` object that wraps `func` if
+    it is a Python callable. (If `func` is not a Python callable then
+    `wrapped_pyfunc` is `None`.)
+  """
+  if not (callable(func) or isinstance(func, ctypes.c_void_p) or func is None):
+    raise TypeError(_INVALID_CALLBACK_TYPE.format(func))
+  try:
+    new_func_ptr = ctypes.cast(func, ctypes.c_void_p)
+    wrapped_pyfunc = None
+  except ctypes.ArgumentError:
+    wrapped_pyfunc = cfunctype(func)
+    new_func_ptr = ctypes.cast(wrapped_pyfunc, ctypes.c_void_p)
+  return new_func_ptr, wrapped_pyfunc

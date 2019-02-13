@@ -54,11 +54,6 @@ _FONT_SCALE = 150
 # Contains {pointer_address: weakref_object} pairs.
 _FINALIZERS = {}
 
-# Cache of ctypes-wrapped Python callback functions that are called from C. We
-# need to retain references to all wrapped Python callbacks that are currently
-# in use, otherwise they might be garbage collected before they are called.
-_ACTIVE_PYTHON_CALLBACKS = {}
-
 
 class Error(Exception):
   """Base class for MuJoCo exceptions."""
@@ -100,12 +95,6 @@ mjlib.mju_user_warning.value = ctypes.cast(
     _warning_callback, ctypes.c_void_p).value
 mjlib.mju_user_error.value = ctypes.cast(
     _error_callback, ctypes.c_void_p).value
-
-# Decorator that wraps a Python callback with the signature
-#     func(const_mjmodel_ptr, mjdata_ptr) -> None
-# and returns a `ctypes.CFunctionType`.
-_WRAP_PYFUNC = ctypes.CFUNCTYPE(None, ctypes.POINTER(types.MJMODEL),
-                                ctypes.POINTER(types.MJDATA))
 
 
 def _maybe_register_license(path=None):
@@ -158,37 +147,8 @@ def set_callback(name, new_callback=None):
       * A C function exposed by a `ctypes.CDLL` object
       * An integer specifying the address of a callback function
       * None, in which case any existing callback of that name is removed
-
-  Returns:
-    Either an integer specifying the address of the previous function used for
-    this callback, or None if the callback has not already been overridden.
-
-  Raises:
-    ValueError: If `name` is not in `functions.function_pointers`.
   """
-  if name not in functions.function_pointers._fields:
-    raise ValueError("Invalid callback name: {!r}. Must be one of {!r}.".format(
-        name, functions.function_pointers._fields))
-  callback_ptr = getattr(functions.function_pointers, name)
-  try:
-    new_callback_ptr = ctypes.cast(new_callback, ctypes.c_void_p)
-  except ctypes.ArgumentError:
-    # Python callables must be wrapped before casting to `ctypes.c_void_p`.
-    wrapped_callback = _WRAP_PYFUNC(new_callback)
-    new_callback_ptr = ctypes.cast(wrapped_callback, ctypes.c_void_p)
-    # We must retain a reference to the wrapped callback function, otherwise it
-    # might be garbage collected before it is called.
-    _ACTIVE_PYTHON_CALLBACKS[new_callback_ptr.value] = wrapped_callback
-
-  old_callback_address = callback_ptr.value
-
-  # If the old callback was a wrapped Python function then we remove it from the
-  # cache of active callbacks so that it can be garbage collected.
-  if old_callback_address in _ACTIVE_PYTHON_CALLBACKS:
-    del _ACTIVE_PYTHON_CALLBACKS[old_callback_address]
-
-  callback_ptr.value = new_callback_ptr.value
-  return old_callback_address
+  setattr(functions.callbacks, name, new_callback)
 
 
 @contextlib.contextmanager
@@ -210,7 +170,8 @@ def callback_context(name, new_callback=None):
   Yields:
     None
   """
-  old_callback = set_callback(name, new_callback)
+  old_callback = getattr(functions.callbacks, name)
+  set_callback(name, new_callback)
   try:
     yield
   finally:

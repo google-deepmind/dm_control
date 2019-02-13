@@ -461,15 +461,60 @@ class StaticStringArray(CDeclBase):
         self.name, ptr_str, cdll_name, self.symbol_name)
 
 
+class FunctionPtrTypedef(CDeclBase):
+  """A type declaration for a C function pointer."""
+
+  def __init__(self, typename, return_type, argument_types):
+    super(FunctionPtrTypedef, self).__init__(
+        typename=typename, return_type=return_type,
+        argument_types=argument_types)
+
+  @property
+  def ctypes_decl(self):
+    """Generates a ctypes.CFUNCTYPE declaration for self."""
+    types = (self.return_type,) + self.argument_types
+    types_decl = ", ".join(t.arg for t in types)
+    return "{0} = ctypes.CFUNCTYPE({1})".format(self.typename, types_decl)
+
+
 class FunctionPtr(CDeclBase):
   """A pointer to an externally defined C function."""
 
-  def __init__(self, name, symbol_name, type_name=None):
+  def __init__(self, name, symbol_name, type_name, comment=""):
     super(FunctionPtr, self).__init__(
-        name=name, symbol_name=symbol_name, type_name=type_name)
+        name=name, symbol_name=symbol_name,
+        type_name=type_name, comment=comment)
+
+  @property
+  def ctypes_field_decl(self):
+    """Generates a declaration for self as a field of a ctypes.Structure."""
+    return "('{0.name}', {0.type_name})".format(self)  # pylint: disable=missing-format-attribute
 
   def ctypes_var_decl(self, cdll_name=""):
     """Generates a ctypes export statement."""
 
-    return "ctypes.c_void_p.in_dll({0}, {1!r})".format(
-        cdll_name, self.symbol_name)
+    return "self._{0} = ctypes.c_void_p.in_dll({1}, {2!r})".format(
+        self.name, cdll_name, self.symbol_name)
+
+  def getters_setters_with_custom_prefix(self, prefix):
+    return textwrap.dedent("""
+    @property
+    def {0.name}(self):
+      if {1}{0.name}.value:
+        return {0.type_name}({1}{0.name}.value)
+      else:
+        return None
+
+    @{0.name}.setter
+    def {0.name}(self, value):
+      new_func_ptr, wrapped_pyfunc = util.cast_func_to_c_void_p(
+          value, {0.type_name})
+      # Prevents wrapped_pyfunc from being inadvertently garbage collected.
+      {1}{0.name}._wrapped_pyfunc = wrapped_pyfunc
+      {1}{0.name}.value = new_func_ptr.value
+    """.format(self, prefix))   # pylint: disable=missing-format-attribute
+
+  @property
+  def getters_setters(self):
+    """Populates a Python class with getter & setter methods for self."""
+    return self.getters_setters_with_custom_prefix(prefix="self._ptr.contents.")

@@ -53,7 +53,7 @@ class BindingGenerator(object):
                consts_dict=None,
                typedefs_dict=None,
                hints_dict=None,
-               structs_dict=None,
+               types_dict=None,
                funcs_dict=None,
                strings_dict=None,
                func_ptrs_dict=None,
@@ -70,7 +70,7 @@ class BindingGenerator(object):
       consts_dict: Mapping from {const_name: value}.
       typedefs_dict: Mapping from {type_name: ctypes_typename}.
       hints_dict: Mapping from {var_name: shape_tuple}.
-      structs_dict: Mapping from {struct_name: Struct_instance}.
+      types_dict: Mapping from {type_name: type_instance}.
       funcs_dict: Mapping from {func_name: Function_instance}.
       strings_dict: Mapping from {var_name: StaticStringArray_instance}.
       func_ptrs_dict: Mapping from {var_name: FunctionPtr_instance}.
@@ -84,8 +84,8 @@ class BindingGenerator(object):
                           else codegen_util.UniqueOrderedDict())
     self.hints_dict = (hints_dict if hints_dict is not None
                        else codegen_util.UniqueOrderedDict())
-    self.structs_dict = (structs_dict if structs_dict is not None
-                         else codegen_util.UniqueOrderedDict())
+    self.types_dict = (types_dict if types_dict is not None
+                       else codegen_util.UniqueOrderedDict())
     self.funcs_dict = (funcs_dict if funcs_dict is not None
                        else codegen_util.UniqueOrderedDict())
     self.strings_dict = (strings_dict if strings_dict is not None
@@ -211,7 +211,7 @@ class BindingGenerator(object):
           out.sub_structs[member.name] = member
 
       # Add to dict of unions
-      self.structs_dict[out.ctypes_typename] = out
+      self.types_dict[out.ctypes_typename] = out
 
     # A struct declaration
     elif token.members:
@@ -258,7 +258,7 @@ class BindingGenerator(object):
           out.sub_structs[member.name] = member
 
       # Add to dict of structs
-      self.structs_dict[out.ctypes_typename] = out
+      self.types_dict[out.ctypes_typename] = out
 
     else:
 
@@ -303,10 +303,14 @@ class BindingGenerator(object):
                                                   parent, is_const)
 
       # A struct we've already encountered
-      elif typename in self.structs_dict:
-        s = self.structs_dict[typename]
-        out = c_declarations.Struct(name, s.typename, s.members, s.sub_structs,
-                                    comment, parent)
+      elif typename in self.types_dict:
+        s = self.types_dict[typename]
+        if isinstance(s, c_declarations.FunctionPtrTypedef):
+          out = c_declarations.FunctionPtr(
+              name, token.name, s.typename, comment)
+        else:
+          out = c_declarations.Struct(name, s.typename, s.members,
+                                      s.sub_structs, comment, parent)
 
       # Presumably this is a scalar primitive
       else:
@@ -358,8 +362,7 @@ class BindingGenerator(object):
   def parse_consts_typedefs(self, src):
     """Updates self.consts_dict, self.typedefs_dict."""
     parser = (header_parsing.COND_DECL |
-              header_parsing.UNCOND_DECL |
-              header_parsing.FUNCTION_PTR_TYPE_DECL)
+              header_parsing.UNCOND_DECL)
     for tokens, _, _ in parser.scanString(src):
       self.recurse_into_conditionals(tokens)
 
@@ -375,11 +378,7 @@ class BindingGenerator(object):
           self.recurse_into_conditionals(token.if_false)
       # One or more declarations
       else:
-        # A type declaration for a function pointer.
-        if token.arguments:
-          self.typedefs_dict.update(
-              {token.typename: header_parsing.CTYPES_FUNCTION_PTR})
-        elif token.typename:
+        if token.typename:
           self.typedefs_dict.update({token.name: token.typename})
         elif token.value:
           value = codegen_util.try_coerce_to_num(token.value)
@@ -391,12 +390,21 @@ class BindingGenerator(object):
         else:
           self.consts_dict.update({token.name: True})
 
-  def parse_structs(self, src):
-    """Updates self.structs_dict."""
-    parser = header_parsing.NESTED_STRUCTS
+  def parse_structs_and_function_pointer_typedefs(self, src):
+    """Updates self.types_dict."""
+    parser = (header_parsing.NESTED_STRUCTS |
+              header_parsing.FUNCTION_PTR_TYPE_DECL)
     for tokens, _, _ in parser.scanString(src):
       for token in tokens:
-        self.get_type_from_token(token)
+        if token.return_type:
+          # This is a function type declaration.
+          self.types_dict[token.typename] = c_declarations.FunctionPtrTypedef(
+              token.typename,
+              self.get_type_from_token(token.return_type),
+              tuple(self.get_type_from_token(arg) for arg in token.arguments))
+        else:
+          # This is a struct or a union.
+          self.get_type_from_token(token)
 
   def parse_functions(self, src):
     """Updates self.funcs_dict."""
@@ -434,7 +442,8 @@ class BindingGenerator(object):
     for token, _, _ in parser.scanString(src):
       name = codegen_util.mangle_varname(token.name)
       self.func_ptrs_dict[name] = c_declarations.FunctionPtr(
-          name, symbol_name=token.name)
+          name, symbol_name=token.name,
+          type_name=token.typename, comment=token.comment)
 
   # Code generation methods
   # ----------------------------------------------------------------------------
@@ -487,15 +496,16 @@ class BindingGenerator(object):
       f.write("\n" + codegen_util.comment_line("End of generated code"))
 
   def write_types(self, fname):
-    """Write ctypes struct declarations."""
+    """Write ctypes struct and function type declarations."""
     imports = [
         "import ctypes",
     ]
     with open(fname, "w") as f:
       f.write(self.make_header(imports))
-      f.write(codegen_util.comment_line("ctypes struct and union declarations"))
-      for struct in six.itervalues(self.structs_dict):
-        f.write("\n" + struct.ctypes_decl)
+      f.write(codegen_util.comment_line(
+          "ctypes struct, union, and function type declarations"))
+      for type_decl in six.itervalues(self.types_dict):
+        f.write("\n" + type_decl.ctypes_decl)
       f.write("\n" + codegen_util.comment_line("End of generated code"))
 
   def write_wrappers(self, fname):
@@ -510,9 +520,9 @@ class BindingGenerator(object):
       ]
       f.write(self.make_header(imports))
       f.write(codegen_util.comment_line("Low-level wrapper classes"))
-      for struct_or_union in six.itervalues(self.structs_dict):
-        if isinstance(struct_or_union, c_declarations.Struct):
-          f.write("\n" + struct_or_union.wrapper_class)
+      for type_decl in six.itervalues(self.types_dict):
+        if isinstance(type_decl, c_declarations.Struct):
+          f.write("\n" + type_decl.wrapper_class)
       f.write("\n" + codegen_util.comment_line("End of generated code"))
 
   def write_funcs_and_globals(self, fname):
@@ -542,17 +552,30 @@ class BindingGenerator(object):
       for string_arr in six.itervalues(self.strings_dict):
         f.write(string_arr.ctypes_var_decl(cdll_name="mjlib"))
 
-      f.write("\n" + codegen_util.comment_line("Function pointers"))
+      f.write("\n" + codegen_util.comment_line("Callback function pointers"))
 
-      fields = [repr(name) for name in self.func_ptrs_dict.keys()]
+      fields = ["'_{0}'".format(func_ptr.name)
+                for func_ptr in self.func_ptrs_dict.values()]
       values = [func_ptr.ctypes_var_decl(cdll_name="mjlib")
                 for func_ptr in self.func_ptrs_dict.values()]
       f.write(textwrap.dedent("""
-        function_pointers = collections.namedtuple(
-            'FunctionPointers',
-            [{0}]
-        )({1})
-        """).format(",\n     ".join(fields), ",\n  ".join(values)))
+        class _Callbacks(object):
+
+          __slots__ = [
+              {0}
+          ]
+
+          def __init__(self):
+            {1}
+        """).format(",\n      ".join(fields), "\n    ".join(values)))
+
+      indent = codegen_util.Indenter()
+      with indent:
+        for func_ptr in self.func_ptrs_dict.values():
+          f.write(indent(func_ptr.getters_setters_with_custom_prefix("self._")))
+
+      f.write("\n\ncallbacks = _Callbacks()  # pylint: disable=invalid-name")
+      f.write("\ndel _Callbacks\n")
 
       f.write("\n" + codegen_util.comment_line("End of generated code"))
 

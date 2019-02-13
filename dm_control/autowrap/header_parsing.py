@@ -28,7 +28,6 @@ import six
 
 NONE = "None"
 CTYPES_CHAR = "ctypes.c_char"
-CTYPES_FUNCTION_PTR = "ctypes.c_void_p"
 
 C_TO_CTYPES = {
     # integers
@@ -292,7 +291,7 @@ MJAPI_FUNCTION_DECL = pp.Group(
 FUNCTION_PTR_TYPE_DECL = pp.Group(
     pp.Optional(MULTILINE_COMMENT("comment")) +
     TYPEDEF +
-    (NATIVE_TYPENAME | NAME)("return_typename") +
+    RET("return_type") +
     LPAREN +
     PTR +
     NAME("typename") +

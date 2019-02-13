@@ -49,6 +49,9 @@ from dm_control.autowrap import codegen_util
 
 import six
 
+_MJMODEL_H = "mjmodel.h"
+_MJXMACRO_H = "mjxmacro.h"
+
 FLAGS = flags.FLAGS
 
 flags.DEFINE_spaceseplist(
@@ -60,17 +63,24 @@ flags.DEFINE_string("output_dir", None,
 
 
 def main(unused_argv):
-  # Get the path to the xmacro header file.
-  xmacro_hdr_path = None
-  for path in FLAGS.header_paths:
-    if path.endswith("mjxmacro.h"):
-      xmacro_hdr_path = path
-      break
-  if xmacro_hdr_path is None:
-    logging.fatal("List of inputs must contain a path to mjxmacro.h")
+  special_header_paths = {}
 
+  # Get the path to the mjmodel and mjxmacro header files.
+  # These header files need special handling.
+  for header in (_MJMODEL_H, _MJXMACRO_H):
+    for path in FLAGS.header_paths:
+      if path.endswith(header):
+        special_header_paths[header] = path
+        break
+    if header not in special_header_paths:
+      logging.fatal("List of inputs must contain a path to %s", header)
+
+  # Make sure mjmodel.h is parsed first, since it is included by other headers.
   srcs = codegen_util.UniqueOrderedDict()
-  for p in sorted(FLAGS.header_paths):
+  sorted_header_paths = sorted(FLAGS.header_paths)
+  sorted_header_paths.remove(special_header_paths[_MJMODEL_H])
+  sorted_header_paths.insert(0, special_header_paths[_MJMODEL_H])
+  for p in sorted_header_paths:
     with io.open(p, "r", errors="ignore") as f:
       srcs[p] = f.read()
 
@@ -92,30 +102,30 @@ def main(unused_argv):
 
   # Parse enums.
   for pth, src in six.iteritems(srcs):
-    if pth is not xmacro_hdr_path:
+    if pth is not special_header_paths[_MJXMACRO_H]:
       parser.parse_enums(src)
 
   # Parse constants and type declarations.
   for pth, src in six.iteritems(srcs):
-    if pth is not xmacro_hdr_path:
+    if pth is not special_header_paths[_MJXMACRO_H]:
       parser.parse_consts_typedefs(src)
 
   # Get shape hints from mjxmacro.h.
-  parser.parse_hints(srcs[xmacro_hdr_path])
+  parser.parse_hints(srcs[special_header_paths[_MJXMACRO_H]])
 
-  # Parse structs.
+  # Parse structs and function pointer type declarations.
   for pth, src in six.iteritems(srcs):
-    if pth is not xmacro_hdr_path:
-      parser.parse_structs(src)
+    if pth is not special_header_paths[_MJXMACRO_H]:
+      parser.parse_structs_and_function_pointer_typedefs(src)
 
   # Parse functions.
   for pth, src in six.iteritems(srcs):
-    if pth is not xmacro_hdr_path:
+    if pth is not special_header_paths[_MJXMACRO_H]:
       parser.parse_functions(src)
 
   # Parse global strings and function pointers.
   for pth, src in six.iteritems(srcs):
-    if pth is not xmacro_hdr_path:
+    if pth is not special_header_paths[_MJXMACRO_H]:
       parser.parse_global_strings(src)
       parser.parse_function_pointers(src)
 
