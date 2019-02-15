@@ -37,11 +37,11 @@ from six.moves import zip
 BACKEND_STRING = 'hardware' if render.USING_GPU else 'software'
 
 
-class ImagesNotClose(AssertionError):
+class ImagesNotCloseError(AssertionError):
   """Exception raised when two images are not equal."""
 
   def __init__(self, message, expected, actual):
-    super(ImagesNotClose, self).__init__(message)
+    super(ImagesNotCloseError, self).__init__(message)
     self.expected = expected
     self.actual = actual
 
@@ -178,16 +178,16 @@ def assert_images_close(expected, actual, tolerance=10.):
       expected and actual images.
 
   Raises:
-    ImagesNotClose: If the images are not sufficiently close.
+    ImagesNotCloseError: If the images are not sufficiently close.
   """
   rms = compute_rms(expected, actual)
   if rms > tolerance:
     message = 'RMS error exceeds tolerance ({} > {})'.format(rms, tolerance)
-    raise ImagesNotClose(message, expected=expected, actual=actual)
+    raise ImagesNotCloseError(message, expected=expected, actual=actual)
 
 
 def save_images_on_failure(output_dir):
-  """Decorator that saves debugging images if `ImagesNotClose` is raised.
+  """Decorator that saves debugging images if `ImagesNotCloseError` is raised.
 
   Args:
     output_dir: Path to the directory where the output images will be saved.
@@ -196,14 +196,14 @@ def save_images_on_failure(output_dir):
     A decorator function.
   """
   def decorator(test_method):
-    """Decorator that saves debugging images if `ImagesNotClose` is raised."""
+    """Decorator, saves debugging images if `ImagesNotCloseError` is raised."""
     method_name = test_method.__name__
     @functools.wraps(test_method)
     def decorated_method(*args, **kwargs):
-      """Call test method, save debugging images if ImagesNotClose is raised."""
+      """Call test method, save images if `ImagesNotCloseError` is raised."""
       try:
         test_method(*args, **kwargs)
-      except ImagesNotClose as e:
+      except ImagesNotCloseError as e:
         _, _, tb = sys.exc_info()
         if not os.path.exists(output_dir):
           os.makedirs(output_dir)
@@ -215,8 +215,9 @@ def save_images_on_failure(output_dir):
         _save_pixels(difference, base_name + '-difference.png')
         msg = ('{}. Debugging images saved to '
                '{}-{{expected,actual,difference}}.png.'.format(e, base_name))
-        new_e = ImagesNotClose(msg, expected=e.expected, actual=e.actual)
+        new_e = ImagesNotCloseError(msg, expected=e.expected, actual=e.actual)
         # Reraise the exception with the original traceback.
-        six.reraise(ImagesNotClose, new_e, tb)
+        six.reraise(ImagesNotCloseError, new_e, tb)
+
     return decorated_method
   return decorator

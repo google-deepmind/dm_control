@@ -54,7 +54,7 @@ class ImageUtilsTest(parameterized.TestCase):
     image1 = random_state.randint(0, 255, size=(64, 64, 3), dtype=np.uint8)
     image2 = random_state.randint(0, 255, size=(64, 64, 3), dtype=np.uint8)
     image_utils.assert_images_close(image1, image1, tolerance=0)
-    with six.assertRaisesRegex(self, image_utils.ImagesNotClose,
+    with six.assertRaisesRegex(self, image_utils.ImagesNotCloseError,
                                'RMS error exceeds tolerance'):
       image_utils.assert_images_close(image1, image2)
 
@@ -68,9 +68,9 @@ class ImageUtilsTest(parameterized.TestCase):
 
     @image_utils.save_images_on_failure(output_dir=output_dir)
     def func():
-      raise image_utils.ImagesNotClose(message, image1, image2)
+      raise image_utils.ImagesNotCloseError(message, image1, image2)
 
-    with six.assertRaisesRegex(self, image_utils.ImagesNotClose,
+    with six.assertRaisesRegex(self, image_utils.ImagesNotCloseError,
                                '{}.*'.format(message)):
       func()
 
