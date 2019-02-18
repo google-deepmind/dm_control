@@ -20,7 +20,7 @@ from __future__ import print_function
 
 import collections
 
-from dm_control import render
+from dm_control import _render
 from dm_control.viewer import gui
 from dm_control.viewer import renderer
 from dm_control.viewer import runtime
@@ -181,7 +181,7 @@ class ReloadParams(collections.namedtuple(
 
 
 class Application(object):
-  """Main application"""
+  """Viewer application."""
 
   def __init__(self, title='Explorer', width=1024, height=768):
     """Instance initializer."""
@@ -244,7 +244,7 @@ class Application(object):
       self._render_surface.free()
     if self._renderer:
       self._renderer.release()
-    self._render_surface = render.Renderer(
+    self._render_surface = _render.Renderer(
         max_width=_MAX_FRONTBUFFER_SIZE, max_height=_MAX_FRONTBUFFER_SIZE)
     self._renderer = renderer.OffScreenRenderer(
         self._environment.physics.model, self._render_surface)

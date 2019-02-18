@@ -23,9 +23,8 @@ import collections
 import functools
 import os
 import sys
-
+from dm_control import _render
 from dm_control import mujoco
-from dm_control import render
 from dm_control.mujoco.testing import assets
 import numpy as np
 from PIL import Image
@@ -34,11 +33,11 @@ from six.moves import range
 from six.moves import zip
 
 
-BACKEND_STRING = 'hardware' if render.USING_GPU else 'software'
+BACKEND_STRING = 'hardware' if _render.USING_GPU else 'software'
 
 
 class ImagesNotCloseError(AssertionError):
-  """Exception raised when two images are not equal."""
+  """Exception raised when two images are not sufficiently close."""
 
   def __init__(self, message, expected, actual):
     super(ImagesNotCloseError, self).__init__(message)

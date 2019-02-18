@@ -19,8 +19,8 @@ from __future__ import division
 from __future__ import print_function
 
 import functools
-from dm_control import render
-from dm_control.render import glfw_renderer
+from dm_control import _render
+from dm_control._render import glfw_renderer
 from dm_control.viewer import util
 from dm_control.viewer.gui import base
 import glfw
@@ -31,11 +31,11 @@ def _check_valid_backend(func):
   """Decorator which checks that GLFW is being used for offscreen rendering."""
   @functools.wraps(func)
   def wrapped_func(*args, **kwargs):
-    if render.BACKEND != 'glfw':
+    if _render.BACKEND != 'glfw':
       raise RuntimeError(
           '{func} may only be called if using GLFW for offscreen rendering, '
-          'got `render.BACKEND={backend!r}`.'
-          .format(func=func, backend=render.BACKEND))
+          'got `render.BACKEND={backend!r}`.'.format(
+              func=func, backend=_render.BACKEND))
     return func(*args, **kwargs)
   return wrapped_func
 
@@ -173,6 +173,7 @@ class GlfwWindow(object):
       listeners, callables taking one argument, will be invoked every time the
       user drops files onto the window. The callable will be passed an iterable
       with dropped file paths.
+    is_full_screen: Boolean, whether the window is currently full-screen.
   """
 
   def __init__(self, width, height, title, context=None):

@@ -26,7 +26,7 @@ import os
 # Internal dependencies.
 from absl.testing import absltest
 from absl.testing import parameterized
-from dm_control import render
+from dm_control import _render
 from dm_control.mujoco.testing import assets
 from dm_control.mujoco.wrapper import core
 from dm_control.mujoco.wrapper import mjbindings
@@ -414,7 +414,7 @@ class CoreTest(parameterized.TestCase):
 
   def testFreeMjrContext(self):
     for _ in range(5):
-      renderer = render.Renderer(640, 480)
+      renderer = _render.Renderer(640, 480)
       with mock.patch.object(core.mjlib, "mjr_freeContext",
                              wraps=mjlib.mjr_freeContext) as mock_destructor:
         mjr_context = core.MjrContext(self.model, renderer)

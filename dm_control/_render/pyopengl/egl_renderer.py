@@ -23,9 +23,9 @@ import atexit
 import ctypes
 import os
 
-from dm_control.render import base
-from dm_control.render import constants
-from dm_control.render import executor
+from dm_control._render import base
+from dm_control._render import constants
+from dm_control._render import executor
 
 PYOPENGL_PLATFORM = os.environ.get(constants.PYOPENGL_PLATFORM)
 
@@ -40,7 +40,7 @@ elif PYOPENGL_PLATFORM != constants.EGL:
 
 
 # pylint: disable=g-import-not-at-top
-from dm_control.render.pyopengl import egl_ext as EGL
+from dm_control._render.pyopengl import egl_ext as EGL
 
 
 def create_initialized_headless_egl_display():

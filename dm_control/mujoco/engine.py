@@ -40,7 +40,7 @@ import contextlib
 
 from absl import logging
 
-from dm_control import render
+from dm_control import _render
 from dm_control.mujoco import index
 from dm_control.mujoco import wrapper
 from dm_control.mujoco.wrapper import util
@@ -419,7 +419,8 @@ class Physics(_control.Physics):
     max_width = self.model.vis.global_.offwidth
     max_height = self.model.vis.global_.offheight
     # Create the OpenGL context.
-    render_context = render.Renderer(max_width=max_width, max_height=max_height)
+    render_context = _render.Renderer(
+        max_width=max_width, max_height=max_height)
     # Create the MuJoCo context.
     mujoco_context = wrapper.MjrContext(self.model, render_context)
     self._contexts = Contexts(gl=render_context, mujoco=mujoco_context)

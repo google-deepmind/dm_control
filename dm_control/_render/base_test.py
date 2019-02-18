@@ -22,8 +22,8 @@ from __future__ import print_function
 import threading
 # Internal dependencies.
 from absl.testing import absltest
-from dm_control.render import base
-from dm_control.render import executor
+from dm_control._render import base
+from dm_control._render import executor
 
 WIDTH = 1024
 HEIGHT = 768

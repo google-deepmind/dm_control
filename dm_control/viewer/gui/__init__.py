@@ -14,14 +14,14 @@
 # ============================================================================
 """Viewer's windowing systems."""
 
-from dm_control import render
+from dm_control import _render
 
 # pylint: disable=g-import-not-at-top
 # pylint: disable=invalid-name
 
 RenderWindow = None
 
-if render.BACKEND == 'glfw':
+if _render.BACKEND == 'glfw':
   try:
     from dm_control.viewer.gui import glfw_gui
     RenderWindow = glfw_gui.GlfwWindow
@@ -35,4 +35,4 @@ else:
         'Cannot create a window because no windowing system could be imported')
   RenderWindow = ErrorRenderWindow
 
-del render
+del _render

@@ -21,8 +21,8 @@ from __future__ import print_function
 
 import os
 
-from dm_control.render import base
-from dm_control.render import constants
+from dm_control._render import base
+from dm_control._render import constants
 
 PYOPENGL_PLATFORM = os.environ.get(constants.PYOPENGL_PLATFORM)
 

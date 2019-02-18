@@ -37,7 +37,7 @@ import contextlib
 import weakref
 
 from absl import logging
-from dm_control.render import executor
+from dm_control._render import executor
 import six
 
 _CURRENT_CONTEXT_FOR_THREAD = collections.defaultdict(lambda: None)

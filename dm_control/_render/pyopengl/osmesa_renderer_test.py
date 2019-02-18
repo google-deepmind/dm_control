@@ -23,26 +23,27 @@ import unittest
 
 # Internal dependencies.
 from absl.testing import absltest
-from dm_control import render
+from dm_control import _render
 import mock
 from OpenGL import GL
 
 MAX_WIDTH = 640
 MAX_HEIGHT = 480
 
-CONTEXT_PATH = render.__name__ + '.pyopengl.osmesa_renderer.osmesa'
-GL_ARRAYS_PATH = render.__name__ + '.pyopengl.osmesa_renderer.arrays'
+CONTEXT_PATH = _render.__name__ + '.pyopengl.osmesa_renderer.osmesa'
+GL_ARRAYS_PATH = _render.__name__ + '.pyopengl.osmesa_renderer.arrays'
 
 
-@unittest.skipUnless(render.BACKEND == render.constants.OSMESA,
-                     reason='OSMesa backend not selected.')
+@unittest.skipUnless(
+    _render.BACKEND == _render.constants.OSMESA,
+    reason='OSMesa backend not selected.')
 class OSMesaContextTest(absltest.TestCase):
 
   def test_init(self):
     mock_context = mock.MagicMock()
     with mock.patch(CONTEXT_PATH) as mock_osmesa:
       mock_osmesa.OSMesaCreateContextExt.return_value = mock_context
-      renderer = render.Renderer(MAX_WIDTH, MAX_HEIGHT)
+      renderer = _render.Renderer(MAX_WIDTH, MAX_HEIGHT)
       self.assertIs(renderer._context, mock_context)
       renderer.free()
 
@@ -53,7 +54,7 @@ class OSMesaContextTest(absltest.TestCase):
       with mock.patch(GL_ARRAYS_PATH) as mock_glarrays:
         mock_osmesa.OSMesaCreateContextExt.return_value = mock_context
         mock_glarrays.GLfloatArray.zeros.return_value = mock_buffer
-        renderer = render.Renderer(MAX_WIDTH, MAX_HEIGHT)
+        renderer = _render.Renderer(MAX_WIDTH, MAX_HEIGHT)
         with renderer.make_current():
           pass
         mock_osmesa.OSMesaMakeCurrent.assert_called_once_with(
@@ -64,7 +65,7 @@ class OSMesaContextTest(absltest.TestCase):
     mock_context = mock.MagicMock()
     with mock.patch(CONTEXT_PATH) as mock_osmesa:
       mock_osmesa.OSMesaCreateContextExt.return_value = mock_context
-      renderer = render.Renderer(MAX_WIDTH, MAX_HEIGHT)
+      renderer = _render.Renderer(MAX_WIDTH, MAX_HEIGHT)
       renderer.free()
       mock_osmesa.OSMesaDestroyContext.assert_called_once_with(mock_context)
       self.assertIsNone(renderer._context)

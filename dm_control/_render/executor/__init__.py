@@ -32,14 +32,14 @@ import os
 _OFFLOAD = not bool(os.environ.get('DISABLE_RENDER_THREAD_OFFLOADING', ''))
 del os
 
-from dm_control.render.executor.render_executor import BaseRenderExecutor
-from dm_control.render.executor.render_executor import OffloadingRenderExecutor
-from dm_control.render.executor.render_executor import PassthroughRenderExecutor
+from dm_control._render.executor.render_executor import BaseRenderExecutor
+from dm_control._render.executor.render_executor import OffloadingRenderExecutor
+from dm_control._render.executor.render_executor import PassthroughRenderExecutor
 
 _EXECUTORS = (PassthroughRenderExecutor, OffloadingRenderExecutor)
 
 try:
-  from dm_control.render.executor.native_mutex.render_executor import NativeMutexOffloadingRenderExecutor
+  from dm_control._render.executor.native_mutex.render_executor import NativeMutexOffloadingRenderExecutor
   _EXECUTORS += (NativeMutexOffloadingRenderExecutor,)
 except ImportError:
   NativeMutexOffloadingRenderExecutor = None

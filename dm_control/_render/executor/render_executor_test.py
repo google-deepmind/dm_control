@@ -25,7 +25,7 @@ import unittest
 
 from absl.testing import absltest
 from absl.testing import parameterized
-from dm_control.render import executor
+from dm_control._render import executor
 import mock
 from six.moves import range
 

@@ -25,24 +25,24 @@ environment variable to 'egl', 'glfw' or 'osmesa'.
 import collections
 import os
 
-from dm_control.render import constants
+from dm_control._render import constants
 
 BACKEND = os.environ.get(constants.MUJOCO_GL)
 
 
 # pylint: disable=g-import-not-at-top
 def _import_egl():
-  from dm_control.render.pyopengl.egl_renderer import EGLContext
+  from dm_control._render.pyopengl.egl_renderer import EGLContext
   return EGLContext
 
 
 def _import_glfw():
-  from dm_control.render.glfw_renderer import GLFWContext
+  from dm_control._render.glfw_renderer import GLFWContext
   return GLFWContext
 
 
 def _import_osmesa():
-  from dm_control.render.pyopengl.osmesa_renderer import OSMesaContext
+  from dm_control._render.pyopengl.osmesa_renderer import OSMesaContext
   return OSMesaContext
 # pylint: enable=g-import-not-at-top
 

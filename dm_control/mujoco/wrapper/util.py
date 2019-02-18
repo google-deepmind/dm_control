@@ -26,7 +26,7 @@ import os
 import platform
 import sys
 import threading
-from dm_control import render
+from dm_control import _render
 import numpy as np
 import six
 
@@ -103,9 +103,9 @@ def _maybe_load_linux_dynamic_deps(library_dir):
   interpreter_symbols = ctypes.cdll.LoadLibrary("")
   if not hasattr(interpreter_symbols, "glewInit"):
     # This means our interpreter is not yet linked against GLEW.
-    if render.BACKEND == "osmesa":
+    if _render.BACKEND == "osmesa":
       libglew_path = os.path.join(library_dir, "libglewosmesa.so")
-    elif render.BACKEND == "egl":
+    elif _render.BACKEND == "egl":
       libglew_path = os.path.join(library_dir, "libglewegl.so")
     else:
       libglew_path = ctypes.util.find_library("GLEW")
