@@ -29,5 +29,5 @@ class Initializer(object):
   """The abstract base class for an initializer."""
 
   @abc.abstractmethod
-  def initialize_episode(self, physics, random_state):
+  def __call__(self, physics, random_state):
     raise NotImplementedError
