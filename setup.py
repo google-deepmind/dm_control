@@ -15,6 +15,7 @@
 
 """Install script for setuptools."""
 
+import fnmatch
 import os
 import platform
 import subprocess
@@ -150,6 +151,18 @@ class TestCommand(test.test):
     self.run_command('build_mjbindings')
     test.test.run(self)
 
+
+def find_data_files(package_dir, patterns):
+  """Recursively finds files whose names match the given shell patterns."""
+  paths = set()
+  for directory, _, filenames in os.walk(package_dir):
+    for pattern in patterns:
+      for filename in fnmatch.filter(filenames, pattern):
+        # NB: paths must be relative to the package directory.
+        relative_dirpath = os.path.relpath(directory, package_dir)
+        paths.add(os.path.join(relative_dirpath, filename))
+  return list(paths)
+
 setup(
     name='dm_control',
     description='Continuous control environments and MuJoCo Python bindings.',
@@ -166,6 +179,7 @@ setup(
         'numpy',
         'pyopengl',
         'pyparsing',
+        'pypng',
         'setuptools',
         'six',
     ],
@@ -177,7 +191,9 @@ setup(
     ],
     test_suite='nose.collector',
     packages=find_packages(),
-    package_data={'': ['*.png', '*.stl', '*.xml']},
+    package_data={'dm_control':
+                  find_data_files(package_dir='dm_control',
+                                  patterns=['*.png', '*.stl', '*.xml'])},
     cmdclass={
         'build_mjbindings': BuildMJBindingsCommand,
         'install': InstallCommand,
