@@ -179,7 +179,6 @@ setup(
         'numpy',
         'pyopengl',
         'pyparsing',
-        'pypng',
         'setuptools',
         'six',
     ],

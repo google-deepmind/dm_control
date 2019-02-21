@@ -25,7 +25,7 @@ from dm_control import composer
 from dm_control import mjcf
 from dm_control.locomotion.walkers import base
 import numpy as np
-import png
+from PIL import Image
 import six
 
 from dm_control.utils import io as resources
@@ -53,29 +53,52 @@ def _compensate_gravity(physics, body_elements):
   bodies.xfrc_applied = -gravity * bodies.mass[..., None]
 
 
+def _alpha_blend(foreground, background):
+  """Does alpha compositing of two RGBA images.
+
+  Both inputs must be (..., 4) numpy arrays whose shapes are compatible for
+  broadcasting. They are assumed to contain float RGBA values in [0, 1].
+
+  Args:
+    foreground: foreground RGBA image.
+    background: background RGBA image.
+
+  Returns:
+    A numpy array of shape (..., 4) containing the blended image.
+  """
+  fg, bg = np.broadcast_arrays(foreground, background)
+  fg_rgb = fg[..., :3]
+  fg_a = fg[..., 3:]
+  bg_rgb = bg[..., :3]
+  bg_a = bg[..., 3:]
+  out = np.empty_like(bg)
+  out_a = out[..., 3:]
+  out_rgb = out[..., :3]
+  # https://en.wikipedia.org/wiki/Alpha_compositing#Alpha_blending
+  out_a[:] = fg_a + bg_a * (1. - fg_a)
+  out_rgb[:] = fg_rgb * fg_a + bg_rgb * bg_a * (1. - fg_a)
+  # Avoid division by zero if foreground and background are both transparent.
+  out_rgb[:] = np.where(out_a, out_rgb / out_a, out_rgb)
+  return out
+
+
 def _asset_png_with_background_rgba_bytes(asset_fname, background_rgba):
   """Decode PNG from asset file and add solid background."""
-  # Retrieve resource bytes.
+
+  # Retrieve PNG image contents as a bytestring, convert to a numpy array.
   contents = resources.GetResource(os.path.join(_ASSETS_PATH, asset_fname))
+  digit_rgba = np.array(Image.open(six.BytesIO(contents)), dtype=np.double)
 
-  # Decode PNG file into np.ndarray.
-  _, _, digit_img, _ = png.Reader(bytes=contents).asDirect()
-  digit = np.reshape(
-      np.vstack(six.moves.map(np.uint16, digit_img)), (256, 256, 4))
-  background = np.full((256, 256, 1), 1.) * np.asarray(background_rgba) * 255
+  # Add solid background with `background_rgba`.
+  blended = 255. * _alpha_blend(digit_rgba / 255., np.asarray(background_rgba))
 
-  # Add solid background with background_rgba.
-  digit_mask = digit[..., -1:]
-  combined_arr = (digit_mask * digit + (1 - digit_mask) * background)
-
-  # Convert from ndarray to png image.
-  combined_png = png.from_array(combined_arr.astype(np.uint8), 'RGBA')
-
-  # Read encoded png bytes via StringIO.
+  # Encode composite image array to a PNG bytestring.
+  img = Image.fromarray(blended.astype(np.uint8), mode='RGBA')
   buf = six.BytesIO()
-  combined_png.save(buf)
+  img.save(buf, format='PNG')
   png_encoding = buf.getvalue()
   buf.close()
+
   return png_encoding
 
 
