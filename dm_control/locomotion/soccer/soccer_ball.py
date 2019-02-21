@@ -69,6 +69,22 @@ class SoccerBall(props.Primitive):
         mass=mass,
         material=material)
 
+    # Add some tracking cameras for visualization and logging.
+    self._mjcf_root.worldbody.add(
+        'camera',
+        name='ball_cam',
+        pos=[0, -7, 7],
+        zaxis=[0, -1, 1],
+        fovy=70,
+        mode='trackcom')
+    self._mjcf_root.worldbody.add(
+        'camera',
+        name='ball_cam_far',
+        pos=[0, -10, 10],
+        zaxis=[0, -1, 1],
+        fovy=70,
+        mode='trackcom')
+
     # Keep track of entities to team mapping.
     self._players = []
 
