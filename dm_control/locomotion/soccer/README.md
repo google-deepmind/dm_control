@@ -1,7 +1,13 @@
 # DeepMind MuJoCo Multi-Agent Soccer Environment.
 
 This submodule contains the components and environment described in ICLR 2019
-submission [Emergent Coordination through Competition][iclr_submission].
+paper [Emergent Coordination through Competition][website].
+
+# ![soccer](soccer.png)
+
+## Installation and requirements
+
+See [dm_control](../../../README.md#installation-and-requirements) for instructions.
 
 ## Quickstart
 
@@ -36,4 +42,4 @@ while not time_step.last():
 To visualize an example 2-vs-2 soccer environment in the `dm_control`
 interactive viewer, execute `dm_control/locomotion/soccer/explore.py`.
 
-[iclr_submission]: https://openreview.net/forum?id=BkG8sjR5Km
+[website]: https://sites.google.com/corp/view/emergent-coordination/home
