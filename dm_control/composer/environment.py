@@ -225,17 +225,9 @@ class _CommonEnvironment(object):
     self._physics = physics
     self._physics_proxy = weakref.proxy(self._physics)
     self._hooks.refresh_entity_hooks()
-
+    self._hooks.after_compile(self._physics_proxy, self._random_state)
     self._observation_updater = self._make_observation_updater()
     self._observation_updater.reset(self._physics_proxy, self._random_state)
-
-    # NB: `physics.after_reset()` is called after `task.after_compile()` so
-    #     that users can use `after_compile` to manually enable observables.
-    try:
-      with self._physics.reset_context():
-        self._hooks.after_compile(self._physics_proxy, self._random_state)
-    except control.PhysicsError as e:
-      logging.warning(e)
 
   def _make_physics(self):
     return mjcf.Physics.from_mjcf_model(self._task.root_entity.mjcf_model)
