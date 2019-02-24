@@ -496,7 +496,12 @@ class Camera(object):
   `camera_id`, for example to render the same view at different resolutions.
   """
 
-  def __init__(self, physics, height=240, width=320, camera_id=-1):
+  def __init__(self,
+               physics,
+               height=240,
+               width=320,
+               camera_id=-1,
+               max_geom=1000):
     """Initializes a new `Camera`.
 
     Args:
@@ -507,7 +512,8 @@ class Camera(object):
         camera, which is always defined. A nonnegative integer or string
         corresponds to a fixed camera, which must be defined in the model XML.
         If `camera_id` is a string then the camera must also be named.
-
+      max_geom: (optional) An integer specifying the maximum number of geoms
+        that can be represented in the scene.
     Raises:
       ValueError: If `camera_id` is outside the valid range, or if `width` or
         `height` exceed the dimensions of MuJoCo's offscreen framebuffer.
@@ -541,7 +547,7 @@ class Camera(object):
     self._physics = physics
 
     # Variables corresponding to structs needed by Mujoco's rendering functions.
-    self._scene = wrapper.MjvScene(model=physics.model)
+    self._scene = wrapper.MjvScene(model=physics.model, max_geom=max_geom)
     self._scene_option = wrapper.MjvOption()
 
     self._perturb = wrapper.MjvPerturb()
