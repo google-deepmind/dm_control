@@ -16,10 +16,10 @@
 """OpenGL context management for rendering MuJoCo scenes.
 
 By default, the `Renderer` class will try to load one of the following rendering
-APIs, in descending order of priority: EGL > GLFW > OSMesa.
+APIs, in descending order of priority: GLFW > EGL > OSMesa.
 
 It is also possible to select a specific backend by setting the `MUJOCO_GL=`
-environment variable to 'egl', 'glfw' or 'osmesa'.
+environment variable to 'glfw', 'egl', or 'osmesa'.
 """
 
 import collections
@@ -47,8 +47,8 @@ def _import_osmesa():
 # pylint: enable=g-import-not-at-top
 
 _ALL_RENDERERS = collections.OrderedDict([
-    (constants.EGL, _import_egl),
     (constants.GLFW, _import_glfw),
+    (constants.EGL, _import_egl),
     (constants.OSMESA, _import_osmesa),
 ])
 
