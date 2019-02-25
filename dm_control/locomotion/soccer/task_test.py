@@ -71,11 +71,11 @@ def _env(players, disable_walker_contacts=True, observables=None):
 
 def _observables_adder(observables_adder):
   if observables_adder == "core":
-    return soccer.CoreObservables()
+    return soccer.CoreObservablesAdder()
   if observables_adder == "core_interception":
-    return soccer.MultiObservables(
-        [soccer.CoreObservables(),
-         soccer.InterceptionObservables()])
+    return soccer.MultiObservablesAdder(
+        [soccer.CoreObservablesAdder(),
+         soccer.InterceptionObservablesAdder()])
   raise ValueError("Unrecognized observable_adder %s" % observables_adder)
 
 

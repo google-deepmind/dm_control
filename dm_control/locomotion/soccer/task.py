@@ -70,9 +70,9 @@ class Task(composer.Task):
       initializer: optional instance of `soccer.Initializer` that initializes
         the task at the start of each episode. If None, defaults to
         `initializers.UniformInitializer()`.
-      observables: optional instance of `soccer.Observables` that adds
+      observables: optional instance of `soccer.ObservablesAdder` that adds
         observables for each player. If None, defaults to
-        `observables.CoreObservables()`.
+        `observables.CoreObservablesAdder()`.
       disable_walker_contacts: if `True`, disable physical contacts between
         players.
       nconmax_per_player: allocated maximum number of contacts per player. It
@@ -87,7 +87,7 @@ class Task(composer.Task):
     self.players = players
 
     self._initializer = initializer or initializers.UniformInitializer()
-    self._observables = observables or observables_lib.CoreObservables()
+    self._observables = observables or observables_lib.CoreObservablesAdder()
 
     if disable_walker_contacts:
       _disable_geom_contacts([p.walker for p in self.players])

@@ -28,7 +28,7 @@ from six.moves import zip
 
 
 @six.add_metaclass(abc.ABCMeta)
-class Observables(object):
+class ObservablesAdder(object):
   """A callable that adds a set of per-player observables for a task."""
 
   @abc.abstractmethod
@@ -41,14 +41,14 @@ class Observables(object):
     """
 
 
-class MultiObservables(Observables):
-  """Adds multiple `Observables` to a soccer task and/or player."""
+class MultiObservablesAdder(ObservablesAdder):
+  """Applies multiple `ObservablesAdder`s to a soccer task and player."""
 
   def __init__(self, observables):
-    """Initializes a `MultiObservables` instance.
+    """Initializes a `MultiObservablesAdder` instance.
 
     Args:
-      observables: A list of `Observables` instances.
+      observables: A list of `ObservablesAdder` instances.
     """
     self._observables = observables
 
@@ -63,7 +63,7 @@ class MultiObservables(Observables):
       observable(task, player)
 
 
-class CoreObservables(Observables):
+class CoreObservablesAdder(ObservablesAdder):
   """Core set of per player observables."""
 
   def __call__(self, task, player):
@@ -333,7 +333,7 @@ class CoreObservables(Observables):
 
 
 # TODO(b/124848293): add unit-test interception observables.
-class InterceptionObservables(Observables):
+class InterceptionObservablesAdder(ObservablesAdder):
   """Adds obervables representing interception events.
 
   These observables represent events where this player received the ball from

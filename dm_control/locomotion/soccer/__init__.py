@@ -23,10 +23,10 @@ from dm_control import composer
 from dm_control.locomotion.soccer.boxhead import BoxHead
 from dm_control.locomotion.soccer.initializers import Initializer
 from dm_control.locomotion.soccer.initializers import UniformInitializer
-from dm_control.locomotion.soccer.observables import CoreObservables
-from dm_control.locomotion.soccer.observables import InterceptionObservables
-from dm_control.locomotion.soccer.observables import MultiObservables
-from dm_control.locomotion.soccer.observables import Observables
+from dm_control.locomotion.soccer.observables import CoreObservablesAdder
+from dm_control.locomotion.soccer.observables import InterceptionObservablesAdder
+from dm_control.locomotion.soccer.observables import MultiObservablesAdder
+from dm_control.locomotion.soccer.observables import ObservablesAdder
 from dm_control.locomotion.soccer.pitch import Pitch
 from dm_control.locomotion.soccer.pitch import RandomizedPitch
 from dm_control.locomotion.soccer.soccer_ball import SoccerBall
