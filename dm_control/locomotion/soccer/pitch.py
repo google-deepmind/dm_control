@@ -131,7 +131,7 @@ class Pitch(composer.Arena):
           self._mjcf_root.worldbody.add(
               'geom',
               type='box',
-              rgba=[.3, .3, .3, .3],
+              rgba=[.3, .3, .3, .0],
               pos=wall_pos,
               size=wall_size))
     # Build roof.
