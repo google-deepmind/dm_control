@@ -35,7 +35,7 @@ _SIDE_WIDTH = 32. / 6.
 _GROUND_GEOM_HEIGHT = 0.5
 
 _DEFAULT_PITCH_SIZE = (12, 9)
-_DEFAULT_GOAL_LENGTH_RATIO = 0.33
+_DEFAULT_GOAL_LENGTH_RATIO = 0.33  # Goal length / pitch width.
 
 
 def _top_down_cam_fovy(size, top_camera_distance):
@@ -75,20 +75,22 @@ class Pitch(composer.Arena):
 
   def _build(self,
              size=_DEFAULT_PITCH_SIZE,
-             goal_length_ratio=_DEFAULT_GOAL_LENGTH_RATIO,
+             goal_size=None,
              top_camera_distance=_TOP_CAMERA_DISTANCE,
              name='pitch'):
     """Construct a pitch with walls and position detectors.
 
     Args:
       size: a tuple of (length, width) of the pitch.
-      goal_length_ratio: the ratio of goal_length / pitch_width.
+      goal_size: optional (depth, width, height) indicating the goal size.
+        If not specified, the goal size is inferred from pitch size with a fixed
+        default ratio.
       top_camera_distance: the distance of the top-down camera to the pitch.
       name: the name of this arena.
     """
     super(Pitch, self)._build(name=name)
     self._size = size
-    self._goal_length_ratio = goal_length_ratio
+    self._goal_size = goal_size
     self._top_camera_distance = top_camera_distance
 
     self._top_camera = self._mjcf_root.worldbody.add(
@@ -144,7 +146,7 @@ class Pitch(composer.Arena):
         size=_roof_size(self._size))
 
     # Build goal position detectors.
-    goal_size = self._goal_size_from_pitch_size(self._size)
+    goal_size = self._get_goal_size()
     self._home_goal = props.PositionDetector(
         pos=(-self._size[0] + goal_size[0], 0, goal_size[2]),
         size=goal_size,
@@ -172,12 +174,15 @@ class Pitch(composer.Arena):
         name='field')
     self.attach(self._field)
 
-  def _goal_size_from_pitch_size(self, pitch_size):
-    return (
-        _SIDE_WIDTH / 2,
-        pitch_size[1] * self._goal_length_ratio,
-        _SIDE_WIDTH / 2,
-    )
+  def _get_goal_size(self):
+    goal_size = self._goal_size
+    if goal_size is None:
+      goal_size = (
+          _SIDE_WIDTH / 2,
+          self._size[1] * _DEFAULT_GOAL_LENGTH_RATIO,
+          _SIDE_WIDTH / 2,
+      )
+    return goal_size
 
   def register_ball(self, ball):
     self._home_goal.register_entities(ball)
@@ -220,7 +225,7 @@ class RandomizedPitch(Pitch):
                max_size,
                randomizer=None,
                keep_aspect_ratio=False,
-               goal_length_ratio=_DEFAULT_GOAL_LENGTH_RATIO,
+               goal_size=None,
                top_camera_distance=_TOP_CAMERA_DISTANCE,
                name='randomized_pitch'):
     """Construct a randomized pitch.
@@ -232,13 +237,15 @@ class RandomizedPitch(Pitch):
         between min_size, max_size.
       keep_aspect_ratio: if `True`, keep the aspect ratio constant during
         randomization.
-      goal_length_ratio: the ratio of goal_length / pitch_width.
+      goal_size: optional (depth, width, height) indicating the goal size.
+        If not specified, the goal size is inferred from pitch size with a fixed
+        default ratio.
       top_camera_distance: the distance of the top-down camera to the pitch.
       name: the name of this arena.
     """
     super(RandomizedPitch, self).__init__(
         size=max_size,
-        goal_length_ratio=goal_length_ratio,
+        goal_size=goal_size,
         top_camera_distance=top_camera_distance,
         name=name)
 
@@ -251,6 +258,14 @@ class RandomizedPitch(Pitch):
     # Sample a new size and regenerate the soccer pitch.
     logging.info('%s between (%s, %s) with %s', self.__class__.__name__,
                  min_size, max_size, self._randomizer)
+
+  def _resize_goals(self, goal_size):
+    self._home_goal.resize(
+        pos=(-self._size[0] + goal_size[0], 0, goal_size[2]),
+        size=goal_size)
+    self._away_goal.resize(
+        pos=(self._size[0] - goal_size[0], 0, goal_size[2]),
+        size=goal_size)
 
   def initialize_episode_mjcf(self, random_state):
     super(RandomizedPitch, self).initialize_episode_mjcf(random_state)
@@ -280,14 +295,8 @@ class RandomizedPitch(Pitch):
       self._walls[i].pos = wall_pos
     self._roof.size = _roof_size(self._size)
 
-    # Resize goal position sizes.
-    goal_size = self._goal_size_from_pitch_size(self._size)
-    self._home_goal.resize(
-        pos=(-self._size[0] + goal_size[0], 0, goal_size[2]),
-        size=goal_size)
-    self._away_goal.resize(
-        pos=(self._size[0] - goal_size[0], 0, goal_size[2]),
-        size=goal_size)
+    goal_size = self._get_goal_size()
+    self._resize_goals(goal_size)
 
     # Resize inverted field position detectors.
     self._field.resize(
