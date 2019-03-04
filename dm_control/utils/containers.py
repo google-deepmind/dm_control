@@ -20,6 +20,11 @@ from __future__ import division
 from __future__ import print_function
 
 import collections
+import six
+
+_NAME_ALREADY_EXISTS = (
+    "A function named {name!r} already exists in the container and "
+    "`allow_overriding_keys` is False.")
 
 
 class TaggedTasks(collections.Mapping):
@@ -43,9 +48,17 @@ class TaggedTasks(collections.Mapping):
   ```
   """
 
-  def __init__(self):
+  def __init__(self, allow_overriding_keys=False):
+    """Initializes a new `TaggedTasks` container.
+
+    Args:
+      allow_overriding_keys: Boolean, whether `add` can override existing keys
+        within the container. If False (default), calling `add` multiple times
+        with the same function name will result in a `ValueError`.
+    """
     self._tasks = collections.OrderedDict()
     self._tags = collections.defaultdict(dict)
+    self.allow_overriding_keys = allow_overriding_keys
 
   def add(self, *tags):
     """Decorator that adds a factory function to the container with tags.
@@ -58,25 +71,37 @@ class TaggedTasks(collections.Mapping):
 
     Raises:
       ValueError: if a function with the same name already exists within the
-        container.
+        container and `allow_overriding_keys` is False.
     """
     def wrap(factory_func):
       name = factory_func.__name__
-      if name in self:
-        raise ValueError("Function named {!r} already exists in the container."
-                         "".format(name))
+      if name in self and not self.allow_overriding_keys:
+        raise ValueError(_NAME_ALREADY_EXISTS.format(name=name))
       self._tasks[name] = factory_func
       for tag in tags:
         self._tags[tag][name] = factory_func
       return factory_func
     return wrap
 
-  def tagged(self, tag):
-    """Returns a (possibly empty) dict of all items that match the given tag."""
-    if tag not in self._tags:
+  def tagged(self, *tags):
+    """Returns a (possibly empty) dict of functions matching all the given tags.
+
+    Args:
+      *tags: Strings specifying tags to query by.
+
+    Returns:
+      A dict of `{name: function}` containing all the functions that are tagged
+      by all of the strings in `tags`.
+    """
+    if not tags:
       return {}
-    else:
-      return self._tags[tag]
+    tags = set(tags)
+    if not tags.issubset(six.viewkeys(self._tags)):
+      return {}
+    names = six.viewkeys(self._tags[tags.pop()])
+    while tags:
+      names &= six.viewkeys(self._tags[tags.pop()])
+    return {name: self._tasks[name] for name in names}
 
   def tags(self):
     """Returns a list of all the tags in this container."""

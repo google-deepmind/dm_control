@@ -20,13 +20,13 @@ from __future__ import division
 from __future__ import print_function
 
 # Internal dependencies.
-
 from absl.testing import absltest
-
+from absl.testing import parameterized
 from dm_control.utils import containers
+import six
 
 
-class TaggedTaskTest(absltest.TestCase):
+class TaggedTaskTest(parameterized.TestCase):
 
   def test_registration(self):
     tasks = containers.TaggedTasks()
@@ -84,6 +84,48 @@ class TaggedTaskTest(absltest.TestCase):
     expected_order = ['first', 'second', 'third', 'fourth']
     actual_order = list(tasks)
     self.assertEqual(expected_order, actual_order)
+
+  def test_override_behavior(self):
+    tasks = containers.TaggedTasks(allow_overriding_keys=False)
+
+    @tasks.add()
+    def some_func():
+      pass
+
+    expected_message = containers._NAME_ALREADY_EXISTS.format(name='some_func')
+    with self.assertRaisesWithLiteralMatch(ValueError, expected_message):
+      tasks.add()(some_func)
+
+    tasks.allow_overriding_keys = True
+    tasks.add()(some_func)  # Override should now succeed.
+
+  @parameterized.parameters(
+      {'query': ['a'], 'expected_keys': frozenset(['f1', 'f2', 'f3'])},
+      {'query': ['b', 'c'], 'expected_keys': frozenset(['f2'])},
+      {'query': ['c'], 'expected_keys': frozenset(['f2', 'f3'])},
+      {'query': ['b', 'd'], 'expected_keys': frozenset()},
+      {'query': ['e'], 'expected_keys': frozenset()},
+      {'query': [], 'expected_keys': frozenset()})
+  def test_query_tag_intersection(self, query, expected_keys):
+    tasks = containers.TaggedTasks()
+
+    # pylint: disable=unused-variable
+    @tasks.add('a', 'b')
+    def f1():
+      pass
+
+    @tasks.add('a', 'b', 'c')
+    def f2():
+      pass
+
+    @tasks.add('a', 'c', 'd')
+    def f3():
+      pass
+    # pylint: enable=unused-variable
+
+    result = tasks.tagged(*query)
+    self.assertSetEqual(frozenset(six.viewkeys(result)), expected_keys)
+
 
 if __name__ == '__main__':
   absltest.main()
