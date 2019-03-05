@@ -212,12 +212,15 @@ class Runtime(object):
       True if the operation was successful, False otherwise.
     """
     old_physics = self._env.physics
+    old_data = old_physics.data
 
     with self._error_logger:
       self._time_step = self._env.reset()
 
     new_physics = self._env.physics
-    if new_physics is not old_physics:
+    new_data = new_physics.data
+
+    if new_physics is not old_physics or old_data is not new_data:
       for listener in self.on_physics_changed:
         listener()
     return not self._error_logger.errors_found
