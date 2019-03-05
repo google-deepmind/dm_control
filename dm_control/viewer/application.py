@@ -37,6 +37,7 @@ _SPEED_UP_TIME = user_input.KEY_EQUAL
 _SLOW_DOWN_TIME = user_input.KEY_MINUS
 _HELP = user_input.KEY_F1
 _STATUS = user_input.KEY_F2
+_RELOAD = user_input.KEY_F3
 
 _MAX_FRONTBUFFER_SIZE = 2048
 _MISSING_STATUS_ENTRY = '--'
@@ -218,6 +219,7 @@ class Application(object):
     self._input_map.bind(self._time_multiplier.decrease, _SLOW_DOWN_TIME)
     self._input_map.bind(self._advance_simulation, _ADVANCE_SIMULATION)
     self._input_map.bind(self._restart_runtime, _RESTART)
+    self._input_map.bind(self._on_reload, _RELOAD)
     self._input_map.bind(help_view_toggle, _HELP)
     self._input_map.bind(status_view_toggle, _STATUS)
 
