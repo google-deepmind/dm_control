@@ -710,6 +710,8 @@ class MjvOption(wrappers.MjvOptionWrapper):
   def __init__(self):
     ptr = ctypes.pointer(types.MJVOPTION())
     mjlib.mjv_defaultOption(ptr)
+    # Do not visualize rangefinder lines by default:
+    ptr.contents.flags[enums.mjtVisFlag.mjVIS_RANGEFINDER] = False
     super(MjvOption, self).__init__(ptr)
 
 
