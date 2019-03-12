@@ -446,6 +446,14 @@ class CoreTest(parameterized.TestCase):
     self.assertLen(scene.geoms, len(geom_types))
     np.testing.assert_array_equal(scene.geoms.objtype, geom_types)
 
+  def testInvalidFontScale(self):
+    invalid_font_scale = 99
+    with self.assertRaisesWithLiteralMatch(
+        ValueError, core._INVALID_FONT_SCALE.format(invalid_font_scale)):
+      core.MjrContext(model=self.model,
+                      gl_context=None,  # Don't need a context for this test.
+                      font_scale=invalid_font_scale)
+
 
 def _get_attributes_test_params():
   model = core.MjModel.from_xml_path(HUMANOID_XML_PATH)

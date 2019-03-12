@@ -36,6 +36,9 @@ from dm_control.mujoco.wrapper.mjbindings import wrappers
 
 import six
 
+# Internal analytics import.
+
+
 _NULL = b"\00"
 _FAKE_XML_FILENAME = b"model.xml"
 _FAKE_BINARY_FILENAME = b"model.mjb"
@@ -46,9 +49,8 @@ _FAKE_BINARY_FILENAME = b"model.mjb"
 _MAX_VFS_FILENAME_CHARACTERS = 98
 _VFS_FILENAME_TOO_LONG = (
     "Filename length {length} exceeds {limit} character limit: {filename}")
-
-# Constants for MjrContext creation.
-_FONT_SCALE = 150
+_INVALID_FONT_SCALE = ("`font_scale` must be one of {}, got {{}}."
+                       .format(enums.mjtFontScale))
 
 # Global cache used to store finalizers for freeing ctypes pointers.
 # Contains {pointer_address: weakref_object} pairs.
@@ -113,6 +115,7 @@ def _maybe_register_license(path=None):
     result = mjlib.mj_activate(util.to_binary_string(path))
     if result == 1:
       _REGISTERED = True
+      # Internal analytics of mj_activate.
     elif result == 0:
       raise Error("Could not register license.")
     else:
@@ -731,18 +734,29 @@ class UnmanagedMjrContext(wrappers.MjrContextWrapper):
 
 class MjrContext(wrappers.MjrContextWrapper):  # pylint: disable=missing-docstring
 
-  def __init__(self, model, gl_context):
+  def __init__(self,
+               model,
+               gl_context,
+               font_scale=enums.mjtFontScale.mjFONTSCALE_150):
     """Initializes this MjrContext instance.
 
     Args:
       model: An `MjModel` instance.
       gl_context: A `render.ContextBase` instance.
+      font_scale: Integer controlling the font size for text. Must be a value
+        in `mjbindings.enums.mjtFontScale`.
+
+    Raises:
+      ValueError: If `font_scale` is invalid.
     """
+    if font_scale not in enums.mjtFontScale:
+      raise ValueError(_INVALID_FONT_SCALE.format(font_scale))
+
     ptr = ctypes.pointer(types.MJRCONTEXT())
     mjlib.mjr_defaultContext(ptr)
 
     with gl_context.make_current() as ctx:
-      ctx.call(mjlib.mjr_makeContext, model.ptr, ptr, _FONT_SCALE)
+      ctx.call(mjlib.mjr_makeContext, model.ptr, ptr, font_scale)
       ctx.call(mjlib.mjr_setBuffer, enums.mjtFramebuffer.mjFB_OFFSCREEN, ptr)
       gl_context.increment_refcount()
 

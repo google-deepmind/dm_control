@@ -159,7 +159,10 @@ class OffScreenRenderer(BaseRenderer):
       new_offheight = max(self._model.vis.global_.offheight, viewport.height)
       self._model.vis.global_.offwidth = new_offwidth
       self._model.vis.global_.offheight = new_offheight
-      self._mujoco_context = wrapper.MjrContext(self._model, self._surface)
+      self._mujoco_context = wrapper.MjrContext(
+          model=self._model,
+          gl_context=self._surface,
+          font_scale=enums.mjtFontScale.mjFONTSCALE_100)
       self._rgb_buffer = np.empty(
           (viewport.height, viewport.width, 3), dtype=np.uint8)
 
