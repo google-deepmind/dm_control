@@ -36,15 +36,17 @@ DEFAULT_DELAY = 0
 class _EnabledObservable(object):
   """Encapsulates an enabled observable, its buffer, and its update schedule."""
 
-  __slots__ = ('observable', 'buffer', 'update_schedule')
+  __slots__ = ('observable', 'observation_callable',
+               'buffer', 'update_schedule')
 
   def __init__(self, observable, physics, random_state,
                strip_singleton_buffer_dim):
     self.observable = observable
+    self.observation_callable = (
+        observable.observation_callable(physics, random_state))
     # We take an observation here to determine the shape and size.
     # This occurs outside of an episode and doesn't affect environment behavior.
-    obs_value = np.array(
-        observable.observation_callable(physics, random_state)())
+    obs_value = np.array(self.observation_callable())
     self.buffer = obs_buffer.Buffer(
         buffer_size=(observable.buffer_size or DEFAULT_BUFFER_SIZE),
         shape=obs_value.shape, dtype=obs_value.dtype,
@@ -128,7 +130,7 @@ class Updater(object):
       first_delay = _call_if_callable(enabled.observable.delay or DEFAULT_DELAY)
       enabled.buffer.insert(
           0, first_delay,
-          enabled.observable.observation_callable(physics, random_state)())
+          enabled.observation_callable())
 
   def observation_spec(self):
     """The observation specification for this environment.
@@ -204,7 +206,7 @@ class Updater(object):
         enabled.buffer.drop_unobserved_upcoming_items(
             enabled.update_schedule, self._physics_steps_per_control_step)
 
-  def update(self, physics, random_state):
+  def update(self):
     if self._enabled_structure is None:
       raise RuntimeError('`reset` must be called before `after_substep`.')
     self._step_counter += 1
@@ -214,7 +216,7 @@ class Updater(object):
         timestamp, delay = enabled.update_schedule.popleft()
         enabled.buffer.insert(
             timestamp, delay,
-            enabled.observable.observation_callable(physics, random_state)())
+            enabled.observation_callable())
 
   def get_observation(self):
     """Gets the current observation.

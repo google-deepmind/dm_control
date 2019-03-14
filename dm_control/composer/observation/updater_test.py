@@ -150,7 +150,7 @@ class UpdaterTest(parameterized.TestCase):
       observation_updater.prepare_for_next_control_step()
       for _ in range(physics_steps_per_control_step):
         physics.step()
-        observation_updater.update(physics=physics, random_state=None)
+        observation_updater.update()
 
       step_counter = (control_step + 1) * physics_steps_per_control_step
 
@@ -216,7 +216,7 @@ class UpdaterTest(parameterized.TestCase):
       observation_updater.prepare_for_next_control_step()
       for _ in range(physics_steps_per_control_step):
         physics.step()
-        observation_updater.update(physics=physics, random_state=None)
+        observation_updater.update()
       np.testing.assert_array_equal(
           observation_updater.get_observation()['time'],
           20*i + np.array([0, 5, 3]))
@@ -224,7 +224,7 @@ class UpdaterTest(parameterized.TestCase):
       observation_updater.prepare_for_next_control_step()
       for _ in range(physics_steps_per_control_step):
         physics.step()
-        observation_updater.update(physics=physics, random_state=None)
+        observation_updater.update()
       # Note that #11 is dropped since it arrives after #8,
       # whose large delay caused it to cross the control step boundary at #10.
       np.testing.assert_array_equal(

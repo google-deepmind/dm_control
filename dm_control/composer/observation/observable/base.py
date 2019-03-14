@@ -127,13 +127,13 @@ class Observable(object):
 
   def observation_callable(self, physics, random_state=None):
     """A callable which returns a (potentially corrupted) observation."""
+    raw_callable = self._callable(physics)
     if self._corruptor:
       def _corrupted():
-        return self._corruptor(self._callable(physics)(),
-                               random_state=random_state)
+        return self._corruptor(raw_callable(), random_state=random_state)
       return _corrupted
     else:
-      return self._callable(physics)
+      return raw_callable
 
   def __call__(self, physics, random_state=None):
     """Convenience function to just call an observable."""

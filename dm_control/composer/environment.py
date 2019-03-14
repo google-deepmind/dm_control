@@ -362,8 +362,7 @@ class Environment(_CommonEnvironment, environment.Base):
         # modify the physics state then we might capture an observation that is
         # inconsistent with the final physics state.
         if i < self._n_sub_steps - 1:
-          self._observation_updater.update(self._physics_proxy,
-                                           self._random_state)
+          self._observation_updater.update()
       physics_is_divergent = False
     except control.PhysicsError as e:
       if not self._raise_exception_on_physics_error:
@@ -373,8 +372,7 @@ class Environment(_CommonEnvironment, environment.Base):
         raise
 
     self._hooks.after_step(self._physics_proxy, self._random_state)
-    self._observation_updater.update(self._physics_proxy,
-                                     self._random_state)
+    self._observation_updater.update()
 
     if not physics_is_divergent:
       reward = self._task.get_reward(self._physics_proxy)

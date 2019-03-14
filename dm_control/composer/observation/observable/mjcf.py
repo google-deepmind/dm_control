@@ -87,7 +87,8 @@ class MJCFFeature(base.Observable):
         update_interval, buffer_size, delay, aggregator, corruptor)
 
   def _callable(self, physics):
-    return lambda: getattr(physics.bind(self._mjcf_element), self._kind)
+    binding = physics.bind(self._mjcf_element)
+    return lambda: getattr(binding, self._kind)
 
 
 class MJCFCamera(base.Observable):
