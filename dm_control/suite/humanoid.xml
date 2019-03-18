@@ -42,6 +42,7 @@
       <body name="head" pos="0 0 .19">
         <geom name="head" type="sphere" size=".09"/>
         <site name="head" class="touch" type="sphere" size=".091"/>
+        <camera name="egocentric" pos=".09 0 0" xyaxes="0 -1 0 .1 0 1" fovy="80"/>
       </body>
       <body name="lower_waist" pos="-.01 0 -.260" quat="1.000 0 -.002 0">
         <geom name="lower_waist" fromto="0 -.06 0 0 .06 0" size=".06"/>

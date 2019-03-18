@@ -120,6 +120,7 @@
                 <joint name="upperneckrx" axis="1 0 0" range="-20 45" class="stiff_medium"/>
                 <geom name="upperneck" size="0.05 0.03" pos="0 0.05 0" quat=".8 1 0 0"/>
                 <body name="head" pos="0 0.09 0">
+                  <camera name="egocentric" pos="0 0 0" xyaxes="-1 0 0 0 1 0" fovy="80"/>
                   <joint name="headrz" axis="0 0 1" range="-30 30" class="stiff_medium"/>
                   <joint name="headry" axis="0 1 0" range="-30 30" class="stiff_medium"/>
                   <joint name="headrx" axis="1 0 0" range="-20 45" class="stiff_medium"/>
