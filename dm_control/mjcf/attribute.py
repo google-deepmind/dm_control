@@ -49,15 +49,20 @@ class _Attribute(object):
     self._parent = parent
     self._value = None
     self._conflict_allowed = conflict_allowed
+    self._xml_string_is_up_to_date = False
+    self._xml_string = None
     self._check_and_assign(value)
 
   def _check_and_assign(self, new_value):
+    """Checks that `new_value` is valid, then assigns it to this attribute."""
     if new_value is None:
       self.clear()
     elif isinstance(new_value, str):
       self._assign_from_string(new_value)
     else:
       self._assign(new_value)
+    self._xml_string = None
+    self._xml_string_is_up_to_date = False
     if debugging.debug_mode():
       self._last_modified_stack = debugging.get_current_stack_trace()
 
@@ -89,6 +94,8 @@ class _Attribute(object):
   def _force_clear(self):
     self._before_clear()
     self._value = None
+    self._xml_string = None
+    self._xml_string_is_up_to_date = False
     if debugging.debug_mode():
       self._last_modified_stack = debugging.get_current_stack_trace()
 
@@ -98,7 +105,14 @@ class _Attribute(object):
   def _assign_from_string(self, string):
     self._assign(string)
 
-  def to_xml_string(self, prefix_root):  # pylint: disable=unused-argument
+  def to_xml_string(self, prefix_root=None):
+    if not self._xml_string_is_up_to_date:
+      self._xml_string = self._make_xml_string(prefix_root)
+      self._xml_string_is_up_to_date = True
+    return self._xml_string
+
+  def _make_xml_string(self, prefix_root):
+    del prefix_root  # Unused
     if self._value is None:
       return None
     else:
@@ -186,7 +200,8 @@ class Array(_Attribute):
   def _assign_from_string(self, string):
     self._assign(np.fromstring(string, dtype=self._dtype, sep=' '))
 
-  def to_xml_string(self, prefix_root=None):  # pylint: disable=unused-argument
+  def _make_xml_string(self, prefix_root):
+    del prefix_root  # Unused
     if self._value is None:
       return None
     else:
@@ -209,6 +224,11 @@ class Array(_Attribute):
 
 class Identifier(_Attribute):
   """A string attribute that represents a unique identifier of an element."""
+
+  def __init__(self, name, required, parent, value, conflict_allowed):
+    super(Identifier, self).__init__(
+        name, required, parent, value, conflict_allowed)
+    self._xml_string_revision = -1
 
   def _assign(self, value):
     if not isinstance(value, str):
@@ -243,6 +263,15 @@ class Identifier(_Attribute):
     return constants.PREFIX_SEPARATOR.join(prefix) or constants.PREFIX_SEPARATOR
 
   def to_xml_string(self, prefix_root=None):
+    if prefix_root is not None:
+      return self._make_xml_string(prefix_root)
+    else:
+      if self._xml_string_revision < self._parent.namescope.revision:
+        self._xml_string = self._make_xml_string(prefix_root=None)
+        self._xml_string_revision = self._parent.namescope.revision
+      return self._xml_string
+
+  def _make_xml_string(self, prefix_root):
     if self._parent.tag == constants.DEFAULT:
       return self._defaults_string(prefix_root)
     elif self._value:
@@ -261,9 +290,10 @@ class Reference(_Attribute):
     self._reference_namespace = reference_namespace
     super(Reference, self).__init__(
         name, required, parent, value, conflict_allowed)
+    self._xml_string_revision = -1
 
   def _check_dead_reference(self):
-    if isinstance(self._value, base.Element) and self._value.is_removed:
+    if getattr(self._value, 'is_removed', False):
       self.clear()
 
   @property
@@ -277,10 +307,8 @@ class Reference(_Attribute):
 
   @property
   def reference_namespace(self):
-    if isinstance(self._reference_namespace, _Attribute):
-      return self._reference_namespace.value
-    else:
-      return self._reference_namespace
+    return getattr(self._reference_namespace, 'value',
+                   self._reference_namespace)
 
   def _assign(self, value):
     if not isinstance(value, (base.Element, six.string_types)):
@@ -331,8 +359,7 @@ class Reference(_Attribute):
     if not self._value:
       defaults_root = self._parent.parent
       while defaults_root is not None:
-        if (hasattr(defaults_root, constants.CHILDCLASS)
-            and defaults_root.childclass):
+        if getattr(defaults_root, constants.CHILDCLASS, None):
           break
         defaults_root = defaults_root.parent
       if defaults_root is None:
@@ -345,10 +372,22 @@ class Reference(_Attribute):
       out_string = prefix + self._value
     return out_string
 
-  def to_xml_string(self, prefix_root):
+  def to_xml_string(self, prefix_root=None):
+    if prefix_root is not None:
+      return self._make_xml_string(prefix_root)
+    else:
+      if self._xml_string_revision < self._parent.namescope.revision:
+        self._xml_string = self._make_xml_string(prefix_root=None)
+        self._xml_string_revision = self._parent.namescope.revision
+      return self._xml_string
+
+  def _make_xml_string(self, prefix_root):
     self._check_dead_reference()
-    if isinstance(self._value, base.Element):
-      return self._value.prefixed_identifier(prefix_root)
+    # Equivalent to `if isinstance(self._value, base.Element)` but cheaper.
+    get_prefixed_identifier = getattr(self._value, 'prefixed_identifier', None)
+    if get_prefixed_identifier:
+      # Case where `self._value` is a `base.Element`.
+      return get_prefixed_identifier(prefix_root)
     elif (self.reference_namespace == constants.DEFAULT
           and self._name != constants.CHILDCLASS):
       return self._defaults_string(prefix_root)
@@ -381,8 +420,8 @@ class BasePath(_Attribute):
     if self._value:
       self._parent.namescope.remove(constants.BASEPATH, self._path_namespace)
 
-  def to_xml_string(self, prefix_root=None):
-    return None
+  def _make_xml_string(self, prefix_root):
+    pass
 
 
 class Asset(object):
@@ -486,7 +525,7 @@ class File(_Attribute):
                          'querying the contents.')
     return self._value.contents
 
-  def to_xml_string(self, prefix_root=None):
+  def _make_xml_string(self, prefix_root):
     """Returns the asset filename as it will appear in the generated XML."""
     del prefix_root  # Unused
     if self._value is not None:
