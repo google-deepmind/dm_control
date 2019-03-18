@@ -252,12 +252,12 @@ class Physics(_control.Physics):
   @contextlib.contextmanager
   def check_invalid_state(self):
     """Raises a `base.PhysicsError` if the simulation state is invalid."""
-    warning_counts_before = self.data.warning.number.copy()
+    # `np.copyto(dst, src)` is marginally faster than `dst[:] = src`.
+    np.copyto(self._warnings_before, self._warnings)
     yield
-    warnings_raised = self.data.warning.number > warning_counts_before
-    if any(warnings_raised):
-      warning_names = [
-          enums.mjtWarning._fields[i] for i in np.where(warnings_raised)[0]]
+    np.greater(self._warnings, self._warnings_before, out=self._new_warnings)
+    if any(self._new_warnings):
+      warning_names = np.compress(self._new_warnings, enums.mjtWarning._fields)
       raise _control.PhysicsError(
           _INVALID_PHYSICS_STATE.format(warning_names=', '.join(warning_names)))
 
@@ -292,6 +292,13 @@ class Physics(_control.Physics):
       data: Instance of `wrapper.MjData`.
     """
     self._data = data
+
+    # Performance optimization: pre-allocate numpy arrays used when checking for
+    # MuJoCo warnings on each step.
+    self._warnings = self.data.warning.number
+    self._warnings_before = np.empty_like(self._warnings)
+    self._new_warnings = np.empty(dtype=bool, shape=self._warnings.shape)
+
     self._make_rendering_contexts()
 
     # Call kinematics update to enable rendering.
