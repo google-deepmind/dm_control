@@ -315,11 +315,20 @@ class Binding(object):
 
   @property
   def element_id(self):
-    if isinstance(self._named_index, list):
-      return np.array([self._physics.model.name2id(item_name, self._namespace)
-                       for item_name in self._named_index])
-    else:
-      return self._physics.model.name2id(self._named_index, self._namespace)
+    """The ID number of this element within MuJoCo's data structures."""
+    try:
+      element_id = self._getattr_cache['element_id']
+    except KeyError:
+      if isinstance(self._named_index, list):
+        element_id = np.array(
+            [self._physics.model.name2id(item_name, self._namespace)
+             for item_name in self._named_index])
+        element_id.flags.writeable = False
+      else:
+        element_id = self._physics.model.name2id(
+            self._named_index, self._namespace)
+      self._getattr_cache['element_id'] = element_id
+    return element_id
 
   def __getattr__(self, name):
     if name in Binding.__slots__:
