@@ -25,7 +25,6 @@ import functools
 import os
 import platform
 import sys
-import threading
 from dm_control import _render
 import numpy as np
 import six
@@ -164,20 +163,16 @@ class CachedProperty(property):
 
   def __init__(self, func, doc=None):
     super(CachedProperty, self).__init__(fget=func, doc=doc)
-    self.lock = threading.RLock()
+    self._name = func.__name__
 
   def __get__(self, obj, cls):
     if obj is None:
       return self
-    name = self.fget.__name__
     obj_dict = obj.__dict__
-    with self.lock:
-      try:
-        # Return cached result if it was computed before the lock was acquired
-        return obj_dict[name]
-      except KeyError:
-        # Otherwise call the function, cache the result, and return it
-        return obj_dict.setdefault(name, self.fget(obj))
+    try:
+      return obj_dict[self._name]
+    except KeyError:
+      return obj_dict.setdefault(self._name, self.fget(obj))
 
 
 def _as_array(src, shape):
