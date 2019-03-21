@@ -21,13 +21,16 @@ from __future__ import print_function
 
 import abc
 import collections
-
 import enum
+import numpy as np
 import six
 
+from dm_control.rl import specs
 
-class TimeStep(collections.namedtuple(
-    'TimeStep', ['step_type', 'reward', 'discount', 'observation'])):
+
+class TimeStep(
+    collections.namedtuple('TimeStep',
+                           ['step_type', 'reward', 'discount', 'observation'])):
   """Returned with every call to `step` and `reset` on an environment.
 
   A `TimeStep` contains the data emitted by an environment at each step of
@@ -132,6 +135,27 @@ class Base(object):
           specification returned by `observation_spec()`.
     """
 
+  def reward_spec(self):
+    """Describes the reward returned by the environment.
+
+    By default this is assumed to be a single float.
+
+    Returns:
+      An `ArraySpec`, or a nested dict, list or tuple of `ArraySpec`s.
+    """
+    return specs.ArraySpec(shape=(), dtype=float, name='reward')
+
+  def discount_spec(self):
+    """Describes the discount returned by the environment.
+
+    By default this is assumed to be a single float between 0 and 1.
+
+    Returns:
+      An `ArraySpec`, or a nested dict, list or tuple of `ArraySpec`s.
+    """
+    return specs.BoundedArraySpec(
+        shape=(), dtype=float, minimum=0., maximum=1., name='discount')
+
   @abc.abstractmethod
   def observation_spec(self):
     """Defines the observations provided by the environment.
@@ -153,19 +177,6 @@ class Base(object):
     Returns:
       An `ArraySpec`, or a nested dict, list or tuple of `ArraySpec`s.
     """
-
-  def step_spec(self):
-    """Optional method that defines fields returned by `step`.
-
-    Implement this method to define an environment that uses non-standard values
-    for any of the items returned by `step`. For example, an environment with
-    array-valued rewards.
-
-    Returns:
-      A `TimeStep` namedtuple containing (possibly nested) `ArraySpec`s defining
-      the reward, discount, and observation structure.
-    """
-    raise NotImplementedError
 
   def close(self):
     """Frees any resources used by the environment.
@@ -196,6 +207,33 @@ class Base(object):
   def __exit__(self, unused_exception_type, unused_exc_value, unused_traceback):
     """Allows the environment to be used in a with-statement context."""
     self.close()
+
+
+# A `StepType` enum can be safely cast to an array that conforms to this spec.
+STEP_TYPE_SPEC = specs.BoundedArraySpec(
+    shape=(),
+    dtype=np.promote_types(np.min_scalar_type(min(StepType)),
+                           np.min_scalar_type(max(StepType))),
+    minimum=min(StepType),
+    maximum=max(StepType),
+    name='step_type')
+
+
+def make_step_spec(environment):
+  """Returns a `TimeStep` describing the return values of an environment.
+
+  Args:
+    environment: An instance of `Base`.
+
+  Returns:
+    A `TimeStep` namedtuple. Each field contains an `ArraySpec`, or a nested
+    dict, list or tuple of `ArraySpec`s that describe the corresponding field in
+    the return values of `environment.reset()` and `environment.step()`.
+  """
+  return TimeStep(step_type=STEP_TYPE_SPEC,
+                  reward=environment.reward_spec(),
+                  discount=environment.discount_spec(),
+                  observation=environment.observation_spec())
 
 # Helper functions for creating TimeStep namedtuples with default settings.
 
