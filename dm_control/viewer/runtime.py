@@ -211,13 +211,15 @@ class Runtime(object):
     Returns:
       True if the operation was successful, False otherwise.
     """
-    old_physics = self._env.physics
+    # NB: we check the identity of the data pointer rather than the physics
+    # instance itself, since this allows us to detect when the physics has been
+    # "reloaded" using one of the `reload_from_*` methods.
+    old_data_ptr = self._env.physics.data.ptr
 
     with self._error_logger:
       self._time_step = self._env.reset()
 
-    new_physics = self._env.physics
-    if new_physics is not old_physics:
+    if self._env.physics.data.ptr is not old_data_ptr:
       for listener in self.on_physics_changed:
         listener()
     return not self._error_logger.errors_found

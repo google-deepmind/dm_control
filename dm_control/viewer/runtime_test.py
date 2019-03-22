@@ -308,7 +308,7 @@ class EnvironmentRuntimeTest(parameterized.TestCase):
     self.runtime.on_physics_changed += [callback]
 
     def begin_episode_and_reload_physics():
-      self.env.physics = mock.MagicMock()
+      self.env.physics.data.ptr = mock.MagicMock()
     self.env.reset.side_effect = begin_episode_and_reload_physics
 
     self.runtime._start()
