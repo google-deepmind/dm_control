@@ -331,7 +331,11 @@ class Environment(_CommonEnvironment, environment.Base):
         discount=None,
         observation=self._observation_updater.get_observation())
 
+  # TODO(b/129061424): Remove this method.
   def step_spec(self):
+    """DEPRECATED: please use `reward_spec` and `discount_spec` instead."""
+    warnings.warn('`step_spec` is deprecated, please use `reward_spec` and '
+                  '`discount_spec` instead.', DeprecationWarning)
     if (self._task.get_reward_spec() is None or
         self._task.get_discount_spec() is None):
       raise NotImplementedError
@@ -399,6 +403,38 @@ class Environment(_CommonEnvironment, environment.Base):
   def action_spec(self):
     """Returns the action specification for this environment."""
     return self._task.action_spec(self._physics_proxy)
+
+  def reward_spec(self):
+    """Describes the reward returned by this environment.
+
+    This will be the output of `self.task.reward_spec()` if it is not None,
+    otherwise it will be the default spec returned by
+    `environment.Base.reward_spec()`.
+
+    Returns:
+      An `ArraySpec`, or a nested dict, list or tuple of `ArraySpec`s.
+    """
+    task_reward_spec = self._task.get_reward_spec()
+    if task_reward_spec is not None:
+      return task_reward_spec
+    else:
+      return super(Environment, self).reward_spec()
+
+  def discount_spec(self):
+    """Describes the discount returned by this environment.
+
+    This will be the output of `self.task.discount_spec()` if it is not None,
+    otherwise it will be the default spec returned by
+    `environment.Base.discount_spec()`.
+
+    Returns:
+      An `ArraySpec`, or a nested dict, list or tuple of `ArraySpec`s.
+    """
+    task_discount_spec = self._task.get_discount_spec()
+    if task_discount_spec is not None:
+      return task_discount_spec
+    else:
+      return super(Environment, self).discount_spec()
 
   def observation_spec(self):
     """Returns the observation specification for this environment.
