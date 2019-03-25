@@ -41,22 +41,26 @@ elif PYOPENGL_PLATFORM != constants.EGL:
 
 # pylint: disable=g-import-not-at-top
 from dm_control._render.pyopengl import egl_ext as EGL
+from OpenGL import error
 
 
 def create_initialized_headless_egl_display():
   """Creates an initialized EGL display directly on a device."""
-  display = EGL.EGL_NO_DISPLAY
-  devices = EGL.eglQueryDevicesEXT()
-  for device in devices:
+  for device in EGL.eglQueryDevicesEXT():
     display = EGL.eglGetPlatformDisplayEXT(
         EGL.EGL_PLATFORM_DEVICE_EXT, device, None)
-    if display and EGL.eglGetError() == EGL.EGL_SUCCESS:
-      initialized = EGL.eglInitialize(display, None, None)
-      if EGL.eglGetError() == EGL.EGL_SUCCESS and initialized == EGL.EGL_TRUE:
-        break
+    if display != EGL.EGL_NO_DISPLAY and EGL.eglGetError() == EGL.EGL_SUCCESS:
+      # `eglInitialize` may or may not raise an exception on failure depending
+      # on how PyOpenGL is configured. We therefore catch a `GLError` and also
+      # manually check the output of `eglGetError()` here.
+      try:
+        initialized = EGL.eglInitialize(display, None, None)
+      except error.GLError:
+        pass
       else:
-        display = EGL.EGL_NO_DISPLAY
-  return display
+        if initialized == EGL.EGL_TRUE and EGL.eglGetError() == EGL.EGL_SUCCESS:
+          return display
+  return EGL.EGL_NO_DISPLAY
 
 
 EGL_DISPLAY = create_initialized_headless_egl_display()
