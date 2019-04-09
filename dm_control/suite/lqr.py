@@ -245,6 +245,7 @@ class LQRLevel(base.Task):
     ndof = physics.model.nq
     unit = self.random.randn(ndof)
     physics.data.qpos[:] = np.sqrt(2) * unit / np.linalg.norm(unit)
+    super(LQRLevel, self).initialize_episode(physics)
 
   def get_observation(self, physics):
     """Returns an observation of the state."""

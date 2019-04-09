@@ -133,9 +133,10 @@ class Stack(base.Task):
     """
     self._n_boxes = n_boxes
     self._box_names = ['box' + str(b) for b in range(n_boxes)]
-    self._box_joint_names = ['_'.join([name, dim])
-                             for name in self._box_names
-                             for dim in 'xzy']
+    self._box_joint_names = []
+    for name in self._box_names:
+      for dim in 'xyz':
+        self._box_joint_names.append('_'.join([name, dim]))
     self._fully_observable = fully_observable
     super(Stack, self).__init__(random=random)
 
@@ -177,6 +178,8 @@ class Stack(base.Task):
       # Check for collisions.
       physics.after_reset()
       penetrating = physics.data.ncon > 0
+
+    super(Stack, self).initialize_episode(physics)
 
   def get_observation(self, physics):
     """Returns either features or only sensors (to be used with pixels)."""

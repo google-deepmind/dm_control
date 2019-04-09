@@ -196,6 +196,8 @@ class Swimmer(base.Task):
     physics.named.model.light_pos['target_light', 'x'] = xpos
     physics.named.model.light_pos['target_light', 'y'] = ypos
 
+    super(Swimmer, self).initialize_episode(physics)
+
   def get_observation(self, physics):
     """Returns an observation of joint angles, body velocities and target."""
     obs = collections.OrderedDict()

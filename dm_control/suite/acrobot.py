@@ -107,6 +107,7 @@ class Balance(base.Task):
     """
     physics.named.data.qpos[
         ['shoulder', 'elbow']] = self.random.uniform(-np.pi, np.pi, 2)
+    super(Balance, self).initialize_episode(physics)
 
   def get_observation(self, physics):
     """Returns an observation of pole orientation and angular velocities."""

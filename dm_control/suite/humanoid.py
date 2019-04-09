@@ -167,6 +167,7 @@ class Humanoid(base.Task):
       # Check for collisions.
       physics.after_reset()
       penetrating = physics.data.ncon > 0
+    super(Humanoid, self).initialize_episode(physics)
 
   def get_observation(self, physics):
     """Returns either the pure state or a set of egocentric features."""

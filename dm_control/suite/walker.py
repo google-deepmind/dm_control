@@ -130,6 +130,7 @@ class PlanarWalker(base.Task):
 
     """
     randomizers.randomize_limited_and_rotational_joints(physics, self.random)
+    super(PlanarWalker, self).initialize_episode(physics)
 
   def get_observation(self, physics):
     """Returns an observation of body orientations, height and velocites."""

@@ -109,6 +109,7 @@ class Hopper(base.Task):
     """Sets the state of the environment at the start of each episode."""
     randomizers.randomize_limited_and_rotational_joints(physics, self.random)
     self._timeout_progress = 0
+    super(Hopper, self).initialize_episode(physics)
 
   def get_observation(self, physics):
     """Returns an observation of positions, velocities and touch sensors."""

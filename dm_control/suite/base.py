@@ -63,17 +63,22 @@ class Task(control.Task):
     """Returns a `BoundedArraySpec` matching the `physics` actuators."""
     return mujoco.action_spec(physics)
 
+  def initialize_episode(self, physics):
+    """Resets geom colors to their defaults after starting a new episode.
+
+    Subclasses of `base.Task` must delegate to this method after performing
+    their own initialization.
+
+    Args:
+      physics: An instance of `mujoco.Physics`.
+    """
+    self.after_step(physics)
+
   def before_step(self, action, physics):
     """Sets the control signal for the actuators to values in `action`."""
     # Support legacy internal code.
-    try:
-      physics.set_control(action.continuous_actions)
-    except AttributeError:
-      physics.set_control(action)
-
-    # Reset any reward visualisation at the start of a new episode.
-    if self._visualize_reward and physics.time() == 0.0:
-      _set_reward_colors(physics, reward=0.0)
+    action = getattr(action, "continuous_actions", action)
+    physics.set_control(action)
 
   def after_step(self, physics):
     """Modifies colors according to the reward."""
@@ -92,15 +97,15 @@ class Task(control.Task):
     self._visualize_reward = value
 
 
+_MATERIALS = ["self", "effector", "target"]
+_DEFAULT = [name + "_default" for name in _MATERIALS]
+_HIGHLIGHT = [name + "_highlight" for name in _MATERIALS]
+
+
 def _set_reward_colors(physics, reward):
   """Sets the highlight, effector and target colors according to the reward."""
   assert 0.0 <= reward <= 1.0
-
   colors = physics.named.model.mat_rgba
-
-  def blend(color1, color2):
-    return reward * colors[color1] + (1.0 - reward) * colors[color2]
-
-  colors["self"] = blend("self_highlight", "self_default")
-  colors["effector"] = blend("effector_highlight", "effector_default")
-  colors["target"] = blend("target_highlight", "target_default")
+  default = colors[_DEFAULT]
+  highlight = colors[_HIGHLIGHT]
+  colors[_MATERIALS] = reward * highlight + (1.0 - reward) * default

@@ -84,6 +84,7 @@ class Cheetah(base.Task):
 
     physics.data.time = 0
     self._timeout_progress = 0
+    super(Cheetah, self).initialize_episode(physics)
 
   def get_observation(self, physics):
     """Returns an observation of the state, ignoring horizontal position."""

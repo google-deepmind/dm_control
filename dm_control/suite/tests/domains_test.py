@@ -24,6 +24,7 @@ from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control import suite
 from dm_control.rl import control
+import mock
 import numpy as np
 import six
 from six.moves import range
@@ -184,14 +185,46 @@ class DomainTest(parameterized.TestCase):
             time_step1.observation[key], time_step2.observation[key],
             err_msg='Observation {!r} is not equal.'.format(key))
 
+  def assertCorrectColors(self, physics, reward):
+    colors = physics.named.model.mat_rgba
+    for material_name in ('self', 'effector', 'target'):
+      highlight = colors[material_name + '_highlight']
+      default = colors[material_name + '_default']
+      expected = reward * highlight + (1.0 - reward) * default
+      actual = colors[material_name]
+      err_msg = ('Material {!r} has unexpected color.\nExpected: {!r}\n'
+                 'Actual: {!r}'.format(material_name, expected, actual))
+      np.testing.assert_array_almost_equal(expected, actual, err_msg=err_msg)
+
   @parameterized.parameters(*suite.ALL_TASKS)
   def test_visualize_reward(self, domain, task):
     env = suite.load(domain, task)
-    env.task.visualise_reward = True
-    env.reset()
+    env.task.visualize_reward = True
     action = np.zeros(env.action_spec().shape)
-    for _ in range(2):
+
+    with mock.patch.object(env.task, 'get_reward') as mock_get_reward:
+      mock_get_reward.return_value = -3.0  # Rewards < 0 should be clipped.
+      env.reset()
+      mock_get_reward.assert_called_with(env.physics)
+      self.assertCorrectColors(env.physics, reward=0.0)
+
+      mock_get_reward.reset_mock()
+      mock_get_reward.return_value = 0.5
       env.step(action)
+      mock_get_reward.assert_called_with(env.physics)
+      self.assertCorrectColors(env.physics, reward=mock_get_reward.return_value)
+
+      mock_get_reward.reset_mock()
+      mock_get_reward.return_value = 2.0  # Rewards > 1 should be clipped.
+      env.step(action)
+      mock_get_reward.assert_called_with(env.physics)
+      self.assertCorrectColors(env.physics, reward=1.0)
+
+      mock_get_reward.reset_mock()
+      mock_get_reward.return_value = 0.25
+      env.reset()
+      mock_get_reward.assert_called_with(env.physics)
+      self.assertCorrectColors(env.physics, reward=mock_get_reward.return_value)
 
   @parameterized.parameters(*suite.ALL_TASKS)
   def test_task_supports_environment_kwargs(self, domain, task):

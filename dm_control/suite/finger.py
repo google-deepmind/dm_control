@@ -146,6 +146,7 @@ class Spin(base.Task):
     physics.named.model.site_rgba['tip', 3] = 0
     physics.named.model.dof_damping['hinge'] = .03
     _set_random_joint_angles(physics, self.random)
+    super(Spin, self).initialize_episode(physics)
 
   def get_observation(self, physics):
     """Returns state and touch sensors, and target info."""
@@ -185,6 +186,8 @@ class Turn(base.Task):
     physics.named.model.site_size['target', 0] = self._target_radius
 
     _set_random_joint_angles(physics, self.random)
+
+    super(Turn, self).initialize_episode(physics)
 
   def get_observation(self, physics):
     """Returns state, touch sensors, and target info."""

@@ -197,6 +197,7 @@ class Balance(base.Task):
       physics.named.data.qpos['slider'] = self.random.uniform(-.1, .1)
       physics.named.data.qpos[1:] = self.random.uniform(-.034, .034, nv - 1)
     physics.named.data.qvel[:] = 0.01 * self.random.randn(physics.model.nv)
+    super(Balance, self).initialize_episode(physics)
 
   def get_observation(self, physics):
     """Returns an observation of the (bounded) physics state."""
