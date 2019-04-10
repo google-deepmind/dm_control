@@ -322,8 +322,10 @@ class CoreObservablesAdder(ObservablesAdder):
     player.walker.observables.add_observable(
         'stats_home_score', base_observable.Generic(_stats_home_score))
 
+    has_opponent = any([p.team != player.team for p in task.players])
+
     def _stats_away_score(unused_physics):
-      if (task.arena.detected_goal() and
+      if (has_opponent and task.arena.detected_goal() and
           task.arena.detected_goal() != player.team):
         return 1.
       return 0.
