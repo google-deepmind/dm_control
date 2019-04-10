@@ -190,7 +190,8 @@ class DomainTest(parameterized.TestCase):
     for material_name in ('self', 'effector', 'target'):
       highlight = colors[material_name + '_highlight']
       default = colors[material_name + '_default']
-      expected = reward * highlight + (1.0 - reward) * default
+      blend_coef = reward ** 4
+      expected = blend_coef * highlight + (1.0 - blend_coef) * default
       actual = colors[material_name]
       err_msg = ('Material {!r} has unexpected color.\nExpected: {!r}\n'
                  'Actual: {!r}'.format(material_name, expected, actual))

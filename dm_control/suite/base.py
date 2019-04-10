@@ -108,4 +108,5 @@ def _set_reward_colors(physics, reward):
   colors = physics.named.model.mat_rgba
   default = colors[_DEFAULT]
   highlight = colors[_HIGHLIGHT]
-  colors[_MATERIALS] = reward * highlight + (1.0 - reward) * default
+  blend_coef = reward ** 4  # Better color distinction near high rewards.
+  colors[_MATERIALS] = blend_coef * highlight + (1.0 - blend_coef) * default
