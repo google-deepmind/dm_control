@@ -165,6 +165,10 @@ class Environment(environment.Base):
   def task(self):
     return self._task
 
+  @property
+  def step_limit(self):
+    return self._step_limit
+
   def control_timestep(self):
     """Returns the interval between agent actions in seconds."""
     return self.physics.timestep() * self._n_sub_steps
