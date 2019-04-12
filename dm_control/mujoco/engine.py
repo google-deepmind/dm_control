@@ -120,7 +120,7 @@ class Physics(_control.Physics):
     Args:
       control: NumPy array or array-like actuation values.
     """
-    self.data.ctrl[:] = np.asarray(control)
+    np.copyto(self.data.ctrl, control)
 
   def step(self):
     """Advances physics with up-to-date position and velocity dependent fields.
