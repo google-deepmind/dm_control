@@ -262,7 +262,8 @@ class DomainTest(parameterized.TestCase):
     for name, array_list in six.iteritems(observations):
       # Sampling random uniform actions generally isn't sufficient to trigger
       # these touch sensors.
-      if domain in ('manipulator', 'stacker') and name == 'touch':
+      if (domain in ('manipulator', 'stacker') and name == 'touch' or
+          domain == 'quadruped' and name == 'force_torque'):
         continue
       stacked_arrays = np.array(array_list)
       is_constant = np.all(stacked_arrays == stacked_arrays[0], axis=0)

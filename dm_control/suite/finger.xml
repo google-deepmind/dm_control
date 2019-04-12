@@ -13,7 +13,7 @@
     <motor ctrllimited="true" ctrlrange="-1 1"/>
     <default class="finger">
       <joint damping="2.5" limited="true"/>
-      <site type="ellipsoid" size=".025 .03 .025" rgba=".5 .5 .5 .3" group="3"/>
+      <site type="ellipsoid" size=".025 .03 .025" material="site" group="3"/>
     </default>
   </default>
 

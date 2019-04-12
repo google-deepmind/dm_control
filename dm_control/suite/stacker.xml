@@ -20,7 +20,7 @@
     <joint solimplimit="0 0.99 0.01" solreflimit=".005 1"/>
     <general ctrllimited="true"/>
     <tendon width="0.01"/>
-    <site size=".003 .003 .003" rgba=".5 .5 .5 .3" group="3"/>
+    <site size=".003 .003 .003" material="site" group="3"/>
 
     <default class="arm">
       <geom type="capsule" material="self" density="500"/>
