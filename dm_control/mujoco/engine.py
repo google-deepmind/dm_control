@@ -202,7 +202,7 @@ class Physics(_control.Physics):
     start = 0
     for state_item in state_items:
       size = state_item.size
-      state_item[:] = physics_state[start:start + size]
+      np.copyto(state_item, physics_state[start:start + size])
       start += size
 
   def copy(self, share_model=False):
@@ -454,13 +454,13 @@ class Physics(_control.Physics):
     Returns:
       List of NumPy arrays containing full physics simulation state.
     """
-    return [self.data.qpos[:], self.data.qvel[:], self.data.act[:]]
+    return [self.data.qpos, self.data.qvel, self.data.act]
 
   # Named views of simulation data.
 
   def control(self):
     """Returns a copy of the control signals for the actuators."""
-    return self.data.ctrl[:].copy()
+    return self.data.ctrl.copy()
 
   def activation(self):
     """Returns a copy of the internal states of actuators.
@@ -471,7 +471,7 @@ class Physics(_control.Physics):
     Returns:
       Activations in a numpy array.
     """
-    return self.data.act[:].copy()
+    return self.data.act.copy()
 
   def state(self):
     """Returns the full physics state. Alias for `get_physics_state`."""
@@ -479,11 +479,11 @@ class Physics(_control.Physics):
 
   def position(self):
     """Returns a copy of the generalized positions (system configuration)."""
-    return self.data.qpos[:].copy()
+    return self.data.qpos.copy()
 
   def velocity(self):
     """Returns a copy of the generalized velocities."""
-    return self.data.qvel[:].copy()
+    return self.data.qvel.copy()
 
   def timestep(self):
     """Returns the simulation timestep."""
@@ -804,7 +804,7 @@ class MovableCamera(Camera):
       azimuth: Azimuth in degrees.
       elevation: Elevation in degrees.
     """
-    self._render_camera.lookat[:] = lookat
+    np.copyto(self._render_camera.lookat, lookat)
     self._render_camera.distance = distance
     self._render_camera.azimuth = azimuth
     self._render_camera.elevation = elevation
