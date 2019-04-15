@@ -278,5 +278,15 @@ class DomainTest(parameterized.TestCase):
         .format('\n'.join(':\t'.join([name, str(is_constant)])
                           for (name, is_constant) in failures)))
 
+  @parameterized.parameters(*suite.ALL_TASKS)
+  def test_initial_state_is_randomized(self, domain, task):
+    env = suite.load(domain, task, task_kwargs={'random': 42})
+    obs1 = env.reset().observation
+    obs2 = env.reset().observation
+    self.assertFalse(
+        all(np.all(obs1[k] == obs2[k]) for k in obs1),
+        'Two consecutive initial states have identical observations.\n'
+        'First: {}\nSecond: {}'.format(obs1, obs2))
+
 if __name__ == '__main__':
   absltest.main()

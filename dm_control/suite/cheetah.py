@@ -47,7 +47,7 @@ def get_model_and_assets():
 def run(time_limit=_DEFAULT_TIME_LIMIT, random=None, environment_kwargs=None):
   """Returns the run task."""
   physics = Physics.from_xml_string(*get_model_and_assets())
-  task = Cheetah(random)
+  task = Cheetah(random=random)
   environment_kwargs = environment_kwargs or {}
   return control.Environment(physics, task, time_limit=time_limit,
                              **environment_kwargs)
@@ -64,19 +64,13 @@ class Physics(mujoco.Physics):
 class Cheetah(base.Task):
   """A `Task` to train a running Cheetah."""
 
-  # pylint: disable=useless-super-delegation
-  def __init__(self, random=None):
-    """Initializes an instance of `Cheetah`.
-
-    Args:
-      random: Optional, either a `numpy.random.RandomState` instance, an
-        integer seed for creating a new `RandomState`, or None to select a seed
-        automatically (default).
-    """
-    super(Cheetah, self).__init__(random)
-
   def initialize_episode(self, physics):
     """Sets the state of the environment at the start of each episode."""
+    # The indexing below assumes that all joints have a single DOF.
+    assert physics.model.nq == physics.model.njnt
+    is_limited = physics.model.jnt_limited == 1
+    lower, upper = physics.model.jnt_range[is_limited].T
+    physics.data.qpos[is_limited] = self.random.uniform(lower, upper)
 
     # Stabilize the model before the actual simulation.
     for _ in range(200):
