@@ -46,6 +46,19 @@ _Attribute = collections.namedtuple(
     ('name', 'get_named_indexer', 'triggers_dirty', 'disable_on_write'))
 
 
+# Object types that can be used to index into numpy arrays.
+_TUPLE = tuple
+_ARRAY_LIKE = (np.ndarray, list)
+# We don't need to differentiate between other types of index, e.g. integers,
+# slices.
+
+
+def _get_index_type(index):
+  for index_type in (_TUPLE, _ARRAY_LIKE):
+    if isinstance(index, index_type):
+      return index_type
+
+
 def _pymjcf_log_xml():
   """Returns True if the generated XML should be logged on model compilation."""
   if FLAGS.is_parsed():
@@ -181,6 +194,7 @@ class SynchronizingArrayWrapper(np.ndarray):
   __slots__ = (
       '_backing_array',
       '_backing_index',
+      '_backing_index_is_array_like',
       '_physics',
       '_triggers_dirty',
       '_disable_on_write',
@@ -196,6 +210,10 @@ class SynchronizingArrayWrapper(np.ndarray):
     # pylint: disable=protected-access
     obj._backing_array = backing_array
     obj._backing_index = backing_index
+    # Performance optimization: avoid repeatedly checking the type of the
+    # backing index.
+    backing_index_type = _get_index_type(backing_index)
+    obj._backing_index_is_array_like = backing_index_type is _ARRAY_LIKE
     obj._physics = physics
     obj._triggers_dirty = triggers_dirty
     obj._disable_on_write = disable_on_write
@@ -205,8 +223,9 @@ class SynchronizingArrayWrapper(np.ndarray):
   def _synchronize_from_backing_array(self):
     if self._physics.is_dirty and not self._triggers_dirty:
       self._physics.forward()
-    super(SynchronizingArrayWrapper, self).__setitem__(
-        slice(None, None, None), self._backing_array[self._backing_index])
+    updated_values = self._backing_array[self._backing_index]
+    # Faster than `super(...).__setitem__(slice(None), updated_values)`
+    np.copyto(self, updated_values)
 
   def copy(self, order='C'):
     return np.copy(self, order=order)
@@ -224,20 +243,23 @@ class SynchronizingArrayWrapper(np.ndarray):
     if self._physics.is_dirty and not self._triggers_dirty:
       self._physics.forward()
     super(SynchronizingArrayWrapper, self).__setitem__(index, value)
-    if isinstance(self._backing_index, collections.Iterable):
-      if isinstance(index, tuple):
+
+    # Performance optimization: avoid repeatedly checking the type of the index.
+    index_type = _get_index_type(index)
+
+    if self._backing_index_is_array_like:
+      if index_type is _TUPLE:
         resolved_index = (self._backing_index[index[0]],) + index[1:]
       else:
         resolved_index = self._backing_index[index]
       self._backing_array[resolved_index] = value
 
     for backing_array, backing_index in self._disable_on_write:
-      if isinstance(index, collections.Iterable):
+      if index_type is _TUPLE:
         # We only need the row component of the index.
-        if isinstance(index, tuple):
-          resolved_index = backing_index[index[0]]
-        else:
-          resolved_index = backing_index[index]
+        resolved_index = backing_index[index[0]]
+      elif index_type is _ARRAY_LIKE:
+        resolved_index = backing_index[index]
       else:
         # If it is only an index into the columns of the backing array then we
         # just discard it and use the backing index.
