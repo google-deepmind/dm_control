@@ -17,7 +17,19 @@ This package contains:
 
 If you use this package, please cite our accompanying [tech report].
 
-## Installation and requirements
+## Requirements and Installation
+
+`dm_control` is regularly tested using the following platforms and Python
+versions:
+
+             | Python 2.7 | Python 3.5
+------------ | ---------- | ----------
+Ubuntu 14.04 | &#x2713;   | &#x2713;
+Ubuntu 16.04 |            | &#x2713;
+
+Various people have been successful in getting `dm_control` to work on other
+Linux distros, OS X, and Windows. We do not provide active support for these,
+but will endeavour to answer questions on a best-effort basis.
 
 Follow these steps to install `dm_control`:
 
