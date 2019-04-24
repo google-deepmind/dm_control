@@ -60,8 +60,21 @@ def _make_players(team_size):
   return home_players + away_players
 
 
-def load(team_size, time_limit=45.):
-  """Construct `team_size`-vs-`team_size` soccer environment."""
+def load(team_size, time_limit=45., random_state=None):
+  """Construct `team_size`-vs-`team_size` soccer environment.
+
+  Args:
+    team_size: Integer, the number of players per team. Must be between 1 and
+      11.
+    time_limit: Float, the maximum duration of each episode in seconds.
+    random_state: (optional) an int seed or `np.random.RandomState` instance.
+
+  Returns:
+    A `composer.Environment` instance.
+
+  Raises:
+    ValueError: If `team_size` is not between 1 and 11.
+  """
   if team_size < 0 or team_size > 11:
     raise ValueError(
         "Team size must be between 1 and 11 (received %d)." % team_size)
@@ -72,4 +85,5 @@ def load(team_size, time_limit=45.):
           arena=RandomizedPitch(
               min_size=(32, 24), max_size=(48, 36), keep_aspect_ratio=True),
       ),
-      time_limit=time_limit)
+      time_limit=time_limit,
+      random_state=random_state)

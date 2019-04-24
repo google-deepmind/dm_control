@@ -49,6 +49,41 @@ class LoadTest(parameterized.TestCase):
             "Player %d: reward = %s, discount = %s, observations = %s.", i,
             time_step.reward[i], time_step.discount, time_step.observation[i])
 
+  def assertSameObservation(self, expected_observation, actual_observation):
+    self.assertLen(actual_observation, len(expected_observation))
+    for player_id in range(len(expected_observation)):
+      expected_player_observations = expected_observation[player_id]
+      actual_player_observations = actual_observation[player_id]
+      expected_keys = expected_player_observations.keys()
+      actual_keys = actual_player_observations.keys()
+      msg = ("Observation keys differ for player {}.\nExpected: {}.\nActual: {}"
+             .format(player_id, expected_keys, actual_keys))
+      self.assertEqual(expected_keys, actual_keys, msg)
+      for key in expected_player_observations:
+        expected_array = expected_player_observations[key]
+        actual_array = actual_player_observations[key]
+        msg = ("Observation {!r} differs for player {}.\nExpected:\n{}\n"
+               "Actual:\n{}"
+               .format(key, player_id, expected_array, actual_array))
+        np.testing.assert_array_equal(expected_array, actual_array,
+                                      err_msg=msg)
+
+  def test_same_first_observation_if_same_seed(self):
+    seed = 42
+    timestep_1 = soccer.load(team_size=2, random_state=seed).reset()
+    timestep_2 = soccer.load(team_size=2, random_state=seed).reset()
+    self.assertSameObservation(timestep_1.observation, timestep_2.observation)
+
+  def test_different_first_observation_if_different_seed(self):
+    timestep_1 = soccer.load(team_size=2, random_state=1).reset()
+    timestep_2 = soccer.load(team_size=2, random_state=2).reset()
+    try:
+      self.assertSameObservation(timestep_1.observation, timestep_2.observation)
+    except AssertionError:
+      pass
+    else:
+      self.fail("Observations are unexpectedly identical.")
+
 
 if __name__ == "__main__":
   absltest.main()
