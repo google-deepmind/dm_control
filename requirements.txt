@@ -6,6 +6,7 @@ glfw==1.7.1
 lxml==4.3.0
 mock==2.0.0
 nose==1.3.7
+nose-xunitmp==0.4.1
 numpy==1.16.1
 pillow==5.4.1
 pyopengl==3.1.0
