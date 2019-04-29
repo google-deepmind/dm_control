@@ -33,7 +33,7 @@ import numpy as np
 import six
 from six.moves import range
 
-_NO_ROTATION = np.array([1., 0., 0., 0])
+_NO_ROTATION = (1, 0, 0, 0)  # Tests support for non-arrays and non-floats.
 _NINETY_DEGREES_ABOUT_X = np.array(
     [np.cos(np.pi / 4), np.sin(np.pi / 4), 0., 0.])
 _NINETY_DEGREES_ABOUT_Y = np.array(
@@ -50,6 +50,12 @@ _TEST_ROTATIONS = [
     (_FORTYFIVE_DEGREES_ABOUT_X, _NINETY_DEGREES_ABOUT_Y,
      np.array([0.65328, 0.2706, 0.65328, -0.2706])),
 ]
+
+
+def _param_product(**param_lists):
+  keys, values = zip(*param_lists.items())
+  for combination in itertools.product(*values):
+    yield dict(zip(keys, combination))
 
 
 class TestEntity(entity.Entity):
@@ -286,17 +292,11 @@ class EntityTest(parameterized.TestCase):
     self.assertEqual(
         list(entities[0].iter_entities(exclude_self=True)), entities[1:])
 
-  @parameterized.parameters(
-      dict(position=position, quaternion=quaternion, freejoint=freejoint)
-      for position, quaternion, freejoint in itertools.product(
-          [None, [1., 0., -1.]],  # position
-          [
-              None,
-              _FORTYFIVE_DEGREES_ABOUT_X,
-              _NINETY_DEGREES_ABOUT_Z,
-          ],  # quaternion
-          [False, True],  # freejoint
-      ))
+  @parameterized.parameters(*_param_product(
+      position=[None, [1., 0., -1.]],
+      quaternion=[None, _FORTYFIVE_DEGREES_ABOUT_X, _NINETY_DEGREES_ABOUT_Z],
+      freejoint=[False, True],
+  ))
   def testSetPose(self, position, quaternion, freejoint):
     # Setup entity.
     test_arena = arena.Arena()
@@ -322,21 +322,14 @@ class EntityTest(parameterized.TestCase):
     np.testing.assert_array_equal(physics.bind(frame).xpos, ground_truth_pos)
     np.testing.assert_array_equal(physics.bind(frame).xquat, ground_truth_quat)
 
-  @parameterized.parameters(
-      dict(
-          original_position=original_position,
-          position=position,
-          original_quaternion=test_rotation[0],
-          quaternion=test_rotation[1],
-          expected_quaternion=test_rotation[2],
-          freejoint=freejoint)
-      for (original_position, position, test_rotation,
-           freejoint) in itertools.product(
-               [[-2, -1, -1.], [1., 0., -1.]],  # original_position
-               [None, [1., 0., -1.]],  # position
-               _TEST_ROTATIONS,  # (original_quat, quat, expected_quat)
-               [False, True],  # freejoint
-           ))
+  @parameterized.parameters(*_param_product(
+      original_position=[[-2, -1, -1.], [1., 0., -1.]],
+      position=[None, [1., 0., -1.]],
+      original_quaternion=_TEST_ROTATIONS[0],
+      quaternion=_TEST_ROTATIONS[1],
+      expected_quaternion=_TEST_ROTATIONS[2],
+      freejoint=[False, True],
+  ))
   def testShiftPose(self, original_position, position, original_quaternion,
                     quaternion, expected_quaternion, freejoint):
     # Setup entity.

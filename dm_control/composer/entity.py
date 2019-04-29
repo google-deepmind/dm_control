@@ -442,11 +442,11 @@ class Entity(object):
     if position is not None:
       new_position = current_position + position
     if quaternion is not None:
-      quaternion = np.array(quaternion, copy=False)
+      quaternion = np.array(quaternion, dtype=np.float64, copy=False)
       new_quaternion = _multiply_quaternions(quaternion, current_quaternion)
       root_joint = mjcf.get_frame_freejoint(self.mjcf_model)
       if root_joint and rotate_velocity:
-        # Rotate the linear velocity. The angular velocity (qvel[3:)
+        # Rotate the linear velocity. The angular velocity (qvel[3:])
         # is left unchanged, as it is expressed in the local frame.
         # When rotatating the body frame the angular velocity already
         # tracks the rotation but the linear velocity does not.
