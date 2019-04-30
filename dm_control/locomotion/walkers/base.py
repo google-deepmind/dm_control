@@ -35,13 +35,27 @@ from dm_control.rl import specs
 _RANGEFINDER_SCALE = 10.0
 _TOUCH_THRESHOLD = 1e-3
 
-_WalkerPose = collections.namedtuple('WalkerPose', ('qpos', 'xpos', 'xquat'))
+
+def _make_readonly_float64_copy(value):
+  if np.isscalar(value):
+    return np.float64(value)
+  else:
+    out = np.array(value, dtype=np.float64)
+    out.flags.writeable = False
+    return out
 
 
-def WalkerPose(qpos=0.0, xpos=(0, 0, 0), xquat=(1, 0, 0, 0)):  # pylint: disable=invalid-name
-  return _WalkerPose(qpos=qpos,
-                     xpos=np.array(xpos, dtype=np.float64),
-                     xquat=np.array(xquat, dtype=np.float64))
+class WalkerPose(collections.namedtuple(
+    'WalkerPose', ('qpos', 'xpos', 'xquat'))):
+
+  __slots__ = ()
+
+  def __new__(cls, qpos=0.0, xpos=(0, 0, 0), xquat=(1, 0, 0, 0)):
+    return super(WalkerPose, cls).__new__(
+        cls,
+        qpos=_make_readonly_float64_copy(qpos),
+        xpos=_make_readonly_float64_copy(xpos),
+        xquat=_make_readonly_float64_copy(xquat))
 
 
 @six.add_metaclass(abc.ABCMeta)
