@@ -158,17 +158,18 @@ class Walker(composer.Robot):
 
   def after_compile(self, physics, unused_random_state):
     super(Walker, self).after_compile(physics, unused_random_state)
-    self._end_effector_ids = set(
-        physics.bind(eff_geom).element_id for eff_body in self.end_effectors
-        for eff_geom in eff_body.find_all('geom'))
+    self._end_effector_geom_ids = set()
+    for eff_body in self.end_effectors:
+      eff_geom = eff_body.find_all('geom')
+      self._end_effector_geom_ids |= set(physics.bind(eff_geom).element_id)
     self._body_geom_ids = set(
         physics.bind(geom).element_id
         for geom in self.mjcf_model.find_all('geom'))
-    self._body_geom_ids.difference_update(self._end_effector_ids)
+    self._body_geom_ids.difference_update(self._end_effector_geom_ids)
 
   @property
-  def end_effector_ids(self):
-    return self._end_effector_ids
+  def end_effector_geom_ids(self):
+    return self._end_effector_geom_ids
 
   @property
   def body_geom_ids(self):
@@ -188,7 +189,7 @@ class Walker(composer.Robot):
       a dict with as key a tuple of geom ids, of which one is an end effector,
       and as value the total magnitude of all contacts between these geoms
     """
-    return self.collect_contacts(physics, self._end_effector_ids)
+    return self.collect_contacts(physics, self._end_effector_geom_ids)
 
   def body_contacts(self, physics):
     """Collect the contacts with the body.
