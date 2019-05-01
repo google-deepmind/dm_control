@@ -170,6 +170,22 @@ class Walker(composer.Robot):
     """
     return 0.
 
+  @abc.abstractproperty
+  def ground_contact_geoms(self):
+    """Geoms in this walker that are expected to be in contact with the ground.
+
+    This property is used by some tasks to determine contact-based failure
+    termination. It should only contain geoms that are expected to be in
+    contact with the ground during "normal" locomotion. For example, for a
+    humanoid model, this property would be expected to contain only the geoms
+    that make up the two feet.
+
+    Note that certain specialized tasks may also allow geoms that are not listed
+    here to be in contact with the ground. For example, a humanoid cartwheel
+    task would also allow the hands to touch the ground in addition to the feet.
+    """
+    raise NotImplementedError
+
   def after_compile(self, physics, unused_random_state):
     super(Walker, self).after_compile(physics, unused_random_state)
     self._end_effector_geom_ids = set()

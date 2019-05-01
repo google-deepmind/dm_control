@@ -251,15 +251,19 @@ class BoxHead(base.Walker):
 
   @composer.cached_property
   def end_effectors(self):
-    return [self._mjcf_root.find('body', 'head_body')]
+    return (self._mjcf_root.find('body', 'head_body'),)
 
   @composer.cached_property
   def observable_joints(self):
-    return [self._mjcf_root.find('joint', 'kick')]
+    return (self._mjcf_root.find('joint', 'kick'),)
 
   @composer.cached_property
   def egocentric_camera(self):
     return self._mjcf_root.find('camera', 'egocentric')
+
+  @composer.cached_property
+  def ground_contact_geoms(self):
+    return (self._mjcf_root.find('geom', 'shell'),)
 
   @property
   def prev_action(self):

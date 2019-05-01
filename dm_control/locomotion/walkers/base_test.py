@@ -56,6 +56,10 @@ class FakeWalker(base.Walker):
     return []
 
   @property
+  def ground_contact_geoms(self):
+    return []
+
+  @property
   def egocentric_camera(self):
     return self._egocentric_camera
 
