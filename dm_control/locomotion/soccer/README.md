@@ -12,6 +12,7 @@ See [dm_control](../../../README.md#installation-and-requirements) for instructi
 ## Quickstart
 
 ```python
+import numpy as np
 from dm_control.locomotion import soccer as dm_soccer
 
 # Load the 2-vs-2 soccer environment with episodes of 10 seconds:
