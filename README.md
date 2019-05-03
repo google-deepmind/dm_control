@@ -2,10 +2,7 @@
 
 # ![all domains](all_domains.png)
 
-This package contains:
-
--   [`dm_control.mjcf`]: A library for composing and modifying MuJoCo MJCF
-    models in Python.
+This package consists of the following "core" components:
 
 -   [`dm_control.mujoco`]: Libraries that provide Python bindings to the MuJoCo
     physics engine.
@@ -14,6 +11,19 @@ This package contains:
     powered by the MuJoCo physics engine.
 
 -   [`dm_control.viewer`]: An interactive environment viewer.
+
+Additionally, the following components are available for the creation of more
+complex control tasks:
+
+-   [`dm_control.mjcf`]: A library for composing and modifying MuJoCo MJCF
+    models in Python.
+
+-   `dm_control.composer`: A library for defining rich RL environments from
+    reusable, self-contained components.
+
+-   [`dm_control.locomotion`]: Additional libraries for custom tasks.
+
+-   [`dm_control.locomotion.soccer`]: Multi-agent soccer tasks.
 
 If you use this package, please cite our accompanying [tech report].
 
@@ -104,3 +114,5 @@ environment variable to `"glfw"`, `"egl"`, or `"osmesa"`, respectively.
 [`dm_control.mujoco`]: dm_control/mujoco/README.md
 [`dm_control.suite`]: dm_control/suite/README.md
 [`dm_control.viewer`]: dm_control/viewer/README.md
+[`dm_control.locomotion`]: dm_control/locomotion/README.md
+[`dm_control.locomotion.soccer`]: locomotion/soccer/README.md
