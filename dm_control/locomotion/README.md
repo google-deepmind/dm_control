@@ -7,8 +7,10 @@ associated with various research papers. These examples can serve as starting
 points or be customized to design new environments using the components
 available from this library.
 
-![walls](walls.png){height="200px"}
-![gaps](gaps.png){height="200px"}
+<p float="left">
+  <img src="walls.png" height="200">
+  <img src="gaps.png" height="200">
+</p>
 
 ## Terminology
 
