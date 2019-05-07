@@ -77,8 +77,8 @@ papers. Relevant references include:
 
 -   [Neural probabilistic motor primitives for humanoid control (2019)][merel2019b].
 
-[installation-and-requirements]: ../README.md#installation-and-requirements
-[`dm_control.viewer`]: ../dm_control/viewer/README.md
+[installation-and-requirements]: ../../README.md#installation-and-requirements
+[`dm_control.viewer`]: ../viewer/README.md
 [heess2017]: https://arxiv.org/abs/1707.02286
 [merel2017]: https://arxiv.org/abs/1707.02201
 [merel2019a]: https://arxiv.org/abs/1811.09656

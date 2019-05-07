@@ -115,4 +115,4 @@ environment variable to `"glfw"`, `"egl"`, or `"osmesa"`, respectively.
 [`dm_control.suite`]: dm_control/suite/README.md
 [`dm_control.viewer`]: dm_control/viewer/README.md
 [`dm_control.locomotion`]: dm_control/locomotion/README.md
-[`dm_control.locomotion.soccer`]: locomotion/soccer/README.md
+[`dm_control.locomotion.soccer`]: dm_control/locomotion/soccer/README.md
