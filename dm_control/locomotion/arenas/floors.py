@@ -29,7 +29,7 @@ _TOP_CAMERA_Y_PADDING_FACTOR = 1.1
 class Floor(composer.Arena):
   """A simple floor arena with a checkered pattern."""
 
-  def _build(self, size=(8, 8), name='floor'):
+  def _build(self, size=(8, 8), reflectance=.2, name='floor'):
     super(Floor, self)._build(name=name)
     self._size = size
 
@@ -53,7 +53,7 @@ class Floor(composer.Arena):
         name='groundplane',
         texrepeat=[3, 3],
         texuniform=True,
-        reflectance=.2,
+        reflectance=reflectance,
         texture=self._ground_texture)
     self._ground_geom = self._mjcf_root.worldbody.add(
         'geom',
