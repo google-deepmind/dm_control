@@ -299,7 +299,7 @@ class CoreObservablesAdder(ObservablesAdder):
             physics.bind(player.walker.root_body).xpos -
             physics.bind(other.walker.root_body).xpos)
         teammate_dists.append(dist)
-      return np.mean(teammate_dists) if teammate_dists else np.nan
+      return np.mean(teammate_dists) if teammate_dists else 0.
 
     player.walker.observables.add_observable(
         'stats_home_avg_teammate_dist',
