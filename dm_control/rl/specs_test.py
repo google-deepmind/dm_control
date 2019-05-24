@@ -75,6 +75,11 @@ class ArraySpecTest(absltest.TestCase):
     self.assertNotEqual(spec_1, spec_2)
     self.assertNotEqual(spec_2, spec_1)
 
+  def testIsUnhashable(self):
+    spec = array_spec.ArraySpec(shape=(1, 2, 3), dtype=np.int32)
+    with self.assertRaisesRegexp(TypeError, "unhashable type"):
+      hash(spec)
+
   def testValidateDtype(self):
     spec = array_spec.ArraySpec((1, 2), np.int32)
     spec.validate(np.zeros((1, 2), dtype=np.int32))
@@ -150,6 +155,12 @@ class BoundedArraySpecTest(absltest.TestCase):
     spec_2 = array_spec.BoundedArraySpec(
         (1, 2), np.int32, minimum=[0.0, 0.0], maximum=[1.0, 1.0])
     self.assertNotEqual(spec_1, spec_2)
+
+  def testIsUnhashable(self):
+    spec = array_spec.BoundedArraySpec(
+        shape=(1, 2), dtype=np.int32, minimum=0.0, maximum=2.0)
+    with self.assertRaisesRegexp(TypeError, "unhashable type"):
+      hash(spec)
 
   def testRepr(self):
     as_string = repr(array_spec.BoundedArraySpec(

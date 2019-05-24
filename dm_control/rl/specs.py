@@ -29,6 +29,7 @@ class ArraySpec(object):
   The equivalent version describing a `tf.Tensor` is `TensorSpec`.
   """
   __slots__ = ('_shape', '_dtype', '_name')
+  __hash__ = None
 
   def __init__(self, shape, dtype, name=None):
     """Initializes a new `ArraySpec`.
@@ -131,8 +132,8 @@ class BoundedArraySpec(ArraySpec):
   spec = BoundedArraySpec((3, 4), np.int, minimum=0, maximum=2)
   ```
   """
-
   __slots__ = ('_minimum', '_maximum')
+  __hash__ = None
 
   def __init__(self, shape, dtype, minimum, maximum, name=None):
     """Initializes a new `BoundedArraySpec`.
@@ -140,7 +141,7 @@ class BoundedArraySpec(ArraySpec):
     Args:
       shape: An iterable specifying the array shape.
       dtype: numpy dtype or string specifying the array dtype.
-      minimum: Number or sequence specifying the maximum element bounds
+      minimum: Number or sequence specifying the minimum element bounds
         (inclusive). Must be broadcastable to `shape`.
       maximum: Number or sequence specifying the maximum element bounds
         (inclusive). Must be broadcastable to `shape`.
