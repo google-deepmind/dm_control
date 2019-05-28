@@ -47,19 +47,24 @@ class UniformInitializer(Initializer):
   def _initialize_ball(self, ball, spawn_range, physics, random_state):
     x, y = random_state.uniform(-spawn_range, spawn_range)
     ball.set_pose(physics, [x, y, self._init_ball_z])
-    ball.set_velocity(
-        physics,
-        velocity=np.asarray([0., 0., 0.]),
-        angular_velocity=np.zeros(3))
+    # Note: this method is not always called immediately after `physics.reset()`
+    #       so we need to explicitly zero out the velocity.
+    ball.set_velocity(physics, velocity=0., angular_velocity=0.)
 
   def _initialize_walker(self, walker, spawn_range, physics, random_state):
+    """Uniformly initialize walker in spawn_range."""
     walker.reinitialize_pose(physics, random_state)
     x, y = random_state.uniform(-spawn_range, spawn_range)
+    (_, _, z), quat = walker.get_pose(physics)
+    walker.set_pose(physics, [x, y, z], quat)
     rotation = random_state.uniform(-np.pi, np.pi)
     quat = [np.cos(rotation / 2), 0, 0, np.sin(rotation / 2)]
-    walker.shift_pose(physics, [x, y, 0.], quat)
-    walker.set_velocity(
-        physics, velocity=np.zeros(3), angular_velocity=np.zeros(3))
+    walker.shift_pose(physics, quaternion=quat)
+    # TODO(b/132759890): `walker.set_velocity` has no effect for walkers without
+    # freejoints, such as `BoxHead`.
+    # Note: this method is not always called immediately after `physics.reset()`
+    #       so we need to explicitly zero out the velocity.
+    walker.set_velocity(physics, velocity=0., angular_velocity=0.)
 
   def __call__(self, task, physics, random_state):
     spawn_range = np.asarray(task.arena.size) * self._spawn_ratio

@@ -19,16 +19,19 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import unittest
 # Internal dependencies.
 
 from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control import composer
+from dm_control import mjcf
 from dm_control.locomotion import soccer
+from dm_control.locomotion.soccer import initializers
+from dm_control.mujoco.wrapper import mjbindings
 import numpy as np
 from six.moves import range
 from six.moves import zip
-
 
 RGBA_BLUE = [.1, .1, .8, 1.]
 RGBA_RED = [.8, .1, .1, 1.]
@@ -58,14 +61,17 @@ def _away_team(team_size):
   return _team_players(team_size, soccer.Team.AWAY, "away", RGBA_RED)
 
 
-def _env(players, disable_walker_contacts=True, observables=None):
+def _env(players, disable_walker_contacts=True, observables=None,
+         random_state=42, **task_kwargs):
   return composer.Environment(
       task=soccer.Task(
           players=players,
           arena=soccer.Pitch((20, 15)),
           observables=observables,
           disable_walker_contacts=disable_walker_contacts,
+          **task_kwargs
       ),
+      random_state=random_state,
       time_limit=1)
 
 
@@ -345,6 +351,120 @@ class TaskTest(parameterized.TestCase):
 
     self.assertEqual(timestep.discount, expected_terminal_discount)
 
+
+class UniformInitializerTest(parameterized.TestCase):
+
+  @parameterized.parameters([0.3, 0.7])
+  def test_walker_position(self, spawn_ratio):
+    initializer = initializers.UniformInitializer(spawn_ratio=spawn_ratio)
+    env = _env(_home_team(2) + _away_team(2), initializer=initializer)
+    root_bodies = [p.walker.root_body for p in env.task.players]
+    xy_bounds = np.asarray(env.task.arena.size) * spawn_ratio
+    env.reset()
+    xy = env.physics.bind(root_bodies).xpos[:, :2].copy()
+    with self.subTest("X and Y positions within bounds"):
+      if np.any(abs(xy) > xy_bounds):
+        self.fail("Walker(s) spawned out of bounds. Expected abs(xy) "
+                  "<= {}, got:\n{}".format(xy_bounds, xy))
+    env.reset()
+    xy2 = env.physics.bind(root_bodies).xpos[:, :2].copy()
+    with self.subTest("X and Y positions change after reset"):
+      if np.any(xy == xy2):
+        self.fail("Walker(s) have the same X and/or Y coordinates before and "
+                  "after reset. Before: {}, after: {}.".format(xy, xy2))
+
+  def test_walker_rotation(self):
+    initializer = initializers.UniformInitializer()
+    env = _env(_home_team(2) + _away_team(2), initializer=initializer)
+
+    def quats_to_eulers(quats):
+      eulers = np.empty((len(quats), 3), dtype=np.double)
+      dt = 1.
+      for i, quat in enumerate(quats):
+        mjbindings.mjlib.mju_quat2Vel(eulers[i], quat, dt)
+      return eulers
+
+    # TODO(b/132671988): Switch to using `get_pose` to get the quaternion once
+    #                    `BoxHead.get_pose` and `BoxHead.set_pose` are
+    #                    implemented in a consistent way.
+    def get_quat(walker):
+      return env.physics.bind(walker.root_body).xquat
+
+    env.reset()
+    quats = [get_quat(p.walker) for p in env.task.players]
+    eulers = quats_to_eulers(quats)
+    with self.subTest("Rotation is about the Z-axis only"):
+      np.testing.assert_array_equal(eulers[:, :2], 0.)
+
+    env.reset()
+    quats2 = [get_quat(p.walker) for p in env.task.players]
+    eulers2 = quats_to_eulers(quats2)
+    with self.subTest("Rotation about Z changes after reset"):
+      if np.any(eulers[:, 2] == eulers2[:, 2]):
+        self.fail("Walker(s) have the same rotation about Z before and "
+                  "after reset. Before: {}, after: {}."
+                  .format(eulers[:, 2], eulers2[:, 2]))
+
+  # TODO(b/132759890): Remove `expectedFailure` decorator once `set_velocity`
+  #                    works correctly for the `BoxHead` walker.
+  @unittest.expectedFailure
+  def test_walker_velocity(self):
+    initializer = initializers.UniformInitializer()
+    env = _env(_home_team(2) + _away_team(2), initializer=initializer)
+    root_joints = []
+    non_root_joints = []
+    for player in env.task.players:
+      attachment_frame = mjcf.get_attachment_frame(player.walker.mjcf_model)
+      root_joints.extend(
+          attachment_frame.find_all("joint", immediate_children_only=True))
+      non_root_joints.extend(player.walker.mjcf_model.find_all("joint"))
+    # Assign a non-zero sentinel value to the velocities of all root and
+    # non-root joints.
+    sentinel_velocity = 3.14
+    env.physics.bind(root_joints + non_root_joints).qvel = sentinel_velocity
+    # The initializer should zero the velocities of the root joints, but not the
+    # non-root joints.
+    initializer(env.task, env.physics, env.random_state)
+    np.testing.assert_array_equal(env.physics.bind(non_root_joints).qvel,
+                                  sentinel_velocity)
+    np.testing.assert_array_equal(env.physics.bind(root_joints).qvel, 0.)
+
+  @parameterized.parameters([
+      dict(spawn_ratio=0.3, init_ball_z=0.4),
+      dict(spawn_ratio=0.5, init_ball_z=0.6),
+  ])
+  def test_ball_position(self, spawn_ratio, init_ball_z):
+    initializer = initializers.UniformInitializer(
+        spawn_ratio=spawn_ratio, init_ball_z=init_ball_z)
+    env = _env(_home_team(2) + _away_team(2), initializer=initializer)
+    xy_bounds = np.asarray(env.task.arena.size) * spawn_ratio
+    env.reset()
+    position, _ = env.task.ball.get_pose(env.physics)
+    xyz = position.copy()
+    with self.subTest("X and Y positions within bounds"):
+      if np.any(abs(xyz[:2]) > xy_bounds):
+        self.fail("Ball spawned out of bounds. Expected abs(xy) "
+                  "<= {}, got:\n{}".format(xy_bounds, xyz[:2]))
+    with self.subTest("Z position equal to `init_ball_z`"):
+      self.assertEqual(xyz[2], init_ball_z)
+    env.reset()
+    position, _ = env.task.ball.get_pose(env.physics)
+    xyz2 = position.copy()
+    with self.subTest("X and Y positions change after reset"):
+      if np.any(xyz[:2] == xyz2[:2]):
+        self.fail("Ball has the same XY position before and after reset. "
+                  "Before: {}, after: {}.".format(xyz[:2], xyz2[:2]))
+
+  def test_ball_velocity(self):
+    initializer = initializers.UniformInitializer()
+    env = _env(_home_team(1) + _away_team(1), initializer=initializer)
+    ball_root_joint = mjcf.get_frame_freejoint(env.task.ball.mjcf_model)
+    # Set the velocities of the ball root joint to a non-zero sentinel value.
+    env.physics.bind(ball_root_joint).qvel = 3.14
+    initializer(env.task, env.physics, env.random_state)
+    # The initializer should set the ball velocity to zero.
+    ball_velocity = env.physics.bind(ball_root_joint).qvel
+    np.testing.assert_array_equal(ball_velocity, 0.)
 
 if __name__ == "__main__":
   absltest.main()
