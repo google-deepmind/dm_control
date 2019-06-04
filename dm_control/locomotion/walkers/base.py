@@ -380,7 +380,6 @@ class WalkerObservables(composer.Observables):
 
   @composer.observable
   def egocentric_camera(self):
-    """Observable of the wrist force-torque sensors."""
     return observable.MJCFCamera(self._entity.egocentric_camera,
                                  width=64, height=64)
 
