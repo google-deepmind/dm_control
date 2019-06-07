@@ -76,3 +76,10 @@ class Floor(composer.Arena):
   @property
   def ground_geoms(self):
     return (self._ground_geom,)
+
+  def regenerate(self, random_state):
+    pass
+
+  @property
+  def size(self):
+    return self._size
