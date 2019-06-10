@@ -83,6 +83,7 @@ class RenderTest(parameterized.TestCase):
     physics = mujoco.Physics.from_xml_string('<mujoco/>')
     for _ in range(500):
       physics._make_rendering_contexts()
+      physics._free_rendering_contexts()
 
 if __name__ == '__main__':
   absltest.main()

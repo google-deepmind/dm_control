@@ -37,6 +37,7 @@ from __future__ import print_function
 
 import collections
 import contextlib
+import threading
 
 from absl import logging
 
@@ -105,6 +106,14 @@ class Physics(_control.Physics):
   """
 
   _contexts = None
+
+  def __new__(cls, *args, **kwargs):
+    obj = super(Physics, cls).__new__(cls)
+    # The lock is created in `__new__` rather than `__init__` because there are
+    # a number of existing subclasses that override `__init__` without calling
+    # the `__init__` method of the  superclass.
+    obj._contexts_lock = threading.Lock()  # pylint: disable=protected-access
+    return obj
 
   def __init__(self, data):
     """Initializes a new `Physics` instance.
@@ -265,6 +274,9 @@ class Physics(_control.Physics):
     return self.data  # All state is assumed to reside within `self.data`.
 
   def __setstate__(self, data):
+    # Note: `_contexts_lock` is normally created in `__new__`, but `__new__` is
+    #       not invoked during unpickling.
+    self._contexts_lock = threading.Lock()
     self._reload_from_data(data)
 
   def _reload_from_model(self, model):
@@ -299,7 +311,11 @@ class Physics(_control.Physics):
     self._warnings_before = np.empty_like(self._warnings)
     self._new_warnings = np.empty(dtype=bool, shape=self._warnings.shape)
 
-    self._make_rendering_contexts()
+    # Forcibly free any previous GL context in order to avoid problems with GL
+    # implementations that do not support multiple contexts on a given device.
+    with self._contexts_lock:
+      if self._contexts:
+        self._free_rendering_contexts()
 
     # Call kinematics update to enable rendering.
     try:
@@ -322,10 +338,9 @@ class Physics(_control.Physics):
     """
     self.data.free()
     self.model.free()
-    if self._contexts:
-      self._contexts.mujoco.free()
-      self._contexts.gl.free()
-      self._contexts = None
+    with self._contexts_lock:
+      if self._contexts:
+        self._free_rendering_contexts()
 
   @classmethod
   def from_model(cls, model):
@@ -417,11 +432,6 @@ class Physics(_control.Physics):
 
   def _make_rendering_contexts(self):
     """Creates the OpenGL and MuJoCo rendering contexts."""
-    # Forcibly clear the previous GL context to avoid problems with GL
-    # implementations which do not support multiple contexts on a given device.
-    if self._contexts:
-      self._contexts.mujoco.free()
-      self._contexts.gl.free()
     # Get the offscreen framebuffer size, as specified in the model XML.
     max_width = self.model.vis.global_.offwidth
     max_height = self.model.vis.global_.offheight
@@ -432,9 +442,18 @@ class Physics(_control.Physics):
     mujoco_context = wrapper.MjrContext(self.model, render_context)
     self._contexts = Contexts(gl=render_context, mujoco=mujoco_context)
 
+  def _free_rendering_contexts(self):
+    """Frees existing OpenGL and MuJoCo rendering contexts."""
+    self._contexts.mujoco.free()
+    self._contexts.gl.free()
+    self._contexts = None
+
   @property
   def contexts(self):
     """Returns a `Contexts` namedtuple, used in `Camera`s and rendering code."""
+    with self._contexts_lock:
+      if not self._contexts:
+        self._make_rendering_contexts()
     return self._contexts
 
   @property
