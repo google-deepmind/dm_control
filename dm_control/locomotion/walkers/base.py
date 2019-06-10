@@ -47,13 +47,26 @@ def _make_readonly_float64_copy(value):
 
 class WalkerPose(collections.namedtuple(
     'WalkerPose', ('qpos', 'xpos', 'xquat'))):
+  """A named tuple representing a walker's joint and Cartesian pose."""
 
   __slots__ = ()
 
-  def __new__(cls, qpos=0.0, xpos=(0, 0, 0), xquat=(1, 0, 0, 0)):
+  def __new__(cls, qpos=None, xpos=(0, 0, 0), xquat=(1, 0, 0, 0)):
+    """Creates a new WalkerPose.
+
+    Args:
+      qpos: The joint position for the pose, or `None` if the `qpos0` values in
+        the `mjModel` should be used.
+      xpos: A Cartesian displacement, for example if the walker should be lifted
+        or lowered by a specific amount for this pose.
+      xquat: A quaternion displacement for the root body.
+
+    Returns:
+      A new instance of `WalkerPose`.
+    """
     return super(WalkerPose, cls).__new__(
         cls,
-        qpos=_make_readonly_float64_copy(qpos),
+        qpos=_make_readonly_float64_copy(qpos) if qpos is not None else None,
         xpos=_make_readonly_float64_copy(xpos),
         xquat=_make_readonly_float64_copy(xquat))
 

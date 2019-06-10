@@ -80,7 +80,11 @@ class CorridorsTest(parameterized.TestCase):
 
     with self.subTest('Correct joint positions'):
       walker_qpos = physics.bind(walker_joints).qpos
-      np.testing.assert_array_equal(walker_qpos, walker.upright_pose.qpos)
+      if walker.upright_pose.qpos is not None:
+        np.testing.assert_array_equal(walker_qpos, walker.upright_pose.qpos)
+      else:
+        walker_qpos0 = physics.bind(walker_joints).qpos0
+        np.testing.assert_array_equal(walker_qpos, walker_qpos0)
 
     walker_xpos, walker_xquat = walker.get_pose(physics)
 

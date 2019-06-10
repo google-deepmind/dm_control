@@ -37,8 +37,12 @@ class UprightInitializer(WalkerInitializer):
   """An initializer that uses the walker-declared upright pose."""
 
   def initialize_pose(self, physics, walker, random_state):
+    all_joints_binding = physics.bind(walker.mjcf_model.find_all('joint'))
     qpos, xpos, xquat = walker.upright_pose
-    physics.bind(walker.mjcf_model.find_all('joint')).qpos = qpos
+    if qpos is None:
+      all_joints_binding.qpos = all_joints_binding.qpos0
+    else:
+      all_joints_binding.qpos = qpos
     walker.set_pose(physics, position=xpos, quaternion=xquat)
     walker.set_velocity(
         physics, velocity=np.zeros(3), angular_velocity=np.zeros(3))
