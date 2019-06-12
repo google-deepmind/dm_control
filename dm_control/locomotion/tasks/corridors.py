@@ -24,8 +24,6 @@ from dm_control.composer import variation
 from dm_control.utils import rewards
 import numpy as np
 
-_ACTION_COST_WEIGHTING = 0.3
-
 
 class RunThroughCorridor(composer.Task):
   """A task that requires a walker to run through a corridor.
@@ -41,6 +39,8 @@ class RunThroughCorridor(composer.Task):
                walker_spawn_position=(0, 0, 0),
                walker_spawn_rotation=None,
                target_velocity=3.0,
+               contact_termination=True,
+               terminate_at_height=-0.5,
                physics_timestep=0.005,
                control_timestep=0.025):
     """Initializes this task.
@@ -56,6 +56,10 @@ class RunThroughCorridor(composer.Task):
         applied to the walker at the beginning of an episode.
       target_velocity: a number specifying the target velocity (in meters per
         second) for the walker.
+      contact_termination: whether to terminate if a non-foot geom touches the
+        ground.
+      terminate_at_height: a number specifying the height of end effectors below
+        which the episode terminates.
       physics_timestep: a number specifying the timestep (in seconds) of the
         physics simulation.
       control_timestep: a number specifying the timestep (in seconds) at which
@@ -74,9 +78,12 @@ class RunThroughCorridor(composer.Task):
     enabled_observables += self._walker.observables.dynamic_sensors
     enabled_observables.append(self._walker.observables.sensors_touch)
     enabled_observables.append(self._walker.observables.egocentric_camera)
-    self._vel = target_velocity
     for observable in enabled_observables:
       observable.enabled = True
+
+    self._vel = target_velocity
+    self._contact_termination = contact_termination
+    self._terminate_at_height = terminate_at_height
 
     self.set_timesteps(
         physics_timestep=physics_timestep, control_timestep=control_timestep)
@@ -122,22 +129,24 @@ class RunThroughCorridor(composer.Task):
 
   def after_step(self, physics, random_state):
     self._failure_termination = False
-    for c in physics.data.contact:
-      if self._is_disallowed_contact(c):
+    if self._contact_termination:
+      for c in physics.data.contact:
+        if self._is_disallowed_contact(c):
+          self._failure_termination = True
+          break
+    if self._terminate_at_height is not None:
+      if any(physics.bind(self._walker.end_effectors).xpos[:, -1] <
+             self._terminate_at_height):
         self._failure_termination = True
-        break
 
   def get_reward(self, physics):
-    minimal_action_reward = rewards.tolerance(physics.data.ctrl, (0, 0),
-                                              margin=1, sigmoid='cosine').mean()
     walker_xvel = physics.bind(self._walker.root_body).subtree_linvel[0]
     xvel_term = rewards.tolerance(
         walker_xvel, (self._vel, self._vel),
         margin=self._vel,
         sigmoid='linear',
         value_at_margin=0.0)
-    return xvel_term * ((1 - _ACTION_COST_WEIGHTING) +
-                        _ACTION_COST_WEIGHTING * minimal_action_reward)
+    return xvel_term
 
   def should_terminate_episode(self, physics):
     return self._failure_termination
