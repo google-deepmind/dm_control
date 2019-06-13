@@ -18,11 +18,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import collections
 from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control.viewer import runtime
 import mock
 import numpy as np
+import six
 from six.moves import zip
 from dm_control.rl import environment
 from dm_control.rl import specs
@@ -340,11 +342,17 @@ class DefaultActionFromSpecTest(parameterized.TestCase):
 
   def assertNestedArraysEqual(self, expected, actual):
     """Asserts that two potentially nested structures of arrays are equal."""
+    self.assertIs(type(actual), type(expected))
     if isinstance(expected, (list, tuple)):
       self.assertIsInstance(actual, (list, tuple))
       self.assertLen(actual, len(expected))
       for expected_item, actual_item in zip(expected, actual):
         self.assertNestedArraysEqual(expected_item, actual_item)
+    elif isinstance(expected, collections.MutableMapping):
+      keys_type = list if isinstance(expected, collections.OrderedDict) else set
+      self.assertEqual(keys_type(actual.keys()), keys_type(expected.keys()))
+      for key, expected_value in six.iteritems(expected):
+        self.assertNestedArraysEqual(actual[key], expected_value)
     else:
       np.testing.assert_array_equal(expected, actual)
 
@@ -356,10 +364,27 @@ class DefaultActionFromSpecTest(parameterized.TestCase):
   @parameterized.named_parameters(
       ('single_array', _ACTION_SPEC, _ACTION),
       ('tuple', (_ACTION_SPEC, _ACTION_SPEC), (_ACTION, _ACTION)),
-      ('list', [_ACTION_SPEC, _ACTION_SPEC], (_ACTION, _ACTION)))
+      ('list', [_ACTION_SPEC, _ACTION_SPEC], (_ACTION, _ACTION)),
+      ('dict',
+       {'a': _ACTION_SPEC, 'b': _ACTION_SPEC},
+       {'a': _ACTION, 'b': _ACTION}),
+      ('OrderedDict',
+       collections.OrderedDict([('a', _ACTION_SPEC), ('b', _ACTION_SPEC)]),
+       collections.OrderedDict([('a', _ACTION), ('b', _ACTION)])),
+      )
   def test_action_structure(self, action_spec, expected_action):
     self.assertNestedArraysEqual(expected_action,
                                  runtime._get_default_action(action_spec))
+
+  def test_ordered_dict_action_structure_with_bad_ordering(self):
+    reversed_spec = collections.OrderedDict([('a', self._ACTION_SPEC),
+                                             ('b', self._ACTION_SPEC)])
+    expected_action = collections.OrderedDict([('b', self._ACTION),
+                                               ('a', self._ACTION)])
+    with self.assertRaisesRegexp(AssertionError,
+                                 r"Lists differ: \['a', 'b'\] != \['b', 'a'\]"):
+      self.assertNestedArraysEqual(expected_action,
+                                   runtime._get_default_action(reversed_spec))
 
   @parameterized.named_parameters(
       ('closed',
