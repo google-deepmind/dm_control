@@ -38,6 +38,24 @@ while not time_step.last():
             time_step.observation[i]))
 ```
 
+## Rewards
+
+The environment provides a reward of +1 to each player when their team
+scores a goal, -1 when their team concedes a goal, or 0 if neither team scored
+on the current timestep.
+
+In addition to the sparse reward returned the environment, the player
+observations also contain various environment statistics that may be used to
+derive custom per-player shaping rewards (as was done in
+http://arxiv.org/abs/1902.07151, where the environment reward was ignored).
+
+## Episode terminations
+
+Episodes will terminate immediately with a discount factor of 0 when either side
+scores a goal. There is also a per-episode `time_limit` (45 seconds by default).
+If neither team scores within this time then the episode will terminate with a
+discount factor of 1.
+
 ## Environment Viewer
 
 To visualize an example 2-vs-2 soccer environment in the `dm_control`

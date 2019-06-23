@@ -26,19 +26,15 @@ from dm_control.locomotion.soccer import soccer_ball
 import numpy as np
 from six.moves import zip
 
+from dm_control.rl import specs
+
 _THROW_IN_BALL_Z = 0.5
-
-_REWARD_LOSE = -30.
-_REWARD_WIN = 30.
-
-_HOME_XMAT = np.asarray([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
-_AWAY_XMAT = np.asarray([[-1, 0, 0], [0, -1, 0], [0, 0, 1]])
 
 
 def _disable_geom_contacts(entities):
   for entity in entities:
     mjcf_model = entity.mjcf_model
-    for geom in mjcf_model.find_all('geom'):
+    for geom in mjcf_model.find_all("geom"):
       geom.set_attributes(contype=0)
 
 
@@ -137,16 +133,50 @@ class Task(composer.Task):
     return self.arena
 
   def get_reward(self, physics):
-    return [np.zeros((), dtype=np.float32)] * len(self.players)
+    """Returns a list of per-player rewards.
+
+    Each player will receive a reward of:
+      +1 if their team scored a goal
+      -1 if their team conceded a goal
+      0 if no goals were scored on this timestep.
+
+    Note: the observations also contain various environment statistics that may
+    be used to derive per-player rewards (as done in
+    http://arxiv.org/abs/1902.07151).
+
+    Args:
+      physics: An instance of `Physics`.
+
+    Returns:
+      A list of 0-dimensional numpy arrays, one per player.
+    """
+    scoring_team = self.arena.detected_goal()
+    if not scoring_team:
+      return [np.zeros((), dtype=np.float32)] * len(self.players)
+
+    rewards = []
+    for p in self.players:
+      if p.team == scoring_team:
+        rewards.append(np.ones((), dtype=np.float32))
+      else:
+        rewards.append(-np.ones((), dtype=np.float32))
+    return rewards
+
+  def get_reward_spec(self):
+    reward_spec = specs.ArraySpec(name="reward", shape=(), dtype=np.float32)
+    return [reward_spec] * len(self.players)
 
   def get_discount(self, physics):
     if self.arena.detected_goal():
       return np.zeros((), np.float32)
     return np.ones((), np.float32)
 
+  def get_discount_spec(self):
+    return specs.ArraySpec(name="discount", shape=(), dtype=np.float32)
+
   def should_terminate_episode(self, physics):
-    # TerminationType determined by get_discount(physics).
-    return self.arena.detected_goal()
+    """Returns True if a goal was scored by either team."""
+    return self.arena.detected_goal() is not None
 
   def before_step(self, physics, actions, random_state):
     for player, action in zip(self.players, actions):

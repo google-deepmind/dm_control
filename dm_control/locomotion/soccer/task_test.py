@@ -162,6 +162,15 @@ class TaskTest(parameterized.TestCase):
     while not timestep.last():
       timestep = env.step(actions)
 
+      self.assertLen(timestep.observation, home_size + away_size)
+
+      self.assertLen(timestep.reward, home_size + away_size)
+      for player_spec, player_reward in zip(env.reward_spec(), timestep.reward):
+        player_spec.validate(player_reward)
+
+      discount_spec = env.discount_spec()
+      discount_spec.validate(timestep.discount)
+
   def test_all_contacts(self):
     env = _env(_home_team(1) + _away_team(1))
 
@@ -278,6 +287,70 @@ class TaskTest(parameterized.TestCase):
           actions[walker_idx],
           err_msg="Walker {}: incorrect previous action.".format(walker_idx))
 
+  @parameterized.named_parameters(
+      dict(testcase_name="1vs2_draw",
+           home_size=1, away_size=2, ball_vel_x=0, expected_home_score=0),
+      dict(testcase_name="1vs2_home_score",
+           home_size=1, away_size=2, ball_vel_x=50, expected_home_score=1),
+      dict(testcase_name="2vs1_away_score",
+           home_size=2, away_size=1, ball_vel_x=-50, expected_home_score=-1),
+      dict(testcase_name="3vs0_home_score",
+           home_size=3, away_size=0, ball_vel_x=50, expected_home_score=1),
+      dict(testcase_name="0vs2_home_score",
+           home_size=0, away_size=2, ball_vel_x=50, expected_home_score=1),
+      dict(testcase_name="2vs2_away_score",
+           home_size=2, away_size=2, ball_vel_x=-50, expected_home_score=-1),
+  )
+  def test_scoring_rewards(
+      self, home_size, away_size, ball_vel_x, expected_home_score):
+    env = _env(_home_team(home_size) + _away_team(away_size))
+
+    def _score_configuration(physics, random_state):
+      del random_state  # Unused.
+      # Send the ball shooting towards either the home or away goal.
+      env.task.ball.set_pose(physics, [0., 0., 0.5])
+      env.task.ball.set_velocity(physics,
+                                 velocity=[ball_vel_x, 0., 0.],
+                                 angular_velocity=[0., 0., 0.])
+
+    env.add_extra_hook("initialize_episode", _score_configuration)
+
+    actions = [np.zeros(s.shape, s.dtype) for s in env.action_spec()]
+
+    # Disable contacts and gravity so that the ball follows a straight path.
+    with env.physics.model.disable("contact", "gravity"):
+
+      timestep = env.reset()
+      with self.subTest("Reward and discount are None on the first timestep"):
+        self.assertTrue(timestep.first())
+        self.assertIsNone(timestep.reward)
+        self.assertIsNone(timestep.discount)
+
+      # Step until the episode ends.
+      timestep = env.step(actions)
+      while not timestep.last():
+        self.assertTrue(timestep.mid())
+        # For non-terminal timesteps, the reward should always be 0 and the
+        # discount should always be 1.
+        np.testing.assert_array_equal(np.hstack(timestep.reward), 0.)
+        self.assertEqual(timestep.discount, 1.)
+        timestep = env.step(actions)
+
+    # If a goal was scored then the epsiode should have ended with a discount of
+    # 0. If neither team scored and the episode ended due to hitting the time
+    # limit then the discount should be 1.
+    with self.subTest("Correct terminal discount"):
+      if expected_home_score != 0:
+        expected_discount = 0.
+      else:
+        expected_discount = 1.
+      self.assertEqual(timestep.discount, expected_discount)
+
+    with self.subTest("Correct terminal reward"):
+      reward = np.hstack(timestep.reward)
+      np.testing.assert_array_equal(reward[:home_size], expected_home_score)
+      np.testing.assert_array_equal(reward[home_size:], -expected_home_score)
+
   def test_throw_in(self):
     env = _env(_home_team(1) + _away_team(1))
 
@@ -287,7 +360,7 @@ class TaskTest(parameterized.TestCase):
 
       x, y, rotation = 0., 3., np.pi / 6.
       ball.set_pose(physics, [x, y, 0.5])
-      # Ball shooting up. Walkers going tangent.
+      # Ball shooting out of bounds.
       ball.set_velocity(physics, velocity=[0., 50., 0.],
                         angular_velocity=[0., 0., 0.])
 
