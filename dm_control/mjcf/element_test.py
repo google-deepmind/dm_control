@@ -86,19 +86,18 @@ class ElementTest(parameterized.TestCase):
   def testAttributeError(self):
     mjcf_model = element.RootElement(model='test')
     mjcf_model.worldbody._spec = None
-    attribute_error_raised = False
     try:
       _ = mjcf_model.worldbody.tag
     except AttributeError:
-      # Test that the error comes from the fact that we've set `_spec = None`.
-      attribute_error_raised = True
       _, err, tb = sys.exc_info()
-      self.assertEqual(str(err),
-                       '\'NoneType\' object has no attribute \'name\'')
-      _, _, func_name, _ = traceback.extract_tb(tb)[-1]
-      # Test that the error comes from the `root` property, not `__getattr__`.
-      self.assertEqual(func_name, 'tag')
-    self.assertTrue(attribute_error_raised)
+    else:
+      self.fail('AttributeError was not raised.')
+    # Test that the error comes from the fact that we've set `_spec = None`.
+    self.assertEqual(str(err),
+                     '\'NoneType\' object has no attribute \'name\'')
+    _, _, func_name, _ = traceback.extract_tb(tb)[-1]
+    # Test that the error comes from the `root` property, not `__getattr__`.
+    self.assertEqual(func_name, 'tag')
 
   def testProperties(self):
     mujoco = element.RootElement(model='test')
@@ -883,7 +882,8 @@ class ElementTest(parameterized.TestCase):
     vfs_filename = hashlib.sha1(contents).hexdigest() + extension
     placeholder = mjcf.Asset(contents=contents, extension=extension)
     mujoco.asset.add('texture', name='fake_texture', file=placeholder)
-    self.assertDictContainsSubset({vfs_filename: contents}, mujoco.get_assets())
+    self.assertContainsSubset(set([(vfs_filename, contents)]),
+                              set(mujoco.get_assets().items()))
 
   def testGetAssetsFromDict(self):
     with open(_MODEL_WITH_INVALID_FILENAMES, 'rb') as f:

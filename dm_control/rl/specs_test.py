@@ -77,7 +77,7 @@ class ArraySpecTest(absltest.TestCase):
 
   def testIsUnhashable(self):
     spec = array_spec.ArraySpec(shape=(1, 2, 3), dtype=np.int32)
-    with self.assertRaisesRegexp(TypeError, "unhashable type"):
+    with six.assertRaisesRegex(self, TypeError, "unhashable type"):
       hash(spec)
 
   def testValidateDtype(self):
@@ -159,7 +159,7 @@ class BoundedArraySpecTest(absltest.TestCase):
   def testIsUnhashable(self):
     spec = array_spec.BoundedArraySpec(
         shape=(1, 2), dtype=np.int32, minimum=0.0, maximum=2.0)
-    with self.assertRaisesRegexp(TypeError, "unhashable type"):
+    with six.assertRaisesRegex(self, TypeError, "unhashable type"):
       hash(spec)
 
   def testRepr(self):

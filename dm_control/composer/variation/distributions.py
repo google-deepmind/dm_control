@@ -40,6 +40,7 @@ class Distribution(base.Variation):
   optional `single_sample` constructor arg is set to `True`, in which case only
   a single sample is drawn.
   """
+  __slots__ = ('_single_sample', '_args', '_kwargs')
 
   def __init__(self, *args, **kwargs):
     self._single_sample = kwargs.pop('single_sample', False)
@@ -68,6 +69,7 @@ class Distribution(base.Variation):
 
 
 class Uniform(Distribution):
+  __slots__ = ()
 
   def __init__(self, low=0.0, high=1.0, single_sample=False):
     super(Uniform, self).__init__(low=low, high=high,
@@ -78,6 +80,7 @@ class Uniform(Distribution):
 
 
 class UniformInteger(Distribution):
+  __slots__ = ()
 
   def __init__(self, low, high=None, single_sample=False):
     super(UniformInteger, self).__init__(low, high=high,
@@ -88,6 +91,7 @@ class UniformInteger(Distribution):
 
 
 class UniformChoice(Distribution):
+  __slots__ = ()
 
   def __init__(self, choices, single_sample=False):
     super(UniformChoice, self).__init__(choices, single_sample=single_sample)
@@ -97,17 +101,19 @@ class UniformChoice(Distribution):
 
 
 class UniformPointOnSphere(base.Variation):
+  __slots__ = ()
 
   def __call__(self, initial_value=None,
                current_value=None, random_state=None):
     random_state = random_state or np.random
-    axis = random_state.normal(size=3 if initial_value is None  # pylint: disable=g-long-ternary
-                               else np.append(np.shape(initial_value), 3))
+    size = 3 if initial_value is None else np.append(np.shape(initial_value), 3)
+    axis = random_state.normal(size=size)
     axis /= np.linalg.norm(axis, axis=-1, keepdims=True)
     return axis
 
 
 class Normal(Distribution):
+  __slots__ = ()
 
   def __init__(self, loc=0.0, scale=1.0, single_sample=False):
     super(Normal, self).__init__(loc=loc, scale=scale,
@@ -118,6 +124,7 @@ class Normal(Distribution):
 
 
 class LogNormal(Distribution):
+  __slots__ = ()
 
   def __init__(self, mean=0.0, sigma=1.0, single_sample=False):
     super(LogNormal, self).__init__(mean=mean, sigma=sigma,
@@ -128,6 +135,7 @@ class LogNormal(Distribution):
 
 
 class Exponential(Distribution):
+  __slots__ = ()
 
   def __init__(self, scale=1.0, single_sample=False):
     super(Exponential, self).__init__(scale=scale, single_sample=single_sample)
@@ -137,6 +145,7 @@ class Exponential(Distribution):
 
 
 class Poisson(Distribution):
+  __slots__ = ()
 
   def __init__(self, lam=1.0, single_sample=False):
     super(Poisson, self).__init__(lam=lam, single_sample=single_sample)
@@ -146,12 +155,17 @@ class Poisson(Distribution):
 
 
 class Bernoulli(Distribution):
+  __slots__ = ()
 
   def __init__(self, prob=0.5, single_sample=False):
     super(Bernoulli, self).__init__(prob, single_sample=single_sample)
 
   def _callable(self, random_state):
     return functools.partial(random_state.binomial, 1)
+
+
+_NEGATIVE_STDEV = '`stdev` must be >= 0, got {}.'
+_NEGATIVE_TIMESCALE = '`timescale` must be >= 0, got {}.'
 
 
 class BiasedRandomWalk(base.Variation):
@@ -164,16 +178,30 @@ class BiasedRandomWalk(base.Variation):
   Then the discete-time first-order filtered diffusion process
   `x_next = retain * x + N(0, scale))`
   has standard deviation `stdev` and characteristic timescale `timescale`.
-
-  Args:
-    stdev: Float. Standard deviation of the output sequence.
-    timescale: Integer. Number of timesteps characteristic of the random walk.
-      After `timescale` steps the correlation is reduced by exp(-1). Larger
-      or equal to 0, where a value of 0 is an uncorrelated normal distribution.
   """
+  __slots__ = ('_scale', '_value')
 
   def __init__(self, stdev=0.1, timescale=10.):
-    self._retain = np.exp(np.divide(-1., timescale))
+    """Initializes a `BiasedRandomWalk`.
+
+    Args:
+      stdev: Float. Standard deviation of the output sequence.
+      timescale: Integer. Number of timesteps characteristic of the random walk.
+        After `timescale` steps the correlation is reduced by exp(-1). Larger
+        or equal to 0, where a value of 0 is an uncorrelated normal
+        distribution.
+
+    Raises:
+      ValueError: if either `stdev` or `timescale` is negative.
+    """
+    if stdev < 0:
+      raise ValueError(_NEGATIVE_STDEV.format(stdev))
+    if timescale < 0:
+      raise ValueError(_NEGATIVE_TIMESCALE.format(timescale))
+    elif timescale == 0:
+      self._retain = 0.
+    else:
+      self._retain = np.exp(-1. / timescale)
     self._scale = stdev * np.sqrt(1 - (self._retain * self._retain))
     self._value = 0.0
 

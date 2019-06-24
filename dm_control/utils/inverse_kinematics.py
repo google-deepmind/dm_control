@@ -262,4 +262,4 @@ def nullspace_method(jac_joints, delta, regularization_strength=0.0):
     hess_approx += np.eye(hess_approx.shape[0]) * regularization_strength
     return np.linalg.solve(hess_approx, joint_delta)
   else:
-    return np.linalg.lstsq(hess_approx, joint_delta)[0]
+    return np.linalg.lstsq(hess_approx, joint_delta, rcond=-1)[0]

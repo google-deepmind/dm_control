@@ -381,8 +381,8 @@ class DefaultActionFromSpecTest(parameterized.TestCase):
                                              ('b', self._ACTION_SPEC)])
     expected_action = collections.OrderedDict([('b', self._ACTION),
                                                ('a', self._ACTION)])
-    with self.assertRaisesRegexp(AssertionError,
-                                 r"Lists differ: \['a', 'b'\] != \['b', 'a'\]"):
+    with six.assertRaisesRegex(self, AssertionError,
+                               r"Lists differ: \['a', 'b'\] != \['b', 'a'\]"):
       self.assertNestedArraysEqual(expected_action,
                                    runtime._get_default_action(reversed_spec))
 

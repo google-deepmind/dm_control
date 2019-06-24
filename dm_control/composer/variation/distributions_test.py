@@ -102,5 +102,14 @@ class DistributionsTest(parameterized.TestCase):
     self.assertAlmostEqual(np.mean(sequence), 0., delta=0.01)
     self.assertAlmostEqual(np.std(sequence), stdev, delta=0.01)
 
+  @parameterized.parameters(
+      dict(arg_name='stdev', template=distributions._NEGATIVE_STDEV),
+      dict(arg_name='timescale', template=distributions._NEGATIVE_TIMESCALE))
+  def testBiasedRandomWalkExceptions(self, arg_name, template):
+    bad_value = -1.
+    with self.assertRaisesWithLiteralMatch(
+        ValueError, template.format(bad_value)):
+      _ = distributions.BiasedRandomWalk(**{arg_name: bad_value})
+
 if __name__ == '__main__':
   absltest.main()
