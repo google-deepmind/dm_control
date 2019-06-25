@@ -60,7 +60,7 @@ def _make_players(team_size):
   return home_players + away_players
 
 
-def load(team_size, time_limit=45., random_state=None):
+def load(team_size, time_limit=45., random_state=None, disable_walker_contacts=False):
   """Construct `team_size`-vs-`team_size` soccer environment.
 
   Args:
@@ -68,6 +68,7 @@ def load(team_size, time_limit=45., random_state=None):
       11.
     time_limit: Float, the maximum duration of each episode in seconds.
     random_state: (optional) an int seed or `np.random.RandomState` instance.
+    disable_walker_contacts: if `True`, disable physical contacts between players.
 
   Returns:
     A `composer.Environment` instance.
@@ -84,6 +85,7 @@ def load(team_size, time_limit=45., random_state=None):
           players=_make_players(team_size),
           arena=RandomizedPitch(
               min_size=(32, 24), max_size=(48, 36), keep_aspect_ratio=True),
+          disable_walker_contacts=disable_walker_contacts,
       ),
       time_limit=time_limit,
       random_state=random_state)
