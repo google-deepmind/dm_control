@@ -152,7 +152,7 @@ class Task(composer.Task):
     """
     scoring_team = self.arena.detected_goal()
     if not scoring_team:
-      return [np.zeros((), dtype=np.float32)] * len(self.players)
+      return [np.zeros((), dtype=np.float32) for _ in self.players]
 
     rewards = []
     for p in self.players:
@@ -163,8 +163,10 @@ class Task(composer.Task):
     return rewards
 
   def get_reward_spec(self):
-    reward_spec = specs.ArraySpec(name="reward", shape=(), dtype=np.float32)
-    return [reward_spec] * len(self.players)
+    return [
+        specs.ArraySpec(name="reward", shape=(), dtype=np.float32)
+        for _ in self.players
+    ]
 
   def get_discount(self, physics):
     if self.arena.detected_goal():
