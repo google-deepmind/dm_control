@@ -29,9 +29,12 @@ from six.moves import range
 
 class LoadTest(parameterized.TestCase):
 
-  @parameterized.parameters(1, 2)
-  def test_load_env(self, team_size):
-    env = soccer.load(team_size=team_size, time_limit=2.)
+  @parameterized.named_parameters(
+      ("2vs2_nocontacts", 2, True), ("2vs2_contacts", 2, False),
+      ("1vs1_nocontacts", 1, True), ("1vs1_contacts", 1, False))
+  def test_load_env(self, team_size, disable_walker_contacts):
+    env = soccer.load(team_size=team_size, time_limit=2.,
+                      disable_walker_contacts=disable_walker_contacts)
     action_specs = env.action_spec()
 
     random_state = np.random.RandomState(0)
@@ -68,15 +71,30 @@ class LoadTest(parameterized.TestCase):
         np.testing.assert_array_equal(expected_array, actual_array,
                                       err_msg=msg)
 
-  def test_same_first_observation_if_same_seed(self):
+  @parameterized.parameters(True, False)
+  def test_same_first_observation_if_same_seed(self, disable_walker_contacts):
     seed = 42
-    timestep_1 = soccer.load(team_size=2, random_state=seed).reset()
-    timestep_2 = soccer.load(team_size=2, random_state=seed).reset()
+    timestep_1 = soccer.load(
+        team_size=2,
+        random_state=seed,
+        disable_walker_contacts=disable_walker_contacts).reset()
+    timestep_2 = soccer.load(
+        team_size=2,
+        random_state=seed,
+        disable_walker_contacts=disable_walker_contacts).reset()
     self.assertSameObservation(timestep_1.observation, timestep_2.observation)
 
-  def test_different_first_observation_if_different_seed(self):
-    timestep_1 = soccer.load(team_size=2, random_state=1).reset()
-    timestep_2 = soccer.load(team_size=2, random_state=2).reset()
+  @parameterized.parameters(True, False)
+  def test_different_first_observation_if_different_seed(
+      self, disable_walker_contacts):
+    timestep_1 = soccer.load(
+        team_size=2,
+        random_state=1,
+        disable_walker_contacts=disable_walker_contacts).reset()
+    timestep_2 = soccer.load(
+        team_size=2,
+        random_state=2,
+        disable_walker_contacts=disable_walker_contacts).reset()
     try:
       self.assertSameObservation(timestep_1.observation, timestep_2.observation)
     except AssertionError:
