@@ -25,6 +25,7 @@ environment variable to 'glfw', 'egl', or 'osmesa'.
 import collections
 import os
 
+from absl import logging
 from dm_control._render import constants
 
 BACKEND = os.environ.get(constants.MUJOCO_GL)
@@ -61,18 +62,25 @@ if BACKEND is not None:
     raise RuntimeError(
         'Environment variable {} must be one of {!r}: got {!r}.'
         .format(constants.MUJOCO_GL, _ALL_RENDERERS.keys(), BACKEND))
+  logging.info('MUJOCO_GL=%s, attempting to import specified OpenGL backend.',
+               BACKEND)
   Renderer = import_func()  # pylint: disable=invalid-name
 else:
+  logging.info('MUJOCO_GL is not set, so an OpenGL backend will be chosen '
+               'automatically.')
   # Otherwise try importing them in descending order of priority until
   # successful.
   for name, import_func in _ALL_RENDERERS.items():
     try:
       Renderer = import_func()
       BACKEND = name
+      logging.info('Successfully imported OpenGL backend: %s', name)
       break
     except ImportError:
-      pass
+      logging.info('Failed to import OpenGL backend: %s', name)
   if BACKEND is None:
+    logging.info('No OpenGL backend could be imported. Attempting to create a '
+                 'rendering context will result in a RuntimeError.')
 
     def Renderer(*args, **kwargs):  # pylint: disable=function-redefined,invalid-name
       del args, kwargs
