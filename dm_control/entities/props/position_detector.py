@@ -26,6 +26,13 @@ import numpy as np
 _RENDERED_HEIGHT_IN_2D_MODE = 0.02
 
 
+def _ensure_3d(pos):
+  # Pad the array with a zero if its length is 2.
+  if len(pos) == 2:
+    return np.hstack([pos, 0.])
+  return pos
+
+
 class _Detection(object):
 
   __slots__ = ('entity', 'detected')
@@ -87,6 +94,9 @@ class PositionDetector(composer.Entity):
     self._detected = False
     self._lower = np.array(pos) - np.array(size)
     self._upper = np.array(pos) + np.array(size)
+    self._lower_3d = _ensure_3d(self._lower)
+    self._upper_3d = _ensure_3d(self._upper)
+    self._mid_3d = (self._lower_3d + self._upper_3d) / 2.
 
     self._entities = []
     self._entity_geoms = {}
@@ -104,8 +114,30 @@ class PositionDetector(composer.Entity):
     self._site = self._mjcf_root.worldbody.add(
         'site', name='detection_zone', type='box',
         pos=render_pos, size=render_size, rgba=self._rgba)
+    self._lower_site = self._mjcf_root.worldbody.add(
+        'site', name='lower', pos=self._lower_3d, size=[0.05],
+        rgba=self._rgba)
+    self._mid_site = self._mjcf_root.worldbody.add(
+        'site', name='mid', pos=self._mid_3d, size=[0.05],
+        rgba=self._rgba)
+    self._upper_site = self._mjcf_root.worldbody.add(
+        'site', name='upper', pos=self._upper_3d, size=[0.05],
+        rgba=self._rgba)
+    self._lower_sensor = self._mjcf_root.sensor.add(
+        'framepos', objtype='site', objname=self._lower_site,
+        name='{}_lower'.format(name))
+    self._mid_sensor = self._mjcf_root.sensor.add(
+        'framepos', objtype='site', objname=self._mid_site,
+        name='{}_mid'.format(name))
+    self._upper_sensor = self._mjcf_root.sensor.add(
+        'framepos', objtype='site', objname=self._upper_site,
+        name='{}_upper'.format(name))
+
     if not visible:
       self._site.group = composer.SENSOR_SITES_GROUP
+      self._lower_site.group = composer.SENSOR_SITES_GROUP
+      self._mid_site.group = composer.SENSOR_SITES_GROUP
+      self._upper_site.group = composer.SENSOR_SITES_GROUP
 
   def resize(self, pos, size):
     if len(pos) != len(size):
@@ -113,6 +145,10 @@ class PositionDetector(composer.Entity):
                        'got {!r} and {!r}'.format(pos, size))
     self._lower = np.array(pos) - np.array(size)
     self._upper = np.array(pos) + np.array(size)
+
+    self._lower_3d = _ensure_3d(self._lower)
+    self._upper_3d = _ensure_3d(self._upper)
+    self._mid_3d = (self._lower_3d + self._upper_3d) / 2.
 
     render_pos = np.zeros(3)
     render_pos[:len(pos)] = pos
@@ -122,6 +158,9 @@ class PositionDetector(composer.Entity):
 
     self._site.pos = render_pos
     self._site.size = render_size
+    self._lower_site.pos = self._lower_3d
+    self._mid_site.pos = self._mid_3d
+    self._upper_site.pos = self._upper_3d
 
   def set_colors(self, rgba, detected_rgba):
     self.set_color(rgba)
@@ -139,6 +178,14 @@ class PositionDetector(composer.Entity):
     size = physics.bind(self._site).size[:3]
     self._lower = np.array(pos) - np.array(size)
     self._upper = np.array(pos) + np.array(size)
+
+    self._lower_3d = _ensure_3d(self._lower)
+    self._upper_3d = _ensure_3d(self._upper)
+    self._mid_3d = (self._lower_3d + self._upper_3d) / 2.
+
+    physics.bind(self._lower_site).pos = self._lower_3d
+    physics.bind(self._mid_site).pos = self._mid_3d
+    physics.bind(self._upper_site).pos = self._upper_3d
 
   @property
   def mjcf_model(self):
@@ -208,3 +255,15 @@ class PositionDetector(composer.Entity):
   @property
   def mid(self):
     return (self._lower + self._upper) / 2.
+
+  @property
+  def lower_sensor(self):
+    return self._lower_sensor
+
+  @property
+  def mid_sensor(self):
+    return self._mid_sensor
+
+  @property
+  def upper_sensor(self):
+    return self._upper_sensor
