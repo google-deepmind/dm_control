@@ -258,9 +258,13 @@ def _find_non_contacting_height(physics, orientation, x_pos=0.0, y_pos=0.0):
     orientation: A quaternion.
     x_pos: A float. Position along global x-axis.
     y_pos: A float. Position along global y-axis.
+  Raises:
+    RuntimeError: If a non-contacting configuration has not been found after
+    10,000 attempts.
   """
   z_pos = 0.0  # Start embedded in the floor.
   num_contacts = 1
+  num_attempts = 0
   # Move up in 1cm increments until no contacts.
   while num_contacts > 0:
     try:
@@ -273,6 +277,9 @@ def _find_non_contacting_height(physics, orientation, x_pos=0.0, y_pos=0.0):
       pass
     num_contacts = physics.data.ncon
     z_pos += 0.01
+    num_attempts += 1
+    if num_attempts > 10000:
+      raise RuntimeError('Failed to find a non-contacting configuration.')
 
 
 def _common_observations(physics):
