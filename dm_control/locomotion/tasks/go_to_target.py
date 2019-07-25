@@ -21,7 +21,7 @@ from __future__ import print_function
 
 from dm_control import composer
 from dm_control.composer import variation
-from dm_control.composer.observation import observable as base_observable
+from dm_control.composer.observation import observable
 from dm_control.composer.variation import distributions
 import numpy as np
 
@@ -106,12 +106,12 @@ class GoToTarget(composer.Task):
     enabled_observables += self._walker.observables.kinematic_sensors
     enabled_observables += self._walker.observables.dynamic_sensors
     enabled_observables.append(self._walker.observables.sensors_touch)
-    for observable in enabled_observables:
-      observable.enabled = True
+    for obs in enabled_observables:
+      obs.enabled = True
 
     walker.observables.add_egocentric_vector(
         'target',
-        base_observable.Generic(lambda physics: physics.bind(self._target).pos),
+        observable.MJCFFeature('pos', self._target),
         origin_callable=lambda physics: physics.bind(walker.root_body).xpos)
 
     self.set_timesteps(

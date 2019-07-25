@@ -56,12 +56,12 @@ class ObservableTest(absltest.TestCase):
         hinge_observation, physics.named.data.qpos[my_hinge.full_identifier])
 
     small_sphere = mjcf_root.find('geom', 'small_sphere')
-    box_observable = mjcf_observable.MJCFFeature(
+    sphere_observable = mjcf_observable.MJCFFeature(
         kind='xpos', mjcf_element=small_sphere, update_interval=5)
-    box_observation = box_observable.observation_callable(physics)()
-    self.assertEqual(box_observable.update_interval, 5)
+    sphere_observation = sphere_observable.observation_callable(physics)()
+    self.assertEqual(sphere_observable.update_interval, 5)
     np.testing.assert_array_equal(
-        box_observation, physics.named.data.geom_xpos[
+        sphere_observation, physics.named.data.geom_xpos[
             small_sphere.full_identifier])
 
     my_box = mjcf_root.find('geom', 'my_box')
@@ -78,6 +78,24 @@ class ObservableTest(absltest.TestCase):
       mjcf_observable.MJCFFeature('qpos', 'my_hinge')
     with six.assertRaisesRegex(self, ValueError, 'expected an `mjcf.Element`'):
       mjcf_observable.MJCFFeature('geom_xpos', [my_box, 'small_sphere'])
+
+  def testMJCFFeatureIndex(self):
+    mjcf_root = mjcf.from_xml_string(_MJCF)
+    physics = mjcf.Physics.from_mjcf_model(mjcf_root)
+
+    small_sphere = mjcf_root.find('geom', 'small_sphere')
+    sphere_xmat = np.array(
+        physics.named.data.geom_xmat[small_sphere.full_identifier])
+
+    observable_xrow = mjcf_observable.MJCFFeature(
+        'xmat', small_sphere, index=[1, 3, 5, 7])
+    np.testing.assert_array_equal(
+        observable_xrow.observation_callable(physics)(),
+        sphere_xmat[[1, 3, 5, 7]])
+
+    observable_yyzz = mjcf_observable.MJCFFeature('xmat', small_sphere)[2:6]
+    np.testing.assert_array_equal(
+        observable_yyzz.observation_callable(physics)(), sphere_xmat[2:6])
 
   def testMJCFCamera(self):
     mjcf_root = mjcf.from_xml_string(_MJCF)

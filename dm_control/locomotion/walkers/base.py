@@ -330,8 +330,7 @@ class WalkerObservables(composer.Observables):
 
   @composer.observable
   def body_height(self):
-    return observable.Generic(
-        lambda physics: physics.bind(self._entity.root_body).xpos[2])
+    return observable.MJCFFeature('xpos', self._entity.root_body)[2]
 
   @composer.observable
   def end_effectors_pos(self):
@@ -346,8 +345,7 @@ class WalkerObservables(composer.Observables):
   @composer.observable
   def world_zaxis(self):
     """The world's z-vector in this Walker's torso frame."""
-    return observable.Generic(
-        lambda physics: physics.bind(self._entity.root_body).xmat[6:])
+    return observable.MJCFFeature('xmat', self._entity.root_body)[6:]
 
   @composer.observable
   def sensors_gyro(self):
@@ -457,46 +455,41 @@ class WalkerObservables(composer.Observables):
   # Convenience observables for defining rewards and terminations.
   @composer.observable
   def veloc_strafe(self):
-    velocimeter = self._entity.mjcf_model.sensor.velocimeter
-    return observable.Generic(
-        lambda physics: physics.bind(velocimeter).sensordata[1])
+    return observable.MJCFFeature(
+        'sensordata', self._entity.mjcf_model.sensor.velocimeter)[1]
 
   @composer.observable
   def veloc_up(self):
-    velocimeter = self._entity.mjcf_model.sensor.velocimeter
-    return observable.Generic(
-        lambda physics: physics.bind(velocimeter).sensordata[2])
+    return observable.MJCFFeature(
+        'sensordata', self._entity.mjcf_model.sensor.velocimeter)[2]
 
   @composer.observable
   def veloc_forward(self):
-    velocimeter = self._entity.mjcf_model.sensor.velocimeter
-    return observable.Generic(
-        lambda physics: physics.bind(velocimeter).sensordata[0])
+    return observable.MJCFFeature(
+        'sensordata', self._entity.mjcf_model.sensor.velocimeter)[0]
 
   @composer.observable
-  def gyro_forward_roll(self):
-    gyro = self._entity.mjcf_model.sensor.gyro
-    return observable.Generic(lambda physics: -physics.bind(gyro).sensordata[0])
+  def gyro_backward_roll(self):
+    return observable.MJCFFeature(
+        'sensordata', self._entity.mjcf_model.sensor.gyro)[0]
 
   @composer.observable
   def gyro_rightward_roll(self):
-    gyro = self._entity.mjcf_model.sensor.gyro
-    return observable.Generic(lambda physics: physics.bind(gyro).sensordata[1])
+    return observable.MJCFFeature(
+        'sensordata', self._entity.mjcf_model.sensor.gyro)[1]
 
   @composer.observable
-  def gyro_clockwise_spin(self):
-    gyro = self._entity.mjcf_model.sensor.gyro
-    return observable.Generic(lambda physics: -physics.bind(gyro).sensordata[2])
+  def gyro_anticlockwise_spin(self):
+    return observable.MJCFFeature(
+        'sensordata', self._entity.mjcf_model.sensor.gyro)[2]
 
   @composer.observable
   def torso_xvel(self):
-    return observable.Generic(
-        lambda physics: physics.bind(self._entity.root_body).subtree_linvel[0])
+    return observable.MJCFFeature('subtree_linvel', self._entity.root_body)[0]
 
   @composer.observable
   def torso_yvel(self):
-    return observable.Generic(
-        lambda physics: physics.bind(self._entity.root_body).subtree_linvel[1])
+    return observable.MJCFFeature('subtree_linvel', self._entity.root_body)[1]
 
   @composer.observable
   def prev_action(self):

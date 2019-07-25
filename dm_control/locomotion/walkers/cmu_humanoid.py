@@ -313,8 +313,7 @@ class CMUHumanoidObservables(base.WalkerObservables):
 
   @composer.observable
   def head_height(self):
-    return observable.Generic(
-        lambda physics: physics.bind(self._entity.head).xpos[2])
+    return observable.MJCFFeature('xpos', self._entity.head)[2]
 
   @composer.observable
   def sensors_torque(self):

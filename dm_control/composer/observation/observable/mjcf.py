@@ -49,7 +49,7 @@ class MJCFFeature(base.Observable):
 
   def __init__(self, kind, mjcf_element, update_interval=1,
                buffer_size=None, delay=None,
-               aggregator=None, corruptor=None):
+               aggregator=None, corruptor=None, index=None):
     """Initializes this observable.
 
     Args:
@@ -76,6 +76,10 @@ class MJCFFeature(base.Observable):
         `BufferedWrapper`, the corruptor is applied to the observation before
         it is added to the buffer. In particular, this means that the aggregator
         operates on corrupted observations.
+      index: (optional) An index that is to be applied to an array attribute
+        to pick out a slice or particular items. As a syntactic sugar,
+        `MJCFFeature` also implements `__getitem__` that returns a copy of the
+        same observable with an index applied.
 
     Raises:
       ValueError: if `mjcf_element` is not an `mjcf.Element`.
@@ -83,12 +87,24 @@ class MJCFFeature(base.Observable):
     _check_mjcf_element_iterable(mjcf_element)
     self._kind = kind
     self._mjcf_element = mjcf_element
+    self._index = index
     super(MJCFFeature, self).__init__(
         update_interval, buffer_size, delay, aggregator, corruptor)
 
   def _callable(self, physics):
     binding = physics.bind(self._mjcf_element)
-    return lambda: getattr(binding, self._kind)
+    if self._index is not None:
+      return lambda: getattr(binding, self._kind)[self._index]
+    else:
+      return lambda: getattr(binding, self._kind)
+
+  def __getitem__(self, key):
+    if self._index is not None:
+      raise NotImplementedError(
+          'slicing an already-sliced MJCFFeature observable is not supported')
+    return MJCFFeature(self._kind, self._mjcf_element, self._update_interval,
+                       self._buffer_size, self._delay, self._aggregator,
+                       self._corruptor, key)
 
 
 class MJCFCamera(base.Observable):
