@@ -25,10 +25,9 @@ import copy
 import sys
 
 from dm_control import mujoco
+from dm_env import specs
 import six
 from six.moves import range
-
-from dm_control.rl import specs
 
 
 def _check_timesteps_divisible(control_timestep, physics_timestep):
@@ -187,9 +186,9 @@ class Task(object):
         self.control_timestep, self.physics_timestep)
 
   def action_spec(self, physics):
-    """Returns an `BoundedArraySpec` matching the `Physics` actuators.
+    """Returns a `BoundedArray` spec matching the `Physics` actuators.
 
-    BoundedArraySpec.name should contain a tab-separated list of actuator names.
+    BoundedArray.name should contain a tab-separated list of actuator names.
     When overloading this method, non-MuJoCo actuators should be added to the
     top of the list when possible, as a matter of convention.
 
@@ -199,11 +198,11 @@ class Task(object):
     names = [physics.model.id2name(i, 'actuator') or str(i)
              for i in range(physics.model.nu)]
     action_spec = mujoco.action_spec(physics)
-    return specs.BoundedArraySpec(shape=action_spec.shape,
-                                  dtype=action_spec.dtype,
-                                  minimum=action_spec.minimum,
-                                  maximum=action_spec.maximum,
-                                  name='\t'.join(names))
+    return specs.BoundedArray(shape=action_spec.shape,
+                              dtype=action_spec.dtype,
+                              minimum=action_spec.minimum,
+                              maximum=action_spec.maximum,
+                              name='\t'.join(names))
 
   def get_reward_spec(self):
     """Optional method to define non-scalar rewards for a `Task`."""

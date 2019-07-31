@@ -22,10 +22,9 @@ from __future__ import print_function
 import abc
 import functools
 
+from dm_env import specs
 import numpy as np
 import six
-
-from dm_control.rl import specs
 
 
 AGGREGATORS = {
@@ -305,7 +304,7 @@ class MujocoCamera(Observable):
 
   @property
   def array_spec(self):
-    return specs.ArraySpec(
+    return specs.Array(
         shape=(self._height, self._width, self._n_channels), dtype=self._dtype)
 
   def _callable(self, physics):

@@ -26,10 +26,9 @@ from absl import logging
 from dm_control import mjcf
 from dm_control.composer import observation
 from dm_control.rl import control
+import dm_env
 import numpy as np
 from six.moves import range
-
-from dm_control.rl import environment
 
 warnings.simplefilter('always', DeprecationWarning)
 
@@ -264,7 +263,7 @@ class _CommonEnvironment(object):
       return self.task.control_timestep
 
 
-class Environment(_CommonEnvironment, environment.Base):
+class Environment(_CommonEnvironment, dm_env.Environment):
   """Reinforcement learning environment for Composer tasks."""
 
   def __init__(self, task, time_limit=float('inf'), random_state=None,
@@ -325,8 +324,8 @@ class Environment(_CommonEnvironment, environment.Base):
       self._hooks.initialize_episode(self._physics_proxy, self._random_state)
     self._observation_updater.reset(self._physics_proxy, self._random_state)
     self._reset_next_step = False
-    return environment.TimeStep(
-        step_type=environment.StepType.FIRST,
+    return dm_env.TimeStep(
+        step_type=dm_env.StepType.FIRST,
         reward=None,
         discount=None,
         observation=self._observation_updater.get_observation())
@@ -339,7 +338,7 @@ class Environment(_CommonEnvironment, environment.Base):
     if (self._task.get_reward_spec() is None or
         self._task.get_discount_spec() is None):
       raise NotImplementedError
-    return environment.TimeStep(
+    return dm_env.TimeStep(
         step_type=None,
         reward=self._task.get_reward_spec(),
         discount=self._task.get_discount_spec(),
@@ -393,12 +392,10 @@ class Environment(_CommonEnvironment, environment.Base):
     obs = self._observation_updater.get_observation()
 
     if not terminating:
-      return environment.TimeStep(
-          environment.StepType.MID, reward, discount, obs)
+      return dm_env.TimeStep(dm_env.StepType.MID, reward, discount, obs)
     else:
       self._reset_next_step = True
-      return environment.TimeStep(
-          environment.StepType.LAST, reward, discount, obs)
+      return dm_env.TimeStep(dm_env.StepType.LAST, reward, discount, obs)
 
   def action_spec(self):
     """Returns the action specification for this environment."""
@@ -409,10 +406,11 @@ class Environment(_CommonEnvironment, environment.Base):
 
     This will be the output of `self.task.reward_spec()` if it is not None,
     otherwise it will be the default spec returned by
-    `environment.Base.reward_spec()`.
+    `dm_env.Environment.reward_spec()`.
 
     Returns:
-      An `ArraySpec`, or a nested dict, list or tuple of `ArraySpec`s.
+      A `specs.Array` instance, or a nested dict, list or tuple of
+      `specs.Array`s.
     """
     task_reward_spec = self._task.get_reward_spec()
     if task_reward_spec is not None:
@@ -425,10 +423,11 @@ class Environment(_CommonEnvironment, environment.Base):
 
     This will be the output of `self.task.discount_spec()` if it is not None,
     otherwise it will be the default spec returned by
-    `environment.Base.discount_spec()`.
+    `dm_env.Environment.discount_spec()`.
 
     Returns:
-      An `ArraySpec`, or a nested dict, list or tuple of `ArraySpec`s.
+      A `specs.Array` instance, or a nested dict, list or tuple of
+      `specs.Array`s.
     """
     task_discount_spec = self._task.get_discount_spec()
     if task_discount_spec is not None:
@@ -440,7 +439,7 @@ class Environment(_CommonEnvironment, environment.Base):
     """Returns the observation specification for this environment.
 
     Returns:
-      An `OrderedDict` mapping observation name to `ArraySpec` containing
+      An `OrderedDict` mapping observation name to `specs.Array` containing
       observation shape and dtype.
     """
     return self._observation_updater.observation_spec()

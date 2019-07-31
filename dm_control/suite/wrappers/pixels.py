@@ -21,13 +21,13 @@ from __future__ import print_function
 
 import collections
 
-from dm_control.rl import environment
-from dm_control.rl import specs
+import dm_env
+from dm_env import specs
 
 STATE_KEY = 'state'
 
 
-class Wrapper(environment.Base):
+class Wrapper(dm_env.Environment):
   """Wraps a control environment and adds a rendered pixel observation."""
 
   def __init__(self, env, pixels_only=True, render_kwargs=None,
@@ -57,7 +57,7 @@ class Wrapper(environment.Base):
 
     wrapped_observation_spec = env.observation_spec()
 
-    if isinstance(wrapped_observation_spec, specs.ArraySpec):
+    if isinstance(wrapped_observation_spec, specs.Array):
       self._observation_is_dict = False
       invalid_keys = set([STATE_KEY])
     elif isinstance(wrapped_observation_spec, collections.MutableMapping):
@@ -80,7 +80,7 @@ class Wrapper(environment.Base):
 
     # Extend observation spec.
     pixels = env.physics.render(**render_kwargs)
-    pixels_spec = specs.ArraySpec(
+    pixels_spec = specs.Array(
         shape=pixels.shape, dtype=pixels.dtype, name=observation_key)
     self._observation_spec[observation_key] = pixels_spec
 

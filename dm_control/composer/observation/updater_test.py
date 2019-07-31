@@ -30,11 +30,10 @@ from absl.testing import parameterized
 from dm_control.composer.observation import fake_physics
 from dm_control.composer.observation import observable
 from dm_control.composer.observation import updater
+from dm_env import specs
 import numpy as np
 import six
 from six.moves import range
-
-from dm_control.rl import specs
 
 
 class DeterministicSequence(object):
@@ -70,7 +69,7 @@ class UpdaterTest(parameterized.TestCase):
 
     def make_spec(obs):
       array = np.array(obs.observation_callable(None, None)())
-      return specs.ArraySpec((1,) + array.shape, array.dtype)
+      return specs.Array((1,) + array.shape, array.dtype)
     expected_specs = list_or_tuple((
         {'two': make_spec(observables[0]['two'])},
         collections.OrderedDict([

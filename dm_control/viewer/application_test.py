@@ -21,11 +21,10 @@ from __future__ import print_function
 from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control.viewer import application
+import dm_env
+from dm_env import specs
 import mock
 import numpy as np
-
-from dm_control.rl import environment
-from dm_control.rl import specs
 
 
 class ApplicationTest(parameterized.TestCase):
@@ -38,8 +37,8 @@ class ApplicationTest(parameterized.TestCase):
     self.app._viewer = mock.MagicMock()
     self.app._keyboard_action = mock.MagicMock()
 
-    self.environment = mock.MagicMock(spec=environment.Base)
-    self.environment.action_spec.return_value = specs.BoundedArraySpec(
+    self.environment = mock.MagicMock(spec=dm_env.Environment)
+    self.environment.action_spec.return_value = specs.BoundedArray(
         (1,), np.float64, -1, 1)
     self.environment.physics = mock.MagicMock()
     self.app._environment = self.environment

@@ -13,7 +13,7 @@
 # limitations under the License.
 # ============================================================================
 
-"""An environment.Base subclass for control-specific environments."""
+"""A dm_env.Environment subclass for control-specific environments."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -23,17 +23,16 @@ import abc
 import collections
 import contextlib
 
+import dm_env
+from dm_env import specs
 import numpy as np
 import six
 from six.moves import range
 
-from dm_control.rl import environment
-from dm_control.rl import specs
-
 FLAT_OBSERVATION_KEY = 'observations'
 
 
-class Environment(environment.Base):
+class Environment(dm_env.Environment):
   """Class for physics-based reinforcement learning environments."""
 
   def __init__(self,
@@ -93,8 +92,8 @@ class Environment(environment.Base):
     if self._flat_observation:
       observation = flatten_observation(observation)
 
-    return environment.TimeStep(
-        step_type=environment.StepType.FIRST,
+    return dm_env.TimeStep(
+        step_type=dm_env.StepType.FIRST,
         reward=None,
         discount=None,
         observation=observation)
@@ -125,11 +124,10 @@ class Environment(environment.Base):
 
     if episode_over:
       self._reset_next_step = True
-      return environment.TimeStep(
-          environment.StepType.LAST, reward, discount, observation)
+      return dm_env.TimeStep(
+          dm_env.StepType.LAST, reward, discount, observation)
     else:
-      return environment.TimeStep(
-          environment.StepType.MID, reward, 1.0, observation)
+      return dm_env.TimeStep(dm_env.StepType.MID, reward, 1.0, observation)
 
   def action_spec(self):
     """Returns the action specification for this environment."""
@@ -202,7 +200,7 @@ def compute_n_steps(control_timestep, physics_timestep, tolerance=1e-8):
 def _spec_from_observation(observation):
   result = collections.OrderedDict()
   for key, value in six.iteritems(observation):
-    result[key] = specs.ArraySpec(value.shape, value.dtype, name=key)
+    result[key] = specs.Array(value.shape, value.dtype, name=key)
   return result
 
 # Base class definitions for objects supplied to Environment.

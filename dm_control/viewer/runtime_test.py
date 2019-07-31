@@ -22,12 +22,12 @@ import collections
 from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control.viewer import runtime
+import dm_env
+from dm_env import specs
 import mock
 import numpy as np
 import six
 from six.moves import zip
-from dm_control.rl import environment
-from dm_control.rl import specs
 
 
 class RuntimeStateMachineTest(parameterized.TestCase):
@@ -35,8 +35,7 @@ class RuntimeStateMachineTest(parameterized.TestCase):
   def setUp(self):
     super(RuntimeStateMachineTest, self).setUp()
     env = mock.MagicMock()
-    env.action_spec.return_value = specs.BoundedArraySpec(
-        (1,), np.float64, -1, 1)
+    env.action_spec.return_value = specs.BoundedArray((1,), np.float64, -1, 1)
     self.runtime = runtime.Runtime(env, mock.MagicMock())
     self.runtime._start = mock.MagicMock()
     self.runtime.get_time = mock.MagicMock()
@@ -115,9 +114,8 @@ class RuntimeSingleStepTest(parameterized.TestCase):
 
   def setUp(self):
     super(RuntimeSingleStepTest, self).setUp()
-    env = mock.MagicMock(spec=environment.Base)
-    env.action_spec.return_value = specs.BoundedArraySpec(
-        (1,), np.float64, -1, 1)
+    env = mock.MagicMock(spec=dm_env.Environment)
+    env.action_spec.return_value = specs.BoundedArray((1,), np.float64, -1, 1)
     self.runtime = runtime.Runtime(env, mock.MagicMock())
     self.runtime._step = mock.MagicMock()
     self.runtime._step.return_value = False
@@ -150,9 +148,8 @@ class RuntimeTest(absltest.TestCase):
 
   def setUp(self):
     super(RuntimeTest, self).setUp()
-    env = mock.MagicMock(spec=environment.Base)
-    env.action_spec.return_value = specs.BoundedArraySpec(
-        (1,), np.float64, -1, 1)
+    env = mock.MagicMock(spec=dm_env.Environment)
+    env.action_spec.return_value = specs.BoundedArray((1,), np.float64, -1, 1)
     self.runtime = runtime.Runtime(env, mock.MagicMock())
     self.runtime._step_paused = mock.MagicMock()
     self.runtime._step = mock.MagicMock(return_value=True)
@@ -263,10 +260,10 @@ class EnvironmentRuntimeTest(parameterized.TestCase):
   def setUp(self):
     super(EnvironmentRuntimeTest, self).setUp()
     self.observation = mock.MagicMock()
-    self.env = mock.MagicMock(spec=environment.Base)
+    self.env = mock.MagicMock(spec=dm_env.Environment)
     self.env.physics = mock.MagicMock()
     self.env.step = mock.MagicMock()
-    self.env.action_spec.return_value = specs.BoundedArraySpec(
+    self.env.action_spec.return_value = specs.BoundedArray(
         (1,), np.float64, -1, 1)
     self.policy = mock.MagicMock()
     self.actions = mock.MagicMock()
@@ -280,7 +277,7 @@ class EnvironmentRuntimeTest(parameterized.TestCase):
       self.policy.assert_not_called()
 
   def test_step_with_policy(self):
-    time_step = mock.Mock(spec=environment.TimeStep)
+    time_step = mock.Mock(spec=dm_env.TimeStep)
     self.runtime._time_step = time_step
     self.runtime._step()
     self.policy.assert_called_once_with(time_step)
@@ -359,7 +356,7 @@ class DefaultActionFromSpecTest(parameterized.TestCase):
   _SHAPE = (2,)
   _DTYPE = np.float64
   _ACTION = np.zeros(_SHAPE)
-  _ACTION_SPEC = specs.BoundedArraySpec(_SHAPE, np.float64, -1, 1)
+  _ACTION_SPEC = specs.BoundedArray(_SHAPE, np.float64, -1, 1)
 
   @parameterized.named_parameters(
       ('single_array', _ACTION_SPEC, _ACTION),
@@ -388,16 +385,16 @@ class DefaultActionFromSpecTest(parameterized.TestCase):
 
   @parameterized.named_parameters(
       ('closed',
-       specs.BoundedArraySpec(_SHAPE, _DTYPE, minimum=1., maximum=2.),
+       specs.BoundedArray(_SHAPE, _DTYPE, minimum=1., maximum=2.),
        np.full(_SHAPE, fill_value=1.5, dtype=_DTYPE)),
       ('left_open',
-       specs.BoundedArraySpec(_SHAPE, _DTYPE, minimum=-np.inf, maximum=2.),
+       specs.BoundedArray(_SHAPE, _DTYPE, minimum=-np.inf, maximum=2.),
        np.full(_SHAPE, fill_value=2., dtype=_DTYPE)),
       ('right_open',
-       specs.BoundedArraySpec(_SHAPE, _DTYPE, minimum=1., maximum=np.inf),
+       specs.BoundedArray(_SHAPE, _DTYPE, minimum=1., maximum=np.inf),
        np.full(_SHAPE, fill_value=1., dtype=_DTYPE)),
       ('unbounded',
-       specs.BoundedArraySpec(_SHAPE, _DTYPE, minimum=-np.inf, maximum=np.inf),
+       specs.BoundedArray(_SHAPE, _DTYPE, minimum=-np.inf, maximum=np.inf),
        np.full(_SHAPE, fill_value=0., dtype=_DTYPE)))
   def test_action_spec_interval(self, action_spec, expected_action):
     self.assertNestedArraysEqual(expected_action,

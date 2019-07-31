@@ -19,15 +19,15 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import dm_env
 import numpy as np
-from dm_control.rl import environment
 
 
 _BOUNDS_MUST_BE_FINITE = (
     'All bounds in `env.action_spec()` must be finite, got: {action_spec}')
 
 
-class Wrapper(environment.Base):
+class Wrapper(dm_env.Environment):
   """Wraps a control environment and adds Gaussian noise to actions."""
 
   def __init__(self, env, scale=0.01):

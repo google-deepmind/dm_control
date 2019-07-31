@@ -23,10 +23,9 @@ from dm_control import composer
 from dm_control.locomotion.soccer import initializers
 from dm_control.locomotion.soccer import observables as observables_lib
 from dm_control.locomotion.soccer import soccer_ball
+from dm_env import specs
 import numpy as np
 from six.moves import zip
-
-from dm_control.rl import specs
 
 _THROW_IN_BALL_Z = 0.5
 
@@ -164,7 +163,7 @@ class Task(composer.Task):
 
   def get_reward_spec(self):
     return [
-        specs.ArraySpec(name="reward", shape=(), dtype=np.float32)
+        specs.Array(name="reward", shape=(), dtype=np.float32)
         for _ in self.players
     ]
 
@@ -174,7 +173,7 @@ class Task(composer.Task):
     return np.ones((), np.float32)
 
   def get_discount_spec(self):
-    return specs.ArraySpec(name="discount", shape=(), dtype=np.float32)
+    return specs.Array(name="discount", shape=(), dtype=np.float32)
 
   def should_terminate_episode(self, physics):
     """Returns True if a goal was scored by either team."""

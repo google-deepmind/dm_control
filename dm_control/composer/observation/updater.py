@@ -22,11 +22,10 @@ from __future__ import print_function
 import collections
 
 from dm_control.composer.observation import obs_buffer
+from dm_env import specs
 import numpy as np
 import six
 from six.moves import range
-
-from dm_control.rl import specs
 
 DEFAULT_BUFFER_SIZE = 1
 DEFAULT_UPDATE_INTERVAL = 1
@@ -140,7 +139,7 @@ class Updater(object):
     the first call to `reset`.
 
     Returns:
-      A dict mapping observation name to `ArraySpec` containing observation
+      A dict mapping observation name to `Array` spec containing observation
       shape and dtype.
 
     Raises:
@@ -156,10 +155,10 @@ class Updater(object):
         if enabled.observable.aggregator:
           aggregated = enabled.observable.aggregator(
               np.zeros(enabled.buffer.shape, dtype=enabled.buffer.dtype))
-          spec = specs.ArraySpec(
+          spec = specs.Array(
               shape=aggregated.shape, dtype=aggregated.dtype, name=name)
         else:
-          spec = specs.ArraySpec(
+          spec = specs.Array(
               shape=enabled.buffer.shape, dtype=enabled.buffer.dtype, name=name)
         out_dict[name] = spec
       return out_dict

@@ -26,11 +26,10 @@ from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control.suite import cartpole
 from dm_control.suite.wrappers import pixels
+import dm_env
+from dm_env import specs
 
 import numpy as np
-
-from dm_control.rl import environment
-from dm_control.rl import specs
 
 
 class FakePhysics(object):
@@ -41,23 +40,23 @@ class FakePhysics(object):
     return np.zeros((4, 5, 3), dtype=np.uint8)
 
 
-class FakeArrayObservationEnvironment(environment.Base):
+class FakeArrayObservationEnvironment(dm_env.Environment):
 
   def __init__(self):
     self.physics = FakePhysics()
 
   def reset(self):
-    return environment.restart(np.zeros((2,)))
+    return dm_env.restart(np.zeros((2,)))
 
   def step(self, action):
     del action
-    return environment.transition(0.0, np.zeros((2,)))
+    return dm_env.transition(0.0, np.zeros((2,)))
 
   def action_spec(self):
     pass
 
   def observation_spec(self):
-    return specs.ArraySpec(shape=(2,), dtype=np.float)
+    return specs.Array(shape=(2,), dtype=np.float)
 
 
 class PixelsTest(parameterized.TestCase):
@@ -85,10 +84,11 @@ class PixelsTest(parameterized.TestCase):
     self.assertIsInstance(wrapped_observation_spec, collections.OrderedDict)
 
     if pixels_only:
-      self.assertEqual(1, len(wrapped_observation_spec))
+      self.assertLen(wrapped_observation_spec, 1)
       self.assertEqual([pixel_key], list(wrapped_observation_spec.keys()))
     else:
-      self.assertEqual(len(observation_spec) + 1, len(wrapped_observation_spec))
+      expected_length = len(observation_spec) + 1
+      self.assertLen(wrapped_observation_spec, expected_length)
       expected_keys = list(observation_spec.keys()) + [pixel_key]
       self.assertEqual(expected_keys, list(wrapped_observation_spec.keys()))
 
@@ -106,7 +106,7 @@ class PixelsTest(parameterized.TestCase):
 
     env = FakeArrayObservationEnvironment()
     observation_spec = env.observation_spec()
-    self.assertIsInstance(observation_spec, specs.ArraySpec)
+    self.assertIsInstance(observation_spec, specs.Array)
 
     wrapped = pixels.Wrapper(env, observation_key=pixel_key,
                              pixels_only=pixels_only)
@@ -114,10 +114,10 @@ class PixelsTest(parameterized.TestCase):
     self.assertIsInstance(wrapped_observation_spec, collections.OrderedDict)
 
     if pixels_only:
-      self.assertEqual(1, len(wrapped_observation_spec))
+      self.assertLen(wrapped_observation_spec, 1)
       self.assertEqual([pixel_key], list(wrapped_observation_spec.keys()))
     else:
-      self.assertEqual(2, len(wrapped_observation_spec))
+      self.assertLen(wrapped_observation_spec, 2)
       self.assertEqual([pixels.STATE_KEY, pixel_key],
                        list(wrapped_observation_spec.keys()))
 

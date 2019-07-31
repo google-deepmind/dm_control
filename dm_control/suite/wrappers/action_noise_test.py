@@ -24,16 +24,16 @@ from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control.rl import control
 from dm_control.suite.wrappers import action_noise
+from dm_env import specs
 import mock
 import numpy as np
-from dm_control.rl import specs
 
 
 class ActionNoiseTest(parameterized.TestCase):
 
   def make_action_spec(self, lower=(-1.,), upper=(1.,)):
     lower, upper = np.broadcast_arrays(lower, upper)
-    return specs.BoundedArraySpec(
+    return specs.BoundedArray(
         shape=lower.shape, dtype=float, minimum=lower, maximum=upper)
 
   def make_mock_env(self, action_spec=None):

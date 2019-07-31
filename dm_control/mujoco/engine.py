@@ -49,11 +49,10 @@ from dm_control.mujoco.wrapper.mjbindings import enums
 from dm_control.mujoco.wrapper.mjbindings import mjlib
 from dm_control.mujoco.wrapper.mjbindings import types
 from dm_control.rl import control as _control
+from dm_env import specs
 
 import numpy as np
 import six
-
-from dm_control.rl import specs
 
 _FONT_STYLES = {
     'normal': enums.mjtFont.mjFONT_NORMAL,
@@ -873,5 +872,5 @@ def action_spec(physics):
   maxima = np.full(num_actions, fill_value=np.inf, dtype=np.float)
   minima[is_limited], maxima[is_limited] = control_range[is_limited].T
 
-  return specs.BoundedArraySpec(
+  return specs.BoundedArray(
       shape=(num_actions,), dtype=np.float, minimum=minima, maximum=maxima)

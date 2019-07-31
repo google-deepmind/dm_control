@@ -23,8 +23,8 @@ import collections
 
 from dm_control import mjcf
 from dm_control.composer.observation.observable import base
+from dm_env import specs
 import numpy as np
-from dm_control.rl import specs
 
 
 _BOTH_SEGMENTATION_AND_DEPTH_ENABLED = (
@@ -221,7 +221,7 @@ class MJCFCamera(base.Observable):
 
   @property
   def array_spec(self):
-    return specs.ArraySpec(
+    return specs.Array(
         shape=(self._height, self._width, self._n_channels), dtype=self._dtype)
 
   def _callable(self, physics):

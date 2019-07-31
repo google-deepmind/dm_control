@@ -25,18 +25,17 @@ from absl.testing import absltest
 from absl.testing import parameterized
 
 from dm_control.rl import control
+from dm_env import specs
 
 import mock
 import numpy as np
 
-from dm_control.rl import specs
-
 _CONSTANT_REWARD_VALUE = 1.0
 _CONSTANT_OBSERVATION = {'observations': np.asarray(_CONSTANT_REWARD_VALUE)}
 
-_ACTION_SPEC = specs.BoundedArraySpec(
+_ACTION_SPEC = specs.BoundedArray(
     shape=(1,), dtype=np.float, minimum=0.0, maximum=1.0)
-_OBSERVATION_SPEC = {'observations': specs.ArraySpec(shape=(), dtype=np.float)}
+_OBSERVATION_SPEC = {'observations': specs.Array(shape=(), dtype=np.float)}
 
 
 class EnvironmentTest(parameterized.TestCase):

@@ -27,10 +27,9 @@ from dm_control.composer.observation import observable
 from dm_control.locomotion.walkers import initializers
 from dm_control.mujoco.wrapper.mjbindings import mjlib
 
+from dm_env import specs
 import numpy as np
 import six
-
-from dm_control.rl import specs
 
 _RANGEFINDER_SCALE = 10.0
 _TOUCH_THRESHOLD = 1e-3
@@ -304,7 +303,7 @@ class Walker(composer.Robot):
         a.ctrlrange if a.ctrlrange is not None else (-1., 1.)
         for a in self.actuators
     ])
-    return specs.BoundedArraySpec(
+    return specs.BoundedArray(
         shape=(len(self.actuators),),
         dtype=np.float,
         minimum=minimum,
