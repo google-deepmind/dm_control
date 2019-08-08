@@ -51,7 +51,7 @@ ElementSpec = collections.namedtuple(
 
 AttributeSpec = collections.namedtuple(
     'AttributeSpec', ('name', 'type', 'required',
-                      'conflict_allowed', 'other_kwargs'))
+                      'conflict_allowed', 'conflict_behavior', 'other_kwargs'))
 
 # Additional namespaces that are not present in the MJCF schema but can
 # be used in `find` and `find_all`.
@@ -138,6 +138,7 @@ def _parse_attribute(attribute_xml):
   name = attribute_xml.get('name')
   required = _str2bool(attribute_xml.get('required'))
   conflict_allowed = _str2bool(attribute_xml.get('conflict_allowed'))
+  conflict_behavior = attribute_xml.get('conflict_behavior', 'replace')
   attribute_type = attribute_xml.get('type')
   other_kwargs = {}
   if attribute_type == 'keyword':
@@ -167,8 +168,9 @@ def _parse_attribute(attribute_xml):
       raise ValueError('Invalid attribute type: {}'.format(attribute_type))
 
   return AttributeSpec(
-      name=name, required=required, conflict_allowed=conflict_allowed,
-      type=attribute_callable, other_kwargs=other_kwargs)
+      name=name, type=attribute_callable, required=required,
+      conflict_allowed=conflict_allowed, conflict_behavior=conflict_behavior,
+      other_kwargs=other_kwargs)
 
 
 def collect_namespaces(root_spec):

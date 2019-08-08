@@ -90,8 +90,8 @@
     </element>
     <element name="size">
       <attributes>
-        <attribute name="njmax" type="int"/>
-        <attribute name="nconmax" type="int"/>
+        <attribute name="njmax" type="int" conflict_allowed="true" conflict_behavior="max"/>
+        <attribute name="nconmax" type="int" conflict_allowed="true" conflict_behavior="max"/>
         <attribute name="nstack" type="int"/>
         <attribute name="nuserdata" type="int"/>
         <attribute name="nkey" type="int"/>

@@ -177,6 +177,7 @@ class _ElementImpl(base.Element):
               name=attribute_spec.name,
               required=attribute_spec.required,
               conflict_allowed=attribute_spec.conflict_allowed,
+              conflict_behavior=attribute_spec.conflict_behavior,
               parent=self, value=value, **attribute_spec.other_kwargs)
         except:  # pylint: disable=bare-except
           # On failure, clear attributes already created
@@ -855,10 +856,16 @@ class _ElementImpl(base.Element):
         other.get_attributes()):
       if attribute_name == constants.DCLASS:
         attribute_name = constants.CLASS
-      enforce_matching_attribute = (
-          copying or not self._attributes[attribute_name].conflict_allowed)
-      if other_attribute is not None and enforce_matching_attribute:
-        self._attributes[attribute_name].value = other_attribute
+
+      self_attribute = self._attributes[attribute_name]
+      if other_attribute is not None:
+        if self_attribute.conflict_behavior == 'max':
+          if self_attribute.value is not None:
+            self_attribute.value = max(self_attribute.value, other_attribute)
+          else:
+            self_attribute.value = other_attribute
+        elif copying or not self_attribute.conflict_allowed:
+          self_attribute.value = other_attribute
 
   def _attach_children(self, other, exclude_worldbody, dry_run=False):
     for other_child in other.all_children():

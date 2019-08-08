@@ -43,12 +43,14 @@ _INVALID_REFERENCE_TYPE = (
 class _Attribute(object):
   """Abstract base class for MJCF attribute data types."""
 
-  def __init__(self, name, required, parent, value, conflict_allowed):
+  def __init__(self, name, required, parent, value,
+               conflict_allowed, conflict_behavior):
     self._name = name
     self._required = required
     self._parent = parent
     self._value = None
     self._conflict_allowed = conflict_allowed
+    self._conflict_behavior = conflict_behavior
     self._check_and_assign(value)
 
   def _check_and_assign(self, new_value):
@@ -108,6 +110,10 @@ class _Attribute(object):
   def conflict_allowed(self):
     return self._conflict_allowed
 
+  @property
+  def conflict_behavior(self):
+    return self._conflict_behavior
+
 
 class String(_Attribute):
   """A string MJCF attribute."""
@@ -150,11 +156,11 @@ class Keyword(_Attribute):
   """A keyword MJCF attribute."""
 
   def __init__(self, name, required, parent, value,
-               conflict_allowed, valid_values):
+               conflict_allowed, conflict_behavior, valid_values):
     self._valid_values = collections.OrderedDict(
         (value.lower(), value) for value in valid_values)
     super(Keyword, self).__init__(
-        name, required, parent, value, conflict_allowed)
+        name, required, parent, value, conflict_allowed, conflict_behavior)
 
   def _assign(self, value):
     if not value:
@@ -175,10 +181,11 @@ class Array(_Attribute):
   """An array MJCF attribute."""
 
   def __init__(self, name, required, parent, value,
-               conflict_allowed, length, dtype):
+               conflict_allowed, conflict_behavior, length, dtype):
     self._length = length
     self._dtype = dtype
-    super(Array, self).__init__(name, required, parent, value, conflict_allowed)
+    super(Array, self).__init__(name, required, parent, value,
+                                conflict_allowed, conflict_behavior)
 
   def _assign(self, value):
     self._value = self._check_shape(np.array(value, dtype=self._dtype))
@@ -257,10 +264,10 @@ class Reference(_Attribute):
   """A string attribute that represents a reference to an identifier."""
 
   def __init__(self, name, required, parent, value,
-               conflict_allowed, reference_namespace):
+               conflict_allowed, conflict_behavior, reference_namespace):
     self._reference_namespace = reference_namespace
     super(Reference, self).__init__(
-        name, required, parent, value, conflict_allowed)
+        name, required, parent, value, conflict_allowed, conflict_behavior)
 
   def _check_dead_reference(self):
     if isinstance(self._value, base.Element) and self._value.is_removed:
@@ -362,10 +369,10 @@ class BasePath(_Attribute):
   """A string attribute that represents a base path for an asset type."""
 
   def __init__(self, name, required, parent, value,
-               conflict_allowed, path_namespace):
+               conflict_allowed, conflict_behavior, path_namespace):
     self._path_namespace = path_namespace
     super(BasePath, self).__init__(
-        name, required, parent, value, conflict_allowed)
+        name, required, parent, value, conflict_allowed, conflict_behavior)
 
   def _assign(self, value):
     if not isinstance(value, str):
@@ -429,9 +436,10 @@ class File(_Attribute):
   """Attribute representing an asset file."""
 
   def __init__(self, name, required, parent, value,
-               conflict_allowed, path_namespace):
+               conflict_allowed, conflict_behavior, path_namespace):
     self._path_namespace = path_namespace
-    super(File, self).__init__(name, required, parent, value, conflict_allowed)
+    super(File, self).__init__(name, required, parent, value,
+                               conflict_allowed, conflict_behavior)
     parent.namescope.files.add(self)
 
   def _assign(self, value):

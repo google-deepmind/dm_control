@@ -1038,6 +1038,19 @@ class ElementTest(parameterized.TestCase):
     # attached submodels with mixed 2nd- and 3rd-order actuators.
     _ = mjcf.Physics.from_mjcf_model(parent)
 
+  def testMaxConflictingValues(self):
+    model_1 = mjcf.RootElement()
+    model_1.size.nconmax = 123
+    model_1.size.njmax = 456
+
+    model_2 = mjcf.RootElement()
+    model_2.size.nconmax = 345
+    model_2.size.njmax = 234
+
+    model_1.attach(model_2)
+    self.assertEqual(model_1.size.nconmax, 345)
+    self.assertEqual(model_1.size.njmax, 456)
+
 
 if __name__ == '__main__':
   absltest.main()
