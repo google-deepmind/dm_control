@@ -21,9 +21,9 @@ from __future__ import print_function
 
 # Internal dependencies.
 from absl.testing import absltest
-
 from dm_control import composer
 from dm_control.composer import hooks_test_utils
+import numpy as np
 from six.moves import range
 
 
@@ -37,7 +37,9 @@ class EnvironmentHooksTest(hooks_test_utils.HooksTestMixin, absltest.TestCase):
       with self.track_episode():
         env.reset()
         for _ in range(self.steps_per_episode):
-          env.step([])
+          env.step([0.1, 0.2, 0.3, 0.4])
+          np.testing.assert_array_equal(env.physics.data.ctrl,
+                                        [0.1, 0.2, 0.3, 0.4])
 
 
 if __name__ == '__main__':

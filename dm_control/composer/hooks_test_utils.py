@@ -21,10 +21,23 @@ from __future__ import print_function
 
 import collections
 import contextlib
+import inspect
 
 from dm_control import composer
 from dm_control import mjcf
 from six.moves import range
+
+
+def add_bodies_and_actuators(mjcf_model, num_actuators):
+  if num_actuators % 2:
+    raise ValueError('num_actuators is not a multiple of 2')
+  for _ in range(num_actuators // 2):
+    body = mjcf_model.worldbody.add('body')
+    body.add('inertial', pos=[0, 0, 0], mass=1, diaginertia=[1, 1, 1])
+    joint_x = body.add('joint', axis=[1, 0, 0])
+    mjcf_model.actuator.add('position', joint=joint_x)
+    joint_y = body.add('joint', axis=[0, 1, 0])
+    mjcf_model.actuator.add('position', joint=joint_y)
 
 
 class HooksTracker(object):
@@ -39,6 +52,9 @@ class HooksTracker(object):
     self._physics_timestep = physics_timestep
     self._physics_steps_per_control_step = (
         round(int(control_timestep / physics_timestep)))
+
+    mro = inspect.getmro(type(self))
+    self._has_super = mro[mro.index(HooksTracker) + 1] != object
 
   def assertEqual(self, actual, expected, msg=''):
     msg = '{}: {}: {!r} != {!r}'.format(type(self), msg, actual, expected)
@@ -75,7 +91,8 @@ class HooksTracker(object):
 
   def initialize_episode_mjcf(self, random_state):
     """Implements `initialize_episode_mjcf` Composer callback."""
-    del random_state  # Unused.
+    if self._has_super:
+      super(HooksTracker, self).initialize_episode_mjcf(random_state)
     if not self.tracked:
       return
     self.assertHooksNotCalled('after_compile',
@@ -88,7 +105,8 @@ class HooksTracker(object):
 
   def after_compile(self, physics, random_state):
     """Implements `after_compile` Composer callback."""
-    del random_state  # Unused.
+    if self._has_super:
+      super(HooksTracker, self).after_compile(physics, random_state)
     if not self.tracked:
       return
     self.assertHooksCalledOnce('initialize_episode_mjcf')
@@ -104,7 +122,8 @@ class HooksTracker(object):
 
   def initialize_episode(self, physics, random_state):
     """Implements `initialize_episode` Composer callback."""
-    del random_state  # Unused.
+    if self._has_super:
+      super(HooksTracker, self).initialize_episode(physics, random_state)
     if not self.tracked:
       return
     self.assertHooksCalledOnce('initialize_episode_mjcf',
@@ -118,9 +137,10 @@ class HooksTracker(object):
                                      self._call_count['before_substep'])
     self._call_count['initialize_episode'] += 1
 
-  def before_step(self, physics, random_state):
+  def before_step(self, physics, *args):
     """Implements `before_step` Composer callback."""
-    del random_state  # Unused.
+    if self._has_super:
+      super(HooksTracker, self).before_step(physics, *args)
     if not self.tracked:
       return
     self.assertHooksCalledOnce('initialize_episode_mjcf',
@@ -141,9 +161,10 @@ class HooksTracker(object):
 
     self._call_count['before_step'] += 1
 
-  def before_substep(self, physics, random_state):
+  def before_substep(self, physics, *args):
     """Implements `before_substep` Composer callback."""
-    del random_state  # Unused.
+    if self._has_super:
+      super(HooksTracker, self).before_substep(physics, *args)
     if not self.tracked:
       return
     self.assertHooksCalledOnce('initialize_episode_mjcf',
@@ -166,7 +187,8 @@ class HooksTracker(object):
 
   def after_substep(self, physics, random_state):
     """Implements `after_substep` Composer callback."""
-    del random_state  # Unused.
+    if self._has_super:
+      super(HooksTracker, self).after_substep(physics, random_state)
     if not self.tracked:
       return
     self.assertHooksCalledOnce('initialize_episode_mjcf',
@@ -189,7 +211,8 @@ class HooksTracker(object):
 
   def after_step(self, physics, random_state):
     """Implements `after_step` Composer callback."""
-    del random_state  # Unused.
+    if self._has_super:
+      super(HooksTracker, self).after_step(physics, random_state)
     if not self.tracked:
       return
     self.assertHooksCalledOnce('initialize_episode_mjcf',
@@ -240,21 +263,7 @@ class TrackedTask(HooksTracker, composer.NullTask):
                                       *args, **kwargs)
     self.set_timesteps(physics_timestep=physics_timestep,
                        control_timestep=control_timestep)
-
-  def before_step(self, physics, unused_actions, random_state):
-    super(TrackedTask, self).before_step(physics, random_state)
-
-  def before_substep(self, physics, unused_actions, random_state):
-    super(TrackedTask, self).before_substep(physics, random_state)
-
-
-class TrackedExtraHooks(HooksTracker):
-
-  def before_step(self, physics, unused_actions, random_state):
-    super(TrackedExtraHooks, self).before_step(physics, random_state)
-
-  def before_substep(self, physics, unused_actions, random_state):
-    super(TrackedExtraHooks, self).before_substep(physics, random_state)
+    add_bodies_and_actuators(self.root_entity.mjcf_model, num_actuators=4)
 
 
 class HooksTestMixin(object):
@@ -270,9 +279,9 @@ class HooksTestMixin(object):
     self.control_timestep = 0.05
     self.physics_timestep = 0.002
 
-    self.extra_hooks = TrackedExtraHooks(physics_timestep=self.physics_timestep,
-                                         control_timestep=self.control_timestep,
-                                         test_case=self)
+    self.extra_hooks = HooksTracker(physics_timestep=self.physics_timestep,
+                                    control_timestep=self.control_timestep,
+                                    test_case=self)
 
     self.entities = []
     for i in range(9):
