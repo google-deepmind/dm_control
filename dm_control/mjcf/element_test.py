@@ -51,6 +51,8 @@ _MODEL_WITH_INVALID_FILENAMES = os.path.join(
     _ASSETS_DIR, 'model_with_invalid_filenames.xml')
 _INCLUDED_WITH_INVALID_FILENAMES = os.path.join(
     _ASSETS_DIR, 'included_with_invalid_filenames.xml')
+_MODEL_WITH_NAMELESS_ASSETS = os.path.join(
+    _ASSETS_DIR, 'model_with_nameless_assets.xml')
 
 
 class ElementTest(parameterized.TestCase):
@@ -927,6 +929,20 @@ class ElementTest(parameterized.TestCase):
     expected = {vfs_filename: contents}
     self.assertDictEqual(expected, mujoco.get_assets())
     self.assertDictEqual(expected, mujoco_copy.get_assets())
+
+  def testParseModelWithNamelessAssets(self):
+    mujoco = parser.from_path(path=_MODEL_WITH_NAMELESS_ASSETS)
+    expected_names_derived_from_filenames = [
+        ('mesh', 'cube'),  # ./test_assets/meshes/cube.stl
+        ('texture', 'deepmind'),  # ./test_assets/textures/deepmind.png
+        ('hfield', 'deepmind'),  # ./test_assets/textures/deepmind.png
+    ]
+    with self.subTest('Expected asset names are present in the parsed model'):
+      for namespace, name in expected_names_derived_from_filenames:
+        self.assertIsNotNone(mujoco.find(namespace, name))
+    with self.subTest('Can compile and step the simulation'):
+      physics = mjcf.Physics.from_mjcf_model(mujoco)
+      physics.step()
 
   def testAssetInheritance(self):
     parent = element.RootElement(model='parent')

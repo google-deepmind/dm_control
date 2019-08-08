@@ -21,6 +21,7 @@ from __future__ import print_function
 
 import collections
 import copy
+import os
 import sys
 
 from dm_control.mjcf import attribute as attribute_types
@@ -98,6 +99,9 @@ def _make_element(spec, parent, attributes=None):
     return _ElementImpl(spec, parent, attributes)
 
 
+_DEFAULT_NAME_FROM_FILENAME = frozenset(['mesh', 'hfield', 'texture'])
+
+
 class _ElementImpl(base.Element):
   """Actual implementation of a generic MJCF element object."""
   __slots__ = ['__weakref__', '_spec', '_parent', '_attributes', '_children',
@@ -108,6 +112,16 @@ class _ElementImpl(base.Element):
 
   def __init__(self, spec, parent, attributes=None):
     attributes = attributes or {}
+
+    # For certain `asset` elements the `name` attribute can be omitted, in which
+    # case the name will be the filename without the leading path and extension.
+    # See http://www.mujoco.org/book/XMLreference.html#asset.
+    if ('name' not in attributes
+        and 'file' in attributes
+        and spec.name in _DEFAULT_NAME_FROM_FILENAME):
+      _, filename = os.path.split(attributes['file'])
+      basename, _ = os.path.splitext(filename)
+      attributes['name'] = basename
 
     self._spec = spec
     self._parent = parent
