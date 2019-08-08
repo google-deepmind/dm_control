@@ -22,6 +22,7 @@ from __future__ import print_function
 import collections
 import copy
 import sys
+import os
 
 from dm_control.mjcf import attribute as attribute_types
 from dm_control.mjcf import base
