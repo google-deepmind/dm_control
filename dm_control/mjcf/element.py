@@ -109,6 +109,10 @@ class _ElementImpl(base.Element):
   def __init__(self, spec, parent, attributes=None):
     attributes = attributes or {}
 
+    if spec.name in ["mesh", "hfield", "texture"] and not ("name" in attributes) and ("file" in attributes):
+        name, ext = os.path.splitext(attributes["file"])
+        attributes["name"] = name
+
     self._spec = spec
     self._parent = parent
     self._attributes = collections.OrderedDict()
