@@ -104,7 +104,8 @@ class Environment(dm_env.Environment):
     if self._reset_next_step:
       return self.reset()
 
-    self._task.before_step(action, self._physics)
+    if self._step_count > 130:
+        self._task.before_step(action, self._physics)
     for _ in range(self._n_sub_steps):
       self._physics.step()
     self._task.after_step(self._physics)

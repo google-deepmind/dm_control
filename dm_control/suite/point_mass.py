@@ -20,7 +20,7 @@ from __future__ import division
 from __future__ import print_function
 
 import collections
-
+from dm_control.rl import specs
 from dm_control import mujoco
 from dm_control.rl import control
 from dm_control.suite import base
@@ -120,11 +120,14 @@ class PointMass(base.Task):
 
   def get_reward(self, physics):
     """Returns a reward to the agent."""
-    target_size = physics.named.model.geom_size['target', 0]
-    near_target = rewards.tolerance(physics.mass_to_target_dist(),
-                                    bounds=(0, target_size), margin=target_size)
-    control_reward = rewards.tolerance(physics.control(), margin=1,
-                                       value_at_margin=0,
-                                       sigmoid='quadratic').mean()
-    small_control = (control_reward + 4) / 5
-    return near_target * small_control
+    # target_size = physics.named.model.geom_size['target', 0]
+    # near_target = rewards.tolerance(physics.mass_to_target_dist(),
+    #                                 bounds=(0, target_size), margin=target_size)
+    # control_reward = rewards.tolerance(physics.control(), margin=1,
+    #                                    value_at_margin=0,
+    #                                    sigmoid='quadratic').mean()
+    # small_control = (control_reward + 4) / 5
+
+    # return near_target * small_control
+    reward_dist = - physics.mass_to_target_dist()
+    return reward_dist
