@@ -28,7 +28,7 @@ from dm_control.suite import common
 from dm_control.utils import containers
 from dm_control.utils import rewards
 from dm_control.utils import xml_tools
-from dm_control.rl import specs
+from dm_env import specs
 
 from lxml import etree
 import numpy as np
@@ -111,13 +111,13 @@ class Cloth(base.Task):
     super(Cloth, self).initialize_episode(physics)
 
   def action_spec(self, physics):
-    """Returns a `BoundedArraySpec` matching the `physics` actuators."""
-    # return specs.BoundedArraySpec(
+    """Returns a `BoundedArray` matching the `physics` actuators."""
+    # return specs.BoundedArray(
     # shape=(12,), dtype=np.float, minimum=[-5.0]*12 ,maximum=[5.0]*12)
-    # return specs.BoundedArraySpec(
+    # return specs.BoundedArray(
     #     shape=(3,), dtype=np.float, minimum=[-5.0] * 3, maximum=[5.0] * 3)
 
-    return specs.BoundedArraySpec(
+    return specs.BoundedArray(
       shape=(12,), dtype=np.float, minimum=[-5.0] * 12, maximum=[5.0] * 12)
 
 

@@ -20,7 +20,7 @@ from __future__ import division
 from __future__ import print_function
 
 import collections
-from dm_control.rl import specs
+from dm_env import specs
 from dm_control import mujoco
 from dm_control.rl import control
 from dm_control.suite import base
@@ -87,19 +87,19 @@ class Cloth(base.Task):
         automatically (default).
     """
     self._randomize_gains = randomize_gains
-    # self.action_spec=specs.BoundedArraySpec(
+    # self.action_spec=specs.BoundedArray(
     # shape=(2,), dtype=np.float, minimum=0.0, maximum=1.0)
     super(Cloth, self).__init__(random=random)
 
   def action_spec(self, physics):
-    """Returns a `BoundedArraySpec` matching the `physics` actuators."""
-    # return specs.BoundedArraySpec(
+    """Returns a `BoundedArray` matching the `physics` actuators."""
+    # return specs.BoundedArray(
     # shape=(12,), dtype=np.float, minimum=[-5.0]*12 ,maximum=[5.0]*12)
-    # return specs.BoundedArraySpec(
+    # return specs.BoundedArray(
     #     shape=(3,), dtype=np.float, minimum=[-5.0] * 3, maximum=[5.0] * 3)
 
 
-    return specs.BoundedArraySpec(
+    return specs.BoundedArray(
       shape=(12,), dtype=np.float, minimum=[-1.0] * 12, maximum=[1.0] * 12)
 
   def initialize_episode(self,physics):

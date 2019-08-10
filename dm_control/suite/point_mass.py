@@ -20,7 +20,7 @@ from __future__ import division
 from __future__ import print_function
 
 import collections
-from dm_control.rl import specs
+from dm_env import specs
 from dm_control import mujoco
 from dm_control.rl import control
 from dm_control.suite import base
