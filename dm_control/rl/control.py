@@ -65,6 +65,7 @@ class Environment(dm_env.Environment):
     self._physics = physics
     self._flat_observation = flat_observation
     self._n_frame_skip = n_frame_skip
+    self._special_task = special_task
 
     if n_sub_steps is not None and control_timestep is not None:
       raise ValueError('Both n_sub_steps and control_timestep were supplied.')
@@ -107,8 +108,9 @@ class Environment(dm_env.Environment):
     if self._reset_next_step:
       return self.reset()
 
-    if self._step_count > 130:
-        self._task.before_step(action, self._physics)
+    if self._special_task:
+        if self._step_count > 130:
+            self._task.before_step(action, self._physics)
     for _ in range(self._n_sub_steps * self._n_frame_skip):
       self._physics.step()
     self._task.after_step(self._physics)
