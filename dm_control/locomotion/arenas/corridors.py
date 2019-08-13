@@ -233,8 +233,9 @@ class GapsCorridor(EmptyCorridor):
     # Resize the entire corridor first.
     super(GapsCorridor, self).regenerate(random_state)
 
-    # Move the clear ground plane down.
+    # Move the ground plane down and make it invisible.
     self._ground_plane.pos = [self._current_corridor_length / 2, 0, -10]
+    self._ground_plane.rgba = [0, 0, 0, 0]
 
     # Clear the existing platform pieces.
     self._ground_body.geom.clear()
