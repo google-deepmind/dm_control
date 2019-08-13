@@ -78,7 +78,8 @@ class PositionDetector(composer.Entity):
       visible: (optional) A boolean, whether this detector is visible by
         default in rendered images. If `False`, this detector's active zone
         is placed in MuJoCo rendering group 4, which is not rendered by default,
-        but can be toggled on (e.g. in Domain Explorer) for debugging purposes.
+        but can be toggled on (e.g. in `dm_control.viewer`) for debugging
+        purposes.
       rgba: (optional) The color to render when nothing is detected.
       detected_rgba: (optional) The color to render when an entity is detected.
       name: (optional) XML element name of this position detector.

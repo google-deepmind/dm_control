@@ -307,7 +307,7 @@ class ErrorLogger(object):
   def __exit__(self, exception_type, exception_value, tb):
     if exception_type:
       self._error_found = True
-      error_message = ('Domain Explorer intercepted an environment error.\n'
+      error_message = ('dm_control viewer intercepted an environment error.\n'
                        'Original message: {}'.format(exception_value))
       logging.error(error_message)
       sys.stderr.write(error_message + '\nTraceback:\n')
