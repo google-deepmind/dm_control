@@ -65,7 +65,7 @@ class Physics(mujoco.Physics):
     joint_to_pos_dist=np.linalg.norm((joint_pos-position),axis=-1)
     joint_id=np.argmin(joint_to_pos_dist)
     force_id=joint_id-5
-    return force_id
+    return force_id, joint_to_pos_dist[joint_id]
 
 
 
@@ -113,8 +113,10 @@ class Cloth(base.Task):
       physics.named.data.xfrc_applied[1:, :3] = np.zeros((3,))
       action_force=action[:3]
       action_position=action[3:]
-      force_id=physics.get_nearest_joint(action_position)
+      force_id, _ = physics.get_nearest_joint(action_position)
       physics.named.data.xfrc_applied[force_id,:3]=5*action_force
+
+      self._stored_action_position = action[3:]
       # print(action)
       # physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:3]=2*action
       # for i in range(4):
@@ -154,13 +156,10 @@ class Cloth(base.Task):
     pos_lr=physics.data.geom_xpos[81,:2]
     pos_ul=physics.data.geom_xpos[59,:2]
     pos_ur=physics.data.geom_xpos[54,:2]
-    # print(pos_ll)
-    # print(pos_lr)
-    # print(pos_ur)
-    # print(pos_ul)
-    # norm=0.11520000000000001
+
+    _, nn_distance =physics.get_nearest_joint(self._stored_action_position)
+
     diag_dist1=np.linalg.norm(pos_ll-pos_ur)
     diag_dist2=np.linalg.norm(pos_lr-pos_ul)
-    reward_dist=diag_dist1+diag_dist2
-    # reward_dist=diag_dist1*diag_dist2/norm
+    reward_dist=diag_dist1+diag_dist2 - nn_distance
     return reward_dist
