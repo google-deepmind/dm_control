@@ -86,6 +86,7 @@ class Cloth(base.Task):
     # self.action_spec=specs.BoundedArray(
     # shape=(2,), dtype=np.float, minimum=0.0, maximum=1.0)
     super(Cloth, self).__init__(random=random)
+    self._stored_action_position = None
 
   def action_spec(self, physics):
     """Returns a `BoundedArray` matching the `physics` actuators."""
@@ -157,7 +158,13 @@ class Cloth(base.Task):
     pos_ul=physics.data.geom_xpos[59,:2]
     pos_ur=physics.data.geom_xpos[54,:2]
 
-    _, nn_distance =physics.get_nearest_joint(self._stored_action_position)
+    if self._stored_action_position is None:
+        nn_distance = 0
+        print('NO self._stored_action_position')
+    else:
+        _, nn_distance =physics.get_nearest_joint(self._stored_action_position)
+        print('YES self._stored_action_position', nn_distance)
+
 
     diag_dist1=np.linalg.norm(pos_ll-pos_ur)
     diag_dist2=np.linalg.norm(pos_lr-pos_ul)
