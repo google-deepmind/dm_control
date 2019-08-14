@@ -762,9 +762,10 @@ class MjrContext(wrappers.MjrContextWrapper):  # pylint: disable=missing-docstri
 
     # Free resources when the ctypes pointer is garbage collected.
     def finalize_mjr_context(ptr):
-      with gl_context.make_current() as ctx:
-        ctx.call(mjlib.mjr_freeContext, ptr)
-        gl_context.decrement_refcount()
+      if not gl_context.terminated:
+        with gl_context.make_current() as ctx:
+          ctx.call(mjlib.mjr_freeContext, ptr)
+          gl_context.decrement_refcount()
 
     _create_finalizer(ptr, finalize_mjr_context)
 

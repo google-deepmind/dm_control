@@ -98,6 +98,10 @@ class BaseRenderExecutor(object):
       yield self
       self._locked -= 1
 
+  @property
+  def terminated(self):
+    return self._terminated
+
   @abc.abstractproperty
   def thread(self):
     pass

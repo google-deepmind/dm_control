@@ -74,6 +74,10 @@ class ContextBase(object):
     self._refcount -= 1
 
   @property
+  def terminated(self):
+    return self._render_executor.terminated
+
+  @property
   def thread(self):
     return self._render_executor.thread
 

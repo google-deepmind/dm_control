@@ -335,11 +335,11 @@ class Physics(_control.Physics):
     necessary. This `Physics` object MUST NOT be used after this function has
     been called.
     """
-    self.data.free()
-    self.model.free()
     with self._contexts_lock:
       if self._contexts:
         self._free_rendering_contexts()
+    self.data.free()
+    self.model.free()
 
   @classmethod
   def from_model(cls, model):
