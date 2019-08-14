@@ -111,12 +111,12 @@ class Cloth(base.Task):
   #     # Support legacy internal code.
 
       physics.named.data.xfrc_applied[1:, :3] = np.zeros((3,))
-      action_force=action[:3]
-      action_position=action[3:]
+      action_force = action[:3]
+      action_position = action[3:] * 0.3
       force_id, _ = physics.get_nearest_joint(action_position)
-      physics.named.data.xfrc_applied[force_id,:3]=5*action_force
+      physics.named.data.xfrc_applied[force_id,:3] = 5*action_force
 
-      self._stored_action_position = action[3:]
+      self._stored_action_position = action_position
       # print(action)
       # physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:3]=2*action
       # for i in range(4):
