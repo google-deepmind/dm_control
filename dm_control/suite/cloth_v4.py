@@ -49,11 +49,11 @@ def get_model_and_assets():
 
 
 @SUITE.add('benchmarking', 'easy')
-def easy(time_limit=_DEFAULT_TIME_LIMIT, random=None, environment_kwargs=None):
+def easy(time_limit=_DEFAULT_TIME_LIMIT, random=None, environment_kwargs=None, **kwargs):
   """Returns the easy cloth task."""
 
   physics = Physics.from_xml_string(*get_model_and_assets())
-  task = Cloth(randomize_gains=False, random=random)
+  task = Cloth(randomize_gains=False, random=random, **kwargs)
   environment_kwargs = environment_kwargs or {}
   return control.Environment(
       physics, task, time_limit=time_limit, n_frame_skip=1, special_task=True, **environment_kwargs)
@@ -61,11 +61,20 @@ def easy(time_limit=_DEFAULT_TIME_LIMIT, random=None, environment_kwargs=None):
 class Physics(mujoco.Physics):
   """physics for the point_mass domain."""
   def get_nearest_joint(self,position):
-    joint_pos=self.named.data.geom_xpos[6:,:2]
-    joint_to_pos_dist=np.linalg.norm((joint_pos-position),axis=-1)
+    joint_pos=self.named.data.geom_xpos[6:,:3]
+
+    x, y = position
+    new_position = [x, y, np.max(joint_pos[:, 2])]
+
+    joint_to_pos_dist=np.linalg.norm((joint_pos-new_position),axis=-1)
     joint_id=np.argmin(joint_to_pos_dist)
     force_id=joint_id-5
-    return force_id, joint_to_pos_dist[joint_id]
+
+    nearest_joint = joint_pos[joint_id]
+    nn_x, nn_y = nearest_joint[:2]
+    nn_distance = np.sqrt((x - nn_x) ** 2 + (y - nn_y) ** 2)
+
+    return force_id, nn_distance
 
 
 
@@ -73,7 +82,7 @@ class Physics(mujoco.Physics):
 class Cloth(base.Task):
   """A point_mass `Task` to reach target with smooth reward."""
 
-  def __init__(self, randomize_gains, random=None):
+  def __init__(self, randomize_gains, random=None, nn_distance_weight=1.0):
     """Initialize an instance of `PointMass`.
 
     Args:
@@ -83,6 +92,8 @@ class Cloth(base.Task):
         automatically (default).
     """
     self._randomize_gains = randomize_gains
+    self._nn_distance_weight = nn_distance_weight
+    print('nn_distance_weight', self._nn_distance_weight)
     # self.action_spec=specs.BoundedArray(
     # shape=(2,), dtype=np.float, minimum=0.0, maximum=1.0)
     super(Cloth, self).__init__(random=random)
@@ -163,10 +174,11 @@ class Cloth(base.Task):
         print('NO self._stored_action_position')
     else:
         _, nn_distance =physics.get_nearest_joint(self._stored_action_position)
-        print('YES self._stored_action_position', nn_distance)
+    nn_distance *= self._nn_distance_weight
 
 
     diag_dist1=np.linalg.norm(pos_ll-pos_ur)
     diag_dist2=np.linalg.norm(pos_lr-pos_ul)
     reward_dist=diag_dist1+diag_dist2 - nn_distance
+    #print(diag_dist1 + diag_dist2, -nn_distance, reward_dist)
     return reward_dist

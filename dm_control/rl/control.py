@@ -96,11 +96,19 @@ class Environment(dm_env.Environment):
     if self._flat_observation:
       observation = flatten_observation(observation)
 
-    return dm_env.TimeStep(
-        step_type=dm_env.StepType.FIRST,
-        reward=None,
-        discount=None,
-        observation=observation)
+    if self._special_task:
+        for _ in range(130):
+            timestep = self.step(self.action_spec().generate_value())
+        return dm_env.TimeStep(step_type=dm_env.StepType.FIRST,
+                               reward=None,
+                               discount=None,
+                               observation=timestep.observation)
+    else:
+        return dm_env.TimeStep(
+            step_type=dm_env.StepType.FIRST,
+            reward=None,
+            discount=None,
+            observation=observation)
 
   def step(self, action):
     """Updates the environment using the action and returns a `TimeStep`."""
@@ -108,9 +116,7 @@ class Environment(dm_env.Environment):
     if self._reset_next_step:
       return self.reset()
 
-    if self._special_task:
-        if self._step_count > 130:
-            self._task.before_step(action, self._physics)
+    self._task.before_step(action, self._physics)
     for _ in range(self._n_sub_steps * self._n_frame_skip):
       self._physics.step()
     self._task.after_step(self._physics)
