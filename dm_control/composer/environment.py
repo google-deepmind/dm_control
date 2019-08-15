@@ -205,31 +205,36 @@ class _CommonEnvironment(object):
                     DeprecationWarning)
     self._overridden_n_sub_steps = n_sub_steps
 
-    self._physics = None
-    self._recompile_physics()
+    self._recompile_physics_and_update_observables()
 
   def add_extra_hook(self, hook_name, hook_callable):
     self._hooks.add_extra_hook(hook_name, hook_callable)
 
-  def _recompile_physics(self):
-    """Recompiles the Physics using the latest MJCF model from the task."""
+  def _recompile_physics_and_update_observables(self):
+    """Sets up the environment for latest MJCF model from the task."""
     self._physics_proxy = None
-    if self._physics:
-      self._physics.free()
-    physics = self._make_physics()
+    self._recompile_physics()
+    if isinstance(self._physics, weakref.ProxyType):
+      self._physics_proxy = self._physics
+    else:
+      self._physics_proxy = weakref.proxy(self._physics)
+
     if self._overridden_n_sub_steps is not None:
       self._n_sub_steps = self._overridden_n_sub_steps
     else:
       self._n_sub_steps = self._task.physics_steps_per_control_step
-    self._physics = physics
-    self._physics_proxy = weakref.proxy(self._physics)
+
     self._hooks.refresh_entity_hooks()
     self._hooks.after_compile(self._physics_proxy, self._random_state)
     self._observation_updater = self._make_observation_updater()
     self._observation_updater.reset(self._physics_proxy, self._random_state)
 
-  def _make_physics(self):
-    return mjcf.Physics.from_mjcf_model(self._task.root_entity.mjcf_model)
+  def _recompile_physics(self):
+    """Creates a new Physics using the latest MJCF model from the task."""
+    if getattr(self, '_physics', None):
+      self._physics.free()
+    self._physics = mjcf.Physics.from_mjcf_model(
+        self._task.root_entity.mjcf_model)
 
   def _make_observation_updater(self):
     return observation.Updater(
@@ -319,7 +324,7 @@ class Environment(_CommonEnvironment, dm_env.Environment):
 
   def _reset_attempt(self):
     self._hooks.initialize_episode_mjcf(self._random_state)
-    self._recompile_physics()
+    self._recompile_physics_and_update_observables()
     with self._physics.reset_context():
       self._hooks.initialize_episode(self._physics_proxy, self._random_state)
     self._observation_updater.reset(self._physics_proxy, self._random_state)

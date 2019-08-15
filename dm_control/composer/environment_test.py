@@ -24,6 +24,7 @@ from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control import composer
 from dm_control import mjcf
+import dm_env
 import mock
 from six.moves import range
 
@@ -76,7 +77,7 @@ class EnvironmentTest(parameterized.TestCase):
         expected_spec = mock.Mock()
         mock_task_get_spec.return_value = expected_spec
       else:
-        expected_spec = getattr(super(composer.Environment, env), name)()
+        expected_spec = getattr(dm_env.Environment, name)(env)
         mock_task_get_spec.return_value = None
       spec = getattr(env, name)()
     mock_task_get_spec.assert_called_once_with()
