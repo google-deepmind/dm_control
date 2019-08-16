@@ -184,4 +184,4 @@ class Cloth(base.Task):
     reward_distance = -nn_distance
     reward = reward_cloth + reward_distance
     print('rewards', reward_cloth, reward_distance)
-    return reward
+    return reward, dict(reward_cloth=reward_cloth, reward_distance=reward_distance)

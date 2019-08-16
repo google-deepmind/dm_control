@@ -103,13 +103,15 @@ class Environment(dm_env.Environment):
         return dm_env.TimeStep(step_type=dm_env.StepType.FIRST,
                                reward=None,
                                discount=None,
-                               observation=timestep.observation)
+                               observation=timestep.observation,
+                               info=dict())
     else:
         return dm_env.TimeStep(
             step_type=dm_env.StepType.FIRST,
             reward=None,
             discount=None,
-            observation=observation)
+            observation=observation,
+            info=dict())
 
   def step(self, action):
     """Updates the environment using the action and returns a `TimeStep`."""
@@ -123,7 +125,12 @@ class Environment(dm_env.Environment):
       self._physics.step()
     self._task.after_step(self._physics)
 
-    reward = self._task.get_reward(self._physics)
+    out = self._task.get_reward(self._physics)
+    if isinstance(out, tuple):
+        reward, info = out
+    else:
+        reward, info = out, dict()
+
     observation = self._task.get_observation(self._physics)
     if self._flat_observation:
       observation = flatten_observation(observation)
@@ -139,9 +146,9 @@ class Environment(dm_env.Environment):
     if episode_over:
       self._reset_next_step = True
       return dm_env.TimeStep(
-          dm_env.StepType.LAST, reward, discount, observation)
+          dm_env.StepType.LAST, reward, discount, observation, info)
     else:
-      return dm_env.TimeStep(dm_env.StepType.MID, reward, 1.0, observation)
+      return dm_env.TimeStep(dm_env.StepType.MID, reward, 1.0, observation, info)
 
   def action_spec(self):
     """Returns the action specification for this environment."""
