@@ -67,7 +67,7 @@ def easy(time_limit=_DEFAULT_TIME_LIMIT, random=None, environment_kwargs=None):
   task = Cloth(randomize_gains=False, random=random)
   environment_kwargs = environment_kwargs or {}
   return control.Environment(
-      physics, task, time_limit=time_limit, **environment_kwargs)
+      physics, task, time_limit=time_limit, special_task=True, **environment_kwargs)
 
 class Physics(mujoco.Physics):
   """physics for the point_mass domain."""

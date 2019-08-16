@@ -97,8 +97,9 @@ class Environment(dm_env.Environment):
       observation = flatten_observation(observation)
 
     if self._special_task:
+        action_spec = self.action_spec()
         for _ in range(130):
-            timestep = self.step(self.action_spec().generate_value())
+            timestep = self.step(None)
         return dm_env.TimeStep(step_type=dm_env.StepType.FIRST,
                                reward=None,
                                discount=None,
@@ -116,7 +117,8 @@ class Environment(dm_env.Environment):
     if self._reset_next_step:
       return self.reset()
 
-    self._task.before_step(action, self._physics)
+    if not self._special_task or (self._special_task and self._step_count > 130):
+        self._task.before_step(action, self._physics)
     for _ in range(self._n_sub_steps * self._n_frame_skip):
       self._physics.step()
     self._task.after_step(self._physics)

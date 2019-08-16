@@ -105,7 +105,7 @@ class Cloth(base.Task):
     # action force(3) ~[-1,1]+ position to apply action(2)~[-.3,.3]
 
     return specs.BoundedArray(
-        shape=(5,), dtype=np.float, minimum=[-1.0,-1.0,-1.0,-.3,-.3] , maximum=[1.0,1.0,1.0,.3,.3] )
+        shape=(5,), dtype=np.float, minimum=[-1.0,-1.0,-1.0,-1.0,-1.0] , maximum=[1.0,1.0,1.0,1.0,1.0] )
 
   def initialize_episode(self,physics):
 
@@ -124,7 +124,7 @@ class Cloth(base.Task):
 
       physics.named.data.xfrc_applied[1:, :3] = np.zeros((3,))
       action_force = action[:3]
-      action_position = action[3:] * 0.3
+      action_position = action[3:] * .3
       force_id, _ = physics.get_nearest_joint(action_position)
       physics.named.data.xfrc_applied[force_id,:3] = 5*action_force
 
@@ -179,6 +179,9 @@ class Cloth(base.Task):
 
     diag_dist1=np.linalg.norm(pos_ll-pos_ur)
     diag_dist2=np.linalg.norm(pos_lr-pos_ul)
-    reward_dist=diag_dist1+diag_dist2 - nn_distance
-    #print(diag_dist1 + diag_dist2, -nn_distance, reward_dist)
-    return reward_dist
+
+    reward_cloth = diag_dist1 + diag_dist2
+    reward_distance = -nn_distance
+    reward = reward_cloth + reward_distance
+    print('rewards', reward_cloth, reward_distance)
+    return reward
