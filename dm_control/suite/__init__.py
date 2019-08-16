@@ -46,6 +46,7 @@ from dm_control.suite import walker
 from dm_control.suite import cloth_v0
 from dm_control.suite import cloth_v3
 from dm_control.suite import cloth_v4
+from dm_control.suite import cloth_v5
 from dm_control.suite import cloth_gripper
 
 # Find all domains imported.

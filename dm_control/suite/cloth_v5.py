@@ -60,21 +60,14 @@ def easy(time_limit=_DEFAULT_TIME_LIMIT, random=None, environment_kwargs=None, *
 
 class Physics(mujoco.Physics):
   """physics for the point_mass domain."""
-  def get_nearest_joint(self,position):
-    joint_pos=self.named.data.geom_xpos[6:,:3]
+  def get_nearest_joint(self, position):
+    joint_pos = self.named.data.geom_xpos[CORNER_INDEX_POSITION, :2]
 
-    x, y = position
-    new_position = [x, y, np.max(joint_pos[:, 2])]
+    joint_to_pos_dist = np.linalg.norm((joint_pos - position),axis=-1)
+    joint_id = np.argmin(joint_to_pos_dist)
+    force_id = CORNER_INDEX_POSITION[joint_id] - 5
 
-    joint_to_pos_dist=np.linalg.norm((joint_pos-new_position),axis=-1)
-    joint_id=np.argmin(joint_to_pos_dist)
-    force_id=joint_id + 1
-
-    nearest_joint = joint_pos[joint_id]
-    nn_x, nn_y = nearest_joint[:2]
-    nn_distance = np.sqrt((x - nn_x) ** 2 + (y - nn_y) ** 2)
-
-    return force_id, nn_distance
+    return force_id, joint_to_pos_dist[joint_id]
 
 
 
