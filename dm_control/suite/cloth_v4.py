@@ -171,7 +171,7 @@ class Cloth(base.Task):
 
     if self._stored_action_position is None:
         nn_distance = 0
-        print('NO self._stored_action_position')
+    #    print('NO self._stored_action_position')
     else:
         _, nn_distance =physics.get_nearest_joint(self._stored_action_position)
     nn_distance *= self._nn_distance_weight
@@ -183,5 +183,5 @@ class Cloth(base.Task):
     reward_cloth = diag_dist1 + diag_dist2
     reward_distance = -nn_distance
     reward = reward_cloth + reward_distance
-    print('rewards', reward_cloth, reward_distance)
+    #print('rewards', reward_cloth, reward_distance)
     return reward, dict(reward_cloth=reward_cloth, reward_distance=reward_distance)
