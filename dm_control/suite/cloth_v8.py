@@ -54,6 +54,9 @@ def easy(time_limit=_DEFAULT_TIME_LIMIT, random=None, environment_kwargs=None, *
   return control.Environment(
       physics, task, time_limit=time_limit, n_frame_skip=1, special_task=True, **environment_kwargs)
 
+class Physics(mujoco.Physics):
+  """physics for the point_mass domain."""
+
 class Cloth(base.Task):
   """A point_mass `Task` to reach target with smooth reward."""
 
@@ -75,10 +78,10 @@ class Cloth(base.Task):
   def action_spec(self, physics):
     """Returns a `BoundedArray` matching the `physics` actuators."""
 
-    # action force(3) ~[-1,1]+ position to apply action(2)~[-.3,.3]
+    # action force(3) ~[-1,1]
 
     return specs.BoundedArray(
-        shape=(5,), dtype=np.float, minimum=[-1.0,-1.0,-1.0,-1.0,-1.0] , maximum=[1.0,1.0,1.0,1.0,1.0] )
+        shape=(3,), dtype=np.float, minimum=[-1.0,-1.0,-1.0] , maximum=[1.0,1.0,1.0] )
 
   def initialize_episode(self,physics):
     physics.named.data.xfrc_applied['B3_4', :3] = np.array([0,0,-2])
