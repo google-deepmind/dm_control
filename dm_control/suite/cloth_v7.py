@@ -102,10 +102,9 @@ class Cloth(base.Task):
       physics.named.data.xfrc_applied[1:, :3] = np.zeros((3,))
       action_force = action[:3]
       action_position = (action[3:] * 0.5 + 0.5) * 8 # [-1, 1] -> [0, 1] -> [0, 8]
-      x, y = np.round(action_position)
+      x, y = np.round(action_position).astype('int32')
 
       force_id = 'B{}_{}'.format(x, y)
-      print(force_id)
       physics.named.data.xfrc_applied[force_id, :3] = 5 * action_force
 
   def get_observation(self, physics):
