@@ -108,7 +108,7 @@ class Wrapper(dm_env.Environment):
   def _add_pixel_observation(self, time_step):
     if self._pixels_only:
       observation = collections.OrderedDict()
-      if 'joints' in observation:
+      if 'joints' in time_step.observation:
           observation['joints'] = time_step.observation['joints']
     elif self._observation_is_dict:
       observation = type(time_step.observation)(time_step.observation)
