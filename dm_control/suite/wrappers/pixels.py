@@ -106,6 +106,7 @@ class Wrapper(dm_env.Environment):
   def _add_pixel_observation(self, time_step):
     if self._pixels_only:
       observation = collections.OrderedDict()
+      observation['joints'] = time_step.observation['joints']
     elif self._observation_is_dict:
       observation = type(time_step.observation)(time_step.observation)
     else:
@@ -114,6 +115,7 @@ class Wrapper(dm_env.Environment):
 
     pixels = self._env.physics.render(**self._render_kwargs)
     observation[self._observation_key] = pixels
+
     return time_step._replace(observation=observation)
 
   def __getattr__(self, name):

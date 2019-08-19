@@ -69,7 +69,8 @@ class Physics(mujoco.Physics):
 
     return force_id, joint_to_pos_dist[joint_id]
 
-
+  def get_joints(self):
+      return self.named.data.geom_xpos[CORNER_INDEX_POSITION, :2] / .3 # To scale to [-1, 1]
 
 
 class Cloth(base.Task):
@@ -152,6 +153,7 @@ class Cloth(base.Task):
     obs = collections.OrderedDict()
     obs['position'] = physics.position()
     obs['velocity'] = physics.velocity()
+    obs['joints'] = physics.get_joints()
     return obs
 
   def get_reward(self, physics):
