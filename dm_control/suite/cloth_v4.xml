@@ -41,10 +41,10 @@
 <!--    <geom name="wall_neg_x" type="plane" pos="1 0 .02" zaxis="-1 0 0"  size=".02 1 .02" material="decoration"/>-->
 <!--    <geom name="wall_neg_y" type="plane" pos="0 1 .02" zaxis="0 -1 0"  size="1 .02 .02" material="decoration"/>-->
        <geom name="ground" type="plane" pos="0 0 0" size=".3 .3 .1" material="site"/>
-    <geom name="wall_x" type="plane" pos="-.3 0 .02" zaxis="1 0 0"  size=".02 .3 .1" material="decoration"/>
-    <geom name="wall_y" type="plane" pos="0 -.3 .02" zaxis="0 1 0"  size=".3 .02 .1" material="decoration"/>
-    <geom name="wall_neg_x" type="plane" pos=".3 0 .02" zaxis="-1 0 0"  size=".02 .3 .1" material="decoration"/>
-    <geom name="wall_neg_y" type="plane" pos="0 .3 .02" zaxis="0 -1 0"  size=".3 .02 .1" material="decoration"/>
+    <geom name="wall_x" type="plane" pos="-.3 0 .05" zaxis="1 0 0"  size=".05 .3 .02" material="decoration"/>
+    <geom name="wall_y" type="plane" pos="0 -.3 .05" zaxis="0 1 0"  size=".3 .05 .02" material="decoration"/>
+    <geom name="wall_neg_x" type="plane" pos=".3 0 .05" zaxis="-1 0 0"  size=".05 .3 .02" material="decoration"/>
+    <geom name="wall_neg_y" type="plane" pos="0 .3 .05" zaxis="0 -1 0"  size=".3 .05 .02" material="decoration"/>
 
     <light cutoff="100" diffuse="1 1 1" dir="-0 0 -1" directional="true" exponent="1" pos="0 0 0.0" specular=".1 .1 .1"/>
 <!--rgba ="0.1 0.1 .1 0.5" -->
