@@ -69,7 +69,7 @@ class Physics(mujoco.Physics):
 class Cloth(base.Task):
   """A point_mass `Task` to reach target with smooth reward."""
 
-  def __init__(self, randomize_gains, random=None):
+  def __init__(self, randomize_gains, random=None, pixel_size=64):
     """Initialize an instance of `PointMass`.
 
     Args:
@@ -79,6 +79,8 @@ class Cloth(base.Task):
         automatically (default).
     """
     self._randomize_gains = randomize_gains
+    self.pixel_size = pixel_size
+    print('pixel_size', self.pixel_size)
     # self.action_spec=specs.BoundedArray(
     # shape=(2,), dtype=np.float, minimum=0.0, maximum=1.0)
     super(Cloth, self).__init__(random=random)
@@ -118,13 +120,18 @@ class Cloth(base.Task):
   def get_reward(self, physics):
     """Returns a reward to the agent."""
 
-    pos_ll=physics.data.geom_xpos[86,:2]
-    pos_lr=physics.data.geom_xpos[81,:2]
-    pos_ul=physics.data.geom_xpos[59,:2]
-    pos_ur=physics.data.geom_xpos[54,:2]
+    pixels = physics.render(width=self.pixel_size, height=self.pixel_size)
+    segmentation = (pixels < 100).any(axis=3).astype('float32')
+    reward = segmentation.mean()
+    return reward
 
-    diag_dist1=np.linalg.norm(pos_ll-pos_ur)
-    diag_dist2=np.linalg.norm(pos_lr-pos_ul)
-
-    reward = diag_dist1 + diag_dist2
-    return reward, dict()
+    # pos_ll=physics.data.geom_xpos[86,:2]
+    # pos_lr=physics.data.geom_xpos[81,:2]
+    # pos_ul=physics.data.geom_xpos[59,:2]
+    # pos_ur=physics.data.geom_xpos[54,:2]
+    #
+    # diag_dist1=np.linalg.norm(pos_ll-pos_ur)
+    # diag_dist2=np.linalg.norm(pos_lr-pos_ul)
+    #
+    # reward = diag_dist1 + diag_dist2
+    # return reward, dict()
