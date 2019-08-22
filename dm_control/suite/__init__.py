@@ -50,6 +50,7 @@ from dm_control.suite import cloth_v5
 from dm_control.suite import cloth_v6
 from dm_control.suite import cloth_v7
 from dm_control.suite import cloth_v8
+from dm_control.suite import cloth_v9
 from dm_control.suite import cloth_gripper
 
 # Find all domains imported.
