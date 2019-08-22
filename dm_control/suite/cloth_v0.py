@@ -88,6 +88,7 @@ class Cloth(base.Task):
     """
     self._randomize_gains = randomize_gains
     self.pixel_size = pixel_size
+    print('pixel_size', self.pixle_size)
     # self.action_spec=specs.BoundedArray(
     # shape=(2,), dtype=np.float, minimum=0.0, maximum=1.0)
     super(Cloth, self).__init__(random=random)
