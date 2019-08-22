@@ -32,7 +32,8 @@ import numpy as np
 import random
 import mujoco_py
 
-"""Input action and location, location maps [0,1] grid onto nearest joint on deformed cloth"""
+"""Input action and location, location maps [0,1] grid onto nearest joint on deformed cloth
+   Same as cloth_v7 but picks TWO points"""
 
 _DEFAULT_TIME_LIMIT = 20
 SUITE = containers.TaggedTasks()
@@ -80,7 +81,7 @@ class Cloth(base.Task):
     # action force(3) ~[-1,1]+ position to apply action(2)~[-.3,.3]
 
     return specs.BoundedArray(
-        shape=(5,), dtype=np.float, minimum=[-1.0,-1.0,-1.0,-1.0,-1.0] , maximum=[1.0,1.0,1.0,1.0,1.0] )
+        shape=(10,), dtype=np.float, minimum=[-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0], maximum=[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0] )
 
   def initialize_episode(self,physics):
     physics.named.data.xfrc_applied['B3_4', :3] = np.array([0,0,-2])
@@ -92,12 +93,17 @@ class Cloth(base.Task):
   def before_step(self, action, physics):
       """Sets the control signal for the actuators to values in `action`."""
       physics.named.data.xfrc_applied[1:, :3] = np.zeros((3,))
-      action_force = action[:3]
-      action_position = (action[3:] * 0.5 + 0.5) * 8 # [-1, 1] -> [0, 1] -> [0, 8]
-      x, y = np.round(action_position).astype('int32')
+      action_force1 = action[:3]
+      action_force2 = action[3:6]
+      action_position1 = (action[6:8] * 0.5 + 0.5) * 8
+      action_position2 = (action[8:] * 0.5 + 0.5) * 8
+      x1, y1 = np.round(action_position1).astype('int32')
+      x2, y2 = np.round(action_position2).astype('int32')
 
-      force_id = 'B{}_{}'.format(x, y)
-      physics.named.data.xfrc_applied[force_id, :3] = 5 * action_force
+      force_id1 = 'B{}_{}'.format(x1, y1)
+      force_id2 = 'B{}_{}'.format(x2, y2)
+      physics.named.data.xfrc_applied[force_id1, :3] = 5 * action_force1
+      physics.named.data.xfrc_applied[force_id2, :3] = 5 * action_force2
 
   def get_observation(self, physics):
     """Returns an observation of the state."""
