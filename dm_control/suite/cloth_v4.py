@@ -13,7 +13,7 @@
 # limitations under the License.
 # ============================================================================
 
-"""Point-mass domain."""
+"""Input action and location, acts on nearest joint"""
 
 from __future__ import absolute_import
 from __future__ import division

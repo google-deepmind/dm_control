@@ -32,6 +32,7 @@ import numpy as np
 import random
 import mujoco_py
 
+"""Input action and location, location maps [0,1] grid onto nearest joint on deformed cloth"""
 
 _DEFAULT_TIME_LIMIT = 20
 SUITE = containers.TaggedTasks()

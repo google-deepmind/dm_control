@@ -61,10 +61,10 @@ def get_model_and_assets():
 
 
 @SUITE.add('benchmarking', 'easy')
-def easy(time_limit=_DEFAULT_TIME_LIMIT, random=None, environment_kwargs=None):
+def easy(time_limit=_DEFAULT_TIME_LIMIT, random=None, environment_kwargs=None, pixel_size=64):
   """Returns the easy cloth task."""
   physics = Physics.from_xml_string(*get_model_and_assets())
-  task = Cloth(randomize_gains=False, random=random)
+  task = Cloth(randomize_gains=False, random=random, pixel_size=pixel_size)
   environment_kwargs = environment_kwargs or {}
   return control.Environment(
       physics, task, time_limit=time_limit, special_task=True, **environment_kwargs)
@@ -77,7 +77,7 @@ class Physics(mujoco.Physics):
 class Cloth(base.Task):
   """A point_mass `Task` to reach target with smooth reward."""
 
-  def __init__(self, randomize_gains, random=None):
+  def __init__(self, randomize_gains, random=None, pixel_size=64):
     """Initialize an instance of `PointMass`.
 
     Args:
@@ -87,6 +87,7 @@ class Cloth(base.Task):
         automatically (default).
     """
     self._randomize_gains = randomize_gains
+    self.pixel_size = pixel_size
     # self.action_spec=specs.BoundedArray(
     # shape=(2,), dtype=np.float, minimum=0.0, maximum=1.0)
     super(Cloth, self).__init__(random=random)
@@ -100,7 +101,7 @@ class Cloth(base.Task):
 
 
     return specs.BoundedArray(
-      shape=(12,), dtype=np.float, minimum=[-1.0] * 12, maximum=[1.0] * 12)
+      shape=(12,), dtype=np.float32, minimum=[-1.0] * 12, maximum=[1.0] * 12)
 
   def initialize_episode(self,physics):
 
@@ -180,22 +181,26 @@ class Cloth(base.Task):
   def get_observation(self, physics):
     """Returns an observation of the state."""
     obs = collections.OrderedDict()
-    obs['position'] = physics.position()
-    obs['velocity'] = physics.velocity()
+    obs['position'] = physics.position().astype(np.float32)
+    obs['velocity'] = physics.velocity().astype(np.float32)
     return obs
 
   def get_reward(self, physics):
     """Returns a reward to the agent."""
 
-    pos_ll=physics.data.geom_xpos[86,:2]
-    pos_lr=physics.data.geom_xpos[81,:2]
-    pos_ul=physics.data.geom_xpos[59,:2]
-    pos_ur=physics.data.geom_xpos[54,:2]
-    # print(pos_ll)
-    # print(pos_lr)
-    # print(pos_ur)
-    # print(pos_ul)
-    diag_dist1=np.linalg.norm(pos_ll-pos_ur)
-    diag_dist2=np.linalg.norm(pos_lr-pos_ul)
-    reward_dist=diag_dist1+diag_dist2
-    return reward_dist
+    pixels = physics.render(width=self.pixel_size, height=self.pixel_size)
+    segmentation = (pixels < 100).any(axis=3).astype('float32')
+    reward = segmentation.mean()
+
+    # pos_ll=physics.data.geom_xpos[86,:2]
+    # pos_lr=physics.data.geom_xpos[81,:2]
+    # pos_ul=physics.data.geom_xpos[59,:2]
+    # pos_ur=physics.data.geom_xpos[54,:2]
+    # # print(pos_ll)
+    # # print(pos_lr)
+    # # print(pos_ur)
+    # # print(pos_ul)
+    # diag_dist1=np.linalg.norm(pos_ll-pos_ur)
+    # diag_dist2=np.linalg.norm(pos_lr-pos_ul)
+    # reward_dist=diag_dist1+diag_dist2
+    return reward

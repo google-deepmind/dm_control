@@ -32,6 +32,8 @@ import numpy as np
 import random
 import mujoco_py
 
+"""Input action, chooses random joint"""
+
 
 _DEFAULT_TIME_LIMIT = 20
 SUITE = containers.TaggedTasks()

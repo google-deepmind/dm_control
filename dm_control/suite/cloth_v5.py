@@ -13,7 +13,7 @@
 # limitations under the License.
 # ============================================================================
 
-"""Point-mass domain."""
+"""Input action and location, acts on nearest corner"""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -32,6 +32,7 @@ import numpy as np
 import random
 import mujoco_py
 
+"""Input action and location, acts on nearest joint, cloth gradient"""
 
 _DEFAULT_TIME_LIMIT = 20
 SUITE = containers.TaggedTasks()
