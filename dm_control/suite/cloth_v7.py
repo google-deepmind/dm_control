@@ -32,7 +32,8 @@ import numpy as np
 import random
 import mujoco_py
 
-"""Input action and location, location maps [0,1] grid onto nearest joint on deformed cloth"""
+"""Input action and location, location maps [0,1] grid onto nearest joint on deformed cloth
+   Allows diagonal or area reward"""
 
 _DEFAULT_TIME_LIMIT = 20
 SUITE = containers.TaggedTasks()
@@ -61,7 +62,8 @@ class Physics(mujoco.Physics):
 class Cloth(base.Task):
   """A point_mass `Task` to reach target with smooth reward."""
 
-  def __init__(self, randomize_gains, random=None, pixel_size=64):
+  def __init__(self, randomize_gains, random=None, pixel_size=64, camera_id=0,
+               reward='area'):
     """Initialize an instance of `PointMass`.
 
     Args:
@@ -70,9 +72,13 @@ class Cloth(base.Task):
         integer seed for creating a new `RandomState`, or None to select a seed
         automatically (default).
     """
+
+    assert reward in ['diagonal', 'area']
     self._randomize_gains = randomize_gains
     self.pixel_size = pixel_size
-    print('pixel_size', self.pixel_size)
+    self.camera_id = camera_id
+    self.reward = reward
+    print('pixel_size', self.pixel_size, 'camera_id', self.camera_id, 'reward', self.reward)
     # self.action_spec=specs.BoundedArray(
     # shape=(2,), dtype=np.float, minimum=0.0, maximum=1.0)
     super(Cloth, self).__init__(random=random)
@@ -112,18 +118,22 @@ class Cloth(base.Task):
   def get_reward(self, physics):
     """Returns a reward to the agent."""
 
-    pixels = physics.render(width=self.pixel_size, height=self.pixel_size)
-    segmentation = (pixels < 100).any(axis=-1).astype('float32')
-    reward = segmentation.mean()
-    return reward
+    if self.reward == 'area':
+        pixels = physics.render(width=self.pixel_size, height=self.pixel_size,
+                                camera_id=self.camera_id)
+        segmentation = (pixels < 100).any(axis=-1).astype('float32')
+        reward = segmentation.mean()
+        return reward, dict()
+    elif self.reward == 'diagonal':
+        pos_ll=physics.data.geom_xpos[86,:2]
+        pos_lr=physics.data.geom_xpos[81,:2]
+        pos_ul=physics.data.geom_xpos[59,:2]
+        pos_ur=physics.data.geom_xpos[54,:2]
 
-    # pos_ll=physics.data.geom_xpos[86,:2]
-    # pos_lr=physics.data.geom_xpos[81,:2]
-    # pos_ul=physics.data.geom_xpos[59,:2]
-    # pos_ur=physics.data.geom_xpos[54,:2]
-    #
-    # diag_dist1=np.linalg.norm(pos_ll-pos_ur)
-    # diag_dist2=np.linalg.norm(pos_lr-pos_ul)
-    #
-    # reward = diag_dist1 + diag_dist2
-    # return reward, dict()
+        diag_dist1=np.linalg.norm(pos_ll-pos_ur)
+        diag_dist2=np.linalg.norm(pos_lr-pos_ul)
+
+        reward = diag_dist1 + diag_dist2
+        return reward, dict()
+
+    raise ValueError(self.reward)
