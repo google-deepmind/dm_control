@@ -121,7 +121,7 @@ class Cloth(base.Task):
     """Returns a reward to the agent."""
 
     pixels = physics.render(width=self.pixel_size, height=self.pixel_size)
-    segmentation = (pixels < 100).any(axis=3).astype('float32')
+    segmentation = (pixels < 100).any(axis=-1).astype('float32')
     reward = segmentation.mean()
     return reward
 
