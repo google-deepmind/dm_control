@@ -29,96 +29,188 @@ from dm_control.suite.utils import randomizers
 from dm_control.utils import containers
 from dm_control.utils import rewards
 import numpy as np
+from scipy.spatial import ConvexHull
 import random
 import mujoco_py
 
-"""Input action, chooses random joint"""
+"""Input action, chooses random n joints"""
 
 
 _DEFAULT_TIME_LIMIT = 20
 SUITE = containers.TaggedTasks()
-CORNER_INDEX_POSITION=[86,81,59,54]
-CORNER_INDEX_ACTION=['B0_0','B0_8','B8_0','B8_8']
-GEOM_INDEX=['G0_0','G0_8','G8_0','G8_8']
+CORNER_INDEX_POSITION = [86, 81, 59, 54]
+CORNER_INDEX_ACTION = ['B0_0', 'B0_8', 'B8_0', 'B8_8']
+GEOM_INDEX = ['G0_0', 'G0_8', 'G8_0', 'G8_8']
+
 
 def get_model_and_assets():
-  """Returns a tuple containing the model XML string and a dict of assets."""
-  # return common.read_model('cloth_v0.xml'), common.ASSETS
-  return common.read_model('cloth_v4.xml'),common.ASSETS
+    """Returns a tuple containing the model XML string and a dict of assets."""
+    # return common.read_model('cloth_v0.xml'), common.ASSETS
+    return common.read_model('cloth_v4.xml'), common.ASSETS
+
 
 @SUITE.add('benchmarking', 'easy')
 def easy(time_limit=_DEFAULT_TIME_LIMIT, random=None, environment_kwargs=None, **kwargs):
-  """Returns the easy cloth task."""
+    """Returns the easy cloth task."""
 
-  physics = Physics.from_xml_string(*get_model_and_assets())
-  task = Cloth(randomize_gains=False, random=random, **kwargs)
-  environment_kwargs = environment_kwargs or {}
-  return control.Environment(
-      physics, task, time_limit=time_limit, n_frame_skip=1, special_task=True, **environment_kwargs)
+    physics = Physics.from_xml_string(*get_model_and_assets())
+    task = Cloth(randomize_gains=False, random=random, **kwargs)
+    environment_kwargs = environment_kwargs or {}
+    return control.Environment(
+        physics, task, time_limit=time_limit, n_frame_skip=1, special_task=True, **environment_kwargs)
+
 
 class Physics(mujoco.Physics):
-  """physics for the point_mass domain."""
+    """physics for the point_mass domain."""
+
 
 class Cloth(base.Task):
-  """A point_mass `Task` to reach target with smooth reward."""
+    """A point_mass `Task` to reach target with smooth reward."""
 
-  def __init__(self, randomize_gains, random=None):
-    """Initialize an instance of `PointMass`.
+    def __init__(self, randomize_gains, random=None, n_locations=1, pixel_size=64, camera_id=0,
+                 reward='area', eval=False):
+        """Initialize an instance of `PointMass`.
 
-    Args:
-      randomize_gains: A `bool`, whether to randomize the actuator gains.
-      random: Optional, either a `numpy.random.RandomState` instance, an
-        integer seed for creating a new `RandomState`, or None to select a seed
-        automatically (default).
-    """
-    self._randomize_gains = randomize_gains
-    # self.action_spec=specs.BoundedArray(
-    # shape=(2,), dtype=np.float, minimum=0.0, maximum=1.0)
-    super(Cloth, self).__init__(random=random)
-    self._current_loc = None
+        Args:
+          randomize_gains: A `bool`, whether to randomize the actuator gains.
+          random: Optional, either a `numpy.random.RandomState` instance, an
+            integer seed for creating a new `RandomState`, or None to select a seed
+            automatically (default).
+        """
+        self._randomize_gains = randomize_gains
+        self.n_locations = n_locations
+        self.pixel_size = pixel_size
+        self.camera_id = camera_id
+        self.reward = reward
+        self.eval = eval
+        print('pixel_size', self.pixel_size, 'camera_id',
+              self.camera_id, 'reward', self.reward,
+              'eval', self.eval)
+        print('n_locations', self.n_locations)
+        self._current_locs = None
+        self._called_before_step = False
 
-  def action_spec(self, physics):
-    """Returns a `BoundedArray` matching the `physics` actuators."""
+        super(Cloth, self).__init__(random=random)
 
-    # action force(3) ~[-1,1]
+    def action_spec(self, physics):
+        """Returns a `BoundedArray` matching the `physics` actuators."""
 
-    return specs.BoundedArray(
-        shape=(3,), dtype=np.float, minimum=[-1.0,-1.0,-1.0] , maximum=[1.0,1.0,1.0] )
+        # action force(3) ~[-1,1]
+        if self.eval:
+            size = 5 * self.n_locations
+        else:
+            size = 3 * self.n_locations
+        return specs.BoundedArray(
+            shape=(size,), dtype=np.float,
+            minimum=[-1.0] * size, maximum=[1.0] * size)
 
-  def initialize_episode(self,physics):
-    physics.named.data.xfrc_applied['B3_4', :3] = np.array([0,0,-2])
-    physics.named.data.xfrc_applied['B4_4', :3] = np.array([0,0,-2])
-    physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:3]=np.random.uniform(-.5,.5,size=3)
+    def initialize_episode(self, physics):
+        self._current_locs = None
+        self._called_before_step = False
 
-    super(Cloth, self).initialize_episode(physics)
+        physics.named.data.xfrc_applied['B3_4', :3] = np.array([0, 0, -2])
+        physics.named.data.xfrc_applied['B4_4', :3] = np.array([0, 0, -2])
+        physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,
+                                        :3] = np.random.uniform(-.5, .5, size=3)
 
-  def before_step(self, action, physics):
-      """Sets the control signal for the actuators to values in `action`."""
-      physics.named.data.xfrc_applied[1:, :3] = np.zeros((3,))
-      self._current_loc = np.random.randint(81)
-      physics.named.data.xfrc_applied[self._current_loc + 1, :3] = 5 * action
+        super(Cloth, self).initialize_episode(physics)
 
-  def get_observation(self, physics):
-    """Returns an observation of the state."""
-    obs = collections.OrderedDict()
-    obs['position'] = physics.position()
-    obs['velocity'] = physics.velocity()
+    def before_step(self, action, physics):
+        """Sets the control signal for the actuators to values in `action`."""
+        physics.named.data.xfrc_applied[1:, :3] = np.zeros((3,))
 
-    one_hot = np.zeros(81)
-    one_hot[self._current_loc] = 1.
-    obs['force_location'] = one_hot
-    return obs
+        if self.eval:
+            assert len(action) == 5 * self.n_locations # action + location
+            force_actions = action[:3 * self.n_locations]
+            locations = action[2 * self.n_locations:]
+            locations = (locations * 0.5 + 0.5) * 8 # [-1, 1] -> [0, 8]
+            locations = np.round(locations).astype('int32')
 
-  def get_reward(self, physics):
-    """Returns a reward to the agent."""
+            for i in range(self.n_locations):
+                force_action = force_actions[3 * i:3 * (i + 1)]
+                x, y = locations[2 * i:2 * (i + 1)]
+                force_id = 'B{}_{}'.format(x, y)
+                physics.named.data.xfrc_applied[force_id, :3] = 5 * force_action
+        else:
+            assert len(action) == 3 * self.n_locations
+            self._current_locs = np.random.choice(
+                81, size=self.n_locations, replace=False)
 
-    pos_ll=physics.data.geom_xpos[86,:2]
-    pos_lr=physics.data.geom_xpos[81,:2]
-    pos_ul=physics.data.geom_xpos[59,:2]
-    pos_ur=physics.data.geom_xpos[54,:2]
+            xs = self._current_locs % 9
+            ys = self._current_locs // 9
 
-    diag_dist1=np.linalg.norm(pos_ll-pos_ur)
-    diag_dist2=np.linalg.norm(pos_lr-pos_ul)
+            for i, (x, y) in enumerate(zip(xs, ys)):
+                x, y = int(x), int(y)
+                force_id = 'B{}_{}'.format(x, y)
+                physics.named.data.xfrc_applied[force_id, :3] = 5 * action[3 * i:3 * (i + 1)]
+        self._called_before_step = True
 
-    reward = diag_dist1 + diag_dist2
-    return reward, dict()
+    def get_observation(self, physics):
+        """Returns an observation of the state."""
+        obs = collections.OrderedDict()
+        obs['position'] = physics.position()
+        obs['velocity'] = physics.velocity()
+
+        if not self.eval:
+            if self._called_before_step:
+                xs = self._current_locs % 9
+                ys = self._current_locs // 9
+
+                points = np.hstack((xs[:, None], ys[:, None])).astype('float32')
+                points /= 8
+                points = 2 * points - 1 # [0, 1] -> [-1, 1]
+                points = points.reshape(-1)
+
+                obs['force_location'] = points
+            else:
+                obs['force_location'] = np.zeros(2 * self.n_locations)
+
+        return obs
+
+    def get_reward(self, physics):
+        """Returns a reward to the agent."""
+        diag_reward = self._compute_diagonal_reward(physics)
+        area_convex_reward = self._compute_area_convex(physics)
+
+        info = dict(reward_diagonal=diag_reward, reward_area_convex=area_convex_reward)
+
+        if self.reward == 'area':
+            pixels = physics.render(width=self.pixel_size, height=self.pixel_size,
+                                    camera_id=self.camera_id)
+            segmentation = (pixels < 100).any(axis=-1).astype('float32')
+            reward = segmentation.mean()
+        elif self.reward == 'area_convex':
+            reward = area_convex_reward
+        elif self.reward == 'diagonal':
+            reward = diag_reward
+        else:
+            raise ValueError(self.reward)
+
+        return reward, info
+
+    def _compute_diagonal_reward(self, physics):
+        pos_ll = physics.data.geom_xpos[86, :2]
+        pos_lr = physics.data.geom_xpos[81, :2]
+        pos_ul = physics.data.geom_xpos[59, :2]
+        pos_ur = physics.data.geom_xpos[54, :2]
+        diag_dist1 = np.linalg.norm(pos_ll - pos_ur)
+        diag_dist2 = np.linalg.norm(pos_lr - pos_ul)
+        diag_reward = diag_dist1 + diag_dist2
+        return diag_reward
+
+    def _compute_area_convex(self, physics):
+        joints = physics.data.geom_xpos[6:, :2]
+        hull = ConvexHull(joints)
+        vertices = joints[hull.vertices]
+
+        x, y = vertices[:, 0], vertices[:, 1]
+        area = 0.5 * np.abs(np.dot(x, np.roll(y, 1)) -
+                            np.dot(y, np.roll(x, 1)))
+        return area
+
+    def _compute_area_reward(self, physics):
+        pixels = physics.render(width=self.pixel_size, height=self.pixel_size,
+                                camera_id=self.camera_id)
+        segmentation = (pixels < 100).any(axis=-1).astype('float32')
+        reward = segmentation.mean()
+        return reward
