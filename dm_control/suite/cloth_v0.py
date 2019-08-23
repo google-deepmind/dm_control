@@ -29,6 +29,7 @@ from dm_control.suite.utils import randomizers
 from dm_control.utils import containers
 from dm_control.utils import rewards
 import numpy as np
+from scipy.spatial import ConvexHull
 import random
 
 _DEFAULT_TIME_LIMIT = 20
@@ -207,4 +208,14 @@ class Cloth(base.Task):
         diag_dist2=np.linalg.norm(pos_lr-pos_ul)
         reward=diag_dist1+diag_dist2
         return reward, dict()
+    elif self.reward == 'area_convex':
+        joints = physics.data.geom_xpos[6:, :2]
+        hull = ConvexHull(joints)
+        vertices = joints[hull.vertices]
+
+        x, y = vertices[:, 0], vertices[:, 1]
+        area = 0.5 * np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
+        return area, dict()
+
+
     raise ValueError(self.reward)
