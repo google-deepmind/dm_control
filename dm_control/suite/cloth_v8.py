@@ -170,19 +170,15 @@ class Cloth(base.Task):
     def get_reward(self, physics):
         """Returns a reward to the agent."""
         diag_reward = self._compute_diagonal_reward(physics)
-        # area_convex_reward = self._compute_area_convex(physics)
+        area_convex_reward = self._compute_area_convex(physics)
+        area_reward = self._compute_area_reward(physics)
 
-        # info = dict(reward_diagonal=diag_reward, reward_area_convex=area_convex_reward)
-        info = dict()
+        info = dict(reward_diagonal=diag_reward, reward_area_convex=area_convex_reward, reward_area=area_reward)
 
         if self.reward == 'area':
-            pixels = physics.render(width=self.pixel_size, height=self.pixel_size,
-                                    camera_id=self.camera_id)
-            segmentation = (pixels < 100).any(axis=-1).astype('float32')
-            reward = segmentation.mean()
+            reward = area_reward
         elif self.reward == 'area_convex':
-            # reward = area_convex_reward
-            area_convex_reward = self._compute_area_convex(physics)
+            reward = area_convex_reward
         elif self.reward == 'diagonal':
             reward = diag_reward
         else:
