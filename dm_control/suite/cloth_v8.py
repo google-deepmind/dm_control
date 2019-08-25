@@ -68,7 +68,7 @@ class Cloth(base.Task):
     """A point_mass `Task` to reach target with smooth reward."""
 
     def __init__(self, randomize_gains, random=None, n_locations=1, pixel_size=64, camera_id=0,
-                 reward='area', eval=False):
+                 reward='area', corners_only=False, eval=False):
         """Initialize an instance of `PointMass`.
 
         Args:
@@ -83,12 +83,16 @@ class Cloth(base.Task):
         self.camera_id = camera_id
         self.reward = reward
         self.eval = eval
+        self.corners_only = corners_only
         print('pixel_size', self.pixel_size, 'camera_id',
               self.camera_id, 'reward', self.reward,
-              'eval', self.eval)
+              'eval', self.eval, 'corners_only', self.corners_only)
         print('n_locations', self.n_locations)
         self._current_locs = None
         self._called_before_step = False
+
+        if self.corners_only:
+            assert 1 <= self.n_locations <= 4
 
         super(Cloth, self).__init__(random=random)
 
@@ -122,7 +126,7 @@ class Cloth(base.Task):
         if self.eval:
             assert len(action) == 5 * self.n_locations # action + location
             force_actions = action[:3 * self.n_locations]
-            locations = action[2 * self.n_locations:]
+            locations = action[3 * self.n_locations:]
             locations = (locations * 0.5 + 0.5) * 8 # [-1, 1] -> [0, 8]
             locations = np.round(locations).astype('int32')
 
@@ -133,8 +137,12 @@ class Cloth(base.Task):
                 physics.named.data.xfrc_applied[force_id, :3] = 5 * force_action
         else:
             assert len(action) == 3 * self.n_locations
-            self._current_locs = np.random.choice(
-                81, size=self.n_locations, replace=False)
+            if self.corners_only:
+                self._current_locs = np.random.choice([0, 8, 72, 80], size=self.n_locations,
+                                                      replace=False)
+            else:
+                self._current_locs = np.random.choice(
+                    81, size=self.n_locations, replace=False)
 
             xs = self._current_locs % 9
             ys = self._current_locs // 9
