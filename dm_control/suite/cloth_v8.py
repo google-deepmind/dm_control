@@ -114,8 +114,9 @@ class Cloth(base.Task):
             minimum=[-1.0] * size, maximum=[1.0] * size)
 
     def initialize_episode(self, physics):
-        self._current_locs = None
         self._called_before_step = False
+        self._current_locs = self._generate_loc()
+        self._obs = self._generate_loc(physics)
 
         physics.named.data.xfrc_applied['B3_4', :3] = np.array([0, 0, -2])
         physics.named.data.xfrc_applied['B4_4', :3] = np.array([0, 0, -2])
@@ -159,14 +160,6 @@ class Cloth(base.Task):
         else:
             assert len(action) == 3 * self.n_locations
             if self.mode in ['normal', 'corners_xy']:
-                if self.mode == 'corners_xy':
-                    self._current_locs = np.random.choice([0, 8, 72, 80], size=self.n_locations,
-                                                          replace=False)
-
-                elif self.mode == 'normal':
-                    self._current_locs = np.random.choice(
-                        81, size=self.n_locations, replace=False)
-
                 xs = self._current_locs % 9
                 ys = self._current_locs // 9
 
@@ -175,7 +168,6 @@ class Cloth(base.Task):
                     force_id = 'B{}_{}'.format(x, y)
                     physics.named.data.xfrc_applied[force_id, :3] = 5 * action[3 * i:3 * (i + 1)]
             elif self.mode == 'corners_onehot':
-                self._current_locs = np.random.choice(4, size=self.n_locations, replace=False)
                 for i in range(self.n_locations):
                     c = CORNER_INDEX_ACTION[self._current_locs[i]]
                     physics.named.data.xfrc_applied[c, :3] = 5 * action[3 * i:3 * (i + 1)]
@@ -183,42 +175,14 @@ class Cloth(base.Task):
                 raise Exception(self.mode)
 
 
+        self._obs = self._generate_obs(physics) # MUST be called BEFORE generate_loc
+        self._current_locs = self._generate_loc()
         self._called_before_step = True
 
     def get_observation(self, physics):
         """Returns an observation of the state."""
-        obs = collections.OrderedDict()
-        obs['position'] = physics.position()
-        obs['velocity'] = physics.velocity()
 
-        if not self.eval:
-            if self._called_before_step:
-                if self.mode in ['normal', 'corners_xy']:
-                    xs = self._current_locs % 9
-                    ys = self._current_locs // 9
-
-                    points = np.hstack((xs[:, None], ys[:, None])).astype('float32')
-                    points /= 8
-                    points = 2 * points - 1 # [0, 1] -> [-1, 1]
-                    points = points.reshape(-1)
-
-                    obs['force_location'] = points
-                elif self.mode == 'corners_onehot':
-                    onehots = np.zeros((self.n_locations, 4))
-                    onehots[np.arange(self.n_locations), self._current_locs] = 1
-                    onehots = onehots.reshape(-1)
-                    obs['force_location'] = onehots
-                else:
-                    raise Exception(self.mode)
-            else:
-                if self.mode in ['normal', 'corners_xy']:
-                    obs['force_location'] = np.zeros(2 * self.n_locations)
-                elif self.mode == 'corners_onehot':
-                    obs['force_location'] = np.zeros(4 * self.n_locations)
-                else:
-                    raise Exception(self.mode)
-
-        return obs
+        return self._obs
 
     def get_reward(self, physics):
         """Returns a reward to the agent."""
@@ -240,6 +204,45 @@ class Cloth(base.Task):
             raise ValueError(self.reward)
 
         return reward, info
+
+    def _generate_obs(self, physics):
+        obs = collections.OrderedDict()
+        obs['position'] = physics.position()
+        obs['velocity'] = physics.velocity()
+
+        if not self.eval:
+            if self.mode in ['normal', 'corners_xy']:
+                xs = self._current_locs % 9
+                ys = self._current_locs // 9
+
+                points = np.hstack((xs[:, None], ys[:, None])).astype('float32')
+                points /= 8
+                points = 2 * points - 1  # [0, 1] -> [-1, 1]
+                points = points.reshape(-1)
+
+                obs['force_location'] = points
+            elif self.mode == 'corners_onehot':
+                onehots = np.zeros((self.n_locations, 4))
+                onehots[np.arange(self.n_locations), self._current_locs] = 1
+                onehots = onehots.reshape(-1)
+                obs['force_location'] = onehots
+            else:
+                raise Exception(self.mode)
+
+        return obs
+
+    def _generate_loc(self):
+        if self.mode == 'corners_xy':
+            loc = np.random.choice([0, 8, 72, 80], size=self.n_locations,
+                                                  replace=False)
+        elif self.mode == 'normal':
+            loc = np.random.choice(
+                81, size=self.n_locations, replace=False)
+        elif self.mode == 'corners_onhot':
+            loc = np.random.choice(4, size=self.n_locations, replace=False)
+        else:
+            raise Exception(self.mode)
+        return loc
 
     def _compute_diagonal_reward(self, physics):
         pos_ll = physics.data.geom_xpos[86, :2]
