@@ -68,7 +68,7 @@ class Cloth(base.Task):
     """A point_mass `Task` to reach target with smooth reward."""
 
     def __init__(self, randomize_gains, random=None, n_locations=1, pixel_size=64, camera_id=0,
-                 reward='area', corners_only=False, eval=False):
+                 reward='area', mode='normal', eval=False):
         """Initialize an instance of `PointMass`.
 
         Args:
@@ -77,21 +77,23 @@ class Cloth(base.Task):
             integer seed for creating a new `RandomState`, or None to select a seed
             automatically (default).
         """
+        assert mode in ['normal', 'corners_xy', 'corners_onehot']
+
         self._randomize_gains = randomize_gains
         self.n_locations = n_locations
         self.pixel_size = pixel_size
         self.camera_id = camera_id
         self.reward = reward
         self.eval = eval
-        self.corners_only = corners_only
+        self.mode = mode
         print('pixel_size', self.pixel_size, 'camera_id',
               self.camera_id, 'reward', self.reward,
-              'eval', self.eval, 'corners_only', self.corners_only)
+              'eval', self.eval, 'mode', self.mode)
         print('n_locations', self.n_locations)
         self._current_locs = None
         self._called_before_step = False
 
-        if self.corners_only:
+        if 'corners' in mode:
             assert 1 <= self.n_locations <= 4
 
         super(Cloth, self).__init__(random=random)
@@ -101,7 +103,10 @@ class Cloth(base.Task):
 
         # action force(3) ~[-1,1]
         if self.eval:
-            size = 5 * self.n_locations
+            if self.mode in ['normal', 'corners_xy']:
+                size = 5 * self.n_locations
+            else:
+                size = (3 + 4) * self.n_locations
         else:
             size = 3 * self.n_locations
         return specs.BoundedArray(
@@ -124,33 +129,60 @@ class Cloth(base.Task):
         physics.named.data.xfrc_applied[1:, :3] = np.zeros((3,))
 
         if self.eval:
-            assert len(action) == 5 * self.n_locations # action + location
-            force_actions = action[:3 * self.n_locations]
-            locations = action[3 * self.n_locations:]
-            locations = (locations * 0.5 + 0.5) * 8 # [-1, 1] -> [0, 8]
-            locations = np.round(locations).astype('int32')
+            if self.mode in ['normal', 'corners_xy']:
+                assert len(action) == 5 * self.n_locations # action + location
+                force_actions = action[:3 * self.n_locations]
+                locations = action[3 * self.n_locations:]
+                assert len(locations) == 2 * self.n_locations
+                locations = (locations * 0.5 + 0.5) * 8 # [-1, 1] -> [0, 8]
+                locations = np.round(locations).astype('int32')
 
-            for i in range(self.n_locations):
-                force_action = force_actions[3 * i:3 * (i + 1)]
-                x, y = locations[2 * i:2 * (i + 1)]
-                force_id = 'B{}_{}'.format(x, y)
-                physics.named.data.xfrc_applied[force_id, :3] = 5 * force_action
+                for i in range(self.n_locations):
+                    force_action = force_actions[3 * i:3 * (i + 1)]
+                    x, y = locations[2 * i:2 * (i + 1)]
+                    force_id = 'B{}_{}'.format(x, y)
+                    physics.named.data.xfrc_applied[force_id, :3] = 5 * force_action
+            else:
+                assert len(action) == (3 + 4) * self.n_locations
+                force_actions = action[:3 * self.n_locations]
+                locations = action[3 * self.n_locations:]
+                assert len(locations) == 4 * self.n_locations
+                assert np.sum(locations) == self.n_locations # Rough sanity check that probably onehot
+                locations = locations.astype('int32')
+                for i in range(self.n_locations):
+                    force_action = force_actions[3 * i:3 * (i + 1)]
+                    force_location = locations[4 * i:4 * (i + 1)]
+                    force_location = np.argwhere(force_location == 1).reshape(-1)
+                    assert len(force_location) == 1
+                    force_location = force_location[0]
+                    physics.named.data.xfrc_applied[CORNER_INDEX_ACTION[force_location], :3] = 5 * force_action
         else:
             assert len(action) == 3 * self.n_locations
-            if self.corners_only:
-                self._current_locs = np.random.choice([0, 8, 72, 80], size=self.n_locations,
-                                                      replace=False)
+            if self.mode in ['normal', 'corners_xy']:
+                if self.mode == 'corners_xy':
+                    self._current_locs = np.random.choice([0, 8, 72, 80], size=self.n_locations,
+                                                          replace=False)
+
+                elif self.mode == 'normal':
+                    self._current_locs = np.random.choice(
+                        81, size=self.n_locations, replace=False)
+
+                xs = self._current_locs % 9
+                ys = self._current_locs // 9
+
+                for i, (x, y) in enumerate(zip(xs, ys)):
+                    x, y = int(x), int(y)
+                    force_id = 'B{}_{}'.format(x, y)
+                    physics.named.data.xfrc_applied[force_id, :3] = 5 * action[3 * i:3 * (i + 1)]
+            elif self.mode == 'corners_onehot':
+                self._current_locs = np.random.choice(4, size=self.n_locations, replace=False)
+                for i in range(self.n_locations):
+                    c = CORNER_INDEX_ACTION[self._current_locs[i]]
+                    physics.named.data.xfrc_applied[c, :3] = 5 * action[3 * i:3 * (i + 1)]
             else:
-                self._current_locs = np.random.choice(
-                    81, size=self.n_locations, replace=False)
+                raise Exception(self.mode)
 
-            xs = self._current_locs % 9
-            ys = self._current_locs // 9
 
-            for i, (x, y) in enumerate(zip(xs, ys)):
-                x, y = int(x), int(y)
-                force_id = 'B{}_{}'.format(x, y)
-                physics.named.data.xfrc_applied[force_id, :3] = 5 * action[3 * i:3 * (i + 1)]
         self._called_before_step = True
 
     def get_observation(self, physics):
@@ -161,17 +193,30 @@ class Cloth(base.Task):
 
         if not self.eval:
             if self._called_before_step:
-                xs = self._current_locs % 9
-                ys = self._current_locs // 9
+                if self.mode in ['normal', 'corners_xy']:
+                    xs = self._current_locs % 9
+                    ys = self._current_locs // 9
 
-                points = np.hstack((xs[:, None], ys[:, None])).astype('float32')
-                points /= 8
-                points = 2 * points - 1 # [0, 1] -> [-1, 1]
-                points = points.reshape(-1)
+                    points = np.hstack((xs[:, None], ys[:, None])).astype('float32')
+                    points /= 8
+                    points = 2 * points - 1 # [0, 1] -> [-1, 1]
+                    points = points.reshape(-1)
 
-                obs['force_location'] = points
+                    obs['force_location'] = points
+                elif self.mode == 'corners_onehot':
+                    onehots = np.zeros((self.n_locations, 4))
+                    onehots[np.arange(self.n_locations), self._current_locs] = 1
+                    onehots = onehots.reshape(-1)
+                    obs['force_location'] = onehots
+                else:
+                    raise Exception(self.mode)
             else:
-                obs['force_location'] = np.zeros(2 * self.n_locations)
+                if self.mode in ['normal', 'corners_xy']:
+                    obs['force_location'] = np.zeros(2 * self.n_locations)
+                elif self.mode == 'corners_onehot':
+                    obs['force_location'] = np.zeros(4 * self.n_locations)
+                else:
+                    raise Exception(self.mode)
 
         return obs
 
@@ -181,7 +226,9 @@ class Cloth(base.Task):
         area_convex_reward = self._compute_area_convex(physics)
         area_reward = self._compute_area_reward(physics)
 
-        info = dict(reward_diagonal=diag_reward, reward_area_convex=area_convex_reward, reward_area=area_reward)
+        info = dict(reward_diagonal=diag_reward,
+                    reward_area_convex=area_convex_reward,
+                    reward_area=area_reward)
 
         if self.reward == 'area':
             reward = area_reward
