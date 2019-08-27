@@ -91,7 +91,6 @@ class Cloth(base.Task):
               'eval', self.eval, 'mode', self.mode)
         print('n_locations', self.n_locations)
         self._current_locs = None
-        self._called_before_step = False
 
         if 'corners' in mode:
             assert 1 <= self.n_locations <= 4
@@ -114,9 +113,8 @@ class Cloth(base.Task):
             minimum=[-1.0] * size, maximum=[1.0] * size)
 
     def initialize_episode(self, physics):
-        self._called_before_step = False
         self._current_locs = self._generate_loc()
-        self._obs = self._generate_loc(physics)
+        self._obs = self._generate_obs(physics)
 
         physics.named.data.xfrc_applied['B3_4', :3] = np.array([0, 0, -2])
         physics.named.data.xfrc_applied['B4_4', :3] = np.array([0, 0, -2])
@@ -177,10 +175,15 @@ class Cloth(base.Task):
 
         self._obs = self._generate_obs(physics) # MUST be called BEFORE generate_loc
         self._current_locs = self._generate_loc()
-        self._called_before_step = True
 
     def get_observation(self, physics):
         """Returns an observation of the state."""
+        if self._current_locs is None:
+            print('current locs None')
+            self._current_locs = self._generate_loc()
+            self._obs = self._generate_obs(physics)
+            self._current_locs = None
+
 
         return self._obs
 
@@ -207,8 +210,8 @@ class Cloth(base.Task):
 
     def _generate_obs(self, physics):
         obs = collections.OrderedDict()
-        obs['position'] = physics.position()
-        obs['velocity'] = physics.velocity()
+        obs['position'] = physics.position().astype('float32')
+        obs['velocity'] = physics.velocity().astype('float32')
 
         if not self.eval:
             if self.mode in ['normal', 'corners_xy']:
@@ -225,7 +228,7 @@ class Cloth(base.Task):
                 onehots = np.zeros((self.n_locations, 4))
                 onehots[np.arange(self.n_locations), self._current_locs] = 1
                 onehots = onehots.reshape(-1)
-                obs['force_location'] = onehots
+                obs['force_location'] = onehots.astype('float32')
             else:
                 raise Exception(self.mode)
 
@@ -238,7 +241,7 @@ class Cloth(base.Task):
         elif self.mode == 'normal':
             loc = np.random.choice(
                 81, size=self.n_locations, replace=False)
-        elif self.mode == 'corners_onhot':
+        elif self.mode == 'corners_onehot':
             loc = np.random.choice(4, size=self.n_locations, replace=False)
         else:
             raise Exception(self.mode)
