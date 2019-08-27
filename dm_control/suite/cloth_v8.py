@@ -190,12 +190,12 @@ class Cloth(base.Task):
     def get_reward(self, physics):
         """Returns a reward to the agent."""
         diag_reward = self._compute_diagonal_reward(physics)
-        area_convex_reward = self._compute_area_convex(physics)
-        area_reward = self._compute_area_reward(physics)
+        #area_convex_reward = self._compute_area_convex(physics)
+        #area_reward = self._compute_area_reward(physics)
 
-        info = dict(reward_diagonal=diag_reward,
-                    reward_area_convex=area_convex_reward,
-                    reward_area=area_reward)
+        info = dict(reward_diagonal=diag_reward,)
+         #           reward_area_convex=area_convex_reward,
+         #           reward_area=area_reward)
 
         if self.reward == 'area':
             reward = area_reward
