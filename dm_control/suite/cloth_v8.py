@@ -114,7 +114,6 @@ class Cloth(base.Task):
 
     def initialize_episode(self, physics):
         self._current_locs = self._generate_loc()
-        self._obs = self._generate_obs(physics)
 
         physics.named.data.xfrc_applied['B3_4', :3] = np.array([0, 0, -2])
         physics.named.data.xfrc_applied['B4_4', :3] = np.array([0, 0, -2])
@@ -172,8 +171,6 @@ class Cloth(base.Task):
             else:
                 raise Exception(self.mode)
 
-
-        self._obs = self._generate_obs(physics) # MUST be called BEFORE generate_loc
         self._current_locs = self._generate_loc()
 
     def get_observation(self, physics):
@@ -181,11 +178,11 @@ class Cloth(base.Task):
         if self._current_locs is None:
             print('current locs None')
             self._current_locs = self._generate_loc()
-            self._obs = self._generate_obs(physics)
+            obs = self._generate_obs(physics)
             self._current_locs = None
+            return obs
 
-
-        return self._obs
+        return self._generate_obs(physics)
 
     def get_reward(self, physics):
         """Returns a reward to the agent."""
