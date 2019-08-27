@@ -30,6 +30,7 @@ from dm_control.utils import containers
 from dm_control.utils import rewards
 import numpy as np
 from scipy.spatial import ConvexHull
+import alphashape
 import random
 import mujoco_py
 
@@ -190,19 +191,18 @@ class Cloth(base.Task):
     def get_reward(self, physics):
         """Returns a reward to the agent."""
         diag_reward = self._compute_diagonal_reward(physics)
-        #area_convex_reward = self._compute_area_convex(physics)
-        #area_reward = self._compute_area_reward(physics)
+        #area_concave_reward = self._compute_area_concave(physics)
 
         info = dict(reward_diagonal=diag_reward,)
-         #           reward_area_convex=area_convex_reward,
-         #           reward_area=area_reward)
+         #           reward_area_concave=area_concave_reward)
 
         if self.reward == 'area':
+            area_reward = self._compute_area_reward(physics)
             reward = area_reward
-        elif self.reward == 'area_convex':
-            reward = area_convex_reward
         elif self.reward == 'diagonal':
             reward = diag_reward
+        elif self.reward == 'area_concave':
+            reward = area_concave_reward
         else:
             raise ValueError(self.reward)
 
@@ -256,6 +256,11 @@ class Cloth(base.Task):
         diag_dist2 = np.linalg.norm(pos_lr - pos_ul)
         diag_reward = diag_dist1 + diag_dist2
         return diag_reward
+
+    def _compute_area_concave(self, physics):
+        points = physics.data.geom_xpos[6:, :2]
+        alpha_shape = alphashape.alphashape(points, 20.0)
+        return alpha_shape.area
 
     def _compute_area_convex(self, physics):
         joints = physics.data.geom_xpos[6:, :2]
