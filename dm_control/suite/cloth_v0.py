@@ -30,6 +30,7 @@ from dm_control.utils import containers
 from dm_control.utils import rewards
 import numpy as np
 from scipy.spatial import ConvexHull
+import alphashape
 import random
 
 _DEFAULT_TIME_LIMIT = 20
@@ -107,9 +108,7 @@ class Cloth(base.Task):
     def get_reward(self, physics):
         """Returns a reward to the agent."""
         diag_reward = self._compute_diagonal_reward(physics)
-        area_convex_reward = self._compute_area_convex(physics)
-
-        info = dict(reward_diagonal=diag_reward, reward_area_convex=area_convex_reward)
+        info = dict(reward_diagonal=diag_reward,)
 
         if self.reward == 'area':
             pixels = physics.render(width=self.pixel_size, height=self.pixel_size,
@@ -117,9 +116,13 @@ class Cloth(base.Task):
             segmentation = (pixels < 100).any(axis=-1).astype('float32')
             reward = segmentation.mean()
         elif self.reward == 'area_convex':
+            area_convex_reward = self._compute_area_convex(physics)
             reward = area_convex_reward
         elif self.reward == 'diagonal':
             reward = diag_reward
+        elif self.reward == 'area_concave':
+            area_concave_reward = self._compute_area_concave(physics)
+            reward = area_concave_reward
         else:
             raise ValueError(self.reward)
 
@@ -144,6 +147,11 @@ class Cloth(base.Task):
         area = 0.5 * np.abs(np.dot(x, np.roll(y, 1)) -
                             np.dot(y, np.roll(x, 1)))
         return area
+
+    def _compute_area_concave(self, physics):
+        points = physics.data.geom_xpos[6:, :2]
+        alpha_shape = alphashape.alphashape(points, 20.0)
+        return alpha_shape.area
 
     def _compute_area_reward(self, physics):
         pixels = physics.render(width=self.pixel_size, height=self.pixel_size,

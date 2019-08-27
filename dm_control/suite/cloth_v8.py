@@ -199,6 +199,7 @@ class Cloth(base.Task):
         elif self.reward == 'diagonal':
             reward = diag_reward
         elif self.reward == 'area_concave':
+            area_concave_reward = self._compute_area_concave(physics)
             reward = area_concave_reward
         else:
             raise ValueError(self.reward)
