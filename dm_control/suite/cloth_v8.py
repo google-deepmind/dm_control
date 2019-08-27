@@ -229,6 +229,7 @@ class Cloth(base.Task):
                 obs['force_location'] = onehots.astype('float32')
             else:
                 raise Exception(self.mode)
+            obs['force_location'] = np.tile(obs['force_location'], 100)
 
         return obs
 
