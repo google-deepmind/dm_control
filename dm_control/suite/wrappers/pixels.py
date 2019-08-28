@@ -74,6 +74,8 @@ class Wrapper(dm_env.Environment):
       self._observation_spec = collections.OrderedDict()
       if 'joints' in wrapped_observation_spec:
           self._observation_spec['joints'] = wrapped_observation_spec.copy()['joints']
+      if 'force_location' in wrapped_observation_spec:
+          self._observation_spec['force_location'] = wrapped_observation_spec.copy()['force_location']
     elif self._observation_is_dict:
       self._observation_spec = wrapped_observation_spec.copy()
     else:
@@ -110,6 +112,8 @@ class Wrapper(dm_env.Environment):
       observation = collections.OrderedDict()
       if 'joints' in time_step.observation:
           observation['joints'] = time_step.observation['joints']
+      if 'force_location' in time_step.observation:
+          observation['force_location'] = time_step.observation['force_location']
     elif self._observation_is_dict:
       observation = type(time_step.observation)(time_step.observation)
     else:
