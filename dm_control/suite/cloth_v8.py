@@ -69,7 +69,7 @@ class Cloth(base.Task):
     """A point_mass `Task` to reach target with smooth reward."""
 
     def __init__(self, randomize_gains, random=None, n_locations=1, pixel_size=64, camera_id=0,
-                 reward='area', mode='normal', eval=False):
+                 reward='area', mode='normal', eval=False, n_tile=100):
         """Initialize an instance of `PointMass`.
 
         Args:
@@ -87,6 +87,7 @@ class Cloth(base.Task):
         self.reward = reward
         self.eval = eval
         self.mode = mode
+        self.n_tile = n_tile
         print('pixel_size', self.pixel_size, 'camera_id',
               self.camera_id, 'reward', self.reward,
               'eval', self.eval, 'mode', self.mode)
@@ -229,7 +230,7 @@ class Cloth(base.Task):
                 obs['force_location'] = onehots.astype('float32')
             else:
                 raise Exception(self.mode)
-            obs['force_location'] = np.tile(obs['force_location'], 100)
+            obs['force_location'] = np.tile(obs['force_location'], self.n_tile)
 
         return obs
 
