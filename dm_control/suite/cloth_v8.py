@@ -69,7 +69,7 @@ class Cloth(base.Task):
     """A point_mass `Task` to reach target with smooth reward."""
 
     def __init__(self, randomize_gains, random=None, n_locations=1, pixel_size=64, camera_id=0,
-                 reward='area', mode='normal', eval=False, n_tile=100):
+                 reward='diagonal', mode='9x9', eval=False, n_tile=100):
         """Initialize an instance of `PointMass`.
 
         Args:
@@ -78,7 +78,7 @@ class Cloth(base.Task):
             integer seed for creating a new `RandomState`, or None to select a seed
             automatically (default).
         """
-        assert mode in ['normal', 'corners_xy', 'corners_onehot']
+        assert mode in ['corners', 'border', '3x3', '5x5', '9x9']
 
         self._randomize_gains = randomize_gains
         self.n_locations = n_locations
@@ -94,8 +94,7 @@ class Cloth(base.Task):
         print('n_locations', self.n_locations)
         self._current_locs = None
 
-        if 'corners' in mode:
-            assert 1 <= self.n_locations <= 4
+        assert self.n_locations == 1 # If this is not 1, something is wrong
 
         super(Cloth, self).__init__(random=random)
 
@@ -104,10 +103,7 @@ class Cloth(base.Task):
 
         # action force(3) ~[-1,1]
         if self.eval:
-            if self.mode in ['normal', 'corners_xy']:
-                size = 5 * self.n_locations
-            else:
-                size = (3 + 4) * self.n_locations
+            size = 5 * self.n_locations
         else:
             size = 3 * self.n_locations
         return specs.BoundedArray(
@@ -129,49 +125,27 @@ class Cloth(base.Task):
         physics.named.data.xfrc_applied[1:, :3] = np.zeros((3,))
 
         if self.eval:
-            if self.mode in ['normal', 'corners_xy']:
-                assert len(action) == 5 * self.n_locations # action + location
-                force_actions = action[:3 * self.n_locations]
-                locations = action[3 * self.n_locations:]
-                assert len(locations) == 2 * self.n_locations
-                locations = (locations * 0.5 + 0.5) * 8 # [-1, 1] -> [0, 8]
-                locations = np.round(locations).astype('int32')
+            assert len(action) == 5 * self.n_locations # action + location
+            force_actions = action[:3 * self.n_locations]
+            locations = action[3 * self.n_locations:]
+            assert len(locations) == 2 * self.n_locations
+            locations = (locations * 0.5 + 0.5) * 8 # [-1, 1] -> [0, 8]
+            locations = np.round(locations).astype('int32')
 
-                for i in range(self.n_locations):
-                    force_action = force_actions[3 * i:3 * (i + 1)]
-                    x, y = locations[2 * i:2 * (i + 1)]
-                    force_id = 'B{}_{}'.format(x, y)
-                    physics.named.data.xfrc_applied[force_id, :3] = 5 * force_action
-            else:
-                assert len(action) == (3 + 4) * self.n_locations
-                force_actions = action[:3 * self.n_locations]
-                locations = action[3 * self.n_locations:]
-                assert len(locations) == 4 * self.n_locations
-                assert np.sum(locations) == self.n_locations # Rough sanity check that probably onehot
-                locations = locations.astype('int32')
-                for i in range(self.n_locations):
-                    force_action = force_actions[3 * i:3 * (i + 1)]
-                    force_location = locations[4 * i:4 * (i + 1)]
-                    force_location = np.argwhere(force_location == 1).reshape(-1)
-                    assert len(force_location) == 1
-                    force_location = force_location[0]
-                    physics.named.data.xfrc_applied[CORNER_INDEX_ACTION[force_location], :3] = 5 * force_action
+            for i in range(self.n_locations):
+                force_action = force_actions[3 * i:3 * (i + 1)]
+                x, y = locations[2 * i:2 * (i + 1)]
+                force_id = 'B{}_{}'.format(x, y)
+                physics.named.data.xfrc_applied[force_id, :3] = 5 * force_action
         else:
             assert len(action) == 3 * self.n_locations
-            if self.mode in ['normal', 'corners_xy']:
-                xs = self._current_locs % 9
-                ys = self._current_locs // 9
+            xs = self._current_locs % 9
+            ys = self._current_locs // 9
 
-                for i, (x, y) in enumerate(zip(xs, ys)):
-                    x, y = int(x), int(y)
-                    force_id = 'B{}_{}'.format(x, y)
-                    physics.named.data.xfrc_applied[force_id, :3] = 5 * action[3 * i:3 * (i + 1)]
-            elif self.mode == 'corners_onehot':
-                for i in range(self.n_locations):
-                    c = CORNER_INDEX_ACTION[self._current_locs[i]]
-                    physics.named.data.xfrc_applied[c, :3] = 5 * action[3 * i:3 * (i + 1)]
-            else:
-                raise Exception(self.mode)
+            for i, (x, y) in enumerate(zip(xs, ys)):
+                x, y = int(x), int(y)
+                force_id = 'B{}_{}'.format(x, y)
+                physics.named.data.xfrc_applied[force_id, :3] = 5 * action[3 * i:3 * (i + 1)]
 
         self._current_locs = self._generate_loc()
 
@@ -213,36 +187,39 @@ class Cloth(base.Task):
         obs['velocity'] = physics.velocity().astype('float32')
 
         if not self.eval:
-            if self.mode in ['normal', 'corners_xy']:
-                xs = self._current_locs % 9
-                ys = self._current_locs // 9
+            xs = self._current_locs % 9
+            ys = self._current_locs // 9
 
-                points = np.hstack((xs[:, None], ys[:, None])).astype('float32')
-                points /= 8
-                points = 2 * points - 1  # [0, 1] -> [-1, 1]
-                points = points.reshape(-1)
+            points = np.hstack((xs[:, None], ys[:, None])).astype('float32')
+            points /= 8
+            points = 2 * points - 1  # [0, 1] -> [-1, 1]
+            points = points.reshape(-1)
 
-                obs['force_location'] = points
-            elif self.mode == 'corners_onehot':
-                onehots = np.zeros((self.n_locations, 4))
-                onehots[np.arange(self.n_locations), self._current_locs] = 1
-                onehots = onehots.reshape(-1)
-                obs['force_location'] = onehots.astype('float32')
-            else:
-                raise Exception(self.mode)
+            obs['force_location'] = points
             obs['force_location'] = np.tile(obs['force_location'], self.n_tile)
 
         return obs
 
     def _generate_loc(self):
-        if self.mode == 'corners_xy':
+        if self.mode == 'corners':
             loc = np.random.choice([0, 8, 72, 80], size=self.n_locations,
                                                   replace=False)
-        elif self.mode == 'normal':
+        elif self.mode == 'border':
+            loc = np.random.choice([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26,
+                                    27, 35, 36, 44, 45, 53, 54, 62, 63, 71,
+                                    72, 73, 74, 75, 76, 77, 78, 79, 80],
+                                   size=self.n_locations, replace=False)
+        elif self.mode == '9x9':
             loc = np.random.choice(
                 81, size=self.n_locations, replace=False)
-        elif self.mode == 'corners_onehot':
-            loc = np.random.choice(4, size=self.n_locations, replace=False)
+        elif self.mode == '5x5':
+            loc = np.random.choice([0, 2, 4, 6, 8, 18, 20, 22, 24, 26,
+                                    36, 38, 40, 42, 44, 54, 56, 58, 60, 62,
+                                    72, 74, 76, 78, 80],
+                                   size=self.n_locations, replace=False)
+        elif self.mode == '3x3':
+            loc = np.random.choice([0, 4, 8, 36, 40, 44, 72, 76, 80],
+                                   size=self.n_locations, replace=False)
         else:
             raise Exception(self.mode)
         return loc
