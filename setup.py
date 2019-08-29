@@ -171,10 +171,10 @@ setup(
     keywords='machine learning control physics MuJoCo AI',
     install_requires=[
         'absl-py>=0.7.0',
-        'enum34',
+        'enum34; python_version < "3.4"',
         'dm_env',
         'future',
-        'futures',
+        'futures; python_version == "2.7"',
         'glfw',
         'lxml',
         'numpy',
