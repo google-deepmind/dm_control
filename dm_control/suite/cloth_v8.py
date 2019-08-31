@@ -166,7 +166,7 @@ class Cloth(base.Task):
     def get_reward(self, physics):
         """Returns a reward to the agent."""
         diag_reward = self._compute_diagonal_reward(physics)
-        distance_reward = -self.distance_weight * np.sum(physics.named.data.geom_xpos['G4_4', :2] ** 2) # center is 0
+        distance_reward = -self.distance_weight * np.linalg.norm(physics.named.data.geom_xpos['G4_4', :2]) # center is 0
 
         #area_concave_reward = self._compute_area_concave(physics)
 
