@@ -69,7 +69,8 @@ class Cloth(base.Task):
     """A point_mass `Task` to reach target with smooth reward."""
 
     def __init__(self, randomize_gains, random=None, n_locations=1, pixel_size=64, camera_id=0,
-                 reward='diagonal', mode='9x9', eval=False, n_tile=100):
+                 reward='diagonal', mode='9x9', eval=False, n_tile=50,
+                 distance_weight=0.0):
         """Initialize an instance of `PointMass`.
 
         Args:
@@ -88,9 +89,11 @@ class Cloth(base.Task):
         self.eval = eval
         self.mode = mode
         self.n_tile = n_tile
+        self.distance_weight = distance_weight
         print('pixel_size', self.pixel_size, 'camera_id',
               self.camera_id, 'reward', self.reward,
-              'eval', self.eval, 'mode', self.mode)
+              'eval', self.eval, 'mode', self.mode,
+              'distance_weight', self.distance_weight)
         print('n_locations', self.n_locations)
         self._current_locs = None
 
@@ -163,9 +166,12 @@ class Cloth(base.Task):
     def get_reward(self, physics):
         """Returns a reward to the agent."""
         diag_reward = self._compute_diagonal_reward(physics)
+        distance_reward = -self.distance_weight * np.sum(physics.named.data.geom_xpos['G4_4', :2] ** 2) # center is 0
+
         #area_concave_reward = self._compute_area_concave(physics)
 
-        info = dict(reward_diagonal=diag_reward,)
+        info = dict(reward_diagonal=diag_reward,
+                    distance_reward=distance_reward)
          #           reward_area_concave=area_concave_reward)
 
         if self.reward == 'area':
@@ -179,12 +185,15 @@ class Cloth(base.Task):
         else:
             raise ValueError(self.reward)
 
+        reward += distance_reward
+
         return reward, info
 
     def _generate_obs(self, physics):
         obs = collections.OrderedDict()
-        obs['position'] = physics.position().astype('float32')
-        obs['velocity'] = physics.velocity().astype('float32')
+        #obs['position'] = physics.position().astype('float32')
+        #obs['velocity'] = physics.velocity().astype('float32')
+        obs['position'] = physics.data.geom_xpos[6:, :2].astype('float32').reshape(-1)
 
         if not self.eval:
             xs = self._current_locs % 9
