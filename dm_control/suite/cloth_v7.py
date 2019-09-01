@@ -63,7 +63,7 @@ class Cloth(base.Task):
   """A point_mass `Task` to reach target with smooth reward."""
 
   def __init__(self, randomize_gains, random=None, pixel_size=64, camera_id=0,
-               reward='diagonal', distance_weight=0.0):
+               reward='diagonal', distance_weight=0.0, eval=False):
     """Initialize an instance of `PointMass`.
 
     Args:
