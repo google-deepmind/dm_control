@@ -101,8 +101,9 @@ class Cloth(base.Task):
     def get_observation(self, physics):
         """Returns an observation of the state."""
         obs = collections.OrderedDict()
-        obs['position'] = physics.position().astype(np.float32)
-        obs['velocity'] = physics.velocity().astype(np.float32)
+#        obs['position'] = physics.position().astype(np.float32)
+#        obs['velocity'] = physics.velocity().astype(np.float32)
+        obs['position'] = physics.named.data.geom_xpos[6:, :2].astype('float32').reshape(-1)
         return obs
 
     def get_reward(self, physics):
