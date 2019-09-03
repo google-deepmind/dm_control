@@ -45,9 +45,6 @@ def get_model_and_assets():
   return common.read_model('cloth_v4.xml'),common.ASSETS
 
 
-
-
-
 @SUITE.add('benchmarking', 'easy')
 def easy(time_limit=_DEFAULT_TIME_LIMIT, random=None, environment_kwargs=None, **kwargs):
   """Returns the easy cloth task."""
@@ -94,15 +91,11 @@ class Cloth(base.Task):
     self._randomize_gains = randomize_gains
     self._nn_distance_weight = nn_distance_weight
     print('nn_distance_weight', self._nn_distance_weight)
-    # self.action_spec=specs.BoundedArray(
-    # shape=(2,), dtype=np.float, minimum=0.0, maximum=1.0)
     super(Cloth, self).__init__(random=random)
     self._stored_action_position = None
 
   def action_spec(self, physics):
     """Returns a `BoundedArray` matching the `physics` actuators."""
-
-    # action force(3) ~[-1,1]+ position to apply action(2)~[-.3,.3]
 
     return specs.BoundedArray(
         shape=(5,), dtype=np.float, minimum=[-1.0,-1.0,-1.0,-1.0,-1.0] , maximum=[1.0,1.0,1.0,1.0,1.0] )
@@ -120,8 +113,6 @@ class Cloth(base.Task):
 
   def before_step(self, action, physics):
       """Sets the control signal for the actuators to values in `action`."""
-  #     # Support legacy internal code.
-
       physics.named.data.xfrc_applied[1:, :3] = np.zeros((3,))
       action_force = action[:3]
       action_position = action[3:] * .3
@@ -129,36 +120,11 @@ class Cloth(base.Task):
       physics.named.data.xfrc_applied[force_id,:3] = 5*action_force
 
       self._stored_action_position = action_position
-      # print(action)
-      # physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:3]=2*action
-      # for i in range(4):
-      #    if (action[i]>0).any():
-      #      print("box")
-      #
-      #      physics.named.data.xpos['mark']=physics.named.data.xpos[CORNER_INDEX_ACTION[i]]
-      #      print(physics.named.data.xpos['mark'])
-      #      physics.named.model.mat_rgba['self']=np.ones(4)
-           # print(physics.named.data.geom_xpos[GEOM_INDEX[i]])
-           # print(physics.named.data.geom_xpos['mark'])
-
-  #     physics.named.data.xfrc_applied['B0_0',:3]=action
-
-      # physics.set_control(action)
-      # physics.named.data.xfrc_applied['B0_0',:3]=action[:3]
-      # physics.named.data.xfrc_applied['B8_0',:3 ]=action[3:6]
-      # physics.named.data.xfrc_applied['B0_8',:3]=action[6:9]
-      # physics.named.data.xfrc_applied['B8_8',:3 ]=action[9:]
-      # physics.named.data.xfrc_applied['B0_0', 2] = 9.5
-      # physics.named.data.xfrc_applied['B0_0',:2]=action[:2]
-      # physics.named.data.xfrc_applied['B8_0',:2]=action[2:]
-      # physics.named.data.xfrc_applied['B8_0', 2] = 9.5
-
 
   def get_observation(self, physics):
     """Returns an observation of the state."""
     obs = collections.OrderedDict()
-    obs['position'] = physics.position()
-    obs['velocity'] = physics.velocity()
+    obs['position'] = physics.data.geom_xpos[6:, :2].astype('float32').reshape(-1)
     return obs
 
   def get_reward(self, physics):
@@ -171,7 +137,6 @@ class Cloth(base.Task):
 
     if self._stored_action_position is None:
         nn_distance = 0
-    #    print('NO self._stored_action_position')
     else:
         _, nn_distance =physics.get_nearest_joint(self._stored_action_position)
 
@@ -181,5 +146,4 @@ class Cloth(base.Task):
     reward_cloth = diag_dist1 + diag_dist2
     reward_distance = -nn_distance
     reward = reward_cloth + self._nn_distance_weight * reward_distance
-    #print('rewards', reward_cloth, reward_distance)
     return reward, dict(reward_cloth=reward_cloth, reward_distance=reward_distance)

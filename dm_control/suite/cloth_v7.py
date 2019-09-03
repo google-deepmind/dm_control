@@ -43,7 +43,6 @@ GEOM_INDEX=['G0_0','G0_8','G8_0','G8_8']
 
 def get_model_and_assets():
   """Returns a tuple containing the model XML string and a dict of assets."""
-  # return common.read_model('cloth_v0.xml'), common.ASSETS
   return common.read_model('cloth_v4.xml'),common.ASSETS
 
 @SUITE.add('benchmarking', 'easy')
@@ -63,7 +62,7 @@ class Cloth(base.Task):
   """A point_mass `Task` to reach target with smooth reward."""
 
   def __init__(self, randomize_gains, random=None, pixel_size=64, camera_id=0,
-               reward='diagonal', distance_weight=0.0, eval=False):
+               reward='diagonal', mode='corners', distance_weight=0.0, eval=False):
     """Initialize an instance of `PointMass`.
 
     Args:
@@ -79,17 +78,14 @@ class Cloth(base.Task):
     self.camera_id = camera_id
     self.reward = reward
     self.distance_weight = distance_weight
+    self.mode = mode
     print('pixel_size', self.pixel_size, 'camera_id', self.camera_id,
-          'reward', self.reward, 'distance_weight', self.distance_weight)
-    # self.action_spec=specs.BoundedArray(
-    # shape=(2,), dtype=np.float, minimum=0.0, maximum=1.0)
+          'reward', self.reward, 'distance_weight', self.distance_weight,
+          'mode', self.mode)
     super(Cloth, self).__init__(random=random)
 
   def action_spec(self, physics):
     """Returns a `BoundedArray` matching the `physics` actuators."""
-
-    # action force(3) ~[-1,1]+ position to apply action(2)~[-.3,.3]
-
     return specs.BoundedArray(
         shape=(5,), dtype=np.float, minimum=[-1.0,-1.0,-1.0,-1.0,-1.0] , maximum=[1.0,1.0,1.0,1.0,1.0] )
 
@@ -103,9 +99,19 @@ class Cloth(base.Task):
   def before_step(self, action, physics):
       """Sets the control signal for the actuators to values in `action`."""
       physics.named.data.xfrc_applied[1:, :3] = np.zeros((3,))
-      action_force = action[:3]
-      action_position = (action[3:] * 0.5 + 0.5) * 8 # [-1, 1] -> [0, 1] -> [0, 8]
-      x, y = np.round(action_position).astype('int32')
+      action_force = action[2:]
+      action_position = (action[:2] * 0.5 + 0.5) * 8 # [-1, 1] -> [0, 1] -> [0, 8]
+
+      assert len(action_force) == 3
+      assert len(action_position) == 2
+
+      action_position = action_position[None, :]
+      grid_points = self._get_grid_points()
+      distances = np.linalg.norm(grid_points - action_position, axis=-1)
+      idx = np.argmin(distances)
+
+      x, y = grid_points[idx]
+      x, y = int(x), int(y)
 
       force_id = 'B{}_{}'.format(x, y)
       physics.named.data.xfrc_applied[force_id, :3] = 5 * action_force
@@ -114,7 +120,6 @@ class Cloth(base.Task):
     """Returns an observation of the state."""
     obs = collections.OrderedDict()
     obs['position'] = physics.data.geom_xpos[6:, :2].astype('float32').reshape(-1)
-
     return obs
 
   def get_reward(self, physics):
@@ -141,3 +146,27 @@ class Cloth(base.Task):
         return reward, dict(diagonal_reward=diagonal_reward, distance_reward=distance_reward)
 
     raise ValueError(self.reward)
+
+  def _get_grid_points(self):
+      if self.mode == 'corners':
+          grid_points = np.array([[0, 0], [0, 8], [8, 0], [8, 8]], dtype='float32')
+      elif self.mode == 'border':
+          grid_points = np.mgrid[0:9, 0:9].reshape(2, 81).T.astype('float32')
+          grid_points = grid_points[((grid_points == 0) | (grid_points == 8)).any(axis=-1)]
+          assert len(grid_points) == 32
+      elif self.mode == '3x3':
+          grid_points = np.mgrid[0:9:4, 0:9:4].reshape(2, 9).T.astype('float32')
+          assert len(grid_points) == 9
+      elif self.mode == '5x5':
+          grid_points = np.mgrid[0:9:2, 0:9:2].reshape(2, 25).T.astype('float32')
+          assert len(grid_points) == 25
+      elif self.mode == 'normal':
+          grid_points = np.mgrid[0:9, 0:9].reshape(2, 81).T.astype('float32')
+          assert len(grid_points) == 81
+      elif self.mode == 'inner_border':
+          grid_points = np.mgrid[1:8, 1:8].reshape(2, 49).T.astype('float32')
+          grid_points = grid_points[((grid_points == 1) | (grid_points == 7)).any(axis=-1)]
+          assert len(grid_points) == 24
+      else:
+          raise Exception(self.mode)
+      return grid_points

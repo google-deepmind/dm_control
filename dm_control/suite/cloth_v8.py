@@ -104,7 +104,6 @@ class Cloth(base.Task):
     def action_spec(self, physics):
         """Returns a `BoundedArray` matching the `physics` actuators."""
 
-        # action force(3) ~[-1,1]
         if self.eval:
             size = 5 * self.n_locations
         else:
@@ -168,11 +167,8 @@ class Cloth(base.Task):
         diag_reward = self._compute_diagonal_reward(physics)
         distance_reward = -self.distance_weight * np.linalg.norm(physics.named.data.geom_xpos['G4_4', :2]) # center is 0
 
-        #area_concave_reward = self._compute_area_concave(physics)
-
         info = dict(reward_diagonal=diag_reward,
                     distance_reward=distance_reward)
-         #           reward_area_concave=area_concave_reward)
 
         if self.reward == 'area':
             area_reward = self._compute_area_reward(physics)
@@ -191,8 +187,6 @@ class Cloth(base.Task):
 
     def _generate_obs(self, physics):
         obs = collections.OrderedDict()
-        #obs['position'] = physics.position().astype('float32')
-        #obs['velocity'] = physics.velocity().astype('float32')
         obs['position'] = physics.data.geom_xpos[6:, :2].astype('float32').reshape(-1)
 
         if not self.eval:
