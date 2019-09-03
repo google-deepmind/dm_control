@@ -143,7 +143,7 @@ class Cloth(base.Task):
         diagonal_reward = diag_dist1 + diag_dist2
         distance_reward = -self.distance_weight * np.linalg.norm(physics.named.data.geom_xpos['G4_4', :2])
         reward = diagonal_reward + distance_reward
-        return reward, dict(diagonal_reward=diagonal_reward, distance_reward=distance_reward)
+        return reward, dict()
 
     raise ValueError(self.reward)
 

@@ -167,9 +167,6 @@ class Cloth(base.Task):
         diag_reward = self._compute_diagonal_reward(physics)
         distance_reward = -self.distance_weight * np.linalg.norm(physics.named.data.geom_xpos['G4_4', :2]) # center is 0
 
-        info = dict(reward_diagonal=diag_reward,
-                    distance_reward=distance_reward)
-
         if self.reward == 'area':
             area_reward = self._compute_area_reward(physics)
             reward = area_reward
@@ -183,7 +180,7 @@ class Cloth(base.Task):
 
         reward += distance_reward
 
-        return reward, info
+        return reward, dict()
 
     def _generate_obs(self, physics):
         obs = collections.OrderedDict()

@@ -101,15 +101,12 @@ class Cloth(base.Task):
     def get_observation(self, physics):
         """Returns an observation of the state."""
         obs = collections.OrderedDict()
-#        obs['position'] = physics.position().astype(np.float32)
-#        obs['velocity'] = physics.velocity().astype(np.float32)
         obs['position'] = physics.named.data.geom_xpos[6:, :2].astype('float32').reshape(-1)
         return obs
 
     def get_reward(self, physics):
         """Returns a reward to the agent."""
         diag_reward = self._compute_diagonal_reward(physics)
-        info = dict(reward_diagonal=diag_reward,)
 
         if self.reward == 'area':
             pixels = physics.render(width=self.pixel_size, height=self.pixel_size,
@@ -127,7 +124,7 @@ class Cloth(base.Task):
         else:
             raise ValueError(self.reward)
 
-        return reward, info
+        return reward, dict()
 
     def _compute_diagonal_reward(self, physics):
         pos_ll = physics.data.geom_xpos[86, :2]
