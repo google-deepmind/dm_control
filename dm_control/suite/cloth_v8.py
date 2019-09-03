@@ -79,7 +79,7 @@ class Cloth(base.Task):
             integer seed for creating a new `RandomState`, or None to select a seed
             automatically (default).
         """
-        assert mode in ['corners', 'border', '3x3', '5x5', '9x9']
+        assert mode in ['corners', 'inner_border', 'border', '3x3', '5x5', '9x9']
 
         self._randomize_gains = randomize_gains
         self.n_locations = n_locations
@@ -229,6 +229,11 @@ class Cloth(base.Task):
         elif self.mode == '3x3':
             loc = np.random.choice([0, 4, 8, 36, 40, 44, 72, 76, 80],
                                    size=self.n_locations, replace=False)
+        elif self.mode == 'inner_border':
+            loc = np.random.choice([10, 11, 12, 13, 14, 15, 16, 19, 25,
+                                    28, 34, 37, 43, 46, 52, 55, 61, 64,
+                                    65, 66, 67, 68, 69, 70],
+                                    size=self.n_locations, replace=False)
         else:
             raise Exception(self.mode)
         return loc

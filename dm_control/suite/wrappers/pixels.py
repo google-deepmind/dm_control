@@ -30,6 +30,11 @@ STATE_KEY = 'state'
 class Wrapper(dm_env.Environment):
   """Wraps a control environment and adds a rendered pixel observation."""
 
+  def __new__(self, env, *args, **kwargs):
+      self._env = env
+      obj = super().__new__(self)
+      return obj
+
   def __init__(self, env, pixels_only=True, render_kwargs=None,
                observation_key='pixels'):
     """Initializes a new pixel Wrapper.
@@ -127,3 +132,6 @@ class Wrapper(dm_env.Environment):
 
   def __getattr__(self, name):
     return getattr(self._env, name)
+
+  def __getnewargs__(self):
+    return (self._env,)
