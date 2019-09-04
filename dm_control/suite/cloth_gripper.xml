@@ -17,11 +17,15 @@
         <texture name="texplane" type="2d" builtin="checker" rgb1=".2 .3 .4" rgb2=".1 0.15 0.2"
             width="512" height="512" mark="cross" markrgb=".8 .8 .8"/>
 <!--        <texture name="texcarpet" type="2d" file="pattern.png"/>-->
-        <texture name="texcorner4" type="2d" file="/home/wilson/dm_control/dm_control/suite/cloth_4c.png"/>
+                <texture name="texcolormap" type="2d" file="/home/wilson/dm_control/dm_control/suite/skin_colormap.png"/>
+
+                <texture name="texcorner4" type="2d" file="/home/wilson/dm_control/dm_control/suite/cloth_4c.png"/>
 <!--        <texture name="texsponge" type="2d" file="sponge.png"/>-->
         <texture name="texcorner" type="2d" file="/home/wilson/dm_control/dm_control/suite/cloth_3c.png"/>
 <!--        <texture name="texmarble" type="cube" file="marble.png"/>-->
 <!--        <texture name=""-->
+                <material name="matcolormap" texture="texcolormap"/>
+
         <material name="matplane" reflectance="0.3" texture="texplane" texrepeat="1 1" texuniform="true"/>
         <material name="matcorner" texture="texcorner"/>
 <!--        <material name="matcarpet" texture="texcarpet"/>-->
@@ -30,134 +34,177 @@
 <!--        <material name="matmarble" texture="texmarble" rgba=".7 .7 .7 1"/>-->
     </asset>
 
-  <visual>
-    <map shadowclip=".5"/>
-    <quality shadowsize="2048"/>
-  </visual>>
+<!--  <visual>-->
+<!--    <map shadowclip=".5"/>-->
+<!--    <quality shadowsize="2048"/>-->
+<!--  </visual>>-->
 
-  <option timestep="0.001" cone="elliptic"/>
+<!--  <option timestep="0.001" cone="elliptic"/>-->
 
-  <default>
-    <geom friction=".7" solimp="0.9 0.97 0.001" solref=".01 1"/>
-    <joint solimplimit="0 0.99 0.01" solreflimit=".005 1"/>
-    <general ctrllimited="true"/>
-    <tendon width="0.01"/>
-    <site size=".003 .003 .003" material="site" group="3"/>
 
-    <default class="arm">
-      <geom type="capsule" material="self" density="500"/>
-      <joint type="hinge" pos="0 0 0" axis="0 -1 0" limited="true"/>
-      <default class="hand">
-        <joint damping=".5" range="-10 60"/>
-        <geom size=".008"/>
-        <site  type="box" size=".018 .005 .005" pos=".022 0 -.002" euler="0 15 0" group="4"/>
-        <default class="fingertip">
-          <geom type="sphere" size=".008" material="effector"/>
-          <joint damping=".01" stiffness=".01" range="-40 20"/>
-          <site  size=".012 .005 .008" pos=".003 0 .003" group="4" euler="0 0 0"/>
-        </default>
-      </default>
-    </default>
-
-    <default class="object">
-      <geom material="self"/>
-    </default>
-
-    <default class="task">
-      <site rgba="0 0 0 0"/>
-    </default>
-
-    <default class="obstacle">
-      <geom material="decoration" friction="0"/>
-    </default>
-
-    <default class="ghost">
-      <geom material="target" contype="0" conaffinity="0"/>
-    </default>
+    <default>
+    <joint type="hinge" axis="0 0 1" limited="true" range="-.29 .29" damping="1"/>
+    <motor gear=".1" ctrlrange="-10 10" ctrllimited="true"/>
   </default>
+<!--    <geom friction=".7" solimp="0.9 0.97 0.001" solref=".01 1"/>-->
+<!--    <joint solimplimit="0 0.99 0.01" solreflimit=".005 1"/>-->
+<!--    <general ctrllimited="true"/>-->
+<!--    <tendon width="0.01"/>-->
+<!--    <site size=".003 .003 .003" material="site" group="3"/>-->
+
+<!--    <default class="arm">-->
+<!--      <geom type="capsule" material="self" density="500"/>-->
+<!--      <joint type="hinge" pos="0 0 0" axis="0 -1 0" limited="true"/>-->
+<!--      <default class="hand">-->
+<!--        <joint damping=".5" range="-10 60"/>-->
+<!--        <geom size=".008"/>-->
+<!--        <site  type="box" size=".018 .005 .005" pos=".022 0 -.002" euler="0 15 0" group="4"/>-->
+<!--        <default class="fingertip">-->
+<!--          <geom type="sphere" size=".008" material="effector"/>-->
+<!--          <joint damping=".01" stiffness=".01" range="-40 20"/>-->
+<!--          <site  size=".012 .005 .008" pos=".003 0 .003" group="4" euler="0 0 0"/>-->
+<!--        </default>-->
+<!--      </default>-->
+<!--    </default>-->
+
+<!--    <default class="object">-->
+<!--      <geom material="self"/>-->
+<!--    </default>-->
+
+<!--    <default class="task">-->
+<!--      <site rgba="0 0 0 0"/>-->
+<!--    </default>-->
+
+<!--    <default class="obstacle">-->
+<!--      <geom material="decoration" friction="0"/>-->
+<!--    </default>-->
+
+<!--    <default class="ghost">-->
+<!--      <geom material="target" contype="0" conaffinity="0"/>-->
+<!--    </default>-->
+
 
   <worldbody>
     <!-- Arena -->
     <light name="light" directional="true" diffuse=".6 .6 .6" pos="0 0 1" specular=".3 .3 .3"/>
+    <camera name="fixed" pos="0 0 .75" quat="1 0 0 0"/>
 
     <geom name="ground" type="plane" pos="0 0 0" size=".3 .3 .1" material="site"/>
-    <geom name="wall_x" type="plane" pos="-.3 0 .02" zaxis="1 0 0"  size=".02 .3 .02" material="decoration"/>
-    <geom name="wall_y" type="plane" pos="0 -.3 .02" zaxis="0 1 0"  size=".3 .02 .02" material="decoration"/>
-    <geom name="wall_neg_x" type="plane" pos=".3 0 .02" zaxis="-1 0 0"  size=".02 .3 .02" material="decoration"/>
-    <geom name="wall_neg_y" type="plane" pos="0 .3 .02" zaxis="0 -1 0"  size=".3 .02 .02" material="decoration"/>
+    <geom name="wall_x" type="plane" pos="-.3 0 .02" zaxis="1 0 0"  size=".02 .3 .02" material="site"/>
+    <geom name="wall_y" type="plane" pos="0 -.3 .02" zaxis="0 1 0"  size=".3 .02 .02" material="site"/>
+    <geom name="wall_neg_x" type="plane" pos=".3 0 .02" zaxis="-1 0 0"  size=".02 .3 .02" material="site"/>
+    <geom name="wall_neg_y" type="plane" pos="0 .3 .02" zaxis="0 -1 0"  size=".3 .02 .02" material="site"/>
 
-    <camera name="fixed" pos="0 -16 .4" xyaxes="1 0 0 0 0 1" fovy="4"/>
+<!--    <camera name="fixed" pos="0 -16 .4" xyaxes="1 0 0 0 0 1" fovy="4"/>-->
 
     <!-- Arm -->
-    <geom name="arm_root" type="cylinder" fromto="0 -.022 .4 0 .022 .4" size=".024"
-          material="decoration" contype="0" conaffinity="0"/>
-    <body name="upper_arm" pos="0 0 .4" childclass="arm">
-      <joint name="arm_root" damping="2" limited="false"/>
-      <geom  name="upper_arm"  size=".02" fromto="0 0 0 0 0 .18"/>
-      <body  name="middle_arm" pos="0 0 .18" childclass="arm">
-        <joint name="arm_shoulder" damping="1.5" range="-160 160"/>
-        <geom  name="middle_arm"  size=".017" fromto="0 0 0 0 0 .15"/>
-        <body  name="lower_arm" pos="0 0 .15">
-          <joint name="arm_elbow" damping="1" range="-160 160"/>
-          <geom  name="lower_arm" size=".014" fromto="0 0 0 0 0 .12"/>
-<!--                      <site  name="grasp" pos="0 0 .001"/>-->
+<!--    <geom name="arm_root" type="cylinder" fromto="0 -.022 .4 0 .022 .4" size=".024"-->
+<!--          material="decoration" contype="0" conaffinity="0"/>-->
+<!--    <body name="upper_arm" pos="0 0 .4" childclass="arm">-->
+<!--      <joint name="arm_root" damping="2" limited="false"/>-->
+<!--      <geom  name="upper_arm"  size=".02" fromto="0 0 0 0 0 .18"/>-->
+<!--      <body  name="middle_arm" pos="0 0 .18" childclass="arm">-->
+<!--        <joint name="arm_shoulder" damping="1.5" range="-160 160"/>-->
+<!--        <geom  name="middle_arm"  size=".017" fromto="0 0 0 0 0 .15"/>-->
+<!--        <body  name="lower_arm" pos="0 0 .15">-->
+<!--          <joint name="arm_elbow" damping="1" range="-160 160"/>-->
+<!--          <geom  name="lower_arm" size=".014" fromto="0 0 0 0 0 .12"/>-->
+<!--&lt;!&ndash;                      <site  name="grasp" pos="0 0 .001"/>&ndash;&gt;-->
 
-<!--          <body  name="hand" pos="0 0 .12">-->
-<!--            <joint name="arm_wrist" damping=".5" range="-140 140" />-->
-<!--            <geom  name="hand" size=".011" fromto="0 0 0 0 0 .03"/>-->
-<!--            <geom  name="palm1"  fromto="0 0 .03  .03 0 .045" class="hand"/>-->
-<!--            <geom  name="palm2"  fromto="0 0 .03 -.03 0 .045" class="hand"/>-->
-            <site  name="grasp" pos="0 0 .001"/>
-<!--            <body  name="pinch site" pos="0 0 .090">-->
-<!--              <site  name="pinch"/>-->
-<!--              <inertial pos="0 0 0" mass="1e-6" diaginertia="1e-12 1e-12 1e-12"/>-->
-<!--              <camera name="hand" pos="0 -.3 0" xyaxes="1 0 0 0 0 1" mode="track"/>-->
-<!--            </body>-->
-            <site  name="palm_touch" type="box" group="4" size=".025 .005 .008" pos="0 0 .043"/>
+<!--&lt;!&ndash;          <body  name="hand" pos="0 0 .12">&ndash;&gt;-->
+<!--&lt;!&ndash;            <joint name="arm_wrist" damping=".5" range="-140 140" />&ndash;&gt;-->
+<!--&lt;!&ndash;            <geom  name="hand" size=".011" fromto="0 0 0 0 0 .03"/>&ndash;&gt;-->
+<!--&lt;!&ndash;            <geom  name="palm1"  fromto="0 0 .03  .03 0 .045" class="hand"/>&ndash;&gt;-->
+<!--&lt;!&ndash;            <geom  name="palm2"  fromto="0 0 .03 -.03 0 .045" class="hand"/>&ndash;&gt;-->
+<!--            <site  name="grasp" pos="0 0 .001"/>-->
+<!--&lt;!&ndash;            <body  name="pinch site" pos="0 0 .090">&ndash;&gt;-->
+<!--&lt;!&ndash;              <site  name="pinch"/>&ndash;&gt;-->
+<!--&lt;!&ndash;              <inertial pos="0 0 0" mass="1e-6" diaginertia="1e-12 1e-12 1e-12"/>&ndash;&gt;-->
+<!--&lt;!&ndash;              <camera name="hand" pos="0 -.3 0" xyaxes="1 0 0 0 0 1" mode="track"/>&ndash;&gt;-->
+<!--&lt;!&ndash;            </body>&ndash;&gt;-->
+<!--            <site  name="palm_touch" type="box" group="4" size=".025 .005 .008" pos="0 0 .043"/>-->
 
 
-        </body>
-      </body>
-    </body>
+<!--        </body>-->
+<!--      </body>-->
+<!--    </body>-->
+
+
 
 <!--    <cloth></cloth>-->
-<body name="B3_5" pos="0 0 0.1">
+    <body name="B3_5" pos="0 0 0.1">
           <camera name="track" mode="trackcom" pos="0 -.5 .5" xyaxes="1 0 0 0 1 1"/>
 <!--      <camera name="cam0" pos="0 -0.3 0.3" xyaxes="1 0 0 0 0.7 0.7"/>-->
+<!--                  <camera name="track" mode="trackcom" pos="-0.05 -0.6 0.5" xyaxes="1 0 0 0 1 1"/>-->
+
       <freejoint name="r1"/>
       <composite type="cloth" count="9 9 1" spacing="0.03" flatinertia="0.01">
         <joint kind="main" damping="0.002"/>
 <!--        <skin rgba="0.6 1 0.6 1" texcoord="true" inflate="0.005" subgrid="2"/>-->
-        <skin material="matcorner4" texcoord="true" inflate="0.005" subgrid="2"/>
+        <skin material="matcolormap" texcoord="true" inflate="0.005" subgrid="2"/>
 
         <geom type="capsule" size="0.0075 0.005" rgba=".8 .2 .1 1"/>
       </composite>
       <site name="target" type="sphere"/>
     </body>
 
+
+<!--     <body name="hand" pos="-0.04 0.04 .3">-->
+<!--      <camera name="cam2" pos="0 -0.3 0.3" xyaxes="1 0 0 0 0.7 0.7"/>-->
+<!--      <joint name="root_x" type="slide"  pos="0 0 0" axis="1 0 0" />-->
+<!--      <joint name="root_y" type="slide"  pos="0 0 0" axis="0 1 0" />-->
+<!--      <joint name="root_z" type="slide"  pos="0 0 0" axis="0 0 1"/>-->
+
+<!--&lt;!&ndash;      original size =.01 now change to a larger size to make it easier also with the target&ndash;&gt;-->
+<!--      <geom name="hand" type="sphere" size=".02" material="self" mass=".005"/>-->
+<!--    </body>-->
+
   </worldbody>
 
 
+<!--  <tendon>-->
+<!--    <fixed name="tx">-->
+<!--      <joint joint="root_x" coef="1"/>-->
+<!--      <joint joint="root_y" coef="0"/>-->
+<!--      <joint joint="root_z" coef="0"/>-->
+<!--    </fixed>-->
+<!--    <fixed name="ty">-->
+<!--      <joint joint="root_x" coef="0"/>-->
+<!--      <joint joint="root_y" coef="1"/>-->
+<!--      <joint joint="root_z" coef="0"/>-->
+<!--    </fixed>-->
+<!--     <fixed name="tz">-->
+<!--      <joint joint="root_x" coef="0"/>-->
+<!--      <joint joint="root_y" coef="0"/>-->
+<!--      <joint joint="root_z" coef="1"/>-->
+<!--    </fixed>-->
+<!--  </tendon>-->
 
-  <equality>
-<!--    <tendon name="coupling" tendon1="coupling" solimp="0.95 0.99 0.001" solref=".005 .5"/>-->
-    <distance geom1="lower_arm" geom2="G8_8" distance="0"/>
 
-  </equality>
+
+<!--  <equality>-->
+
+<!--    <distance geom1="hand" geom2="G8_8" distance="0"/>-->
+
+<!--  </equality>-->
 
   <sensor>
-    <touch name="palm_touch" site="palm_touch"/>
+<!--    <touch name="palm_touch" site="palm_touch"/>-->
 
   </sensor>
 
   <actuator>
-    <motor name="root"     joint="arm_root"     ctrlrange="-1 1"  gear="12"/>
-    <motor name="shoulder" joint="arm_shoulder" ctrlrange="-1 1"  gear="8"/>
-    <motor name="elbow"    joint="arm_elbow"    ctrlrange="-1 1"  gear="4"/>
+<!--    <motor name="root"     joint="arm_root"     ctrlrange="-1 1"  gear="12"/>-->
+<!--    <motor name="shoulder" joint="arm_shoulder" ctrlrange="-1 1"  gear="8"/>-->
+<!--    <motor name="elbow"    joint="arm_elbow"    ctrlrange="-1 1"  gear="4"/>-->
 <!--    <motor name="wrist"    joint="arm_wrist"    ctrlrange="-1 1"  gear="2"/>-->
 <!--    <motor name="grasp"    tendon="grasp"       ctrlrange="-1 1"  gear="2"/>-->
 <!--    <position name="finger" joint="fingertip" ctrllimited="true" ctrlrange="0 0.2" kp="300"/>-->
 <!--    <position name="thumb" joint="thumbtip" ctrllimited="true" ctrlrange="0 0.2" kp="300"/>-->
+<!--    <motor name="tx" tendon="tx"/>-->
+<!--    <motor name="ty" tendon="ty"/>-->
+<!--    <motor name="tz" tendon="tz"/>-->
+        <motor ctrllimited="true" ctrlrange="-1 1" gear="5.0" joint="r1"/>
 
   </actuator>
 
