@@ -53,6 +53,8 @@ def get_model_and_assets():
   """Returns a tuple containing the model XML string and a dict of assets."""
   return common.read_model('cloth_gripper.xml'), common.ASSETS
 
+
+
 @SUITE.add('hard')
 def easy(fully_observable=True, time_limit=_TIME_LIMIT, random=None,
             environment_kwargs=None):
@@ -69,11 +71,10 @@ def easy(fully_observable=True, time_limit=_TIME_LIMIT, random=None,
 class Physics(mujoco.Physics):
   """Physics with additional features for the Planar Manipulator domain."""
 
-
 class Stack(base.Task):
   """A Stack `Task`: stack the boxes."""
 
-  def __init__(self, randomize_gains, random=None):
+  def __init__(self, randomize_gains, random=None, mode='corners'):
     """Initialize an instance of `PointMass`.
 
     Args:
@@ -83,7 +84,9 @@ class Stack(base.Task):
         automatically (default).
     """
     self._randomize_gains = randomize_gains
-    self.current_loc = np.zeros((2,))
+    self._mode = mode
+    self._current_loc = np.zeros((2,))
+    print('mode', self._mode)
 
     super(Stack, self).__init__(random=random)
 
@@ -96,92 +99,67 @@ class Stack(base.Task):
 
   def action_spec(self, physics):
     """Returns a `BoundedArray` matching the `physics` actuators."""
-
     return specs.BoundedArray(
       shape=(3,), dtype=np.float, minimum=[-1.0,-1.0,-1.0] , maximum=[1.0,1.0,1.0])
 
+
   def before_step(self, action, physics):
-
     """Sets the control signal for the actuators to values in `action`."""
-    # Support legacy internal code.
-
     # clear previous xfrc_force
     physics.named.data.xfrc_applied[:, :3] = np.zeros((3,))
 
     # scale the position to be a normal range
+    goal_position = action[:3] * 0.1
+    x = int(self._current_loc % 9)
+    y = int(self._current_loc // 9)
 
-    goal_position = action[:3]
-    location = self.current_loc
+    action_id = 'B{}_{}'.format(x, y)
+    geom_id = 'G{}_{}'.format(x, y)
 
-    goal_position = goal_position * 0.1
+    # apply consecutive force to move the point to the target position
+    position = goal_position + physics.named.data.geom_xpos[geom_id]
+    dist = position - physics.named.data.geom_xpos[geom_id]
 
-    # computing the mapping from geom_xpos to location in image
-    cam_fovy = physics.model.cam_fovy[0]
-    f = 0.5 * 64 / math.tan(cam_fovy * math.pi / 360)
-    cam_matrix = np.array([[f, 0, 64 / 2], [0, f, 64 / 2], [0, 0, 1]])
-    cam_mat = physics.data.cam_xmat[0].reshape((3, 3))
-    cam_pos = physics.data.cam_xpos[0].reshape((3, 1))
-    cam = np.concatenate([cam_mat, cam_pos], axis=1)
-    cam_pos_all = np.zeros((86, 3, 1))
-    for i in range(86):
-        geom_xpos_added = np.concatenate([physics.data.geom_xpos[i], np.array([1])]).reshape((4, 1))
-        cam_pos_all[i] = cam_matrix.dot(cam.dot(geom_xpos_added)[:3])
-
-    # cam_pos_xy=cam_pos_all[5:,:]
-    cam_pos_xy=np.rint(cam_pos_all[:,:2].reshape((86,2))/cam_pos_all[:,2])
-    cam_pos_xy=cam_pos_xy.astype(int)
-    cam_pos_xy[:,1]=64-cam_pos_xy[:,1]
-
-    # hyperparameter epsilon=3(selecting 3 nearest joint) and select the point
-    epsilon=3
-    possible_index=[]
-    possible_z=[]
-    for i in range(86):
-        #flipping the x and y to make sure it corresponds to the real location
-        if abs(cam_pos_xy[i][0]-location[0,1])<epsilon and abs(cam_pos_xy[i][1]-location[0,0])<epsilon and i>4:
-            possible_index.append(i)
-            possible_z.append(physics.data.geom_xpos[i,2])
-
-    if possible_index != [] :
-        index=possible_index[possible_z.index(max(possible_z))]
-
-        corner_action = index-4
-        corner_geom = index
-
-        # apply consecutive force to move the point to the target position
-        position=goal_position+physics.named.data.geom_xpos[corner_geom]
-        dist = position-physics.named.data.geom_xpos[corner_geom]
-
-        loop=0
-        while np.linalg.norm(dist)>0.025:
-          loop+=1
-          if loop >40:
-            break
-          physics.named.data.xfrc_applied[corner_action,:3]=dist*20
-          physics.step()
-          self.after_step(physics)
-          dist=position-physics.named.data.geom_xpos[corner_geom]
+    loop = 0
+    while np.linalg.norm(dist) > 0.025:
+      loop += 1
+      if loop > 40:
+        break
+      physics.named.data.xfrc_applied[action_id,:3] = dist * 20
+      physics.step()
+      self.after_step(physics)
+      dist = position - physics.named.data.geom_xpos[geom_id]
 
   def get_observation(self, physics):
     """Returns either features or only sensors (to be used with pixels)."""
     obs = collections.OrderedDict()
-    self.current_loc = self.sample_location(physics)
-    obs['force_location'] = np.tile(self.current_loc, 50).reshape(-1).astype('float32')
+    obs['position'] = physics.data.geom_xpos[6:, :2].astype('float32').reshape(-1)
+    self._current_loc = self._generate_loc()
+    obs['force_location'] = np.tile(self._current_loc , 50).reshape(-1).astype('float32')
     return obs
 
-  def sample_location(self,physics):
-    # obs=self.get_observation(physics)
-    render_kwargs={}
-    render_kwargs['camera_id']=0
-    render_kwargs['width'] = 64
-    render_kwargs['height'] = 64
-    image=physics.render(**render_kwargs)
-    location_range = np.transpose(np.where(~np.all(image > 100, axis=2)))
-    num_loc=np.shape(location_range)[0]
-    index=np.random.randint(num_loc,size=1)
-    location=location_range[index]
-
-    return location
+  def _generate_loc(self):
+      if self._mode == 'corners':
+          loc = np.random.choice([0, 8, 72, 80])
+      elif self._mode == 'border':
+          loc = np.random.choice([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26,
+                                  27, 35, 36, 44, 45, 53, 54, 62, 63, 71,
+                                  72, 73, 74, 75, 76, 77, 78, 79, 80])
+      elif self._mode == '9x9':
+          loc = np.random.choice(81)
+      elif self._mode == '5x5':
+          loc = np.random.choice([0, 2, 4, 6, 8, 18, 20, 22, 24, 26,
+                                  36, 38, 40, 42, 44, 54, 56, 58, 60, 62,
+                                  72, 74, 76, 78, 80])
+      elif self._mode == '3x3':
+          loc = np.random.choice([0, 4, 8, 36, 40, 44, 72, 76, 80])
+      elif self._mode == 'inner_border':
+          loc = np.random.choice([10, 11, 12, 13, 14, 15, 16, 19, 25,
+                                  28, 34, 37, 43, 46, 52, 55, 61, 64,
+                                  65, 66, 67, 68, 69, 70])
+      else:
+          raise Exception(self.mode)
+      return loc
 
   def get_reward(self,physics):
       dist_sum=0
