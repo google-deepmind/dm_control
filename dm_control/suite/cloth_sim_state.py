@@ -57,12 +57,12 @@ def get_model_and_assets():
 
 @SUITE.add('hard')
 def easy(fully_observable=True, time_limit=_TIME_LIMIT, random=None,
-            environment_kwargs=None):
+            environment_kwargs=None, **kwargs):
   """Returns stacker task with 2 boxes."""
 
   physics=Physics.from_xml_string(*get_model_and_assets())
 
-  task = Stack(randomize_gains=False,random=random)
+  task = Stack(randomize_gains=False,random=random, **kwargs)
   environment_kwargs = environment_kwargs or {}
   return control.Environment(
       physics, task, control_timestep=_CONTROL_TIMESTEP,special_task=True,time_limit=time_limit,
