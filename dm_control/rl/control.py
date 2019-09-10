@@ -29,6 +29,8 @@ import numpy as np
 import six
 from six.moves import range
 
+from dm_control.suite.rope_v1 import Rope
+
 FLAT_OBSERVATION_KEY = 'observations'
 
 
@@ -66,6 +68,9 @@ class Environment(dm_env.Environment):
         self._flat_observation = flat_observation
         self._n_frame_skip = n_frame_skip
         self._special_task = special_task
+        self._rope_task = isinstance(task, Rope)
+        if self._rope_task:
+            print('Using rope environment')
 
         if n_sub_steps is not None and control_timestep is not None:
             raise ValueError(
@@ -97,8 +102,20 @@ class Environment(dm_env.Environment):
         if self._flat_observation:
             observation = flatten_observation(observation)
 
+        if self._rope_task:
+            for _ in range(130):
+                timestep = self.initial_step(None)
+            self._physics.named.data.xfrc_applied[:] = np.zeros((6,))
+            for _ in range(50):
+                timestep = self.initial_step(None)
+            return dm_env.TimeStep(
+                step_type=dm_env.StepType.FIRST,
+                reward=None,
+                discount=None,
+                observation=timestep.observation
+            )
+
         if self._special_task:
-            action_spec = self.action_spec()
             for _ in range(130):
                 timestep = self.step(None)
             return dm_env.TimeStep(step_type=dm_env.StepType.FIRST,
@@ -114,14 +131,42 @@ class Environment(dm_env.Environment):
                 observation=observation,
                 info=dict())
 
+    def initial_step(self, action):
+        if self._reset_next_step:
+            return self.reset()
+        for _ in range(self._n_sub_steps * self._n_frame_skip):
+            self._physics.step()
+        self._task.after_step(self._physics)
+        reward = self._task.get_reward(self._physics)
+        observation = self._task.get_observation(self._physics)
+        if self._flat_observation:
+            observation = flatten_observation(observation)
+
+        if self._step_count >= self._step_limit:
+            discount = 1.0
+        else:
+            discount = self._task.get_termination(self._physics)
+        episode_over = discount is not None
+
+        if episode_over:
+            self._reset_next_step = True
+            return dm_env.TimeStep(
+                dm_env.StepType.LAST, reward, discount, observation
+            )
+        else:
+            return dm_env.TimeStep(
+                dm_env.StepType.MID, reward, 1.0, observation
+            )
+
     def step(self, action):
         """Updates the environment using the action and returns a `TimeStep`."""
 
         if self._reset_next_step:
             return self.reset()
 
-        if not self._special_task or (self._special_task and self._step_count > 130):
+        if action is not None:
             self._task.before_step(action, self._physics)
+
         for _ in range(self._n_sub_steps * self._n_frame_skip):
             self._physics.step()
         self._task.after_step(self._physics)

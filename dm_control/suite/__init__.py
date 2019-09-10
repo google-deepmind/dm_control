@@ -51,6 +51,9 @@ from dm_control.suite import cloth_v8
 from dm_control.suite import cloth_gripper
 from dm_control.suite import cloth_sim
 from dm_control.suite import cloth_sim_state
+from dm_control.suite import cloth_corner
+from dm_control.suite import cloth_point
+from dm_control.suite import rope_v1
 
 # Find all domains imported.
 _DOMAINS = {name: module for name, module in locals().items()
