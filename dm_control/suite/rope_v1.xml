@@ -1,0 +1,123 @@
+
+<mujoco>
+<!--    <default class="main">-->
+<!--        <geom rgba="1 0 0 1"/>-->
+<!--&lt;!&ndash;        <geom rgba="255 255 255 1"/>&ndash;&gt;-->
+<!--        <default class="sub">-->
+<!--            <geom rgba="0 1 0 1"/>-->
+<!--        </default>-->
+<!--    </default>-->
+
+  <include file="./common/visual.xml"/>
+  <include file="./common/skybox.xml"/>
+  <include file="./common/materials.xml"/>
+    <asset>
+         <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="512"/>
+        <texture name="texplane" type="2d" builtin="checker" rgb1=".2 .3 .4" rgb2=".1 0.15 0.2"
+            width="512" height="512" mark="cross" markrgb=".8 .8 .8"/>
+         <texture name="background" builtin="flat" type="2d" mark="random" markrgb="1 1 1" width="800" height="800" rgb1=".2 .3 .4"/>
+        <material name="background" texture="background" texrepeat="1 1" texuniform="true"/>
+<!--         <texture name="textablecenter" type="2d" file="table_center_10.png"/>-->
+
+<!--        <material name="tablecenter"  texture="textablecenter" />-->
+    </asset>
+    <default>
+           <geom rgba="255 255 255 1"/>
+        <default class="sub">
+            <geom rgba="0 1 0 1"/>
+        </default>
+    </default>
+  <worldbody>
+<!--    <light cutoff="100" diffuse="1 1 1" dir="-0 0 -1" directional="true" exponent="1" pos="0 0 0.0" specular=".1 .1 .1"/>-->
+<!--rgba ="0.1 0.1 .1 0.5" -->
+<!--      rgba="0.5 0.5 0.5 0.3" -->
+    <geom  rgba="0.5 0.5 0.5 1" conaffinity="1" density='0.' contype="1" condim="1" name="table" pos="0 0.0 0." size="1 1 0.1" type="plane" />
+<!--    <geom name="target" pos="0 0 .01" type="sphere" size=".06" rgba=".6 .3 .3 1"/>-->
+    <!--  ================= SWIMMER ================= /-->
+    <body name="B10" pos="0 0 0.1">
+         <camera name="track" mode="trackcom" pos="0 -1 1" xyaxes="1 0 0 0 1 1" />
+<!--        <joint type="slide"  pos="0 0 1" name="slider1" axis="0 0 1"/>-->
+        <freejoint name="r1"/>
+<!--        <composite type="rope" count="21 1 1" spacing="0.04" offset="0 0 2">-->
+
+        <composite type="rope" count="21 1 1" spacing="0.04" offset="0 0 2">
+            <joint kind="main" damping="0.005"/>
+<!--            rgba="0.8 0.2 0.1 1-->
+<!--            <geom type="capsule" size=".01 .015" rgba=" 1. 0 0 1"/>-->
+            <geom type="capsule" size=".01 .015" rgba=" 1. 0 0 1"/>
+
+<!--            <pin coord="1" />-->
+<!--            <pin coord="2" />-->
+<!--            <pin coord="3" />-->
+<!--            <pin coord="4" />-->
+<!--            <pin coord="5" />-->
+<!--            <pin coord="6" />-->
+<!--            <pin coord="7" />-->
+<!--            <pin coord="21"/>-->
+        </composite>
+<!--        <body name="head" pos="-1 0 1">-->
+<!--           <geom density="30" fromto="0 0 0 -1 0 0" size="0.04" type="capsule"/>-->
+<!--               <joint type="slide"  name="slider1" axis="0 0 1"/>-->
+
+<!--            </body>-->
+    </body>
+
+<!--    <body name="torso" pos="0 0 0">-->
+<!--      <geom density="1000" fromto="1.5 0 0 0.5 0 0" size="0.1" type="capsule"/>-->
+<!--      <joint axis="1 0 0" name="slider1" pos="0 0 0" type="slide"/>-->
+<!--      <joint axis="0 1 0" name="slider2" pos="0 0 0" type="slide"/>-->
+<!--      <joint axis="0 0 1" name="rot" pos="0 0 0" type="hinge"/>-->
+<!--      <body name="mid" pos="0.5 0 0">-->
+<!--        <geom density="1000" fromto="0 0 0 -1 0 0" size="0.1" type="capsule"/>-->
+<!--        <joint axis="0 0 1" limited="true" name="rot2" pos="0 0 0" range="-100 100" type="hinge"/>-->
+<!--        <body name="back" pos="-1 0 0">-->
+<!--          <geom density="1000" fromto="0 0 0 -1 0 0" size="0.1" type="capsule"/>-->
+<!--          <joint axis="0 0 1" limited="true" name="rot3" pos="0 0 0" range="-100 100" type="hinge"/>-->
+<!--        </body>-->
+<!--      </body>-->
+<!--    </body>-->
+  </worldbody>
+  <sensor>
+
+  </sensor>
+  <actuator>
+    <motor ctrllimited="true" ctrlrange="-1 1" gear="10.0" joint="r1"/>
+<!--    <motor ctrllimited="true" ctrlrange="-1 1" gear="150.0" joint="rot3"/>-->
+<!--      <motor ctrllimited="true" ctrlrange="-1 1" gear="150.0" joint="r1"/>-->
+  </actuator>
+<!--    <worldbody>-->
+
+<!--        <light cutoff="100" diffuse="1 1 1" dir="-0 0 -1" directional="true" exponent="1" pos="0 0 0.0" specular=".1 .1 .1"/>-->
+
+<!--        <geom rgba="0.1 0.1 .1 1." conaffinity="1" density='0.' contype="1" condim="1" name="table" pos="0 0.0 0." size="2.8 2.8 0.1" type="plane" />-->
+
+<!--        <body name="B10" pos="0 0 1">-->
+<!--            <freejoint/>-->
+<!--            <composite type="rope" count="21 1 1" spacing="0.04" offset="0 0 2">-->
+<!--                <joint kind="main" damping="0.005" />-->
+<!--                <geom type="capsule" size=".01 .015" rgba=".8 .2 .1 1"/>-->
+<!--            </composite>-->
+<!--        </body>-->
+<!--        <body name="back" pos="-1 0 0">-->
+<!--          <geom density="1000" fromto="0 0 0 -1 0 0" size="0.1" type="capsule"/>-->
+<!--          <joint axis="0 0 1" limited="true" name="rot3" pos="0 0 0" range="-100 100" type="hinge"/>-->
+<!--        </body>-->
+<!--    </worldbody>-->
+<!--    <actuator>-->
+<!--        <general joint="rot3"  ctrlrange="-1 1" ctrllimited="True"/>-->
+<!--    </actuator>-->
+</mujoco>
+<!--    # rope object-->
+
+<!--    </body>-->
+<!--            <composite type="grid" count="11 9 1" spacing="0.2" offset="0. 0. 0">-->
+<!--            <skin texcoord="true" material="mathammock" inflate="0.01" subgrid="3"/>-->
+<!--            <pin coord="0 0"/>-->
+<!--            <pin coord="10 0"/>-->
+<!--            <pin coord="0 8"/>-->
+<!--            <pin coord="10 8"/>-->
+<!--            <geom size=".095"/>-->
+<!--            <joint kind="main" damping="10"/>-->
+<!--        </composite>-->
+
+<!--</mujoco>-->
