@@ -110,7 +110,8 @@ class Environment(dm_env.Environment):
                 step_type=dm_env.StepType.FIRST,
                 reward=None,
                 discount=None,
-                observation=timestep.observation
+                observation=timestep.observation,
+                info=dict(),
             )
 
         if self._special_task:
@@ -149,11 +150,11 @@ class Environment(dm_env.Environment):
         if episode_over:
             self._reset_next_step = True
             return dm_env.TimeStep(
-                dm_env.StepType.LAST, reward, discount, observation
+                dm_env.StepType.LAST, reward, discount, observation, dict()
             )
         else:
             return dm_env.TimeStep(
-                dm_env.StepType.MID, reward, 1.0, observation
+                dm_env.StepType.MID, reward, 1.0, observation, dict()
             )
 
     def step(self, action):

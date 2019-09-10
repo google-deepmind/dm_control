@@ -103,8 +103,7 @@ class Rope(base.Task):
   def get_observation(self, physics):
     """Returns an observation of the state."""
     obs = collections.OrderedDict()
-    obs['position'] = physics.position()
-    obs['velocity'] = physics.velocity()
+    obs['position'] = physics.data.geom_xpos[1:, :].astype('float32').reshape(-1)
     return obs
 
   def get_reward(self, physics):
