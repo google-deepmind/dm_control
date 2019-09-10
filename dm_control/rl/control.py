@@ -29,7 +29,6 @@ import numpy as np
 import six
 from six.moves import range
 
-from dm_control.suite.rope_v1 import Rope
 
 FLAT_OBSERVATION_KEY = 'observations'
 
@@ -45,7 +44,8 @@ class Environment(dm_env.Environment):
                  n_sub_steps=None,
                  flat_observation=False,
                  n_frame_skip=1,
-                 special_task=True):
+                 special_task=False,
+                 rope_task=False):
         """Initializes a new `Environment`.
 
         Args:
@@ -68,9 +68,7 @@ class Environment(dm_env.Environment):
         self._flat_observation = flat_observation
         self._n_frame_skip = n_frame_skip
         self._special_task = special_task
-        self._rope_task = isinstance(task, Rope)
-        if self._rope_task:
-            print('Using rope environment')
+        self._rope_task = rope_task
 
         if n_sub_steps is not None and control_timestep is not None:
             raise ValueError(

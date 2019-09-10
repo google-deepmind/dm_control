@@ -20,7 +20,7 @@ from __future__ import division
 from __future__ import print_function
 
 import collections
-from dm_control.rl import specs
+from dm_env import specs
 from dm_control import mujoco
 from dm_control.rl import control
 from dm_control.suite import base
@@ -86,7 +86,7 @@ class Cloth(base.Task):
   def action_spec(self, physics):
     """Returns a `BoundedArraySpec` matching the `physics` actuators."""
 
-    return specs.BoundedArraySpec(
+    return specs.BoundedArray(
         shape=(12,), dtype=np.float, minimum=[-1.0] * 12, maximum=[1.0] * 12)
 
   def initialize_episode(self,physics):

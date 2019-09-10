@@ -42,7 +42,7 @@ GEOM_INDEX=['G0_0','G0_8','G8_0','G8_8']
 def get_model_and_assets():
   """Returns a tuple containing the model XML string and a dict of assets."""
   # return common.read_model('cloth_v0.xml'), common.ASSETS
-  return common.read_model('rope_v1.xml'),common.ASSETS
+  return common.read_model('rope.xml'),common.ASSETS
 
 
 

@@ -130,7 +130,6 @@ class Cloth(base.Task):
         physics.step()
         self.after_step(physics)
         dist = position - physics.named.data.geom_xpos[corner_geom]
-      print('loop', loop)
 
 
 
