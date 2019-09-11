@@ -69,7 +69,7 @@ class Physics(mujoco.Physics):
 class Cloth(base.Task):
   """A point_mass `Task` to reach target with smooth reward."""
 
-  def __init__(self, randomize_gains, random=None):
+  def __init__(self, randomize_gains, random=None, random_location=True):
     """Initialize an instance of `PointMass`.
 
     Args:
@@ -79,16 +79,19 @@ class Cloth(base.Task):
         automatically (default).
     """
     self._randomize_gains = randomize_gains
+    self._random_location = random_location
 
     super(Cloth, self).__init__(random=random)
 
   def action_spec(self, physics):
     """Returns a `BoundedArraySpec` matching the `physics` actuators."""
-
-    return specs.BoundedArray(
-        shape=(16,), dtype=np.float, minimum=[-1.0] * 16, maximum=[1.0] * 16)
+    if self._random_location:
+      return specs.BoundedArray(
+          shape=(16,), dtype=np.float, minimum=[-1.0] * 16, maximum=[1.0] * 16)
 
   def initialize_episode(self,physics):
+    self._current_loc = self._generate_loc()
+
     physics.named.data.xfrc_applied['B3_4', :3] = np.array([0,0,-2])
     physics.named.data.xfrc_applied['B4_4', :3] = np.array([0,0,-2])
     render_kwargs = {}
@@ -154,3 +157,6 @@ class Cloth(base.Task):
     reward = area / np.sum(self.mask)
 
     return reward
+
+  def _generate_loc(self):
+    return np.random.choice(4)
