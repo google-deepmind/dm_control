@@ -62,7 +62,8 @@ class Physics(mujoco.Physics):
 class Cloth(base.Task):
   """A point_mass `Task` to reach target with smooth reward."""
 
-  def __init__(self, randomize_gains, random=None, random_location=True):
+  def __init__(self, randomize_gains, random=None, random_location=True,
+               pixels_only=False):
     """Initialize an instance of `PointMass`.
 
     Args:
@@ -73,10 +74,11 @@ class Cloth(base.Task):
     """
     self._randomize_gains = randomize_gains
     self._random_location = random_location
+    self._pixels_only = pixels_only
 
     self._current_loc = self._generate_loc()
 
-    print('random_location', self._random_location)
+    print('random_location', self._random_location, 'pixels_only', self._pixels_only)
 
     super(Cloth, self).__init__(random=random)
 
@@ -157,7 +159,9 @@ class Cloth(base.Task):
     image = physics.render(**render_kwargs)
     self.image=image
 
-    obs['position'] = physics.data.geom_xpos[5:,:].reshape(-1).astype('float32')
+    if not self._pixels_only:
+        obs['position'] = physics.data.geom_xpos[5:,:].reshape(-1).astype('float32')
+
     if self._random_location:
       one_hot = np.zeros(4).astype('float32')
       one_hot[self._current_loc] = 1
