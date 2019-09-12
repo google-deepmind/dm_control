@@ -104,7 +104,7 @@ class Cloth(base.Task):
     image = physics.render(**render_kwargs)
     self.image = image
     image_dim = image[:, :, 1].reshape((W, W, 1))
-    self.mask = ~np.all(image_dim > 120, axis=2).astype(int)
+    self.mask = (~np.all(image_dim > 120, axis=2)).astype(int)
 
     physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:3]=np.random.uniform(-.5,.5,size=3)
 
@@ -121,8 +121,8 @@ class Cloth(base.Task):
       else:
         one_hot = action[:4]
         index = np.argmax(one_hot)
+        action = action[4:]
 
-      action = action[4:]
       goal_position = action * 0.05
       corner_action = CORNER_INDEX_ACTION[index]
       corner_geom = CORNER_INDEX_POSITION[index]
