@@ -25,15 +25,8 @@ from dm_control import mujoco
 from dm_control.rl import control
 from dm_control.suite import base
 from dm_control.suite import common
-from dm_control.suite.utils import randomizers
 from dm_control.utils import containers
-from dm_control.utils import rewards
-from imageio import imsave
-from PIL import Image,ImageColor
-import os
 import numpy as np
-import random
-import mujoco_py
 
 
 _DEFAULT_TIME_LIMIT = 20
@@ -45,18 +38,18 @@ CORNER_INDEX_POSITION=['G0_0','G0_8','G8_0','G8_8']
 def get_model_and_assets():
   """Returns a tuple containing the model XML string and a dict of assets."""
 
-  return common.read_model('cloth_corner.xml'),common.ASSETS
+  return common.read_model('cloth_point.xml'),common.ASSETS
 
 
 
 W=64
 
 @SUITE.add('benchmarking', 'easy')
-def easy(time_limit=_DEFAULT_TIME_LIMIT, random=None, environment_kwargs=None):
+def easy(time_limit=_DEFAULT_TIME_LIMIT, random=None, environment_kwargs=None, **kwargs):
   """Returns the easy cloth task."""
 
   physics = Physics.from_xml_string(*get_model_and_assets())
-  task = Cloth(randomize_gains=False, random=random)
+  task = Cloth(randomize_gains=False, random=random, **kwargs)
   environment_kwargs = environment_kwargs or {}
   return control.Environment(
       physics, task, time_limit=time_limit,n_frame_skip=1,special_task=True, **environment_kwargs)
@@ -81,16 +74,26 @@ class Cloth(base.Task):
     self._randomize_gains = randomize_gains
     self._random_location = random_location
 
+    self._current_loc = self._generate_loc()
+
+    print('random_location', self._random_location)
+
     super(Cloth, self).__init__(random=random)
 
   def action_spec(self, physics):
     """Returns a `BoundedArraySpec` matching the `physics` actuators."""
+    # one hot corner + action
     if self._random_location:
       return specs.BoundedArray(
-          shape=(16,), dtype=np.float, minimum=[-1.0] * 16, maximum=[1.0] * 16)
+          shape=(3,), dtype=np.float, minimum=[-1.0] * 3, maximum=[1.0] * 3)
+    else:
+      return specs.BoundedArray(
+        shape=(7,), dtype=np.float, minimum=[-1.0] * 7, maximum=[1.0] * 7
+      )
 
   def initialize_episode(self,physics):
-    self._current_loc = self._generate_loc()
+    if self._random_location:
+        self._current_loc = self._generate_loc()
 
     physics.named.data.xfrc_applied['B3_4', :3] = np.array([0,0,-2])
     physics.named.data.xfrc_applied['B4_4', :3] = np.array([0,0,-2])
@@ -101,7 +104,7 @@ class Cloth(base.Task):
     image = physics.render(**render_kwargs)
     self.image = image
     image_dim = image[:, :, 1].reshape((W, W, 1))
-    self.mask = ~np.all(image_dim > 100, axis=2).astype(int)
+    self.mask = ~np.all(image_dim > 120, axis=2).astype(int)
 
     physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:3]=np.random.uniform(-.5,.5,size=3)
 
@@ -112,10 +115,15 @@ class Cloth(base.Task):
   #     # Support legacy internal code.
 
       physics.named.data.xfrc_applied[:,:3]=np.zeros((3,))
-      index = np.argmax(action[:4])
-      action=action[4:].reshape((4,3))
-      goal_position = action[index]*0.05
-      # physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:3]=2*action
+
+      if self._random_location:
+        index = self._current_loc
+      else:
+        one_hot = action[:4]
+        index = np.argmax(one_hot)
+
+      action = action[4:]
+      goal_position = action * 0.05
       corner_action = CORNER_INDEX_ACTION[index]
       corner_geom = CORNER_INDEX_POSITION[index]
 
@@ -134,6 +142,9 @@ class Cloth(base.Task):
         self.after_step(physics)
         dist = position - physics.named.data.geom_xpos[corner_geom]
 
+      if self._random_location:
+        self._current_loc = self._generate_loc()
+
 
 
   def get_observation(self, physics):
@@ -147,12 +158,17 @@ class Cloth(base.Task):
     self.image=image
 
     obs['position'] = physics.data.geom_xpos[5:,:].reshape(-1).astype('float32')
+    if self._random_location:
+      one_hot = np.zeros(4).astype('float32')
+      one_hot[self._current_loc] = 1
+      obs['location'] = one_hot
+
     return obs
 
   def get_reward(self, physics):
     """Returns a reward to the agent."""
     image_dim = self.image[:, :, 1].reshape((W, W, 1))
-    current_mask = (~np.all(image_dim > 100, axis=2)).astype(int)
+    current_mask = (~np.all(image_dim > 120, axis=2)).astype(int)
     area = np.sum(current_mask * self.mask)
     reward = area / np.sum(self.mask)
 
