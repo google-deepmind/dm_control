@@ -25,7 +25,22 @@ complex control tasks:
 
 -   [`dm_control.locomotion.soccer`]: Multi-agent soccer tasks.
 
-If you use this package, please cite our accompanying [tech report].
+If you use this package, please cite our accompanying [tech report]:
+
+```
+@techreport{deepmindcontrolsuite2018,
+  title = {Deep{Mind} Control Suite},
+  author = {Yuval Tassa and Yotam Doron and Alistair Muldal and Tom Erez
+            and Yazhe Li and Diego de Las Casas and David Budden and Abbas
+            Abdolmaleki and Josh Merel and Andrew Lefrancq and Timothy Lillicrap
+            and Martin Riedmiller},
+  year = 2018,
+  month = jan,
+  howpublished = {https://arxiv.org/abs/1801.00690},
+  url = {https://arxiv.org/abs/1801.00690},
+  volume = {abs/1504.04804},
+}
+```
 
 ## Requirements and Installation
 
