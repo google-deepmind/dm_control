@@ -87,7 +87,7 @@ class Cloth(base.Task):
     """Returns a `BoundedArraySpec` matching the `physics` actuators."""
 
     return specs.BoundedArray(
-        shape=(12,), dtype=np.float, minimum=[-1.0] * 12, maximum=[1.0] * 12)
+        shape=(3,), dtype=np.float, minimum=[-1.0] * 3, maximum=[1.0] * 3)
 
   def initialize_episode(self,physics):
 
@@ -102,7 +102,7 @@ class Cloth(base.Task):
     image = physics.render(**render_kwargs)
     self.image = image
     image_dim = image[:, :, 1].reshape((W, W, 1))
-    self.mask = ~np.all(image_dim > 100, axis=2).astype(int)
+    self.mask = (~np.all(image_dim > 120, axis=2)).astype(int)
 
     physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:3]=np.random.uniform(-.5,.5,size=3)
 
@@ -115,14 +115,8 @@ class Cloth(base.Task):
       physics.named.data.xfrc_applied[:,:3]=np.zeros((3,))
 
       goal_position = action[:3]
-      # location =action[3:].astype(int)
-
-      print('original action', goal_position)
-
       goal_position = goal_position * 0.05
-      print('scaled_action', goal_position)
       location = self.current_loc
-      print('location', location)
 
       # computing the mapping from geom_xpos to location in image
       cam_fovy = physics.named.model.cam_fovy['fixed']
@@ -197,7 +191,7 @@ class Cloth(base.Task):
       image = physics.render(**render_kwargs)
       self.image = image
       image_dim = image[:, :, 1].reshape((W, W, 1))
-      location_range = np.transpose(np.where(~np.all(image_dim > 100, axis=2)))
+      location_range = np.transpose(np.where(~np.all(image_dim > 120, axis=2)))
 
       num_loc = np.shape(location_range)[0]
       index = np.random.randint(num_loc, size=1)
@@ -208,16 +202,8 @@ class Cloth(base.Task):
   def get_reward(self, physics):
     """Returns a reward to the agent."""
 
-    # pos_ll=physics.data.geom_xpos[86,:2]
-    # pos_lr=physics.data.geom_xpos[81,:2]
-    # pos_ul=physics.data.geom_xpos[59,:2]
-    # pos_ur=physics.data.geom_xpos[54,:2]
-    #
-    # diag_dist1=np.linalg.norm(pos_ll-pos_ur)
-    # diag_dist2=np.linalg.norm(pos_lr-pos_ul)
-    # reward_dist=diag_dist1+diag_dist2
     image_dim = self.image[:, :, 1].reshape((W, W, 1))
-    current_mask = (~np.all(image_dim > 100, axis=2)).astype(int)
+    current_mask = (~np.all(image_dim > 120, axis=2)).astype(int)
     area = np.sum(current_mask * self.mask)
     reward = area / np.sum(self.mask)
 
