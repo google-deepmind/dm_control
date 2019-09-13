@@ -53,11 +53,11 @@ def get_model_and_assets():
 W=64
 
 @SUITE.add('benchmarking', 'easy')
-def easy(time_limit=_DEFAULT_TIME_LIMIT, random=None, environment_kwargs=None):
+def easy(time_limit=_DEFAULT_TIME_LIMIT, random=None, environment_kwargs=None, **kwargs):
   """Returns the easy cloth task."""
 
   physics = Physics.from_xml_string(*get_model_and_assets())
-  task = Cloth(randomize_gains=False, random=random)
+  task = Cloth(randomize_gains=False, random=random, **kwargs)
   environment_kwargs = environment_kwargs or {}
   return control.Environment(
       physics, task, time_limit=time_limit,n_frame_skip=1,special_task=True, **environment_kwargs)
