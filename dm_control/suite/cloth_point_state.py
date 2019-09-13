@@ -70,7 +70,7 @@ class Physics(mujoco.Physics):
 class Cloth(base.Task):
   """A point_mass `Task` to reach target with smooth reward."""
 
-  def __init__(self, randomize_gains, random=None):
+  def __init__(self, randomize_gains, random=None, random_location=True):
     """Initialize an instance of `PointMass`.
 
     Args:
@@ -80,6 +80,7 @@ class Cloth(base.Task):
         automatically (default).
     """
     self._randomize_gains = randomize_gains
+    self._current_loc = np.zeros((2,))
 
     super(Cloth, self).__init__(random=random)
 
@@ -89,10 +90,7 @@ class Cloth(base.Task):
     return specs.BoundedArray(
         shape=(3,), dtype=np.float, minimum=[-1.0] * 3, maximum=[1.0] * 3)
 
-  def initialize_episode(self,physics):
-
-
-
+  def initialize_episode(self, physics):
     physics.named.data.xfrc_applied['B3_4', :3] = np.array([0,0,-2])
     physics.named.data.xfrc_applied['B4_4', :3] = np.array([0,0,-2])
     render_kwargs = {}
@@ -114,87 +112,38 @@ class Cloth(base.Task):
 
       physics.named.data.xfrc_applied[:,:3]=np.zeros((3,))
 
-      goal_position = action[:3]
-      goal_position = goal_position * 0.05
-      location = self.current_loc
+      goal_position = action[:3] * 0.05
+      x = int(self._current_loc % 9)
+      y = int(self._current_loc // 9)
 
-      # computing the mapping from geom_xpos to location in image
-      cam_fovy = physics.named.model.cam_fovy['fixed']
-      f = 0.5 * W / math.tan(cam_fovy * math.pi / 360)
-      cam_matrix = np.array([[f, 0, W / 2], [0, f, W / 2], [0, 0, 1]])
-      cam_mat = physics.named.data.cam_xmat['fixed'].reshape((3, 3))
-      cam_pos = physics.named.data.cam_xpos['fixed'].reshape((3, 1))
-      cam = np.concatenate([cam_mat, cam_pos], axis=1)
-      cam_pos_all = np.zeros((86, 3, 1))
-      for i in range(86):
-          geom_xpos_added = np.concatenate([physics.data.geom_xpos[i], np.array([1])]).reshape((4, 1))
-          cam_pos_all[i] = cam_matrix.dot(cam.dot(geom_xpos_added)[:3])
+      action_id = 'B{}_{}'.format(x, y)
+      geom_id = 'G{}_{}'.format(x, y)
 
-      # cam_pos_xy=cam_pos_all[5:,:]
-      cam_pos_xy = np.rint(cam_pos_all[:, :2].reshape((86, 2)) / cam_pos_all[:, 2])
-      cam_pos_xy = cam_pos_xy.astype(int)
-      cam_pos_xy[:, 1] = W - cam_pos_xy[:, 1]
+      # apply consecutive force to move the point to the target position
+      position = goal_position + physics.named.data.geom_xpos[geom_id]
+      dist = position - physics.named.data.geom_xpos[geom_id]
 
-      epsilon = 3
-      possible_index = []
-      possible_z = []
-      for i in range(86):
-          # flipping the x and y to make sure it corresponds to the real location
-          if abs(cam_pos_xy[i][0] - location[0, 1]) < epsilon and abs(
-                  cam_pos_xy[i][1] - location[0, 0]) < epsilon and i > 4:
-              possible_index.append(i)
-              possible_z.append(physics.data.geom_xpos[i, 2])
-
-
-
-      if possible_index != []:
-          index = possible_index[possible_z.index(max(possible_z))]
-
-          corner_action = index - 4
-          corner_geom = index
-
-
-          # apply consecutive force to move the point to the target position
-          position = goal_position + physics.named.data.geom_xpos[corner_geom]
-          dist = position - physics.named.data.geom_xpos[corner_geom]
-
-          loop = 0
-          while np.linalg.norm(dist) > 0.025:
-            loop += 1
-            if loop > 40:
-              break
-            physics.named.data.xfrc_applied[corner_action, :3] = dist * 20
-            physics.step()
-            self.after_step(physics)
-            dist = position - physics.named.data.geom_xpos[corner_geom]
+      loop = 0
+      while np.linalg.norm(dist) > 0.025:
+        loop += 1
+        if loop > 40:
+          break
+        physics.named.data.xfrc_applied[action_id, :3] = dist * 20
+        physics.step()
+        self.after_step(physics)
+        dist = position - physics.named.data.geom_xpos[geom_id]
 
 
   def get_observation(self, physics):
     """Returns an observation of the state."""
     obs = collections.OrderedDict()
 
-
-    # obs['position'] = physics.data.geom_xpos[5:,:].reshape(-1).astype('float32')
-    self.current_loc = self.sample_location(physics)
-    obs['location'] = np.tile(self.current_loc, 50).reshape(-1).astype('float32')
+    obs['position'] = physics.data.geom_xpos[5:,:].reshape(-1).astype('float32')
+    self._current_loc = np.random.choice(81)
+    x = int(self._current_loc % 9)
+    y = int(self._current_loc // 9)
+    obs['location'] = np.tile([x, y], 50).reshape(-1).astype('float32')
     return obs
-
-  def sample_location(self, physics):
-      # obs=self.get_observation(physics)
-      render_kwargs = {}
-      render_kwargs['camera_id'] = 0
-      render_kwargs['width'] = W
-      render_kwargs['height'] = W
-      image = physics.render(**render_kwargs)
-      self.image = image
-      image_dim = image[:, :, 1].reshape((W, W, 1))
-      location_range = np.transpose(np.where(~np.all(image_dim > 120, axis=2)))
-
-      num_loc = np.shape(location_range)[0]
-      index = np.random.randint(num_loc, size=1)
-      location = location_range[index]
-
-      return location
 
   def get_reward(self, physics):
     """Returns a reward to the agent."""

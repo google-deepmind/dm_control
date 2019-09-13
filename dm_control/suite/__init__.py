@@ -53,6 +53,7 @@ from dm_control.suite import cloth_sim
 from dm_control.suite import cloth_sim_state
 from dm_control.suite import cloth_corner
 from dm_control.suite import cloth_point
+from dm_control.suite import cloth_point_state
 from dm_control.suite import rope_v1
 
 # Find all domains imported.
