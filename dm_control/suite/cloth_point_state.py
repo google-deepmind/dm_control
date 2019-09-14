@@ -140,6 +140,14 @@ class Cloth(base.Task):
 
     obs['position'] = physics.data.geom_xpos[5:,:].reshape(-1).astype('float32')
     self._current_loc = np.random.choice(81)
+
+    render_kwargs = {}
+    render_kwargs['camera_id'] = 0
+    render_kwargs['width'] = W
+    render_kwargs['height'] = W
+    image = physics.render(**render_kwargs)
+    self.image = image
+
     x = int(self._current_loc % 9)
     y = int(self._current_loc // 9)
     obs['location'] = np.tile([x, y], 50).reshape(-1).astype('float32')
