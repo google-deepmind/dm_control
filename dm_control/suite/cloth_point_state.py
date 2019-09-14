@@ -80,15 +80,21 @@ class Cloth(base.Task):
         automatically (default).
     """
     self._randomize_gains = randomize_gains
-    self._current_loc = np.zeros((2,))
+    self._random_location = random
+    if self._random_location:
+      self._current_loc = np.zeros((2,))
 
     super(Cloth, self).__init__(random=random)
 
   def action_spec(self, physics):
     """Returns a `BoundedArraySpec` matching the `physics` actuators."""
-
-    return specs.BoundedArray(
-        shape=(3,), dtype=np.float, minimum=[-1.0] * 3, maximum=[1.0] * 3)
+    if self._random_location:
+      return specs.BoundedArray(
+          shape=(3,), dtype=np.float, minimum=[-1.0] * 3, maximum=[1.0] * 3)
+    else:
+      return specs.BoundedArray(
+          shape=(5,), dtype=np.float, minimum=[-1.0] * 5, maximum=[1.0] * 5
+      )
 
   def initialize_episode(self, physics):
     physics.named.data.xfrc_applied['B3_4', :3] = np.array([0,0,-2])
@@ -99,8 +105,7 @@ class Cloth(base.Task):
     render_kwargs['height'] = W
     image = physics.render(**render_kwargs)
     self.image = image
-    image_dim = image[:, :, 1].reshape((W, W, 1))
-    self.mask = (~np.all(image_dim > 120, axis=2)).astype(int)
+    self.mask = np.any(image < 100, axis=2).astype(int)
 
     physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:3]=np.random.uniform(-.5,.5,size=3)
 
@@ -112,9 +117,17 @@ class Cloth(base.Task):
 
       physics.named.data.xfrc_applied[:,:3]=np.zeros((3,))
 
-      goal_position = action[:3] * 0.05
-      x = int(self._current_loc % 9)
-      y = int(self._current_loc // 9)
+      if self._random_location:
+        assert len(action) == 3
+        goal_position = action * 0.05
+        x = int(self._current_loc % 9)
+        y = int(self._current_loc // 9)
+      else:
+        assert len(action) == 5
+        goal_position = action[2:] * 0.05
+        point = (action[:2] * 0.5 + 0.5) * 8
+        point = np.round(point).astype('int32')
+        x, y = point
 
       action_id = 'B{}_{}'.format(x, y)
       geom_id = 'G{}_{}'.format(x, y)
@@ -139,7 +152,6 @@ class Cloth(base.Task):
     obs = collections.OrderedDict()
 
     obs['position'] = physics.data.geom_xpos[5:,:].reshape(-1).astype('float32')
-    self._current_loc = np.random.choice(81)
 
     render_kwargs = {}
     render_kwargs['camera_id'] = 0
@@ -148,16 +160,18 @@ class Cloth(base.Task):
     image = physics.render(**render_kwargs)
     self.image = image
 
-    x = int(self._current_loc % 9)
-    y = int(self._current_loc // 9)
-    obs['location'] = np.tile([x, y], 50).reshape(-1).astype('float32')
+    if self._random_location:
+      self._current_loc = np.random.choice(81)
+
+      x = int(self._current_loc % 9)
+      y = int(self._current_loc // 9)
+      obs['location'] = np.tile([x, y], 50).reshape(-1).astype('float32')
     return obs
 
   def get_reward(self, physics):
     """Returns a reward to the agent."""
 
-    image_dim = self.image[:, :, 1].reshape((W, W, 1))
-    current_mask = (~np.all(image_dim > 120, axis=2)).astype(int)
+    current_mask = np.any(self.image < 100, axis=2).astype(int)
     area = np.sum(current_mask * self.mask)
     reward = area / np.sum(self.mask)
 
