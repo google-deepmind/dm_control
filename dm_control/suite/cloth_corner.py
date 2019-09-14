@@ -170,7 +170,6 @@ class Cloth(base.Task):
 
   def get_reward(self, physics):
     """Returns a reward to the agent."""
-    image_dim = self.image[:, :, 1].reshape((W, W, 1))
     current_mask = np.any(self.image < 100, axis=-1).astype(int)
     area = np.sum(current_mask * self.mask)
     reward = area / np.sum(self.mask)

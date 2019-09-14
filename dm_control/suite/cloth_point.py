@@ -70,7 +70,7 @@ class Physics(mujoco.Physics):
 class Cloth(base.Task):
   """A point_mass `Task` to reach target with smooth reward."""
 
-  def __init__(self, randomize_gains, random=None, random_location=True):
+  def __init__(self, randomize_gains, random=None, random_location=True, pixels_only=False):
     """Initialize an instance of `PointMass`.
 
     Args:
@@ -101,8 +101,7 @@ class Cloth(base.Task):
     render_kwargs['height'] = W
     image = physics.render(**render_kwargs)
     self.image = image
-    image_dim = image[:, :, 1].reshape((W, W, 1))
-    self.mask = (~np.all(image_dim > 120, axis=2)).astype(int)
+    self.mask = np.any(image < 100, axis=-1).astype(int)
 
     physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:3]=np.random.uniform(-.5,.5,size=3)
 
@@ -187,8 +186,7 @@ class Cloth(base.Task):
       render_kwargs['height'] = W
       image = physics.render(**render_kwargs)
       self.image = image
-      image_dim = image[:, :, 1].reshape((W, W, 1))
-      location_range = np.transpose(np.where(~np.all(image_dim > 120, axis=2)))
+      location_range = np.transpose(np.where(np.any(image < 100, axis=-1)))
 
       num_loc = np.shape(location_range)[0]
       index = np.random.randint(num_loc, size=1)
@@ -199,8 +197,7 @@ class Cloth(base.Task):
   def get_reward(self, physics):
     """Returns a reward to the agent."""
 
-    image_dim = self.image[:, :, 1].reshape((W, W, 1))
-    current_mask = (~np.all(image_dim > 120, axis=2)).astype(int)
+    current_mask = np.any(self.image < 100, axis=-1).astype(int)
     area = np.sum(current_mask * self.mask)
     reward = area / np.sum(self.mask)
 
