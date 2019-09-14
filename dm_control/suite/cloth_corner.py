@@ -38,7 +38,7 @@ CORNER_INDEX_POSITION=['G0_0','G0_8','G8_0','G8_8']
 def get_model_and_assets():
   """Returns a tuple containing the model XML string and a dict of assets."""
 
-  return common.read_model('cloth_point.xml'),common.ASSETS
+  return common.read_model('cloth_corner.xml'),common.ASSETS
 
 
 
@@ -105,8 +105,7 @@ class Cloth(base.Task):
     render_kwargs['height'] = W
     image = physics.render(**render_kwargs)
     self.image = image
-    image_dim = image[:, :, 1].reshape((W, W, 1))
-    self.mask = (~np.all(image_dim > 120, axis=2)).astype(int)
+    self.mask = np.any(image < 100, axis=-1).astype(int)
 
     physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:3]=np.random.uniform(-.5,.5,size=3)
 
@@ -172,7 +171,7 @@ class Cloth(base.Task):
   def get_reward(self, physics):
     """Returns a reward to the agent."""
     image_dim = self.image[:, :, 1].reshape((W, W, 1))
-    current_mask = (~np.all(image_dim > 120, axis=2)).astype(int)
+    current_mask = np.any(self.image < 100, axis=-1).astype(int)
     area = np.sum(current_mask * self.mask)
     reward = area / np.sum(self.mask)
 
