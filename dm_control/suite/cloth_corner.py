@@ -164,7 +164,7 @@ class Cloth(base.Task):
     if self._random_location:
       one_hot = np.zeros(4).astype('float32')
       one_hot[self._current_loc] = 1
-      obs['location'] = one_hot
+      obs['location'] = np.tile(one_hot, 50).reshape(-1).astype('float32')
 
     return obs
 
