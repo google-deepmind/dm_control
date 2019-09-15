@@ -80,7 +80,7 @@ class Cloth(base.Task):
         automatically (default).
     """
     self._randomize_gains = randomize_gains
-    self._random_location = random
+    self._random_location = random_location
     if self._random_location:
       self._current_loc = np.zeros((2,))
 
