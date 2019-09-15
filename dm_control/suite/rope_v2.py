@@ -84,32 +84,9 @@ class Rope(base.Task):
           shape=(2,), dtype=np.float, minimum=[-1.0] * 2, maximum=[1.0] * 2)
     else:
       return specs.BoundedArray(
-          shape=(3,), dtype=np.float, minimum=[-1.0] * 3, maximum=[1.0] * 3
-      )
+          shape=(3,), dtype=np.float, minimum=[-1.0] * 3, maximum=[1.0] * 3)
 
   def initialize_episode(self,physics):
-
-    #physics.named.data.xfrc_applied['B3_4', :3] = np.array([0, 0, -2])
-    # physics.named.data.xfrc_applied['B10', :3] = np.array([0, 0, -2])
-    # physics.named.data.xfrc_applied['B0_8', :3] = np.array([0.2,0.2,0.1])
-
-    # self.dof_damping = np.concatenate([np.zeros((6)), np.ones((48)) * 0.002], axis=0)
-    # self.body_mass = np.concatenate([np.zeros(1), np.ones(25) * 0.00563])
-    # self.body_inertia = np.concatenate([np.zeros((1, 3)), np.tile(np.array([[4.58e-07,  4.58e-07,  1.8e-07]]), (25, 1))],
-    #                                    axis=0)
-    # self.geom_friction = np.tile(np.array([[1, 0.005, 0.001]]), (26, 1))
-    # self.cam_pos = np.array([0, 0, 0.75])
-    # self.cam_quat = np.array([1, 0, 0, 0])
-    #
-    # self.light_diffuse = np.array([0, 0, 0])
-    # self.light_specular = np.array([0, 0, 0])
-    # self.light_ambient = np.array([0, 0, 0])
-    # self.light_castshadow = np.array([1])
-    # self.light_dir = np.array([0, 0, -1])
-    # self.light_pos = np.array([0, 0, 1])
-
-
-
     render_kwargs = {}
     render_kwargs['camera_id'] = 0
     render_kwargs['width'] = W
@@ -124,23 +101,20 @@ class Rope(base.Task):
 
     physics.named.data.xfrc_applied[:,:3]=np.zeros((3,))
     physics.named.data.qfrc_applied[:2]=0
-    goal_position = action[:2]
 
     if self._random_location:
       assert len(action) == 2
       goal_position = action
+      location = self.current_loc
     else:
       assert len(action) == 3
       goal_position = action[:2]
-      location = action[2]
+      location = int(np.round((action[2] * 0.5 + 0.5) * 24))
 
     goal_position = goal_position * 0.05
-    location = self.current_loc
-    if location is None:
-      return
 
-    corner_action = index
-    corner_geom = index
+    corner_action = 'G{}'.format(location)
+    corner_geom = 'B{}'.format(location)
 
     position = goal_position + physics.named.data.geom_xpos[corner_geom,:2]
     dist = position - physics.named.data.geom_xpos[corner_geom,:2]
@@ -165,45 +139,37 @@ class Rope(base.Task):
   def get_observation(self, physics):
     """Returns an observation of the state."""
     obs = collections.OrderedDict()
-    location = self.sample_location(physics)
-    self.current_loc = location
-    if location is None:
-      obs['location'] = np.tile(np.array([-1,-1]), 50).reshape(-1).astype('float32')
-    #
+    obs['position'] = physics.data.geom_xpos[1:, :].reshape(-1).astype('float32')
 
-    # location = self.current_loc
-    else:
-   # self.current_loc = location
-       obs['location'] = np.tile(location, 50).reshape(-1).astype('float32')
+    if self._random_location:
+      location = self.sample_location(physics)
+      self.current_loc = location
+      if location is None:
+        obs['location'] = np.tile(-1, 50).reshape(-1).astype('float32')
+      else:
+         obs['location'] = np.tile(location, 50).reshape(-1).astype('float32')
 
-
-    # obs['position'] = physics.position()
-    # obs['velocity'] = physics.velocity()
     return obs
 
 
   def sample_location(self, physics):
-    # obs=self.get_observation(physics)
     render_kwargs = {}
     render_kwargs['camera_id'] = 0
     render_kwargs['width'] = W
     render_kwargs['height'] = W
     image = physics.render(**render_kwargs)
-    # image_dir = os.path.expanduser('~/softlearning')
-    # image_path = os.path.join(image_dir,f'rope_v1.png')
-    # imsave(image_path,image)
+
     self.image = image
-  #  image_dim = image[:, :, 1].reshape((W, W, 1))
+
     location_range = np.transpose(np.where(np.all(image > 150, axis=2)))
     self.location_range = location_range
     num_loc = np.shape(location_range)[0]
     self.num_loc = num_loc
     if num_loc == 0 :
       return None
-    index = np.random.randint(num_loc, size=1)
-    location = location_range[index]
 
-    return location
+    return np.random.randint(0, 25)
+
   def get_reward(self,physics):
     #image_dim = self.image[:,:,1].reshape((W,W,1))
     current_mask = np.all(self.image>150,axis=2).astype(int)
@@ -211,7 +177,6 @@ class Rope(base.Task):
     line = np.linspace(0,31,num=32)*(-0.5)
     column = np.concatenate([np.flip(line),line])
     reward =np.sum(reward_mask* np.exp(column).reshape((W,1)))/111.0
-    print(reward)
     return reward
   # def l2_norm_dist_2d(self, xpos):
   #   _, _, _, _, error = linregress(xpos[:, 0], xpos[:, 1])
