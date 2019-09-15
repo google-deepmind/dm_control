@@ -108,7 +108,7 @@ class Environment(dm_env.Environment):
                 timestep = self.initial_step(None)
             return dm_env.TimeStep(
                 step_type=dm_env.StepType.FIRST,
-                reward=None,
+                reward=0.0,
                 discount=None,
                 observation=timestep.observation,
                 info=dict(),
@@ -118,7 +118,7 @@ class Environment(dm_env.Environment):
             for _ in range(130):
                 timestep = self.step(None)
             return dm_env.TimeStep(step_type=dm_env.StepType.FIRST,
-                                   reward=None,
+                                   reward=0.0,
                                    discount=None,
                                    observation=timestep.observation,
                                    info=dict())

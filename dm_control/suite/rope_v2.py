@@ -47,11 +47,11 @@ W=64
 
 
 @SUITE.add('benchmarking', 'easy')
-def easy(time_limit=_DEFAULT_TIME_LIMIT, random=None, environment_kwargs=None):
+def easy(time_limit=_DEFAULT_TIME_LIMIT, random=None, environment_kwargs=None, **kwargs):
   """Returns the easy cloth task."""
 
   physics = Physics.from_xml_string(*get_model_and_assets())
-  task = Rope(randomize_gains=False, random=random)
+  task = Rope(randomize_gains=False, random=random, **kwargs)
   environment_kwargs = environment_kwargs or {}
   return control.Environment(
       physics, task, time_limit=time_limit,n_frame_skip=1, rope_task=True,**environment_kwargs)
@@ -75,6 +75,7 @@ class Rope(base.Task):
     """
     self._randomize_gains = randomize_gains
     self._random_location = random_location
+    self.num_loc = 100
     super(Rope, self).__init__(random=random)
 
   def action_spec(self, physics):
@@ -113,8 +114,8 @@ class Rope(base.Task):
 
     goal_position = goal_position * 0.05
 
-    corner_action = 'G{}'.format(location)
-    corner_geom = 'B{}'.format(location)
+    corner_action = 'B{}'.format(location)
+    corner_geom = 'G{}'.format(location)
 
     position = goal_position + physics.named.data.geom_xpos[corner_geom,:2]
     dist = position - physics.named.data.geom_xpos[corner_geom,:2]
@@ -141,8 +142,20 @@ class Rope(base.Task):
     obs = collections.OrderedDict()
     obs['position'] = physics.data.geom_xpos[1:, :].reshape(-1).astype('float32')
 
+    render_kwargs = {}
+    render_kwargs['camera_id'] = 0
+    render_kwargs['width'] = W
+    render_kwargs['height'] = W
+    image = physics.render(**render_kwargs)
+
+    self.image = image
+    location_range = np.transpose(np.where(np.all(image > 150, axis=2)))
+    self.location_range = location_range
+    num_loc = np.shape(location_range)[0]
+    self.num_loc = num_loc
+
     if self._random_location:
-      location = self.sample_location(physics)
+      location = np.random.choice(25)
       self.current_loc = location
       if location is None:
         obs['location'] = np.tile(-1, 50).reshape(-1).astype('float32')
@@ -151,75 +164,10 @@ class Rope(base.Task):
 
     return obs
 
-
-  def sample_location(self, physics):
-    render_kwargs = {}
-    render_kwargs['camera_id'] = 0
-    render_kwargs['width'] = W
-    render_kwargs['height'] = W
-    image = physics.render(**render_kwargs)
-
-    self.image = image
-
-    location_range = np.transpose(np.where(np.all(image > 150, axis=2)))
-    self.location_range = location_range
-    num_loc = np.shape(location_range)[0]
-    self.num_loc = num_loc
-    if num_loc == 0 :
-      return None
-
-    return np.random.randint(0, 25)
-
   def get_reward(self,physics):
-    #image_dim = self.image[:,:,1].reshape((W,W,1))
     current_mask = np.all(self.image>150,axis=2).astype(int)
-    reward_mask = current_mask 
+    reward_mask = current_mask
     line = np.linspace(0,31,num=32)*(-0.5)
     column = np.concatenate([np.flip(line),line])
     reward =np.sum(reward_mask* np.exp(column).reshape((W,1)))/111.0
     return reward
-  # def l2_norm_dist_2d(self, xpos):
-  #   _, _, _, _, error = linregress(xpos[:, 0], xpos[:, 1])
-  #   return error
-
-  # def get_reward(self,physics):
-  #   geom_xpos= physics.named.data.geom_xpos[5:]
-  #   dist = self.l2_norm_dist_2d(geom_xpos)
-  #   reward = -dist
-  #   print(reward)
-  #   return reward
-
-
-#  def get_reward(self,physics):
-    # geom_xpos = physics.named.data.geom_xpos[5:]
-#    reward_dist=np.linalg.norm(physics.named.data.geom_xpos['G0',:2]-physics.named.data.geom_xpos['G24',:2])
-#    reward=reward_dist
-    # sum_dist_1=np.sum(physics.named.data.geom_xpos[5:,1]**2)
-    # for i in range(25):
-    #   # sum_dist+=np.linalg.norm(physics.named.data.geom_xpos['G'+str(i),:2]-np.array([0.2-0.02*i,0]))
-    #   sum_dist_1 += np.linalg.norm(physics.named.data.geom_xpos[i, :2] - np.array([-0.2 + 0.02 * i, 0]))
-    #
-    # reward= -sum_dist_1
-#    print(reward)
-
-#    return reward
-  # def get_reward(self, physics):
-  #   """Returns a reward to the agent."""
-  #   B0_pos=physics.named.data.geom_xpos['G0']
-  #   B20_pos=physics.named.data.geom_xpos['G10']
-  #
-  #   reward_dist_goal = np.linalg.norm(B0_pos - B20_pos)
-  #     # reward_ctrl=ctrl_cost_coeff*np.square(action).sum()
-  #
-  #
-  #   reward = reward_dist_goal
-  #
-  #   return reward
-  # def get_reward(self,physics):
-  #      # ori
-  #     image_dim = self.image[:,:,1].reshape((W,W,1))
-  #     current_mask=(~np.all(image_dim > 100, axis=2)).astype(int)
-  #     area=np.sum(current_mask*self.mask)
-  #     reward=area/np.sum(self.mask)
-  #
-  #     return reward
