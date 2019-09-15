@@ -55,6 +55,7 @@ from dm_control.suite import cloth_corner
 from dm_control.suite import cloth_point
 from dm_control.suite import cloth_point_state
 from dm_control.suite import rope_v1
+from dm_control.suite import rope_v2
 
 # Find all domains imported.
 _DOMAINS = {name: module for name, module in locals().items()
