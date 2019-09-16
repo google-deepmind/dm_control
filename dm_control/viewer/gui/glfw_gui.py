@@ -23,6 +23,7 @@ from dm_control import _render
 from dm_control._render import glfw_renderer
 from dm_control.viewer import util
 from dm_control.viewer.gui import base
+from dm_control.viewer.gui import fullscreen_quad
 import glfw
 import numpy as np
 
@@ -205,7 +206,7 @@ class GlfwWindow(object):
 
   def _glfw_setup(self, window):
     glfw.set_drop_callback(window, self._handle_file_drop)
-    return base.FullscreenQuadRenderer()
+    return fullscreen_quad.FullscreenQuadRenderer()
 
   @property
   def shape(self):

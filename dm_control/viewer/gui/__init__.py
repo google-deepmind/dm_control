@@ -21,13 +21,13 @@ from dm_control import _render
 
 RenderWindow = None
 
-if _render.BACKEND == 'glfw':
-  try:
-    from dm_control.viewer.gui import glfw_gui
-    RenderWindow = glfw_gui.GlfwWindow
-  except ImportError:
-    pass
-else:
+try:
+  from dm_control.viewer.gui import glfw_gui
+  RenderWindow = glfw_gui.GlfwWindow
+except ImportError:
+  pass
+
+if RenderWindow is None:
 
   def ErrorRenderWindow(*args, **kwargs):
     del args, kwargs
