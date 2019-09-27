@@ -216,6 +216,10 @@ class Pitch(composer.Arena):
   def field(self):
     return self._field
 
+  @property
+  def ground_geom(self):
+    return self._ground_geom
+
 
 class RandomizedPitch(Pitch):
   """RandomizedPitch that randomizes its size between (min_size, max_size)."""
