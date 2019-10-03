@@ -43,12 +43,17 @@ class _EnabledObservable(object):
     self.observable = observable
     self.observation_callable = (
         observable.observation_callable(physics, random_state))
-    # We take an observation here to determine the shape and size.
-    # This occurs outside of an episode and doesn't affect environment behavior.
-    obs_value = np.array(self.observation_callable())
+
+    obs_spec = self.observable.array_spec
+    if obs_spec is None:
+      # We take an observation here to determine the shape and size.
+      # This occurs outside of an episode and doesn't affect environment
+      # behavior.
+      obs_value = np.array(self.observation_callable())
+      obs_spec = specs.Array(shape=obs_value.shape, dtype=obs_value.dtype)
     self.buffer = obs_buffer.Buffer(
         buffer_size=(observable.buffer_size or DEFAULT_BUFFER_SIZE),
-        shape=obs_value.shape, dtype=obs_value.dtype,
+        shape=obs_spec.shape, dtype=obs_spec.dtype,
         strip_singleton_buffer_dim=strip_singleton_buffer_dim)
     self.update_schedule = collections.deque()
 
