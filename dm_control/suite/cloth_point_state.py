@@ -70,7 +70,7 @@ class Physics(mujoco.Physics):
 class Cloth(base.Task):
   """A point_mass `Task` to reach target with smooth reward."""
 
-  def __init__(self, randomize_gains, random=None, random_location=True):
+  def __init__(self, randomize_gains, random=None, random_location=True, maxq=False):
     """Initialize an instance of `PointMass`.
 
     Args:
@@ -81,6 +81,7 @@ class Cloth(base.Task):
     """
     self._randomize_gains = randomize_gains
     self._random_location = random_location
+    self._maxq = maxq
     if self._random_location:
       self._current_loc = np.zeros((2,))
 
@@ -88,7 +89,7 @@ class Cloth(base.Task):
 
   def action_spec(self, physics):
     """Returns a `BoundedArraySpec` matching the `physics` actuators."""
-    if self._random_location:
+    if self._random_location and not self._maxq:
       return specs.BoundedArray(
           shape=(3,), dtype=np.float, minimum=[-1.0] * 3, maximum=[1.0] * 3)
     else:
@@ -117,7 +118,7 @@ class Cloth(base.Task):
 
       physics.named.data.xfrc_applied[:,:3]=np.zeros((3,))
 
-      if self._random_location:
+      if self._random_location and not self._maxq:
         assert len(action) == 3
         goal_position = action * 0.05
         x = int(self._current_loc % 9)
