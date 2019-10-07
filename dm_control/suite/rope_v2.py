@@ -109,8 +109,8 @@ class Rope(base.Task):
       location = self.current_loc
     else:
       assert len(action) == 3
-      goal_position = action[:2]
-      location = int(np.round((action[2] * 0.5 + 0.5) * 24))
+      goal_position = action[1:]
+      location = int(np.round((action[0] * 0.5 + 0.5) * 24))
 
     goal_position = goal_position * 0.05
 
@@ -153,6 +153,7 @@ class Rope(base.Task):
     self.location_range = location_range
     num_loc = np.shape(location_range)[0]
     self.num_loc = num_loc
+
 
     if self._random_location:
       location = np.random.choice(25)
