@@ -183,6 +183,9 @@ class GoToTarget(composer.Task):
         self._reward_step_counter += 1
     return reward
 
+  def before_step(self, physics, action, random_state):
+    self._walker.apply_action(physics, action, random_state)
+
   def after_step(self, physics, random_state):
     self._failure_termination = False
     for contact in physics.data.contact:

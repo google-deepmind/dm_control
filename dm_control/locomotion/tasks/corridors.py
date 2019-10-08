@@ -127,6 +127,9 @@ class RunThroughCorridor(composer.Task):
     return ((contact.geom1 in set1 and contact.geom2 in set2) or
             (contact.geom1 in set2 and contact.geom2 in set1))
 
+  def before_step(self, physics, action, random_state):
+    self._walker.apply_action(physics, action, random_state)
+
   def after_step(self, physics, random_state):
     self._failure_termination = False
     if self._contact_termination:
