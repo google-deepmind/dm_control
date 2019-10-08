@@ -70,7 +70,8 @@ class Physics(mujoco.Physics):
 class Cloth(base.Task):
   """A point_mass `Task` to reach target with smooth reward."""
 
-  def __init__(self, randomize_gains, random=None, random_location=True, pixels_only=False):
+  def __init__(self, randomize_gains, random=None, random_location=True, pixels_only=False,
+               maxq=False):
     """Initialize an instance of `PointMass`.
 
     Args:
@@ -80,14 +81,19 @@ class Cloth(base.Task):
         automatically (default).
     """
     self._randomize_gains = randomize_gains
+    self._maxq = maxq
 
     super(Cloth, self).__init__(random=random)
 
   def action_spec(self, physics):
     """Returns a `BoundedArraySpec` matching the `physics` actuators."""
 
-    return specs.BoundedArray(
-        shape=(3,), dtype=np.float, minimum=[-1.0] * 3, maximum=[1.0] * 3)
+    if self._maxq:
+        return specs.BoundedArray(
+            shape=(5,), dtype=np.float, minimum=[-1.0] * 5, maximum=[1.0] * 5)
+    else:
+        return specs.BoundedArray(
+            shape=(3,), dtype=np.float, minimum=[-1.0] * 3, maximum=[1.0] * 3)
 
   def initialize_episode(self,physics):
 
@@ -115,7 +121,12 @@ class Cloth(base.Task):
 
       goal_position = action[:3]
       goal_position = goal_position * 0.05
-      location = self.current_loc
+
+      if self._maxq:
+          location = (action[:2] * 0.5 + 0.5) * 63
+          location = np.round(location).astype('int32')
+      else:
+          location = self.current_loc
 
       # computing the mapping from geom_xpos to location in image
       cam_fovy = physics.named.model.cam_fovy['fixed']
@@ -172,9 +183,10 @@ class Cloth(base.Task):
     """Returns an observation of the state."""
     obs = collections.OrderedDict()
 
-
-    # obs['position'] = physics.data.geom_xpos[5:,:].reshape(-1).astype('float32')
-    self.current_loc = self.sample_location(physics)
+    if self._maxq:
+        self.current_loc = np.zeros(2)
+    else:
+        self.current_loc = self.sample_location(physics)
     obs['location'] = np.tile(self.current_loc, 50).reshape(-1).astype('float32') / 63.
     return obs
 
