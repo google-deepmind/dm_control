@@ -89,6 +89,7 @@ class Cloth(base.Task):
 
   def action_spec(self, physics):
     """Returns a `BoundedArraySpec` matching the `physics` actuators."""
+
     if self._random_location and not self._maxq:
       return specs.BoundedArray(
           shape=(3,), dtype=np.float, minimum=[-1.0] * 3, maximum=[1.0] * 3)
