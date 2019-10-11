@@ -13,7 +13,7 @@
 # limitations under the License.
 # ============================================================================
 
-"""Module defining the abstract robot class."""
+"""Module defining the abstract entity class."""
 
 from __future__ import absolute_import
 from __future__ import division
