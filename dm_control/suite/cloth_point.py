@@ -119,14 +119,14 @@ class Cloth(base.Task):
 
       physics.named.data.xfrc_applied[:,:3]=np.zeros((3,))
 
-      goal_position = action[:3]
-      goal_position = goal_position * 0.05
-
       if self._maxq:
           location = (action[:2] * 0.5 + 0.5) * 63
           location = np.round(location).astype('int32')
+          goal_position = action[2:]
       else:
           location = self.current_loc
+          goal_position = action
+      goal_position = goal_position * 0.05
 
       # computing the mapping from geom_xpos to location in image
       cam_fovy = physics.named.model.cam_fovy['fixed']
@@ -150,8 +150,8 @@ class Cloth(base.Task):
       possible_z = []
       for i in range(86):
           # flipping the x and y to make sure it corresponds to the real location
-          if abs(cam_pos_xy[i][0] - location[0, 1]) < epsilon and abs(
-                  cam_pos_xy[i][1] - location[0, 0]) < epsilon and i > 4:
+          if abs(cam_pos_xy[i][0] - location[1]) < epsilon and abs(
+                  cam_pos_xy[i][1] - location[0]) < epsilon and i > 4:
               possible_index.append(i)
               possible_z.append(physics.data.geom_xpos[i, 2])
 
@@ -183,6 +183,13 @@ class Cloth(base.Task):
     """Returns an observation of the state."""
     obs = collections.OrderedDict()
 
+    render_kwargs = {}
+    render_kwargs['camera_id'] = 0
+    render_kwargs['width'] = W
+    render_kwargs['height'] = W
+    image = physics.render(**render_kwargs)
+    self.image = image
+
     if self._maxq:
         self.current_loc = np.zeros(2)
     else:
@@ -191,17 +198,11 @@ class Cloth(base.Task):
     return obs
 
   def sample_location(self, physics):
-      # obs=self.get_observation(physics)
-      render_kwargs = {}
-      render_kwargs['camera_id'] = 0
-      render_kwargs['width'] = W
-      render_kwargs['height'] = W
-      image = physics.render(**render_kwargs)
-      self.image = image
+      image = self.image
       location_range = np.transpose(np.where(np.any(image < 100, axis=-1)))
 
       num_loc = np.shape(location_range)[0]
-      index = np.random.randint(num_loc, size=1)
+      index = np.random.randint(num_loc)
       location = location_range[index]
 
       return location
@@ -210,7 +211,8 @@ class Cloth(base.Task):
     """Returns a reward to the agent."""
 
     current_mask = np.any(self.image < 100, axis=-1).astype(int)
-    area = np.sum(current_mask * self.mask)
-    reward = area / np.sum(self.mask)
+    reward = np.sum(current_mask) / np.sum(self.mask)
+  #  area = np.sum(current_mask * self.mask)
+  #  reward = area / np.sum(self.mask)
 
     return reward

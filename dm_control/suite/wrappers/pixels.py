@@ -58,6 +58,7 @@ class Wrapper(dm_env.Environment):
       ValueError: If `env`'s observation already contains the specified
         `observation_key`.
     """
+    print('RENDER KWARGS', render_kwargs)
     if render_kwargs is None:
       render_kwargs = {}
 

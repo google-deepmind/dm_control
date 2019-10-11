@@ -153,8 +153,6 @@ class Cloth(base.Task):
     """Returns an observation of the state."""
     obs = collections.OrderedDict()
 
-    obs['position'] = physics.data.geom_xpos[5:,:].reshape(-1).astype('float32')
-
     render_kwargs = {}
     render_kwargs['camera_id'] = 0
     render_kwargs['width'] = W
@@ -168,6 +166,8 @@ class Cloth(base.Task):
       x = int(self._current_loc % 9)
       y = int(self._current_loc // 9)
       obs['location'] = np.tile([x, y], 50).reshape(-1).astype('float32')
+
+    obs['position'] = physics.data.geom_xpos[5:,:].reshape(-1).astype('float32')
     return obs
 
   def get_reward(self, physics):
