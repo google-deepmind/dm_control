@@ -226,7 +226,7 @@ class Viewer(object):
 
   def render(self):
     """Renders the visualized scene."""
-    if self._camera:
+    if self._camera and self._renderer:  # Can be None during env reload.
       scene = self._camera.render(self.perturbation)
       self._render_settings.apply_settings(scene)
       self._renderer.render(self._viewport, scene)
