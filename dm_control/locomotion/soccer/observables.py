@@ -267,6 +267,13 @@ class CoreObservablesAdder(ObservablesAdder):
         'stats_closest_vel_to_ball',
         base_observable.Generic(_stats_closest_vel_to_ball))
 
+    def _stats_veloc_forward(physics):
+      """Player's forward velocity."""
+      return player.walker.observables.veloc_forward(physics)
+
+    player.walker.observables.add_observable(
+        'stats_veloc_forward', base_observable.Generic(_stats_veloc_forward))
+
     def _stats_vel_ball_to_goal(physics):
       """Ball velocity towards opponents' goal."""
       if player.team == team_lib.Team.HOME:
