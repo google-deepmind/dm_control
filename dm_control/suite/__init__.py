@@ -144,8 +144,7 @@ def build_environment(domain_name, task_name, task_kwargs=None,
 
   task_kwargs = task_kwargs or {}
   if environment_kwargs is not None:
-    task_kwargs = task_kwargs.copy()
-    task_kwargs['environment_kwargs'] = environment_kwargs
+    task_kwargs = dict(task_kwargs, environment_kwargs=environment_kwargs)
   env = domain.SUITE[task_name](**task_kwargs)
   env.task.visualize_reward = visualize_reward
   return env
