@@ -122,6 +122,10 @@ class Physics(_control.Physics):
     """
     self._reload_from_data(data)
 
+  def enable_profiling(self):
+    """Enables Mujoco timing profiling."""
+    wrapper.enable_timer(True)
+
   def set_control(self, control):
     """Sets the control signal for the actuators.
 

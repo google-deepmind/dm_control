@@ -23,6 +23,7 @@ from __future__ import print_function
 from dm_control.mujoco.wrapper import mjbindings
 
 from dm_control.mujoco.wrapper.core import callback_context
+from dm_control.mujoco.wrapper.core import enable_timer
 
 from dm_control.mujoco.wrapper.core import Error
 

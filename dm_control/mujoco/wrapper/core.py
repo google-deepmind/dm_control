@@ -37,7 +37,7 @@ from dm_control.mujoco.wrapper.mjbindings import wrappers
 import six
 
 # Internal analytics import.
-
+# Unused internal import: resources.
 
 _NULL = b"\00"
 _FAKE_XML_FILENAME = b"model.xml"
@@ -77,6 +77,7 @@ _NOT_LAST_PARSED_ERROR = (
     "Only the model that was most recently loaded from an XML file or string "
     "can be saved to an XML file.")
 
+import time
 
 # NB: Python functions that are called from C are defined at module-level to
 # ensure they won't be garbage-collected before they are called.
@@ -97,6 +98,13 @@ mjlib.mju_user_warning.value = ctypes.cast(
     _warning_callback, ctypes.c_void_p).value
 mjlib.mju_user_error.value = ctypes.cast(
     _error_callback, ctypes.c_void_p).value
+
+
+def enable_timer(enabled=True):
+  if enabled:
+    set_callback("mjcb_time", time.time)
+  else:
+    set_callback("mjcb_time", None)
 
 
 def _maybe_register_license(path=None):
