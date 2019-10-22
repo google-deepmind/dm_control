@@ -38,6 +38,13 @@ _INVALID_REFERENCE_TYPE = (
     'Reference should be an MJCF Element whose type is one of {valid_types!r}: '
     'got {actual_type!r}.')
 
+_MESH_EXTENSIONS = ('.stl', '.msh')
+
+# MuJoCo's compiler enforces this.
+_INVALID_MESH_EXTENSION = (
+    'Mesh files must have one of the following extensions: {}, got {{}}.'
+    .format(_MESH_EXTENSIONS))
+
 
 @six.add_metaclass(abc.ABCMeta)
 class _Attribute(object):
@@ -483,9 +490,8 @@ class File(_Attribute):
 
   def _validate_extension(self, extension):
     if self._parent.tag == constants.MESH:
-      if extension.lower() != '.stl':
-        # MuJoCo's compiler enforces this.
-        raise ValueError('Mesh files must have the extension \'.stl\'.')
+      if extension.lower() not in _MESH_EXTENSIONS:
+        raise ValueError(_INVALID_MESH_EXTENSION.format(extension))
 
   def get_contents(self):
     """Returns a bytestring representing the contents of the asset."""
