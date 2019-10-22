@@ -165,7 +165,7 @@ class Cloth(base.Task):
 
       x = int(self._current_loc % 9)
       y = int(self._current_loc // 9)
-      obs['location'] = np.tile([x, y], 50).reshape(-1).astype('float32')
+      obs['location'] = np.tile([x, y], 50).reshape(-1).astype('float32') / 8
 
     obs['position'] = physics.data.geom_xpos[5:,:].reshape(-1).astype('float32')
     return obs
