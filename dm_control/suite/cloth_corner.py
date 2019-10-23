@@ -63,7 +63,7 @@ class Cloth(base.Task):
   """A point_mass `Task` to reach target with smooth reward."""
 
   def __init__(self, randomize_gains, random=None, random_location=True,
-               pixels_only=False):
+               pixels_only=False, maxq=False):
     """Initialize an instance of `PointMass`.
 
     Args:
@@ -77,8 +77,9 @@ class Cloth(base.Task):
     self._pixels_only = pixels_only
 
     self._current_loc = self._generate_loc()
+    self._maxq = maxq
 
-    print('random_location', self._random_location, 'pixels_only', self._pixels_only)
+    print('random_location', self._random_location, 'pixels_only', self._pixels_only, 'maxq', self._maxq)
 
     super(Cloth, self).__init__(random=random)
 
@@ -94,7 +95,7 @@ class Cloth(base.Task):
       )
 
   def initialize_episode(self,physics):
-    if self._random_location:
+    if self._random_location or self._maxq:
         self._current_loc = self._generate_loc()
 
     physics.named.data.xfrc_applied['B3_4', :3] = np.array([0,0,-2])
@@ -117,7 +118,7 @@ class Cloth(base.Task):
 
       physics.named.data.xfrc_applied[:,:3]=np.zeros((3,))
 
-      if self._random_location:
+      if self._random_location and not self._maxq:
         index = self._current_loc
       else:
         one_hot = action[:4]
@@ -143,7 +144,7 @@ class Cloth(base.Task):
         self.after_step(physics)
         dist = position - physics.named.data.geom_xpos[corner_geom]
 
-      if self._random_location:
+      if self._random_location and not self._maxq:
         self._current_loc = self._generate_loc()
 
 
@@ -158,13 +159,13 @@ class Cloth(base.Task):
     image = physics.render(**render_kwargs)
     self.image=image
 
-    if not self._pixels_only:
-        obs['position'] = physics.data.geom_xpos[5:,:].reshape(-1).astype('float32')
-
-    if self._random_location:
+    if self._random_location or self._maxq:
       one_hot = np.zeros(4).astype('float32')
       one_hot[self._current_loc] = 1
       obs['location'] = np.tile(one_hot, 50).reshape(-1).astype('float32')
+
+    if not self._pixels_only:
+        obs['position'] = physics.data.geom_xpos[5:,:].reshape(-1).astype('float32')
 
     return obs
 
