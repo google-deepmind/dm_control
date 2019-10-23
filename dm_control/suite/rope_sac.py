@@ -20,23 +20,17 @@ from __future__ import division
 from __future__ import print_function
 
 import collections
-from dm_control.rl import specs
+from dm_env import specs
 from dm_control import mujoco
 from dm_control.rl import control
 from dm_control.suite import base
 from dm_control.suite import common
-from dm_control.suite.utils import randomizers
 from dm_control.utils import containers
-from dm_control.utils import rewards
 import numpy as np
 import random
 import mujoco_py
 import os
 import math
-from PIL import Image,ImageColor
-from scipy.stats import linregress
-from dm_control.suite.wrappers.modder import LightModder
-from imageio import imsave
 _DEFAULT_TIME_LIMIT = 20
 SUITE = containers.TaggedTasks()
 
@@ -88,7 +82,7 @@ class Rope(base.Task):
   def action_spec(self, physics):
     """Returns a `BoundedArraySpec` matching the `physics` actuators."""
 
-    return specs.BoundedArraySpec(
+    return specs.BoundedArray(
         shape=(2,), dtype=np.float, minimum=[-1.0] * 2, maximum=[1.0] * 2)
 
   def initialize_episode(self,physics):
@@ -108,9 +102,9 @@ class Rope(base.Task):
     physics.named.data.qfrc_applied[:2]=0
 
     if self._maxq:
-        goal_position = action[:2]
+        location = np.round((action[:2] * 0.5 + 0.5) * 63).astype('int32')
+        goal_position = action[2:]
         goal_position = goal_position * 0.05
-        location = np.round((action[2:] * 0.5 + 0.5) * 63).astype('int32')
     else:
         goal_position = action
         goal_position = goal_position * 0.05
@@ -179,7 +173,10 @@ class Rope(base.Task):
         location = self.sample_location(physics)
         self.current_loc = location
 
-    obs['location'] = np.tile(location, 50).reshape(-1).astype('float32') / 64
+    if self.current_loc is None:
+        obs['location'] = np.tile([-1, -1], 50).reshape(-1).astype('float32') / 63
+    else:
+        obs['location'] = np.tile(location, 50).reshape(-1).astype('float32') / 63
 
     return obs
 
@@ -203,11 +200,11 @@ class Rope(base.Task):
     location = location_range[index]
 
     return location
+
   def get_reward(self,physics):
     current_mask = np.all(self.image>150,axis=2).astype(int)
     reward_mask = current_mask
     line = np.linspace(0,31,num=32)*(-0.5)
     column = np.concatenate([np.flip(line),line])
     reward =np.sum(reward_mask* np.exp(column).reshape((W,1)))/111.0
-    print(reward)
     return reward
