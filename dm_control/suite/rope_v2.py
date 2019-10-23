@@ -159,9 +159,9 @@ class Rope(base.Task):
       location = np.random.choice(25)
       self.current_loc = location
       if location is None:
-        obs['location'] = np.tile(-1, 50).reshape(-1).astype('float32')
+        obs['location'] = np.tile(-1, 50).reshape(-1).astype('float32') / 24
       else:
-         obs['location'] = np.tile(location, 50).reshape(-1).astype('float32')
+        obs['location'] = np.tile(location, 50).reshape(-1).astype('float32') / 24
 
     return obs
 
