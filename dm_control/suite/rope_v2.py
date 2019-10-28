@@ -64,7 +64,7 @@ class Physics(mujoco.Physics):
 class Rope(base.Task):
   """A point_mass `Task` to reach target with smooth reward."""
 
-  def __init__(self, randomize_gains, random=None, random_location=True):
+  def __init__(self, randomize_gains, random=None, random_location=True, maxq=False):
     """Initialize an instance of `PointMass`.
 
     Args:
@@ -75,7 +75,9 @@ class Rope(base.Task):
     """
     self._randomize_gains = randomize_gains
     self._random_location = random_location
+    self._maxq = maxq
     self.num_loc = 100
+    print('maxq', self._maxq, 'random_location', self._random_location)
     super(Rope, self).__init__(random=random)
 
   def action_spec(self, physics):
@@ -103,7 +105,7 @@ class Rope(base.Task):
     physics.named.data.xfrc_applied[:,:3]=np.zeros((3,))
     physics.named.data.qfrc_applied[:2]=0
 
-    if self._random_location:
+    if self._random_location and not self._maxq:
       assert len(action) == 2
       goal_position = action
       location = self.current_loc
@@ -140,6 +142,11 @@ class Rope(base.Task):
   def get_observation(self, physics):
     """Returns an observation of the state."""
     obs = collections.OrderedDict()
+    if self._random_location:
+      location = np.random.choice(25)
+      self.current_loc = location
+      obs['location'] = np.tile(location, 50).reshape(-1).astype('float32') / 24
+
     obs['position'] = physics.data.geom_xpos[1:, :].reshape(-1).astype('float32')
 
     render_kwargs = {}
@@ -153,15 +160,6 @@ class Rope(base.Task):
     self.location_range = location_range
     num_loc = np.shape(location_range)[0]
     self.num_loc = num_loc
-
-
-    if self._random_location:
-      location = np.random.choice(25)
-      self.current_loc = location
-      if location is None:
-        obs['location'] = np.tile(-1, 50).reshape(-1).astype('float32') / 24
-      else:
-        obs['location'] = np.tile(location, 50).reshape(-1).astype('float32') / 24
 
     return obs
 

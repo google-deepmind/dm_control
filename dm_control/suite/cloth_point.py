@@ -81,6 +81,7 @@ class Cloth(base.Task):
         automatically (default).
     """
     self._randomize_gains = randomize_gains
+    self._random_location = random_location
     self._maxq = maxq
 
     super(Cloth, self).__init__(random=random)
@@ -88,7 +89,7 @@ class Cloth(base.Task):
   def action_spec(self, physics):
     """Returns a `BoundedArraySpec` matching the `physics` actuators."""
 
-    if self._maxq:
+    if not self._maxq and not self._random_location:
         return specs.BoundedArray(
             shape=(5,), dtype=np.float, minimum=[-1.0] * 5, maximum=[1.0] * 5)
     else:
