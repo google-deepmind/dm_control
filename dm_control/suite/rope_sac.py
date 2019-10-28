@@ -132,8 +132,8 @@ class Rope(base.Task):
     possible_z = []
     for i in range(26):
       # flipping the x and y to make sure it corresponds to the real location
-      if abs(cam_pos_xy[i][0] - location[0, 1]) < epsilon and abs(
-              cam_pos_xy[i][1] - location[0, 0]) < epsilon and i > 0 and np.all(cam_pos_xy[i] < W) and np.all(
+      if abs(cam_pos_xy[i][0] - location[1]) < epsilon and abs(
+              cam_pos_xy[i][1] - location[0]) < epsilon and i > 0 and np.all(cam_pos_xy[i] < W) and np.all(
         cam_pos_xy[i] >= 0):
         possible_index.append(i)
         possible_z.append(physics.data.geom_xpos[i, 2])
@@ -168,10 +168,22 @@ class Rope(base.Task):
     """Returns an observation of the state."""
     obs = collections.OrderedDict()
     if self._maxq:
-        self.current_loc = np.zeros(2)
+        location = np.zeros(2)
+        render_kwargs = {}
+        render_kwargs['camera_id'] = 0
+        render_kwargs['width'] = W
+        render_kwargs['height'] = W
+        image = physics.render(**render_kwargs)
+
+        self.image = image
+
+        location_range = np.transpose(np.where(np.all(image > 150, axis=2)))
+        self.location_range = location_range
+        num_loc = np.shape(location_range)[0]
+        self.num_loc = num_loc
     else:
         location = self.sample_location(physics)
-        self.current_loc = location
+    self.current_loc = location
 
     if self.current_loc is None:
         obs['location'] = np.tile([-1, -1], 50).reshape(-1).astype('float32') / 63
@@ -197,7 +209,7 @@ class Rope(base.Task):
     if num_loc == 0 :
       return None
     index = np.random.randint(num_loc, size=1)
-    location = location_range[index]
+    location = location_range[index][0]
 
     return location
 
