@@ -142,10 +142,12 @@ class Rope(base.Task):
   def get_observation(self, physics):
     """Returns an observation of the state."""
     obs = collections.OrderedDict()
-    if self._random_location:
+    if self._random_location and not self._maxq:
       location = np.random.choice(25)
       self.current_loc = location
       obs['location'] = np.tile(location, 50).reshape(-1).astype('float32') / 24
+    elif self._maxq:
+      obs['location'] = np.tile(-1, 50).reshape(-1).astype('float32')
 
     obs['position'] = physics.data.geom_xpos[1:, :].reshape(-1).astype('float32')
 

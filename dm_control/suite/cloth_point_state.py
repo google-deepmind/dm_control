@@ -90,7 +90,7 @@ class Cloth(base.Task):
   def action_spec(self, physics):
     """Returns a `BoundedArraySpec` matching the `physics` actuators."""
 
-    if self._random_location and not self._maxq:
+    if self._random_location or self._maxq:
       return specs.BoundedArray(
           shape=(3,), dtype=np.float, minimum=[-1.0] * 3, maximum=[1.0] * 3)
     else:
@@ -160,12 +160,14 @@ class Cloth(base.Task):
     image = physics.render(**render_kwargs)
     self.image = image
 
-    if self._random_location:
+    if self._random_location and not self._maxq:
       self._current_loc = np.random.choice(81)
 
       x = int(self._current_loc % 9)
       y = int(self._current_loc // 9)
       obs['location'] = np.tile([x, y], 50).reshape(-1).astype('float32') / 8
+    elif self._maxq:
+      obs['location'] = np.tile([-1, -1], 50).reshape(-1).astype('float32')
 
     obs['position'] = physics.data.geom_xpos[5:,:].reshape(-1).astype('float32')
     return obs

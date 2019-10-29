@@ -168,7 +168,7 @@ class Rope(base.Task):
     """Returns an observation of the state."""
     obs = collections.OrderedDict()
     if self._maxq:
-        location = np.zeros(2)
+        location = [-1, 1]
         render_kwargs = {}
         render_kwargs['camera_id'] = 0
         render_kwargs['width'] = W
