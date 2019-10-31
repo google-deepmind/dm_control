@@ -90,16 +90,15 @@ class Cloth(base.Task):
     """Returns a `BoundedArraySpec` matching the `physics` actuators."""
 
     if not self._maxq and not self._random_location:
+        # first 2 are pixel locations for pick point, last 3 are xyz deltas (place point computed as pick point + delta)
         return specs.BoundedArray(
             shape=(5,), dtype=np.float, minimum=[-1.0] * 5, maximum=[1.0] * 5)
     else:
+        # xyz deltas (place point computed as pick point + delta)
         return specs.BoundedArray(
             shape=(3,), dtype=np.float, minimum=[-1.0] * 3, maximum=[1.0] * 3)
 
   def initialize_episode(self,physics):
-
-
-
     physics.named.data.xfrc_applied['B3_4', :3] = np.array([0,0,-2])
     physics.named.data.xfrc_applied['B4_4', :3] = np.array([0,0,-2])
     render_kwargs = {}
@@ -110,14 +109,13 @@ class Cloth(base.Task):
     self.image = image
     self.mask = np.any(image < 100, axis=-1).astype(int)
 
+    # Apply random force in the beginning for random cloth init state
     physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:3]=np.random.uniform(-.5,.5,size=3)
 
     super(Cloth, self).initialize_episode(physics)
 
   def before_step(self, action, physics):
       """Sets the control signal for the actuators to values in `action`."""
-  #     # Support legacy internal code.
-
       physics.named.data.xfrc_applied[:,:3]=np.zeros((3,))
 
       if self._maxq:
@@ -129,7 +127,7 @@ class Cloth(base.Task):
           goal_position = action
       goal_position = goal_position * 0.05
 
-      # computing the mapping from geom_xpos to location in image
+      # computing the mapping from geom_xpos to pixel location in image
       cam_fovy = physics.named.model.cam_fovy['fixed']
       f = 0.5 * W / math.tan(cam_fovy * math.pi / 360)
       cam_matrix = np.array([[f, 0, W / 2], [0, f, W / 2], [0, 0, 1]])
@@ -141,7 +139,6 @@ class Cloth(base.Task):
           geom_xpos_added = np.concatenate([physics.data.geom_xpos[i], np.array([1])]).reshape((4, 1))
           cam_pos_all[i] = cam_matrix.dot(cam.dot(geom_xpos_added)[:3])
 
-      # cam_pos_xy=cam_pos_all[5:,:]
       cam_pos_xy = np.rint(cam_pos_all[:, :2].reshape((86, 2)) / cam_pos_all[:, 2])
       cam_pos_xy = cam_pos_xy.astype(int)
       cam_pos_xy[:, 1] = W - cam_pos_xy[:, 1]
@@ -157,6 +154,7 @@ class Cloth(base.Task):
               possible_z.append(physics.data.geom_xpos[i, 2])
 
 
+      # Move the selected joint to the correct goal position
 
       if possible_index != []:
           index = possible_index[possible_z.index(max(possible_z))]
@@ -191,6 +189,7 @@ class Cloth(base.Task):
     image = physics.render(**render_kwargs)
     self.image = image
 
+    # If pick point part of state space, sample a point randomly
     if self._maxq:
         self.current_loc = np.zeros(2)
     else:
@@ -211,6 +210,7 @@ class Cloth(base.Task):
   def get_reward(self, physics):
     """Returns a reward to the agent."""
 
+    # Reward computed as intersection of current binary image with goal binary image
     current_mask = np.any(self.image < 100, axis=-1).astype(int)
     reward = np.sum(current_mask) / np.sum(self.mask)
 
