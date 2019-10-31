@@ -213,7 +213,5 @@ class Cloth(base.Task):
 
     current_mask = np.any(self.image < 100, axis=-1).astype(int)
     reward = np.sum(current_mask) / np.sum(self.mask)
-  #  area = np.sum(current_mask * self.mask)
-  #  reward = area / np.sum(self.mask)
 
     return reward
