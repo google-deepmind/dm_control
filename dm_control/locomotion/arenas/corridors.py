@@ -23,6 +23,7 @@ import abc
 
 from dm_control import composer
 from dm_control.composer import variation
+from dm_control.locomotion.arenas import assets as locomotion_arenas_assets
 import six
 
 _SIDE_WALLS_GEOM_GROUP = 3
@@ -187,6 +188,7 @@ class GapsCorridor(EmptyCorridor):
              corridor_length=40,
              ground_rgba=(0.5, 0.5, 0.5, 1),
              visible_side_planes=False,
+             aesthetic='default',
              name='gaps_corridor'):
     """Builds the corridor.
 
@@ -203,6 +205,7 @@ class GapsCorridor(EmptyCorridor):
         object specifying the color of the ground.
       visible_side_planes: Whether to the side planes that bound the corridor's
         perimeter should be rendered.
+      aesthetic: option to adjust the material properties and skybox
       name: The name of this arena.
     """
     super(GapsCorridor, self)._build(
@@ -214,6 +217,28 @@ class GapsCorridor(EmptyCorridor):
     self._platform_length = platform_length
     self._gap_length = gap_length
     self._ground_rgba = ground_rgba
+    self._aesthetic = aesthetic
+
+    if self._aesthetic != 'default':
+      ground_info = locomotion_arenas_assets.get_ground_texture_info(aesthetic)
+      sky_info = locomotion_arenas_assets.get_sky_texture_info(aesthetic)
+      texturedir = locomotion_arenas_assets.get_texturedir(aesthetic)
+      self._mjcf_root.compiler.texturedir = texturedir
+
+      self._ground_texture = self._mjcf_root.asset.add(
+          'texture', name='grass', file=ground_info.file,
+          type=ground_info.type)
+      self._ground_material = self._mjcf_root.asset.add(
+          'material', name='grass', texture=self._ground_texture,
+          texuniform='true')
+      # remove existing skybox
+      for texture in self._mjcf_root.asset.find_all('texture'):
+        if texture.type == 'skybox':
+          texture.remove()
+      self._skybox = self._mjcf_root.asset.add(
+          'texture', name='outdoor', file=sky_info.file,
+          type='skybox', gridsize=sky_info.gridsize,
+          gridlayout=sky_info.gridlayout)
 
     self._ground_body = self._mjcf_root.worldbody.add('body', name='ground')
 
@@ -252,13 +277,22 @@ class GapsCorridor(EmptyCorridor):
         self._current_corridor_width / 2,
         _WALL_THICKNESS,
     ]
-    self._ground_body.add(
-        'geom',
-        type='box',
-        rgba=variation.evaluate(self._ground_rgba, random_state),
-        name='start_floor',
-        pos=platform_pos,
-        size=platform_size)
+    if self._aesthetic != 'default':
+      self._ground_body.add(
+          'geom',
+          type='box',
+          name='start_floor',
+          pos=platform_pos,
+          size=platform_size,
+          material=self._ground_material)
+    else:
+      self._ground_body.add(
+          'geom',
+          type='box',
+          rgba=variation.evaluate(self._ground_rgba, random_state),
+          name='start_floor',
+          pos=platform_pos,
+          size=platform_size)
 
     current_x = platform_length
     platform_id = 0
@@ -275,13 +309,22 @@ class GapsCorridor(EmptyCorridor):
           self._current_corridor_width / 2,
           _WALL_THICKNESS,
       ]
-      self._ground_body.add(
-          'geom',
-          type='box',
-          rgba=variation.evaluate(self._ground_rgba, random_state),
-          name='floor_{}'.format(platform_id),
-          pos=platform_pos,
-          size=platform_size)
+      if self._aesthetic != 'default':
+        self._ground_body.add(
+            'geom',
+            type='box',
+            name='floor_{}'.format(platform_id),
+            pos=platform_pos,
+            size=platform_size,
+            material=self._ground_material)
+      else:
+        self._ground_body.add(
+            'geom',
+            type='box',
+            rgba=variation.evaluate(self._ground_rgba, random_state),
+            name='floor_{}'.format(platform_id),
+            pos=platform_pos,
+            size=platform_size)
 
       platform_id += 1
 
