@@ -183,6 +183,9 @@ setup(
         'setuptools',
         'six',
     ],
+    extras_require={
+        'locomotion_mazes': ['labmaze'],
+    },
     tests_require=[
         'mock',
         'nose',
@@ -191,9 +194,10 @@ setup(
     ],
     test_suite='nose.collector',
     packages=find_packages(),
-    package_data={'dm_control':
-                  find_data_files(package_dir='dm_control',
-                                  patterns=['*.png', '*.stl', '*.xml'])},
+    package_data={
+        'dm_control': find_data_files(package_dir='dm_control',
+                                      patterns=['*.png', '*.stl', '*.xml']),
+    },
     cmdclass={
         'build_mjbindings': BuildMJBindingsCommand,
         'install': InstallCommand,

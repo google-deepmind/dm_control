@@ -12,3 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+"""Arenas for Locomotion tasks."""
+
+from dm_control.locomotion.arenas.corridors import EmptyCorridor
+from dm_control.locomotion.arenas.corridors import GapsCorridor
+from dm_control.locomotion.arenas.corridors import WallsCorridor
+from dm_control.locomotion.arenas.floors import Floor
+from dm_control.locomotion.arenas.mazes import MazeWithTargets
+from dm_control.locomotion.arenas.mazes import RandomMazeWithTargets
