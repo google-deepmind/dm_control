@@ -344,6 +344,13 @@ class MazeWithTargets(composer.Arena):
             'geom', name=tile_name, type='plane', material=material,
             pos=tile_pos, size=tile_size, contype=0, conaffinity=0)
 
+  @property
+  def ground_geoms(self):
+    return tuple([
+        geom for geom in self.mjcf_model.find_all('geom')
+        if 'ground' in geom.name
+    ])
+
   def find_token_grid_positions(self, tokens):
     out = {token: [] for token in tokens}
     for y in range(self._maze.entity_layer.shape[0]):
