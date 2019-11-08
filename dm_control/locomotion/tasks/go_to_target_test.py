@@ -29,13 +29,6 @@ import numpy as np
 from six.moves import range
 
 
-def _build_task(**task_kwargs):
-  walker = cmu_humanoid.CMUHumanoid()
-  arena = floors.Floor()
-  task = go_to_target.GoToTarget(walker=walker, arena=arena, **task_kwargs)
-  return task
-
-
 class GoToTargetTest(absltest.TestCase):
 
   def test_observables(self):
