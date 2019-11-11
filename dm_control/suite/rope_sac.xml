@@ -28,25 +28,13 @@
         </default>
     </default>
   <worldbody>
-<!--    <light cutoff="100" diffuse="1 1 1" dir="-0 0 -1" directional="true" exponent="1" pos="0 0 0.0" specular=".1 .1 .1"/>-->
-<!--rgba ="0.1 0.1 .1 0.5" -->
-<!--      rgba="0.5 0.5 0.5 0.3" -->
-<!--    <geom  rgba="0.5 0.5 0.5 1" conaffinity="1" density='0.' contype="1" condim="1" name="table" pos="0 0.0 0." size="1 1 0.1" type="plane" />-->
        <camera name="fixed" pos="0 0 .73" quat="1 0 0 0"/>
       <light name="light" directional="true" diffuse="0 .0 .0" pos="0 0 .5" specular="0 .0 .0"/>
-<!--    <geom name="ground" type="plane" pos="0 0 0" size="1 1 .1" rgba="0 1 0 1"/>-->
-<!--    <geom name="ground" type="plane" pos="0 0 0" size="1 1 .1" material="site"/>-->
-
-<!--    <geom name="wall_x" type="plane" pos="-1 0 .02" zaxis="1 0 0"  size=".02 1 .02" material="decoration"/>-->
-<!--    <geom name="wall_y" type="plane" pos="0 -1 .02" zaxis="0 1 0"  size="1 .02 .02" material="decoration"/>-->
-<!--    <geom name="wall_neg_x" type="plane" pos="1 0 .02" zaxis="-1 0 0"  size=".02 1 .02" material="decoration"/>-->
-<!--    <geom name="wall_neg_y" type="plane" pos="0 1 .02" zaxis="0 -1 0"  size="1 .02 .02" material="decoration"/>-->
-<!--      rgba="0.3 .98 0.3 1-->
     <geom name="ground" type="plane" pos="0 0 0" size=".6 .6 .1" rgba="0.18 0.545 0.341 1"/>
-<!--    <geom name="wall_x" type="plane" pos="-.3 0 .02" zaxis="1 0 0"  size=".02 .3 .02" rgba="1 1 1 1"/>-->
-<!--    <geom name="wall_y" type="plane" pos="0 -.3 .02" zaxis="0 1 0"  size=".3 .02 .02" rgba="1 1 1 1"/>-->
-<!--    <geom name="wall_neg_x" type="plane" pos=".3 0 .02" zaxis="-1 0 0"  size=".02 .3 .02" rgba="1 1 1 1"/>-->
-<!--    <geom name="wall_neg_y" type="plane" pos="0 .3 .02" zaxis="0 -1 0"  size=".3 .02 .02" rgba="1 1 1 1"/>-->
+    <geom name="wall_x" type="plane" pos="-.3 0 .02" zaxis="1 0 0"  size=".02 .3 .02" rgba="1 1 1 1"/>
+    <geom name="wall_y" type="plane" pos="0 -.3 .02" zaxis="0 1 0"  size=".3 .02 .02" rgba="1 1 1 1"/>
+    <geom name="wall_neg_x" type="plane" pos=".3 0 .02" zaxis="-1 0 0"  size=".02 .3 .02" rgba="1 1 1 1"/>
+    <geom name="wall_neg_y" type="plane" pos="0 .3 .02" zaxis="0 -1 0"  size=".3 .02 .02" rgba="1 1 1 1"/>
 <!--    <geom name="target" pos="0 0 .01" type="sphere" size=".06" rgba=".6 .3 .3 1"/>-->
     <!--  ================= SWIMMER ================= /-->
     <body name="B10" pos="0 0 0">
