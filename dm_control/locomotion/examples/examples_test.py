@@ -50,7 +50,9 @@ class ExampleEnvironmentsTest(parameterized.TestCase):
 
   @parameterized.named_parameters(
       ('cmu_humanoid_run_walls', basic_cmu_2019.cmu_humanoid_run_walls),
-      ('cmu_humanoid_run_gaps', basic_cmu_2019.cmu_humanoid_run_gaps))
+      ('cmu_humanoid_run_gaps', basic_cmu_2019.cmu_humanoid_run_gaps),
+      ('cmu_humanoid_go_to_target', basic_cmu_2019.cmu_humanoid_go_to_target),
+      ('cmu_humanoid_maze_forage', basic_cmu_2019.cmu_humanoid_maze_forage),)
   def test_env_runs(self, env_constructor):
     """Tests that the environment runs and is coherent with its specs."""
     random_state = np.random.RandomState(99)
