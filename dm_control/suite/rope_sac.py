@@ -104,10 +104,10 @@ class Rope(base.Task):
     if self._maxq:
         location = np.round((action[:2] * 0.5 + 0.5) * 63).astype('int32')
         goal_position = action[2:]
-        goal_position = goal_position * 0.05
+        goal_position = goal_position * 0.1
     else:
         goal_position = action
-        goal_position = goal_position * 0.05
+        goal_position = goal_position * 0.1
         location = self.current_loc
 
     # computing the mapping from geom_xpos to location in image
@@ -150,7 +150,7 @@ class Rope(base.Task):
       loop = 0
       while np.linalg.norm(dist) > 0.025:
         loop += 1
-        if loop > 40:
+        if loop > 1000:
           break
         physics.named.data.xfrc_applied[corner_action, :2] = dist * 20
         physics.step()
