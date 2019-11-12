@@ -34,11 +34,11 @@
         <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="512"/>
         <texture name="texplane" type="2d" builtin="checker" rgb1=".2 .3 .4" rgb2=".1 0.15 0.2"
             width="512" height="512" mark="cross" markrgb=".8 .8 .8"/>
-        <texture name="texgrey" type="2d" file="/home/wilson/dm_control/dm_control/suite/skin_colormap.png"/>
+        <texture name="texgrey" type="2d" file="/home/ashwin/Documents/dm_control/dm_control/suite/skin_colormap.png"/>
 <!--        <texture name="texcarpet" type="2d" file="pattern.png"/>-->
-        <texture name="texcorner4" type="2d" file="/home/wilson/dm_control/dm_control/suite/skin_colormap.png"/>
+        <texture name="texcorner4" type="2d" file="/home/ashwin/Documents/dm_control/dm_control/suite/skin_colormap.png"/>
 <!--        <texture name="texsponge" type="2d" file="sponge.png"/>-->
-        <texture name="texcorner" type="2d" file="/home/wilson/dm_control/dm_control/suite/skin_colormap.png"/>
+        <texture name="texcorner" type="2d" file="/home/ashwin/Documents/dm_control/dm_control/suite/skin_colormap.png"/>
 <!--        <texture name="texmarble" type="cube" file="marble.png"/>-->
 <!--        <texture name=""-->
 <!--        <texture name="textwhite" type="2d" file="/home/yilin/Downloads/pattern2.png"/>-->
@@ -77,7 +77,7 @@
 <!--rgba ="0.1 0.1 .1 0.5" -->
 <!--    <geom rgba="0 0 0 0.1" conaffinity="1" density='0.' contype="1" condim="1" name="table" pos="0 0.0 0." size="2.8 2.8 0.1" type="plane" />-->
 
-    <body name="B3_5" pos="0 0 0.1">
+    <body name="B4_4" pos="0 0 0.2">
           <camera name="track" mode="trackcom" pos="-0.05 -0.6 0.5" xyaxes="1 0 0 0 1 1"/>
 <!--      <camera name="cam0" pos="0 -0.3 0.3" xyaxes="1 0 0 0 0.7 0.7"/>-->
       <freejoint name="r1"/>
@@ -87,8 +87,8 @@
         <skin material="matgrey" texcoord="true" inflate="0.005" subgrid="2"/>
 <!--                  <skin material="matcorner4" texcoord="true" inflate="0.005" subgrid="2"/>-->
 
-
-        <geom type="capsule" size="0.0075 0.005" rgba=".8 .2 .1 1"/>
+        <!-- <geom type="sphere" size="0.005" rgba=".8 .2 .1 1"/> -->
+        <geom type="capsule" size="0.0075 0.005 1" rgba=".8 .2 .1 1"/>
       </composite>
     </body>
 

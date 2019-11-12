@@ -70,8 +70,7 @@ class Physics(mujoco.Physics):
 class Cloth(base.Task):
   """A point_mass `Task` to reach target with smooth reward."""
 
-  def __init__(self, randomize_gains, random=None, random_location=True, pixels_only=False,
-               maxq=False):
+  def __init__(self, randomize_gains, random=None, random_location=True, maxq=False):
     """Initialize an instance of `PointMass`.
 
     Args:
@@ -92,43 +91,45 @@ class Cloth(base.Task):
     if not self._maxq and not self._random_location:
         # first 2 are pixel locations for pick point, last 3 are xyz deltas (place point computed as pick point + delta)
         return specs.BoundedArray(
-            shape=(5,), dtype=np.float, minimum=[-1.0] * 5, maximum=[1.0] * 5)
+            shape=(10,), dtype=np.float, minimum=[-1.0] * 10, maximum=[1.0] * 10)
     else:
         # xyz deltas (place point computed as pick point + delta)
+        # first xyz is left, second xyz is right, currently no distinction of right vs left
         return specs.BoundedArray(
-            shape=(3,), dtype=np.float, minimum=[-1.0] * 3, maximum=[1.0] * 3)
+            shape=(6,), dtype=np.float, minimum=[-1.0] * 6, maximum=[1.0] * 6)
 
   def initialize_episode(self,physics):
-    physics.named.data.xfrc_applied['B3_4', :3] = np.array([0,0,-2])
-    physics.named.data.xfrc_applied['B4_4', :3] = np.array([0,0,-2])
+      # physics.named.data.xfrc_applied['B3_4', :3] = np.array([0,0,-2])
+      # physics.named.data.xfrc_applied['B4_4', :3] = np.array([0,0,-2])
 
-    # physics.named.data.xfrc_applied['B2_2', :3] = np.array([0,0, -2])
-    # physics.named.data.xfrc_applied['B3_3', :3] = np.array([0,0, -2])
-    render_kwargs = {}
-    render_kwargs['camera_id'] = 0
-    render_kwargs['width'] = W
-    render_kwargs['height'] = W
-    image = physics.render(**render_kwargs)
-    self.image = image
-    self.mask = np.any(image < 100, axis=-1).astype(int)
+      # physics.named.data.xfrc_applied['B2_2', :3] = np.array([0,0, -2])
+      # physics.named.data.xfrc_applied['B3_3', :3] = np.array([0,0, -2])
+      render_kwargs = {}
+      render_kwargs['camera_id'] = 0
+      render_kwargs['width'] = W
+      render_kwargs['height'] = W
+      image = physics.render(**render_kwargs)
+      self.image = image
+      self.mask = np.any(image < 100, axis=-1).astype(int)
 
-    # Apply random force in the beginning for random cloth init state
-    # physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:3]=np.random.uniform(-.5,.5,size=3)
+      # Apply random force in the beginning for random cloth init state
+      # physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:3]=np.random.uniform(-.5,.5,size=3)
 
-    super(Cloth, self).initialize_episode(physics)
+      super(Cloth, self).initialize_episode(physics)
+      self.current_locs = self.sample_locations(physics)
 
   def before_step(self, action, physics):
       """Sets the control signal for the actuators to values in `action`."""
       physics.named.data.xfrc_applied[:,:3]=np.zeros((3,))
-
+      action = action.reshape((2,-1))
       if self._maxq:
-          location = (action[:2] * 0.5 + 0.5) * 63
-          location = np.round(location).astype('int32')
-          goal_position = action[2:]
+          locations = (action[:, :2] * 0.5 + 0.5) * 63
+          locations = np.round(locations).astype('int32')
+          goal_positions = action[:, 2:]
       else:
-          location = self.current_loc
-          goal_position = action
-      goal_position = goal_position * 0.05
+          locations = self.current_locs.reshape((2,-1))
+          goal_positions = action
+      goal_positions = goal_positions * 0.05
 
       # computing the mapping from geom_xpos to pixel location in image
       cam_fovy = physics.named.model.cam_fovy['fixed']
@@ -148,42 +149,41 @@ class Cloth(base.Task):
       cam_pos_xy[:, 1] = W - cam_pos_xy[:, 1]
 
       epsilon = 3
-      possible_index = []
-      possible_z = []
-      for i in range(num_bodies):
-          # flipping the x and y to make sure it corresponds to the real location
-          if abs(cam_pos_xy[i][0] - location[1]) < epsilon and abs(
-                  cam_pos_xy[i][1] - location[0]) < epsilon and i > 4:
-              possible_index.append(i)
-              possible_z.append(physics.data.geom_xpos[i, 2])
 
+      for location, goal_position in zip(locations, goal_positions):
+        possible_index = []
+        possible_z = []
+        for i in range(num_bodies):
+            # flipping the x and y to make sure it corresponds to the real location
+            if abs(cam_pos_xy[i][0] - location[1]) < epsilon and abs(cam_pos_xy[i][1] - location[0]) < epsilon and i > 4:
+                possible_index.append(i)
+                possible_z.append(physics.data.geom_xpos[i, 2])
 
-      # Move the selected joint to the correct goal position
+        # Move the selected joint to the correct goal position
 
-      if possible_index != []:
-          index = possible_index[possible_z.index(max(possible_z))]
+        if possible_index != []:
+            index = possible_index[possible_z.index(max(possible_z))]
 
-          corner_action = index - 4
-          corner_geom = index
+            corner_action = index - 4
+            corner_geom = index
 
-
-          # apply consecutive force to move the point to the target position
-          position = goal_position + physics.named.data.geom_xpos[corner_geom]
-          dist = position - physics.named.data.geom_xpos[corner_geom]
-
-          loop = 0
-          while np.linalg.norm(dist) > 0.025:
-            loop += 1
-            if loop > 40:
-              break
-            physics.named.data.xfrc_applied[corner_action, :3] = dist * 20
-            physics.step()
-            self.after_step(physics)
+            # apply consecutive force to move the point to the target position
+            position = goal_position + physics.named.data.geom_xpos[corner_geom]
             dist = position - physics.named.data.geom_xpos[corner_geom]
+
+            loop = 0
+            while np.linalg.norm(dist) > 0.025:
+              loop += 1
+              if loop > 40:
+                break
+              physics.named.data.xfrc_applied[corner_action, :3] = dist * 20
+              physics.step()
+              self.after_step(physics)
+              dist = position - physics.named.data.geom_xpos[corner_geom]
 
 
   def get_observation(self, physics):
-    """Returns an observation of the state."""
+    """Returns an observation of the state. For this env, it is the pick point."""
     obs = collections.OrderedDict()
 
     render_kwargs = {}
@@ -195,21 +195,21 @@ class Cloth(base.Task):
 
     # If pick point part of state space, sample a point randomly
     if self._maxq:
-        self.current_loc = np.zeros(2)
+        self.current_locs = np.zeros((2,2))
     else:
-        self.current_loc = self.sample_location(physics)
-    obs['location'] = np.tile(self.current_loc, 50).reshape(-1).astype('float32') / 63.
+        self.current_locs = self.sample_locations(physics)
+    obs['location'] = np.tile(self.current_locs, 50).reshape(-1).astype('float32') / 63.
     return obs
 
-  def sample_location(self, physics):
+  def sample_locations(self, physics):
       image = self.image
       location_range = np.transpose(np.where(np.any(image < 100, axis=-1)))
 
       num_loc = np.shape(location_range)[0]
-      index = np.random.randint(num_loc)
-      location = location_range[index]
-
-      return location
+      index = np.random.randint(num_loc, size=2)
+      # Doesn't constrain pick points to left or right.
+      locations = location_range[index]
+      return locations.flatten()
 
   def get_reward(self, physics):
     """Returns a reward to the agent."""
