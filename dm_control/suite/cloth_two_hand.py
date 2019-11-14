@@ -70,7 +70,7 @@ class Physics(mujoco.Physics):
 class Cloth(base.Task):
   """A point_mass `Task` to reach target with smooth reward."""
 
-  def __init__(self, randomize_gains, random=None, random_location=True, maxq=False):
+  def __init__(self, randomize_gains, random=None, random_location=True, pixels_only=False, maxq=False):
     """Initialize an instance of `PointMass`.
 
     Args:
