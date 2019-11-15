@@ -172,7 +172,8 @@ setup(
     install_requires=[
         'absl-py>=0.7.0',
         'enum34; python_version < "3.4"',
-        'dm_env',
+        'dm-env',
+        'dm-tree',
         'future',
         'futures; python_version == "2.7"',
         'glfw',

@@ -1,4 +1,4 @@
-# Copyright 2018 The dm_control Authors.
+# Copyright 2019 The dm_control Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,22 +13,27 @@
 # limitations under the License.
 # ============================================================================
 
-"""Utility function for evaluating callables or constants."""
+"""Utilities for handling nested structures of callables or constants."""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import tree
 
-def evaluate(x, *args, **kwargs):
-  """Evaluates a callable or constant value.
+
+def evaluate(structure, *args, **kwargs):
+  """Evaluates a arbitrarily nested structure of callables or constant values.
 
   Args:
-    x: Either a callable or a constant value.
-    *args: Positional arguments passed to `x` if `x` is callable.
-    **kwargs: Keyword arguments passed to `x` if `x` is callable.
+    structure: An arbitrarily nested structure of callables or constant values.
+      By "structures", we mean lists, tuples, namedtuples, or dicts.
+    *args: Positional arguments passed to each callable in `structure`.
+    **kwargs: Keyword arguments passed to each callable in `structure.
 
   Returns:
-    Either the result of calling `x` if `x` is callable or else `x`.
+    The same nested structure, with each callable replaced by the value returned
+    by calling it.
   """
-  return x(*args, **kwargs) if callable(x) else x
+  return tree.map_structure(
+      lambda x: x(*args, **kwargs) if callable(x) else x, structure)
