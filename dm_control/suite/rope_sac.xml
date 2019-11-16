@@ -49,7 +49,7 @@
 <!--                    <skin rgba="0.6 1 0.6 1" texcoord="true" inflate="0.005" subgrid="2"/>-->
 
 <!--            <geom type="capsule" size=".01 .015" rgba=" 1. 0 0 1"/>-->
-            <geom type="capsule" size=".008 .01" rgba=" 1 0.871 0.678 1"/>
+            <geom type="capsule" size=".019 .01" rgba=" 1 0.871 0.678 1"/>
 
 <!--            <pin coord="1" />-->
 <!--            <pin coord="2" />-->
