@@ -85,7 +85,7 @@ class MazeWithTargets(composer.Arena):
       texturedir = locomotion_arenas_assets.get_texturedir(aesthetic)
       self._mjcf_root.compiler.texturedir = texturedir
       self._skybox = self._mjcf_root.asset.add(
-          'texture', name='outdoor', file=sky_info.file,
+          'texture', name='aesthetic_skybox', file=sky_info.file,
           type='skybox', gridsize=sky_info.gridsize,
           gridlayout=sky_info.gridlayout)
     elif skybox_texture:
@@ -119,12 +119,12 @@ class MazeWithTargets(composer.Arena):
       self._floor_textures = [
           self._mjcf_root.asset.add(
               'texture',
-              name='grass_main',
+              name='aesthetic_texture_main',
               file=ground_info.file,
               type=ground_info.type),
           self._mjcf_root.asset.add(
               'texture',
-              name='grass',
+              name='aesthetic_texture',
               file=ground_info.file,
               type=ground_info.type)
       ]

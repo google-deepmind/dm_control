@@ -45,13 +45,13 @@ class Floor(composer.Arena):
       self._mjcf_root.compiler.texturedir = texturedir
 
       self._ground_texture = self._mjcf_root.asset.add(
-          'texture', name='grass', file=ground_info.file,
+          'texture', name='aesthetic_texture', file=ground_info.file,
           type=ground_info.type)
       self._ground_material = self._mjcf_root.asset.add(
-          'material', name='grass', texture=self._ground_texture,
+          'material', name='aesthetic_material', texture=self._ground_texture,
           texuniform='true')
       self._skybox = self._mjcf_root.asset.add(
-          'texture', name='outdoor', file=sky_info.file,
+          'texture', name='aesthetic_skybox', file=sky_info.file,
           type='skybox', gridsize=sky_info.gridsize,
           gridlayout=sky_info.gridlayout)
     else:
