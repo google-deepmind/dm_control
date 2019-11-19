@@ -98,9 +98,9 @@ class Cloth(base.Task):
         return specs.BoundedArray(
             shape=(6,), dtype=np.float, minimum=[-1.0] * 6, maximum=[1.0] * 6)
 
-  def initialize_episode(self,physics):
-      # physics.named.data.xfrc_applied['B3_4', :3] = np.array([0,0,-2])
-      # physics.named.data.xfrc_applied['B4_4', :3] = np.array([0,0,-2])
+  def initialize_episode(self, physics):
+      physics.named.data.xfrc_applied['B3_4', :3] = np.array([0,0,-2])
+      physics.named.data.xfrc_applied['B4_4', :3] = np.array([0,0,-2])
 
       # physics.named.data.xfrc_applied['B2_2', :3] = np.array([0,0, -2])
       # physics.named.data.xfrc_applied['B3_3', :3] = np.array([0,0, -2])
@@ -113,7 +113,7 @@ class Cloth(base.Task):
       self.mask = np.any(image < 100, axis=-1).astype(int)
 
       # Apply random force in the beginning for random cloth init state
-      # physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:3]=np.random.uniform(-.5,.5,size=3)
+      physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:3]=np.random.uniform(-.5,.5,size=3)
 
       super(Cloth, self).initialize_episode(physics)
       self.current_locs = self.sample_locations(physics)
@@ -150,36 +150,46 @@ class Cloth(base.Task):
 
       epsilon = 3
 
-      for location, goal_position in zip(locations, goal_positions):
-        possible_index = []
-        possible_z = []
-        for i in range(num_bodies):
-            # flipping the x and y to make sure it corresponds to the real location
-            if abs(cam_pos_xy[i][0] - location[1]) < epsilon and abs(cam_pos_xy[i][1] - location[0]) < epsilon and i > 4:
-                possible_index.append(i)
-                possible_z.append(physics.data.geom_xpos[i, 2])
+      possible_index = []
+      possible_z = []
+      for i in range(num_bodies):
+          for j in range(i+1, num_bodies):
+              # flipping the x and y to make sure it corresponds to the real location
+              if abs(cam_pos_xy[i][0] - locations[0][1]) < epsilon and abs(cam_pos_xy[i][1] - locations[0][0]) < epsilon and i > 4 \
+              and abs(cam_pos_xy[j][0] - locations[1][1]) < epsilon and abs(cam_pos_xy[j][1] - locations[1][0]) < epsilon and j > 4:
+                  possible_index.append((i,j))
+                  possible_z.append((physics.data.geom_xpos[i, 2], physics.data.geom_xpos[j, 2]))
 
-        # Move the selected joint to the correct goal position
+      # Move the selected joint to the correct goal position
+      if possible_index != []:
+          left_index, right_index = possible_index[possible_z.index(max(possible_z, key=lambda x: np.mean(x)))]
 
-        if possible_index != []:
-            index = possible_index[possible_z.index(max(possible_z))]
+          left_action, left_geom = left_index - 4, left_index
+          right_action, right_geom = right_index - 4, right_index
 
-            corner_action = index - 4
-            corner_geom = index
+          # apply consecutive force to move the point to the target position
+          left_position = goal_positions[0] + physics.named.data.geom_xpos[left_geom]
+          left_dist = left_position - physics.named.data.geom_xpos[left_geom]
 
-            # apply consecutive force to move the point to the target position
-            position = goal_position + physics.named.data.geom_xpos[corner_geom]
-            dist = position - physics.named.data.geom_xpos[corner_geom]
+          right_position = goal_positions[1] + physics.named.data.geom_xpos[right_geom]
+          right_dist = right_position - physics.named.data.geom_xpos[right_geom]
 
-            loop = 0
-            while np.linalg.norm(dist) > 0.025:
-              loop += 1
-              if loop > 40:
-                break
-              physics.named.data.xfrc_applied[corner_action, :3] = dist * 20
-              physics.step()
-              self.after_step(physics)
-              dist = position - physics.named.data.geom_xpos[corner_geom]
+          loop = 0
+          while np.linalg.norm(np.vstack((left_dist,right_dist))) > 0.025:
+            loop += 1
+            if loop > 40:
+              print('Timeout exceeded.')
+              break
+            physics.named.data.xfrc_applied[left_action, :3] = right_dist * 20
+            physics.named.data.xfrc_applied[right_action, :3] = left_dist * 20
+            physics.step()
+            self.after_step(physics)
+            left_dist = left_position - physics.named.data.geom_xpos[left_geom]
+            right_dist = right_position - physics.named.data.geom_xpos[right_geom]
+          print(np.linalg.norm(left_dist), np.linalg.norm(right_dist))
+      else:
+          print('No pick point geom found.')
+
 
 
   def get_observation(self, physics):

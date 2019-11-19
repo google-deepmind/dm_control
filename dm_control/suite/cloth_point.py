@@ -113,7 +113,7 @@ class Cloth(base.Task):
     self.mask = np.any(image < 100, axis=-1).astype(int)
 
     # Apply random force in the beginning for random cloth init state
-    # physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:3]=np.random.uniform(-.5,.5,size=3)
+    physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:3]=np.random.uniform(-.5,.5,size=3)
 
     super(Cloth, self).initialize_episode(physics)
 
