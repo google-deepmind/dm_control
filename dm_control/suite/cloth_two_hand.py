@@ -21,7 +21,7 @@ from __future__ import print_function
 
 import collections
 from dm_env import specs
-from dm_control import mujoco, viewer
+from dm_control import mujoco#, viewer
 from dm_control.rl import control
 from dm_control.suite import base
 from dm_control.suite import common
@@ -102,8 +102,6 @@ class Cloth(base.Task):
       physics.named.data.xfrc_applied['B3_4', :3] = np.array([0,0,-2])
       physics.named.data.xfrc_applied['B4_4', :3] = np.array([0,0,-2])
 
-      # physics.named.data.xfrc_applied['B2_2', :3] = np.array([0,0, -2])
-      # physics.named.data.xfrc_applied['B3_3', :3] = np.array([0,0, -2])
       render_kwargs = {}
       render_kwargs['camera_id'] = 0
       render_kwargs['width'] = W
@@ -156,7 +154,8 @@ class Cloth(base.Task):
           for j in range(i+1, num_bodies):
               # flipping the x and y to make sure it corresponds to the real location
               if abs(cam_pos_xy[i][0] - locations[0][1]) < epsilon and abs(cam_pos_xy[i][1] - locations[0][0]) < epsilon and i > 4 \
-              and abs(cam_pos_xy[j][0] - locations[1][1]) < epsilon and abs(cam_pos_xy[j][1] - locations[1][0]) < epsilon and j > 4:
+              and abs(cam_pos_xy[j][0] - locations[1][1]) < epsilon and abs(cam_pos_xy[j][1] - locations[1][0]) < epsilon and j > 4 \
+              and i != j:
                   possible_index.append((i,j))
                   possible_z.append((physics.data.geom_xpos[i, 2], physics.data.geom_xpos[j, 2]))
 
@@ -177,8 +176,8 @@ class Cloth(base.Task):
           loop = 0
           while np.linalg.norm(np.vstack((left_dist,right_dist))) > 0.025:
             loop += 1
-            if loop > 40:
-              print('Timeout exceeded.')
+            if loop > 50:
+              # print('Timeout exceeded.')
               break
             physics.named.data.xfrc_applied[left_action, :3] = right_dist * 20
             physics.named.data.xfrc_applied[right_action, :3] = left_dist * 20
@@ -186,9 +185,9 @@ class Cloth(base.Task):
             self.after_step(physics)
             left_dist = left_position - physics.named.data.geom_xpos[left_geom]
             right_dist = right_position - physics.named.data.geom_xpos[right_geom]
-          print(np.linalg.norm(left_dist), np.linalg.norm(right_dist))
-      else:
-          print('No pick point geom found.')
+          # print(np.linalg.norm(left_dist), np.linalg.norm(right_dist))
+      # else:
+      #     print('No pick point geom found.')
 
 
 
