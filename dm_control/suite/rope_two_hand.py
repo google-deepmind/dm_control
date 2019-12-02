@@ -75,15 +75,14 @@ class Rope(base.Task):
     """
     self._randomize_gains = randomize_gains
     self._maxq = maxq
-    # self.action_spec=specs.BoundedArraySpec(
-    # shape=(2,), dtype=np.float, minimum=0.0, maximum=1.0)
+
     super(Rope, self).__init__(random=random)
 
   def action_spec(self, physics):
     """Returns a `BoundedArraySpec` matching the `physics` actuators."""
 
     return specs.BoundedArray(
-        shape=(2,), dtype=np.float, minimum=[-1.0] * 2, maximum=[1.0] * 2)
+        shape=(4,), dtype=np.float, minimum=[-1.0] * 4, maximum=[1.0] * 4)
 
   def initialize_episode(self,physics):
     render_kwargs = {}
@@ -100,15 +99,14 @@ class Rope(base.Task):
   def before_step(self, action, physics):
     physics.named.data.xfrc_applied[:,:3]=np.zeros((3,))
     physics.named.data.qfrc_applied[:2]=0
-
+    action = action.reshape((2,-1))
     if self._maxq:
-        location = np.round((action[:2] * 0.5 + 0.5) * 63).astype('int32')
-        goal_position = action[2:]
-        goal_position = goal_position * 0.1
+        locations = np.round((action[:, :2] * 0.5 + 0.5) * 63).astype('int32')
+        goal_positions = action[:, 2:]
     else:
-        goal_position = action
-        goal_position = goal_position * 0.1
-        location = self.current_loc
+        goal_positions = action
+        locations = self.current_loc.reshape((2,-1))
+    goal_positions = goal_positions * 0.1
 
     # computing the mapping from geom_xpos to location in image
     cam_fovy = physics.named.model.cam_fovy['fixed']
@@ -117,10 +115,11 @@ class Rope(base.Task):
     cam_mat = physics.named.data.cam_xmat['fixed'].reshape((3, 3))
     cam_pos = physics.named.data.cam_xpos['fixed'].reshape((3, 1))
     cam = np.concatenate([cam_mat, cam_pos], axis=1)
-    cam_pos_all = np.zeros((26, 3, 1))
-    for i in range(26):
+    num_bodies = len(physics.data.geom_xpos)
+    cam_pos_all = np.zeros((num_bodies, 3, 1))
+    for i in range(num_bodies):
       geom_xpos_added = np.concatenate([physics.data.geom_xpos[i], np.array([1])]).reshape((4, 1))
-      cam_pos_all[i] = cam_matrix.dot(cam.dot(geom_xpos_added)[:3])
+      cam_pos_all[i-5] = cam_matrix.dot(cam.dot(geom_xpos_added)[:3])
 
     # cam_pos_xy=cam_pos_all[5:,:]
     cam_pos_xy = np.rint(cam_pos_all[:, :2].reshape((26, 2)) / cam_pos_all[:, 2])
@@ -130,33 +129,40 @@ class Rope(base.Task):
     epsilon = 4
     possible_index = []
     possible_z = []
-    for i in range(26):
-      # flipping the x and y to make sure it corresponds to the real location
-      if abs(cam_pos_xy[i][0] - location[1]) < epsilon and abs(
-              cam_pos_xy[i][1] - location[0]) < epsilon and i > 0 and np.all(cam_pos_xy[i] < W) and np.all(
-        cam_pos_xy[i] >= 0):
-        possible_index.append(i)
-        possible_z.append(physics.data.geom_xpos[i, 2])
+    for i in range(num_bodies):
+        for j in range(num_bodies):
+            # flipping the x and y to make sure it corresponds to the real location
+            if abs(cam_pos_xy[i][0] - locations[0][1]) < epsilon and abs(cam_pos_xy[i][1] - locations[0][0]) < epsilon and i > 4 and np.all(cam_pos_xy[i] < W) and np.all(cam_pos_xy[i] >= 0) \
+               abs(cam_pos_xy[j][0] - locations[1][1]) < epsilon and abs(cam_pos_xy[j][1] - locations[1][0]) < epsilon and j > 4 and np.all(cam_pos_xy[j] < W) and np.all(cam_pos_xy[j] >= 0) \
+               and i != j:
+                possible_index.append((i,j))
+                possible_z.append((physics.data.geom_xpos[i, 2], physics.data.geom_xpos[j, 2]))
 
     if possible_index != []:
-      index = possible_index[possible_z.index(max(possible_z))]
+          left_index, right_index = possible_index[possible_z.index(max(possible_z, key=lambda x: np.mean(x)))]
 
-      corner_action = index
-      corner_geom = index
+          left_action, left_geom = left_index - 4, left_index
+          right_action, right_geom = right_index - 4, right_index
 
-      position = goal_position + physics.named.data.geom_xpos[corner_geom,:2]
-      dist = position - physics.named.data.geom_xpos[corner_geom,:2]
+          # apply consecutive force to move the point to the target position
+          left_position = goal_positions[0] + physics.named.data.geom_xpos[left_geom]
+          left_dist = left_position - physics.named.data.geom_xpos[left_geom]
 
-      loop = 0
-      while np.linalg.norm(dist) > 0.025:
-        loop += 1
-        if loop > 1000:
-          # print(np.linalg.norm(dist), 'break')
-          break
-        physics.named.data.xfrc_applied[corner_action, :2] = dist * 20
-        physics.step()
-        self.after_step(physics)
-        dist = position - physics.named.data.geom_xpos[corner_geom,:2]
+          right_position = goal_positions[1] + physics.named.data.geom_xpos[right_geom]
+          right_dist = right_position - physics.named.data.geom_xpos[right_geom]
+
+          loop = 0
+          while np.linalg.norm(np.vstack((left_dist,right_dist))) > 0.025:
+            loop += 1
+            if loop > 1000:
+                print(np.linalg.norm(left_dist), np.linalg.norm(right_dist), 'Timeout exceeded.')
+                break
+            physics.named.data.xfrc_applied[left_action, :2] = right_dist * 20
+            physics.named.data.xfrc_applied[right_action, :2] = left_dist * 20
+            physics.step()
+            self.after_step(physics)
+            left_dist = left_position - physics.named.data.geom_xpos[left_geom, :2]
+            right_dist = right_position - physics.named.data.geom_xpos[right_geom, :2]
 
   def get_termination(self,physics):
     if self.num_loc<1:
@@ -187,7 +193,7 @@ class Rope(base.Task):
     self.current_loc = location
 
     if self.current_loc is None:
-        obs['location'] = np.tile([-1, -1], 50).reshape(-1).astype('float32') / 63
+        obs['location'] = np.tile([-1, -1, -1, -1], 50).reshape(-1).astype('float32') / 63
     else:
         obs['location'] = np.tile(location, 50).reshape(-1).astype('float32') / 63
 
@@ -209,10 +215,10 @@ class Rope(base.Task):
     self.num_loc = num_loc
     if num_loc == 0 :
       return None
-    index = np.random.randint(num_loc, size=1)
-    location = location_range[index][0]
-
-    return location
+    index = np.random.randint(num_loc, size=2)
+    # Doesn't constrain pick points to left or right
+    location = location_range[index]
+    return location.flatten() # shape 4, array of locations
 
   def get_reward(self,physics):
     current_mask = np.all(self.image>150,axis=2).astype(int)
@@ -221,3 +227,6 @@ class Rope(base.Task):
     column = np.concatenate([np.flip(line),line])
     reward =np.sum(reward_mask* np.exp(column).reshape((W,1)))/111.0
     return reward
+
+if __name__ == '__main__':
+  env = easy()

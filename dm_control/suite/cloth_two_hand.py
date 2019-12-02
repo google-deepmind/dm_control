@@ -153,10 +153,11 @@ class Cloth(base.Task):
       possible_index = []
       possible_z = []
       for i in range(num_bodies):
-          for j in range(i+1, num_bodies):
+          for j in range(num_bodies):
               # flipping the x and y to make sure it corresponds to the real location
               if abs(cam_pos_xy[i][0] - locations[0][1]) < epsilon and abs(cam_pos_xy[i][1] - locations[0][0]) < epsilon and i > 4 \
-              and abs(cam_pos_xy[j][0] - locations[1][1]) < epsilon and abs(cam_pos_xy[j][1] - locations[1][0]) < epsilon and j > 4:
+              and abs(cam_pos_xy[j][0] - locations[1][1]) < epsilon and abs(cam_pos_xy[j][1] - locations[1][0]) < epsilon and j > 4 \
+              and i != j:
                   possible_index.append((i,j))
                   possible_z.append((physics.data.geom_xpos[i, 2], physics.data.geom_xpos[j, 2]))
 
@@ -177,18 +178,17 @@ class Cloth(base.Task):
           loop = 0
           while np.linalg.norm(np.vstack((left_dist,right_dist))) > 0.025:
             loop += 1
-            if loop > 40:
-              print('Timeout exceeded.')
-              break
+            if loop > 100:
+                print(np.linalg.norm(left_dist), np.linalg.norm(right_dist), 'Timeout exceeded.')
+                break
             physics.named.data.xfrc_applied[left_action, :3] = right_dist * 20
             physics.named.data.xfrc_applied[right_action, :3] = left_dist * 20
             physics.step()
             self.after_step(physics)
             left_dist = left_position - physics.named.data.geom_xpos[left_geom]
             right_dist = right_position - physics.named.data.geom_xpos[right_geom]
-          print(np.linalg.norm(left_dist), np.linalg.norm(right_dist))
-      else:
-          print('No pick point geom found.')
+    #   else:
+    #       print('No pick point geom found.')
 
 
 
@@ -205,7 +205,7 @@ class Cloth(base.Task):
 
     # If pick point part of state space, sample a point randomly
     if self._maxq:
-        self.current_locs = np.zeros((2,2))
+        self.current_locs = np.zeros((4,))
     else:
         self.current_locs = self.sample_locations(physics)
     obs['location'] = np.tile(self.current_locs, 50).reshape(-1).astype('float32') / 63.

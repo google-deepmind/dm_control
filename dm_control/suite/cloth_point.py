@@ -98,12 +98,10 @@ class Cloth(base.Task):
         return specs.BoundedArray(
             shape=(3,), dtype=np.float, minimum=[-1.0] * 3, maximum=[1.0] * 3)
 
-  def initialize_episode(self,physics):
+  def initialize_episode(self, physics):
     physics.named.data.xfrc_applied['B3_4', :3] = np.array([0,0,-2])
     physics.named.data.xfrc_applied['B4_4', :3] = np.array([0,0,-2])
 
-    # physics.named.data.xfrc_applied['B2_2', :3] = np.array([0,0, -2])
-    # physics.named.data.xfrc_applied['B3_3', :3] = np.array([0,0, -2])
     render_kwargs = {}
     render_kwargs['camera_id'] = 0
     render_kwargs['width'] = W
