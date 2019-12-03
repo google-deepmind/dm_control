@@ -65,7 +65,8 @@ class UpdaterTest(parameterized.TestCase):
     observables[1]['five'].enabled = True
 
     observation_updater = updater.Updater(observables)
-    observation_updater.reset(physics=None, random_state=None)
+    observation_updater.reset(physics=fake_physics.FakePhysics(),
+                              random_state=None)
 
     def make_spec(obs):
       array = np.array(obs.observation_callable(None, None)())

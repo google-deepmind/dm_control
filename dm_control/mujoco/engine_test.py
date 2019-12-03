@@ -346,6 +346,30 @@ class MujocoEngineTest(parameterized.TestCase):
         self._physics.data.ctrl[0] = float('nan')
         self._physics.step()
 
+  def testSuppressPhysicsError(self):
+    bad_value = float('nan')
+    message = engine._INVALID_PHYSICS_STATE.format(
+        warning_names='mjWARN_BADCTRL')
+
+    def assert_physics_error():
+      self._physics.data.ctrl[0] = bad_value
+      with self.assertRaisesWithLiteralMatch(control.PhysicsError, message):
+        self._physics.forward()
+
+    def assert_warning():
+      self._physics.data.ctrl[0] = bad_value
+      with mock.patch.object(engine.logging, 'warn') as mock_warn:
+        self._physics.forward()
+      mock_warn.assert_called_once_with(message)
+
+    assert_physics_error()
+    with self._physics.suppress_physics_errors():
+      assert_warning()
+      with self._physics.suppress_physics_errors():
+        assert_warning()
+      assert_warning()
+    assert_physics_error()
+
   @parameterized.named_parameters(
       ('_copy', lambda x: x.copy()),
       ('_pickle_and_unpickle', lambda x: cPickle.loads(cPickle.dumps(x))),

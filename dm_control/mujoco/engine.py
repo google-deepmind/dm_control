@@ -120,7 +120,18 @@ class Physics(_control.Physics):
     Args:
       data: Instance of `wrapper.MjData`.
     """
+    self._warnings_cause_exception = True
     self._reload_from_data(data)
+
+  @contextlib.contextmanager
+  def suppress_physics_errors(self):
+    """Physics warnings will be logged rather than raise exceptions."""
+    prev_state = self._warnings_cause_exception
+    self._warnings_cause_exception = False
+    try:
+      yield
+    finally:
+      self._warnings_cause_exception = prev_state
 
   def enable_profiling(self):
     """Enables Mujoco timing profiling."""
@@ -263,15 +274,28 @@ class Physics(_control.Physics):
 
   @contextlib.contextmanager
   def check_invalid_state(self):
-    """Raises a `base.PhysicsError` if the simulation state is invalid."""
+    """Checks whether the physics state is invalid at exit.
+
+    Yields:
+      None
+
+    Raises:
+      PhysicsError: if the simulation state is invalid at exit, unless this
+        context is nested inside a `suppress_physics_errors` context, in which
+        case a warning will be logged instead.
+    """
     # `np.copyto(dst, src)` is marginally faster than `dst[:] = src`.
     np.copyto(self._warnings_before, self._warnings)
     yield
     np.greater(self._warnings, self._warnings_before, out=self._new_warnings)
     if any(self._new_warnings):
       warning_names = np.compress(self._new_warnings, enums.mjtWarning._fields)
-      raise _control.PhysicsError(
-          _INVALID_PHYSICS_STATE.format(warning_names=', '.join(warning_names)))
+      message = _INVALID_PHYSICS_STATE.format(
+          warning_names=', '.join(warning_names))
+      if self._warnings_cause_exception:
+        raise _control.PhysicsError(message)
+      else:
+        logging.warn(message)
 
   def __getstate__(self):
     return self.data  # All state is assumed to reside within `self.data`.

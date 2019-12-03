@@ -46,11 +46,16 @@ class _EnabledObservable(object):
 
     obs_spec = self.observable.array_spec
     if obs_spec is None:
-      # We take an observation here to determine the shape and size.
+      # We take an observation to determine the shape and dtype of the array.
       # This occurs outside of an episode and doesn't affect environment
-      # behavior.
-      obs_value = np.array(self.observation_callable())
-      obs_spec = specs.Array(shape=obs_value.shape, dtype=obs_value.dtype)
+      # behavior. At this point the physics state is not guaranteed to be valid,
+      # so we might get a `PhysicsError` if the observation callable calls
+      # `physics.forward`. We suppress such errors since they do not matter as
+      # far as the shape and dtype of the observation are concerned.
+      with physics.suppress_physics_errors():
+        obs_array = self.observation_callable()
+      obs_array = np.asarray(obs_array)
+      obs_spec = specs.Array(shape=obs_array.shape, dtype=obs_array.dtype)
     self.buffer = obs_buffer.Buffer(
         buffer_size=(observable.buffer_size or DEFAULT_BUFFER_SIZE),
         shape=obs_spec.shape, dtype=obs_spec.dtype,

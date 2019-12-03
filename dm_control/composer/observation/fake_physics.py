@@ -19,6 +19,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import contextlib
+
 from dm_control.composer.observation import observable
 from dm_control.rl import control
 import numpy as np
@@ -68,3 +70,7 @@ class FakePhysics(control.Physics):
 
   def after_reset(self):
     pass
+
+  @contextlib.contextmanager
+  def suppress_physics_errors(self):
+    yield
