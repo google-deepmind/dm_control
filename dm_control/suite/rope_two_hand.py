@@ -106,7 +106,7 @@ class Rope(base.Task):
     else:
         goal_positions = action
         locations = self.current_loc.reshape((2,-1))
-    goal_positions = goal_positions * 0.1
+    goal_positions = goal_positions * 0.05
 
     # computing the mapping from geom_xpos to location in image
     cam_fovy = physics.named.model.cam_fovy['fixed']
@@ -122,7 +122,7 @@ class Rope(base.Task):
       cam_pos_all[i-5] = cam_matrix.dot(cam.dot(geom_xpos_added)[:3])
 
     # cam_pos_xy=cam_pos_all[5:,:]
-    cam_pos_xy = np.rint(cam_pos_all[:, :2].reshape((26, 2)) / cam_pos_all[:, 2])
+    cam_pos_xy = np.rint(cam_pos_all[:, :2].reshape((num_bodies, 2)) / cam_pos_all[:, 2])
     cam_pos_xy = cam_pos_xy.astype(int)
     cam_pos_xy[:, 1] = W - cam_pos_xy[:, 1]
 
@@ -132,7 +132,7 @@ class Rope(base.Task):
     for i in range(num_bodies):
         for j in range(num_bodies):
             # flipping the x and y to make sure it corresponds to the real location
-            if abs(cam_pos_xy[i][0] - locations[0][1]) < epsilon and abs(cam_pos_xy[i][1] - locations[0][0]) < epsilon and i > 4 and np.all(cam_pos_xy[i] < W) and np.all(cam_pos_xy[i] >= 0) \
+            if abs(cam_pos_xy[i][0] - locations[0][1]) < epsilon and abs(cam_pos_xy[i][1] - locations[0][0]) < epsilon and i > 4      and np.all(cam_pos_xy[i] < W) and np.all(cam_pos_xy[i] >= 0) and \
                abs(cam_pos_xy[j][0] - locations[1][1]) < epsilon and abs(cam_pos_xy[j][1] - locations[1][0]) < epsilon and j > 4 and np.all(cam_pos_xy[j] < W) and np.all(cam_pos_xy[j] >= 0) \
                and i != j:
                 possible_index.append((i,j))
@@ -145,17 +145,17 @@ class Rope(base.Task):
           right_action, right_geom = right_index - 4, right_index
 
           # apply consecutive force to move the point to the target position
-          left_position = goal_positions[0] + physics.named.data.geom_xpos[left_geom]
-          left_dist = left_position - physics.named.data.geom_xpos[left_geom]
+          left_position = goal_positions[0] + physics.named.data.geom_xpos[left_geom, :2]
+          left_dist = left_position - physics.named.data.geom_xpos[left_geom, :2]
 
-          right_position = goal_positions[1] + physics.named.data.geom_xpos[right_geom]
-          right_dist = right_position - physics.named.data.geom_xpos[right_geom]
+          right_position = goal_positions[1] + physics.named.data.geom_xpos[right_geom, :2]
+          right_dist = right_position - physics.named.data.geom_xpos[right_geom, :2]
 
           loop = 0
           while np.linalg.norm(np.vstack((left_dist,right_dist))) > 0.025:
             loop += 1
-            if loop > 1000:
-                print(np.linalg.norm(left_dist), np.linalg.norm(right_dist), 'Timeout exceeded.')
+            if loop > 40:
+                # print(np.linalg.norm(left_dist), np.linalg.norm(right_dist), 'Timeout exceeded.')
                 break
             physics.named.data.xfrc_applied[left_action, :2] = right_dist * 20
             physics.named.data.xfrc_applied[right_action, :2] = left_dist * 20
