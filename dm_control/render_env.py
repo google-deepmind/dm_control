@@ -24,7 +24,7 @@ for i in range(100):
                                 action_spec.maximum,
                                 size=action_spec.shape)
     # action = np.array([.5,.5,.5,-.5,-.5,-.5])
-    action = np.array([0.4,0.4,.8,.8])
+    action = np.array([-0.4,-0.4,-.8,-.8])
     # print(action)
     time_step = env.step(action)
     image = np.hstack([env.physics.render(height, width, camera_id=0),

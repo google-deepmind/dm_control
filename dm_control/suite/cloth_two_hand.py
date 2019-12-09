@@ -176,7 +176,7 @@ class Cloth(base.Task):
           loop = 0
           while np.linalg.norm(np.vstack((left_dist,right_dist))) > 0.025:
             loop += 1
-            if loop > 100:
+            if loop > 40:
                 # print(np.linalg.norm(left_dist), np.linalg.norm(right_dist), 'Timeout exceeded.')
                 break
             physics.named.data.xfrc_applied[left_action, :3] = right_dist * 20
@@ -205,7 +205,7 @@ class Cloth(base.Task):
     if self._maxq:
         self.current_locs = np.zeros((4,))
     else:
-        self.current_locs = self.sample_locations(physics)
+        self.current_locs = self.sample_locations(physics)  # Flattened (4,) array
     obs['location'] = np.tile(self.current_locs, 50).reshape(-1).astype('float32') / 63.
     return obs
 

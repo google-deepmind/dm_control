@@ -119,7 +119,7 @@ class Rope(base.Task):
     cam_pos_all = np.zeros((num_bodies, 3, 1))
     for i in range(num_bodies):
       geom_xpos_added = np.concatenate([physics.data.geom_xpos[i], np.array([1])]).reshape((4, 1))
-      cam_pos_all[i-5] = cam_matrix.dot(cam.dot(geom_xpos_added)[:3])
+      cam_pos_all[i] = cam_matrix.dot(cam.dot(geom_xpos_added)[:3])
 
     # cam_pos_xy=cam_pos_all[5:,:]
     cam_pos_xy = np.rint(cam_pos_all[:, :2].reshape((num_bodies, 2)) / cam_pos_all[:, 2])
