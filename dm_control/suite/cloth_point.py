@@ -21,7 +21,7 @@ from __future__ import print_function
 
 import collections
 from dm_env import specs
-from dm_control import mujoco, viewer
+from dm_control import mujoco #, viewer
 from dm_control.rl import control
 from dm_control.suite import base
 from dm_control.suite import common
@@ -136,8 +136,8 @@ class Cloth(base.Task):
       cam_pos = physics.named.data.cam_xpos['fixed'].reshape((3, 1))
       cam = np.concatenate([cam_mat, cam_pos], axis=1)
       cam_pos_all = np.zeros((86, 3, 1))
-      num_bodies = len(physics.data.geom_xpos)
-      for i in range(num_bodies):
+      # num_bodies = len(physics.data.geom_xpos)
+      for i in range(86):
           geom_xpos_added = np.concatenate([physics.data.geom_xpos[i], np.array([1])]).reshape((4, 1))
           cam_pos_all[i] = cam_matrix.dot(cam.dot(geom_xpos_added)[:3])
 
@@ -148,7 +148,7 @@ class Cloth(base.Task):
       epsilon = 3
       possible_index = []
       possible_z = []
-      for i in range(num_bodies):
+      for i in range(86):
           # flipping the x and y to make sure it corresponds to the real location
           if abs(cam_pos_xy[i][0] - location[1]) < epsilon and abs(
                   cam_pos_xy[i][1] - location[0]) < epsilon and i > 4:

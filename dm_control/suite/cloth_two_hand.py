@@ -21,7 +21,7 @@ from __future__ import print_function
 
 import collections
 from dm_env import specs
-from dm_control import mujoco, viewer
+from dm_control import mujoco#, viewer
 from dm_control.rl import control
 from dm_control.suite import base
 from dm_control.suite import common
@@ -102,8 +102,6 @@ class Cloth(base.Task):
       physics.named.data.xfrc_applied['B3_4', :3] = np.array([0,0,-2])
       physics.named.data.xfrc_applied['B4_4', :3] = np.array([0,0,-2])
 
-      # physics.named.data.xfrc_applied['B2_2', :3] = np.array([0,0, -2])
-      # physics.named.data.xfrc_applied['B3_3', :3] = np.array([0,0, -2])
       render_kwargs = {}
       render_kwargs['camera_id'] = 0
       render_kwargs['width'] = W
@@ -179,7 +177,7 @@ class Cloth(base.Task):
           while np.linalg.norm(np.vstack((left_dist,right_dist))) > 0.025:
             loop += 1
             if loop > 100:
-                print(np.linalg.norm(left_dist), np.linalg.norm(right_dist), 'Timeout exceeded.')
+                # print(np.linalg.norm(left_dist), np.linalg.norm(right_dist), 'Timeout exceeded.')
                 break
             physics.named.data.xfrc_applied[left_action, :3] = right_dist * 20
             physics.named.data.xfrc_applied[right_action, :3] = left_dist * 20
