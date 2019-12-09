@@ -42,6 +42,7 @@ def get_model_and_assets():
   # return common.read_model('cloth_v0.xml'), common.ASSETS
   return common.read_model('rope_sac.xml'),common.ASSETS
 W=64
+counter = 0
 
 
 
@@ -117,32 +118,40 @@ class Rope(base.Task):
     cam_mat = physics.named.data.cam_xmat['fixed'].reshape((3, 3))
     cam_pos = physics.named.data.cam_xpos['fixed'].reshape((3, 1))
     cam = np.concatenate([cam_mat, cam_pos], axis=1)
-    cam_pos_all = np.zeros((26, 3, 1))
-    for i in range(26):
-      geom_xpos_added = np.concatenate([physics.data.geom_xpos[i], np.array([1])]).reshape((4, 1))
+    cam_pos_all = np.zeros((25, 3, 1))
+    for i in range(25):
+      geom_xpos_added = np.concatenate([physics.data.geom_xpos[i+5], np.array([1])]).reshape((4, 1))
       cam_pos_all[i] = cam_matrix.dot(cam.dot(geom_xpos_added)[:3])
 
     # cam_pos_xy=cam_pos_all[5:,:]
-    cam_pos_xy = np.rint(cam_pos_all[:, :2].reshape((26, 2)) / cam_pos_all[:, 2])
+    cam_pos_xy = np.rint(cam_pos_all[:, :2].reshape((25, 2)) / cam_pos_all[:, 2])
     cam_pos_xy = cam_pos_xy.astype(int)
     cam_pos_xy[:, 1] = W - cam_pos_xy[:, 1]
+    cam_pos_xy[:, [0, 1]] = cam_pos_xy[:, [1, 0]]
 
-    epsilon = 4
-    possible_index = []
-    possible_z = []
-    for i in range(26):
-      # flipping the x and y to make sure it corresponds to the real location
-      if abs(cam_pos_xy[i][0] - location[1]) < epsilon and abs(
-              cam_pos_xy[i][1] - location[0]) < epsilon and i > 0 and np.all(cam_pos_xy[i] < W) and np.all(
-        cam_pos_xy[i] >= 0):
-        possible_index.append(i)
-        possible_z.append(physics.data.geom_xpos[i, 2])
+    dists = np.linalg.norm(cam_pos_xy - location[None, :], axis=1)
+    index = np.argmin(dists)
 
-    if possible_index != []:
-      index = possible_index[possible_z.index(max(possible_z))]
+   # epsilon = 4
+   # possible_index = []
+   # possible_z = []
+   # for i in range(25):
+   #   # flipping the x and y to make sure it corresponds to the real location
+   #   if abs(cam_pos_xy[i][0] - location[0]) < epsilon and abs(
+   #           cam_pos_xy[i][1] - location[1]) < epsilon and i > 0 and np.all(cam_pos_xy[i] < W) and np.all(
+   #     cam_pos_xy[i] >= 0):
+   #     possible_index.append(i+4)
+   #     possible_z.append(physics.data.geom_xpos[i+5, 2])
+
+    #if possible_index != []:
+    if True:
+      #index = possible_index[possible_z.index(max(possible_z))]
+
+      #corner_action = index - 5
+      #corner_geom = index
 
       corner_action = index
-      corner_geom = index
+      corner_geom = index + 5
 
       position = goal_position + physics.named.data.geom_xpos[corner_geom,:2]
       dist = position - physics.named.data.geom_xpos[corner_geom,:2]
@@ -156,6 +165,15 @@ class Rope(base.Task):
         physics.step()
         self.after_step(physics)
         dist = position - physics.named.data.geom_xpos[corner_geom,:2]
+  #  else:
+  #      if np.all(action != 0):
+  #          print('failed', location, action, cam_pos_xy)
+        #tmp = np.zeros((64, 64, 3), dtype='uint8')
+        #for i in range(25):
+        #    tmp[cam_pos_xy[i, 0], cam_pos_xy[i, 1]] = (255, 255, 255)
+        #import cv2
+        #cv2.imwrite('tmp/debug_point.png', tmp)
+        #cv2.imwrite('tmp/debug_true.png', self.image)
 
   def get_termination(self,physics):
     if self.num_loc<1:
