@@ -35,6 +35,8 @@ class GoToTarget(composer.Task):
                walker,
                arena,
                moving_target=False,
+               target_relative=False,
+               target_relative_dist=1.5,
                steps_before_moving_target=10,
                distance_tolerance=DEFAULT_DISTANCE_TOLERANCE_TO_TARGET,
                target_spawn_position=None,
@@ -49,6 +51,10 @@ class GoToTarget(composer.Task):
       arena: an instance of `locomotion.arenas.floors.Floor`.
       moving_target: bool, Whether the target should move after receiving the
         walker reaches it.
+      target_relative: bool, Whether the target be set relative to its current
+        position.
+      target_relative_dist: float, new target distance range if
+        using target_relative.
       steps_before_moving_target: int, the number of steps before the target
         moves, if moving_target==True.
       distance_tolerance: Accepted to distance to the target position before
@@ -90,6 +96,8 @@ class GoToTarget(composer.Task):
 
     self._distance_tolerance = distance_tolerance
     self._moving_target = moving_target
+    self._target_relative = target_relative
+    self._target_relative_dist = target_relative_dist
     self._steps_before_moving_target = steps_before_moving_target
     self._reward_step_counter = 0
 
@@ -196,8 +204,16 @@ class GoToTarget(composer.Task):
         self._reward_step_counter >= self._steps_before_moving_target):
 
       # Reset the target position.
-      target_x, target_y = variation.evaluate(
-          self._target_spawn_position, random_state=random_state)
+      if self._target_relative:
+        walker_pos = physics.bind(self._walker.root_body).xpos[:2]
+        target_x, target_y = random_state.uniform(
+            -np.array([self._target_relative_dist, self._target_relative_dist]),
+            np.array([self._target_relative_dist, self._target_relative_dist]))
+        target_x += walker_pos[0]
+        target_y += walker_pos[1]
+      else:
+        target_x, target_y = variation.evaluate(
+            self._target_spawn_position, random_state=random_state)
       physics.bind(self._target).pos = [target_x, target_y, 0.]
 
       # Reset the number of steps at the target for the moving target.
