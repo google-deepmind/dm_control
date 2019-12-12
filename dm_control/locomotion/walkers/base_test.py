@@ -30,8 +30,6 @@ class FakeWalker(base.Walker):
 
   def _build(self):
     self._mjcf_root = mjcf.RootElement(model='walker')
-    self._egocentric_camera = self._mjcf_root.worldbody.add(
-        'camera', name='egocentric', xyaxes=[0, -1, 0, 0, 0, 1])
     self._torso_body = self._mjcf_root.worldbody.add(
         'body', name='torso', xyaxes=[0, 1, 0, -1, 0, 0])
 
@@ -48,20 +46,8 @@ class FakeWalker(base.Walker):
     return self._torso_body
 
   @property
-  def end_effectors(self):
-    return []
-
-  @property
   def observable_joints(self):
     return []
-
-  @property
-  def ground_contact_geoms(self):
-    return []
-
-  @property
-  def egocentric_camera(self):
-    return self._egocentric_camera
 
 
 class BaseWalkerTest(absltest.TestCase):

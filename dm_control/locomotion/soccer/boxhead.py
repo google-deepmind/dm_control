@@ -23,7 +23,7 @@ import os
 
 from dm_control import composer
 from dm_control import mjcf
-from dm_control.locomotion.walkers import base
+from dm_control.locomotion.walkers import legacy_base
 import numpy as np
 from PIL import Image
 import six
@@ -102,7 +102,7 @@ def _asset_png_with_background_rgba_bytes(asset_fname, background_rgba):
   return png_encoding
 
 
-class BoxHead(base.Walker):
+class BoxHead(legacy_base.Walker):
   """A rollable and jumpable ball with a head."""
 
   def _build(self,

@@ -27,6 +27,7 @@ from dm_control import composer
 from dm_control import mjcf
 from dm_control.composer.observation import observable
 from dm_control.locomotion.walkers import base
+from dm_control.locomotion.walkers import legacy_base
 from dm_control.locomotion.walkers import scaled_actuators
 from dm_control.mujoco import wrapper as mj_wrapper
 import numpy as np
@@ -124,7 +125,7 @@ _TORQUE_THRESHOLD = 60
 
 
 @six.add_metaclass(abc.ABCMeta)
-class _CMUHumanoidBase(base.Walker):
+class _CMUHumanoidBase(legacy_base.Walker):
   """The abstract base class for walkers compatible with the CMU humanoid."""
 
   def _build(self,
@@ -299,7 +300,7 @@ class CMUHumanoidPositionControlled(CMUHumanoid):
     return (2 * target_pose[self.actuator_order] - self._offset) / self._scale
 
 
-class CMUHumanoidObservables(base.WalkerObservables):
+class CMUHumanoidObservables(legacy_base.WalkerObservables):
   """Observables for the Humanoid."""
 
   @composer.observable
