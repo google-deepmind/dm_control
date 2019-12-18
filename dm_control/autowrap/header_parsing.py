@@ -21,6 +21,7 @@ from __future__ import print_function
 
 import pyparsing as pp
 import six
+from six.moves import map
 
 # NB: Don't enable parser memoization (`pp.ParserElement.enablePackrat()`),
 #     since this results in a ~6x slowdown.
@@ -85,7 +86,7 @@ def _nested_if_else(if_, pred, else_, endif, match_if_true, match_if_false):
 # Some common string patterns to suppress.
 # ------------------------------------------------------------------------------
 (X, LPAREN, RPAREN, LBRACK, RBRACK, LBRACE, RBRACE, SEMI, COMMA, EQUAL, FSLASH,
- BSLASH) = map(pp.Suppress, "X()[]{};,=/\\")
+ BSLASH) = list(map(pp.Suppress, "X()[]{};,=/\\"))
 EOL = pp.LineEnd().suppress()
 
 # Comments, continuation.
