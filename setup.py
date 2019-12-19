@@ -197,7 +197,8 @@ setup(
     packages=find_packages(),
     package_data={
         'dm_control': find_data_files(package_dir='dm_control',
-                                      patterns=['*.png', '*.stl', '*.xml']),
+                                      patterns=['*.msh', '*.png',
+                                                '*.stl', '*.xml']),
     },
     cmdclass={
         'build_mjbindings': BuildMJBindingsCommand,
