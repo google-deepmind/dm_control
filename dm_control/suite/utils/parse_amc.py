@@ -21,12 +21,10 @@ from __future__ import print_function
 
 import collections
 
-from dm_control.mujoco.wrapper import mjbindings
+from dm_control.mujoco import math as mjmath
 import numpy as np
 from scipy import interpolate
 from six.moves import range
-
-mjlib = mjbindings.mjlib
 
 MOCAP_DT = 1.0/120.0
 CONVERSION_LENGTH = 0.056444
@@ -104,7 +102,8 @@ def convert(file_name, physics, timestep):
     p_tp1 = qpos_values_resampled[:, t + 1]
     p_t = qpos_values_resampled[:, t]
     qvel = [(p_tp1[:3]-p_t[:3])/ timestep,
-            mj_quat2vel(mj_quatdiff(p_t[3:7], p_tp1[3:7]), timestep),
+            mjmath.mj_quat2vel(
+                mjmath.mj_quatdiff(p_t[3:7], p_tp1[3:7]), timestep),
             (p_tp1[7:]-p_t[7:])/ timestep]
     qvel_list.append(np.concatenate(qvel))
 
@@ -187,65 +186,10 @@ class Amcvals2qpos(object):
 
     # Root.
     qpos[:3] = np.dot(self.root_xyz_ransform, amc_val[:3])
-    qpos_quat = euler2quat(amc_val[3], amc_val[4], amc_val[5])
-    qpos_quat = mj_quatprod(euler2quat(90, 0, 0), qpos_quat)
+    qpos_quat = mjmath.euler2quat(amc_val[3], amc_val[4], amc_val[5])
+    qpos_quat = mjmath.mj_quatprod(mjmath.euler2quat(90, 0, 0), qpos_quat)
 
     for i, ind in enumerate(self.qpos_root_quat_ind):
       qpos[ind] = qpos_quat[i]
 
     return qpos
-
-
-def euler2quat(ax, ay, az):
-  """Converts euler angles to a quaternion.
-
-  Note: rotation order is zyx
-
-  Args:
-    ax: Roll angle (deg)
-    ay: Pitch angle (deg).
-    az: Yaw angle (deg).
-
-  Returns:
-    A numpy array representing the rotation as a quaternion.
-  """
-  r1 = az
-  r2 = ay
-  r3 = ax
-
-  c1 = np.cos(np.deg2rad(r1 / 2))
-  s1 = np.sin(np.deg2rad(r1 / 2))
-  c2 = np.cos(np.deg2rad(r2 / 2))
-  s2 = np.sin(np.deg2rad(r2 / 2))
-  c3 = np.cos(np.deg2rad(r3 / 2))
-  s3 = np.sin(np.deg2rad(r3 / 2))
-
-  q0 = c1 * c2 * c3 + s1 * s2 * s3
-  q1 = c1 * c2 * s3 - s1 * s2 * c3
-  q2 = c1 * s2 * c3 + s1 * c2 * s3
-  q3 = s1 * c2 * c3 - c1 * s2 * s3
-
-  return np.array([q0, q1, q2, q3])
-
-
-def mj_quatprod(q, r):
-  quaternion = np.zeros(4)
-  mjlib.mju_mulQuat(quaternion, np.ascontiguousarray(q),
-                    np.ascontiguousarray(r))
-  return quaternion
-
-
-def mj_quat2vel(q, dt):
-  vel = np.zeros(3)
-  mjlib.mju_quat2Vel(vel, np.ascontiguousarray(q), dt)
-  return vel
-
-
-def mj_quatneg(q):
-  quaternion = np.zeros(4)
-  mjlib.mju_negQuat(quaternion, np.ascontiguousarray(q))
-  return quaternion
-
-
-def mj_quatdiff(source, target):
-  return mj_quatprod(mj_quatneg(source), np.ascontiguousarray(target))
