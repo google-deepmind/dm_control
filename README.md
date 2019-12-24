@@ -66,12 +66,10 @@ Follow these steps to install `dm_control`:
     extracted as `~/.mujoco/mujoco200_$PLATFORM` where `$PLATFORM` is either
     `linux`, `win64`, or `macos`.
 
-2.  Install the `dm_control` Python package by running `pip install
-    git+git://github.com/deepmind/dm_control.git` (PyPI package coming soon) or
-    by cloning the repository and running `pip install /path/to/dm_control/`. We
-    recommend `pip install`ing into a `virtualenv`, or with the `--user` flag to
-    avoid interfering with system packages. At installation time, `dm_control`
-    looks for the MuJoCo headers from Step 1 in
+2.  Install the `dm_control` Python package by running `pip install dm_control`.
+    We recommend `pip install`ing into a `virtualenv`, or with the `--user` flag
+    to avoid interfering with system packages. At installation time,
+    `dm_control` looks for the MuJoCo headers from Step 1 in
     `~/.mujoco/mujoco200_$PLATFORM/include`, however this path can be configured
     with the `headers-dir` command line argument.
 
@@ -83,6 +81,18 @@ Follow these steps to install `dm_control`:
     MuJoCo Pro (e.g. `libmujoco200.so` or `libmujoco200.dylib`) are installed at
     non-default paths, specify their locations using the `MJKEY_PATH` and
     `MJLIB_PATH` environment variables respectively.
+
+## Versioning
+
+`dm_control` is released on a rolling basis: the latest commit on the `master`
+branch of our GitHub repository represents our latest release. Our Python
+package is versioned `0.0.N`, where `N` is the number that appears in the
+`PiperOrigin-RevId` field of the commit message. We always ensure that `N`
+strictly increases between a parent commit and its children. We do not upload
+all versions to PyPI, and occasionally the latest version on PyPI may lag behind
+the latest commit on GitHub. Should this happen, you can still install the
+newest version available by running `pip install
+git+git://github.com/deepmind/dm_control.git`.
 
 ## Rendering
 
