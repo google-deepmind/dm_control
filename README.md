@@ -80,7 +80,9 @@ Follow these steps to install `dm_control`:
 4.  If the license key (e.g. `mjkey.txt`) or the shared library provided by
     MuJoCo Pro (e.g. `libmujoco200.so` or `libmujoco200.dylib`) are installed at
     non-default paths, specify their locations using the `MJKEY_PATH` and
-    `MJLIB_PATH` environment variables respectively.
+    `MJLIB_PATH` environment variables respectively. These environment variables
+    should be set to the full path to the relevant file itself, e.g.
+    `export MJLIB_PATH=/path/to/libmujoco200.so`.
 
 ## Versioning
 
