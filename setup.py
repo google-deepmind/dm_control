@@ -58,14 +58,15 @@ def _initialize_mjbindings_options(cmd_instance):
   """Set default values for options relating to `build_mjbindings`."""
   # A default value must be assigned to each user option here.
   cmd_instance.inplace = 0
-  cmd_instance.headers_dir = os.path.expanduser(DEFAULT_HEADERS_DIR)
+  cmd_instance.headers_dir = DEFAULT_HEADERS_DIR
 
 
 def _finalize_mjbindings_options(cmd_instance):
   """Post-process options relating to `build_mjbindings`."""
+  headers_dir = os.path.expanduser(cmd_instance.headers_dir)
   header_paths = []
   for filename in HEADER_FILENAMES:
-    full_path = os.path.join(cmd_instance.headers_dir, filename)
+    full_path = os.path.join(headers_dir, filename)
     if not os.path.exists(full_path):
       raise IOError('Header file {!r} does not exist.'.format(full_path))
     header_paths.append(full_path)
@@ -165,7 +166,7 @@ def find_data_files(package_dir, patterns):
 
 setup(
     name='dm_control',
-    version='0.0.287061374',
+    version='0.0.287770839',
     description='Continuous control environments and MuJoCo Python bindings.',
     author='DeepMind',
     license='Apache License, Version 2.0',
