@@ -40,7 +40,7 @@
 
       <body name="B10" pos="0 0 1">
           <inertial pos="0 0 0" quat="0.707107 0 0.707107 0" mass="0.0125664" diaginertia="1.98968e-06 1.98968e-06 6.28319e-07" />
-          <joint type="free" />
+          <freejoint name="r1" />
           <geom name="G10" size="0.01 0.015" quat="0.707107 0 0.707107 0" type="capsule" rgba="0.8 0.2 0.1 1" />
           <body name="B11" pos="0.04 0 0">
               <inertial pos="0 0 0" quat="0.707107 0 0.707107 0" mass="0.0125664" diaginertia="1.98968e-06 1.98968e-06 6.28319e-07" />
@@ -173,14 +173,14 @@
 <!--        </composite>-->
 <!--    </body>-->
   </worldbody>
-<!--  <sensor>-->
+  <sensor>
 
-<!--  </sensor>-->
-<!--  <actuator>-->
-<!--    <motor ctrllimited="true" ctrlrange="-1 1" gear="10.0" joint="r1"/>-->
+  </sensor>
+  <actuator>
+    <motor ctrllimited="true" ctrlrange="-1 1" gear="10.0" joint="r1"/>
 <!--    <motor ctrllimited="true" ctrlrange="-1 1" gear="150.0" joint="rot3"/>-->
 <!--      <motor ctrllimited="true" ctrlrange="-1 1" gear="150.0" joint="r1"/>-->
-<!--  </actuator>-->
+  </actuator>
 <!--    <worldbody>-->
 
 <!--        <light cutoff="100" diffuse="1 1 1" dir="-0 0 -1" directional="true" exponent="1" pos="0 0 0.0" specular=".1 .1 .1"/>-->
