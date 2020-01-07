@@ -36,10 +36,12 @@ from six.moves import range
 
 
 # From the EGL_EXT_device_enumeration extension.
-EGLDeviceEXT = ctypes.c_void_p
 PFNEGLQUERYDEVICESEXTPROC = ctypes.CFUNCTYPE(
-    EGL.EGLBoolean, EGL.EGLint,
-    ctypes.POINTER(EGLDeviceEXT), ctypes.POINTER(EGL.EGLint))
+    EGL.EGLBoolean,
+    EGL.EGLint,
+    ctypes.POINTER(EGL.EGLDeviceEXT),
+    ctypes.POINTER(EGL.EGLint),
+)
 try:
   _eglQueryDevicesEXT = PFNEGLQUERYDEVICESEXTPROC(  # pylint: disable=invalid-name
       EGL.eglGetProcAddress('eglQueryDevicesEXT'))
@@ -60,7 +62,7 @@ except TypeError:
 
 # Wrap raw _eglQueryDevicesEXT function into something more Pythonic.
 def eglQueryDevicesEXT(max_devices=10):  # pylint: disable=invalid-name
-  devices = (EGLDeviceEXT * max_devices)()
+  devices = (EGL.EGLDeviceEXT * max_devices)()
   num_devices = EGL.EGLint()
   success = _eglQueryDevicesEXT(max_devices, devices, num_devices)
   if success == EGL.EGL_TRUE:
