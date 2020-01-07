@@ -173,14 +173,14 @@
 <!--        </composite>-->
 <!--    </body>-->
   </worldbody>
-  <sensor>
+<!--  <sensor>-->
 
-  </sensor>
-  <actuator>
-    <motor ctrllimited="true" ctrlrange="-1 1" gear="10.0" joint="r1"/>
+<!--  </sensor>-->
+<!--  <actuator>-->
+<!--    <motor ctrllimited="true" ctrlrange="-1 1" gear="10.0" joint="r1"/>-->
 <!--    <motor ctrllimited="true" ctrlrange="-1 1" gear="150.0" joint="rot3"/>-->
 <!--      <motor ctrllimited="true" ctrlrange="-1 1" gear="150.0" joint="r1"/>-->
-  </actuator>
+<!--  </actuator>-->
 <!--    <worldbody>-->
 
 <!--        <light cutoff="100" diffuse="1 1 1" dir="-0 0 -1" directional="true" exponent="1" pos="0 0 0.0" specular=".1 .1 .1"/>-->
