@@ -114,12 +114,12 @@ class Rope(base.Task):
     cam_mat = physics.named.data.cam_xmat['fixed'].reshape((3, 3))
     cam_pos = physics.named.data.cam_xpos['fixed'].reshape((3, 1))
     cam = np.concatenate([cam_mat, cam_pos], axis=1)
-    cam_pos_all = np.zeros((25, 3, 1))
-    for i in range(25):
+    cam_pos_all = np.zeros((21, 3, 1))
+    for i in range(21):
       geom_xpos_added = np.concatenate([physics.data.geom_xpos[i+5], np.array([1])]).reshape((4, 1))
       cam_pos_all[i] = cam_matrix.dot(cam.dot(geom_xpos_added)[:3])
 
-    cam_pos_xy = np.rint(cam_pos_all[:, :2].reshape((25, 2)) / cam_pos_all[:, 2])
+    cam_pos_xy = np.rint(cam_pos_all[:, :2].reshape((21, 2)) / cam_pos_all[:, 2])
     cam_pos_xy = cam_pos_xy.astype(int)
     cam_pos_xy[:, 1] = W - cam_pos_xy[:, 1]
     cam_pos_xy[:, [0, 1]] = cam_pos_xy[:, [1, 0]]
@@ -148,18 +148,18 @@ class Rope(base.Task):
       corner_action = index
       corner_geom = index + 5
 
-      position = goal_position + physics.named.data.geom_xpos[corner_geom,:2]
-      dist = position - physics.named.data.geom_xpos[corner_geom,:2]
+      position = goal_position + physics.data.geom_xpos[corner_geom,:2]
+      dist = position - physics.data.geom_xpos[corner_geom,:2]
 
       loop = 0
       while np.linalg.norm(dist) > 0.025:
         loop += 1
         if loop > 40:
           break
-        physics.named.data.xfrc_applied[corner_action, :2] = dist * 20
+        physics.data.xfrc_applied[corner_action, :2] = dist * 20
         physics.step()
         self.after_step(physics)
-        dist = position - physics.named.data.geom_xpos[corner_geom,:2]
+        dist = position - physics.data.geom_xpos[corner_geom,:2]
   #  else:
   #      if np.all(action != 0):
   #          print('failed', location, action, cam_pos_xy)
@@ -190,10 +190,11 @@ class Rope(base.Task):
 
         self.image = image
 
-        location_range = np.transpose(np.where(np.all(image > 150, axis=2)))
-        self.location_range = location_range
-        num_loc = np.shape(location_range)[0]
-        self.num_loc = num_loc
+        # location_range = np.transpose(np.where(np.all(image > 150, axis=2)))
+        # self.location_range = location_range
+        # num_loc = np.shape(location_range)[0]
+        # self.num_loc = num_loc
+        self.num_loc = 100
     else:
         location = self.sample_location(physics)
     self.current_loc = location
