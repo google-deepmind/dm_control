@@ -83,8 +83,12 @@ class Rope(base.Task):
   def action_spec(self, physics):
     """Returns a `BoundedArraySpec` matching the `physics` actuators."""
 
-    return specs.BoundedArray(
-        shape=(2,), dtype=np.float, minimum=[-1.0] * 2, maximum=[1.0] * 2)
+    if self._maxq:
+        return specs.BoundedArray(
+                shape=(4,), dtype=np.float, minimum=[-1.0] * 4, maximum=[1.0] * 4)
+    else:
+        return specs.BoundedArray(
+            shape=(2,), dtype=np.float, minimum=[-1.0] * 2, maximum=[1.0] * 2)
 
   def initialize_episode(self,physics):
     render_kwargs = {}
@@ -103,7 +107,7 @@ class Rope(base.Task):
     physics.named.data.qfrc_applied[:2]=0
 
     if self._maxq:
-        location = np.round((action[:2] * 0.5 + 0.5) * 63).astype('int32')
+        location = (action[:2] * 0.5 + 0.5) * 63
         goal_position = action[2:]
         goal_position = goal_position * 0.05
     else:
@@ -152,6 +156,7 @@ class Rope(base.Task):
 
       corner_action = index
       corner_geom = index + 5
+      start = physics.named.data.geom_xpos[corner_geom, :2].copy()
 
       position = goal_position + physics.named.data.geom_xpos[corner_geom,:2]
       dist = position - physics.named.data.geom_xpos[corner_geom,:2]
@@ -159,9 +164,9 @@ class Rope(base.Task):
       loop = 0
       while np.linalg.norm(dist) > 0.025:
         loop += 1
-        if loop > 40:
+        if loop > 100:
           break
-        physics.named.data.xfrc_applied[corner_action, :2] = dist * 20
+        physics.named.data.xfrc_applied[corner_action, :2] = 25 * dist
         physics.step()
         self.after_step(physics)
         dist = position - physics.named.data.geom_xpos[corner_geom,:2]

@@ -40,7 +40,7 @@ GEOM_INDEX=['G0_0','G0_8','G8_0','G8_8']
 def get_model_and_assets():
   """Returns a tuple containing the model XML string and a dict of assets."""
   # return common.read_model('cloth_v0.xml'), common.ASSETS
-  return common.read_model('rope_sac.xml'),common.ASSETS
+  return common.read_model('rope_colored.xml'),common.ASSETS
 W=64
 counter = 0
 
@@ -99,7 +99,7 @@ class Rope(base.Task):
     physics.named.data.qfrc_applied[:2]=0
 
     if not self._random_pick:
-        location = np.round((action[:2] * 0.5 + 0.5) * 63).astype('int32')
+        location = (action[:2] * 0.5 + 0.5) * 63
         goal_position = action[2:]
         goal_position = goal_position * 0.05
     else:
