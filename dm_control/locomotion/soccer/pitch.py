@@ -33,6 +33,7 @@ _WALL_HEIGHT = 10.
 _WALL_THICKNESS = .5
 _SIDE_WIDTH = 32. / 6.
 _GROUND_GEOM_HEIGHT = 0.5
+_FIELD_BOX_CONTACT_BIT = 1 << 7  # Use a higher bit to prevent potential clash.
 
 _DEFAULT_PITCH_SIZE = (12, 9)
 _DEFAULT_GOAL_LENGTH_RATIO = 0.33  # Goal length / pitch width.
@@ -43,7 +44,7 @@ def _top_down_cam_fovy(size, top_camera_distance):
                                     top_camera_distance)
 
 
-def _wall_pos_size(size):
+def _wall_pos_xyaxes(size):
   """Infers position and size of bounding walls given pitch size.
 
   Walls are placed around `ground_geom` that represents the pitch. Note that
@@ -54,15 +55,15 @@ def _wall_pos_size(size):
     size: a tuple of (length, width) of the pitch.
 
   Returns:
-    a list of 4 tuples, each representing the position and size of a wall. In
-    order, walls are placed along x-negative, x-positive, y-negative,
+    a list of 4 tuples, each representing the position and xyaxes of a wall
+    plane. In order, walls are placed along x-negative, x-positive, y-negative,
     y-positive relative the center of the pitch.
   """
   return [
-      ((-size[0], 0., _WALL_HEIGHT), (_WALL_THICKNESS, size[1], _WALL_HEIGHT)),
-      ((size[0], 0., _WALL_HEIGHT), (_WALL_THICKNESS, size[1], _WALL_HEIGHT)),
-      ((0., -size[1], _WALL_HEIGHT), (size[0], _WALL_THICKNESS, _WALL_HEIGHT)),
-      ((0., size[1], _WALL_HEIGHT), (size[0], _WALL_THICKNESS, _WALL_HEIGHT)),
+      ((0., -size[1], 0.), (-1, 0, 0, 0, 0, 1)),
+      ((0., size[1], 0.), (1, 0, 0, 0, 0, 1)),
+      ((-size[0], 0., 0.), (0, 1, 0, 0, 0, 1)),
+      ((size[0], 0., 0.), (0, -1, 0, 0, 0, 1)),
   ]
 
 
@@ -77,6 +78,7 @@ class Pitch(composer.Arena):
              size=_DEFAULT_PITCH_SIZE,
              goal_size=None,
              top_camera_distance=_TOP_CAMERA_DISTANCE,
+             field_box=False,
              name='pitch'):
     """Construct a pitch with walls and position detectors.
 
@@ -86,6 +88,8 @@ class Pitch(composer.Arena):
         If not specified, the goal size is inferred from pitch size with a fixed
         default ratio.
       top_camera_distance: the distance of the top-down camera to the pitch.
+      field_box: adds a "field box" that collides with the ball but not the
+        walkers.
       name: the name of this arena.
     """
     super(Pitch, self)._build(name=name)
@@ -128,27 +132,24 @@ class Pitch(composer.Arena):
 
     # Build walls.
     self._walls = []
-    for wall_pos, wall_size in _wall_pos_size(self._size):
+    for wall_pos, wall_xyaxes in _wall_pos_xyaxes(self._size):
       self._walls.append(
           self._mjcf_root.worldbody.add(
               'geom',
-              type='box',
-              rgba=[.3, .3, .3, .0],
+              type='plane',
+              rgba=[.1, .1, .1, .8],
               pos=wall_pos,
-              size=wall_size))
-    # Build roof.
-    self._roof = self._mjcf_root.worldbody.add(
-        'geom',
-        type='box',
-        rgba=[.3, .3, .3, .3],
-        pos=(0., 0., 2 * _WALL_HEIGHT),
-        group=4,
-        size=_roof_size(self._size))
+              size=[1e-7, 1e-7, 1e-7],
+              xyaxes=wall_xyaxes))
 
     # Build goal position detectors.
+    # If field_box is enabled, offset goal by 1.0 such that ball reaches the
+    # goal position detector before bouncing off the field_box.
+    self._fb_offset = 0.5 if field_box else 0.0
     goal_size = self._get_goal_size()
     self._home_goal = props.PositionDetector(
-        pos=(-self._size[0] + goal_size[0], 0, goal_size[2]),
+        pos=(-self._size[0] + goal_size[0] - self._fb_offset, 0,
+             goal_size[2]),
         size=goal_size,
         rgba=(0, 0, 1, 0.5),
         visible=True,
@@ -156,7 +157,7 @@ class Pitch(composer.Arena):
     self.attach(self._home_goal)
 
     self._away_goal = props.PositionDetector(
-        pos=(self._size[0] - goal_size[0], 0, goal_size[2]),
+        pos=(self._size[0] - goal_size[0] + self._fb_offset, 0, goal_size[2]),
         size=goal_size,
         rgba=(1, 0, 0, 0.5),
         visible=True,
@@ -168,11 +169,25 @@ class Pitch(composer.Arena):
         pos=(0, 0),
         size=(self._size[0] - 2 * goal_size[0],
               self._size[1] - 2 * goal_size[0]),
-        rgba=(0, 0, 0, 0.1),
+        rgba=(1, 0, 0, 0.1),
         inverted=True,
         visible=True,
         name='field')
     self.attach(self._field)
+
+    # Build field box.
+    self._field_box = []
+    if field_box:
+      for wall_pos, wall_xyaxes in _wall_pos_xyaxes(
+          (self._field.upper - self._field.lower) / 2.0):
+        self._field_box.append(
+            self._mjcf_root.worldbody.add(
+                'geom',
+                type='plane',
+                rgba=[.3, .3, .3, .3],
+                pos=wall_pos,
+                size=[1e-7, 1e-7, 1e-7],
+                xyaxes=wall_xyaxes))
 
   def _get_goal_size(self):
     goal_size = self._goal_size
@@ -187,7 +202,17 @@ class Pitch(composer.Arena):
   def register_ball(self, ball):
     self._home_goal.register_entities(ball)
     self._away_goal.register_entities(ball)
-    self._field.register_entities(ball)
+
+    if self._field_box:
+      # Geoms a and b collides if:
+      #   (a.contype & b.conaffinity) || (b.contype & a.conaffinity) != 0.
+      #   See: http://www.mujoco.org/book/computation.html#Collision
+      ball.geom.contype = (ball.geom.contype or 0) | _FIELD_BOX_CONTACT_BIT
+      for wall in self._field_box:
+        wall.conaffinity = _FIELD_BOX_CONTACT_BIT
+        wall.contype = _FIELD_BOX_CONTACT_BIT
+    else:
+      self._field.register_entities(ball)
 
   def detected_goal(self):
     """Returning the team that scored a goal."""
@@ -230,6 +255,7 @@ class RandomizedPitch(Pitch):
                randomizer=None,
                keep_aspect_ratio=False,
                goal_size=None,
+               field_box=False,
                top_camera_distance=_TOP_CAMERA_DISTANCE,
                name='randomized_pitch'):
     """Construct a randomized pitch.
@@ -244,6 +270,8 @@ class RandomizedPitch(Pitch):
       goal_size: optional (depth, width, height) indicating the goal size.
         If not specified, the goal size is inferred from pitch size with a fixed
         default ratio.
+      field_box: optional indicating if we should construct field box containing
+        the ball (but not the walkers).
       top_camera_distance: the distance of the top-down camera to the pitch.
       name: the name of this arena.
     """
@@ -251,6 +279,7 @@ class RandomizedPitch(Pitch):
         size=max_size,
         goal_size=goal_size,
         top_camera_distance=top_camera_distance,
+        field_box=field_box,
         name=name)
 
     self._min_size = min_size
@@ -265,10 +294,10 @@ class RandomizedPitch(Pitch):
 
   def _resize_goals(self, goal_size):
     self._home_goal.resize(
-        pos=(-self._size[0] + goal_size[0], 0, goal_size[2]),
+        pos=(-self._size[0] + goal_size[0] + self._fb_offset, 0, goal_size[2]),
         size=goal_size)
     self._away_goal.resize(
-        pos=(self._size[0] - goal_size[0], 0, goal_size[2]),
+        pos=(self._size[0] - goal_size[0] - self._fb_offset, 0, goal_size[2]),
         size=goal_size)
 
   def initialize_episode_mjcf(self, random_state):
@@ -294,10 +323,8 @@ class RandomizedPitch(Pitch):
     self._ground_geom.size = list(self._size) + [_GROUND_GEOM_HEIGHT]
 
     # Resize and reposition walls and roof geoms.
-    for i, (wall_pos, wall_size) in enumerate(_wall_pos_size(self._size)):
-      self._walls[i].size = wall_size
+    for i, (wall_pos, _) in enumerate(_wall_pos_xyaxes(self._size)):
       self._walls[i].pos = wall_pos
-    self._roof.size = _roof_size(self._size)
 
     goal_size = self._get_goal_size()
     self._resize_goals(goal_size)
@@ -307,3 +334,9 @@ class RandomizedPitch(Pitch):
         pos=(0, 0),
         size=(self._size[0] - 2 * goal_size[0],
               self._size[1] - 2 * goal_size[0]))
+
+    # Resize and reposition field box geoms.
+    if self._field_box:
+      for i, (pos, _) in enumerate(
+          _wall_pos_xyaxes((self._field.upper - self._field.lower) / 2.0)):
+        self._field_box[i].pos = pos
