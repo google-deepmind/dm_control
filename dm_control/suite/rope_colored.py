@@ -101,10 +101,10 @@ class Rope(base.Task):
     if not self._random_pick:
         location = (action[:2] * 0.5 + 0.5) * 63
         goal_position = action[2:]
-        goal_position = goal_position * 0.05
+        goal_position = goal_position * 0.075
     else:
         goal_position = action
-        goal_position = goal_position * 0.05
+        goal_position = goal_position * 0.075
         location = self.current_loc
 
     # computing the mapping from geom_xpos to location in image
@@ -156,7 +156,7 @@ class Rope(base.Task):
         loop += 1
         if loop > 40:
           break
-        physics.data.xfrc_applied[corner_action, :2] = dist * 20
+        physics.data.xfrc_applied[corner_action, :2] = dist * 30
         physics.step()
         self.after_step(physics)
         dist = position - physics.data.geom_xpos[corner_geom,:2]
@@ -182,19 +182,14 @@ class Rope(base.Task):
     obs = collections.OrderedDict()
     if not self._random_pick:
         location = [-1, 1]
-        render_kwargs = {}
-        render_kwargs['camera_id'] = 0
-        render_kwargs['width'] = W
-        render_kwargs['height'] = W
-        image = physics.render(**render_kwargs)
-
+        image = self.get_image(physics)
+        mask = self.segment_image(image)
         self.image = image
 
-        # location_range = np.transpose(np.where(np.all(image > 150, axis=2)))
-        # self.location_range = location_range
-        # num_loc = np.shape(location_range)[0]
-        # self.num_loc = num_loc
-        self.num_loc = 100
+        location_range = np.transpose(np.where(mask))
+        self.location_range = location_range
+        num_loc = np.shape(location_range)[0]
+        self.num_loc = num_loc
     else:
         location = self.sample_location(physics)
     self.current_loc = location
@@ -208,15 +203,11 @@ class Rope(base.Task):
 
 
   def sample_location(self, physics):
-    render_kwargs = {}
-    render_kwargs['camera_id'] = 0
-    render_kwargs['width'] = W
-    render_kwargs['height'] = W
-    image = physics.render(**render_kwargs)
-
+    image = self.get_image(physics)
     self.image = image
 
-    location_range = np.transpose(np.where(np.all(image > 150, axis=2)))
+    mask = self.segment_image(image)
+    location_range = np.transpose(np.where(mask))
     self.location_range = location_range
     num_loc = np.shape(location_range)[0]
     self.num_loc = num_loc
@@ -227,12 +218,23 @@ class Rope(base.Task):
 
     return location
 
-  def get_reward(self,physics):
-    # current_mask = np.all(self.image>150,axis=2).astype(int)
-    # reward_mask = current_mask
-    # line = np.linspace(0,31,num=32)*(-0.5)
-    # column = np.concatenate([np.flip(line),line])
-    # reward =np.sum(reward_mask* np.exp(column).reshape((W,1)))/111.0
-    # return reward
+  def get_image(self, physics):
+    render_kwargs = {}
+    render_kwargs['camera_id'] = 0
+    render_kwargs['width'] = W
+    render_kwargs['height'] = W
+    image = physics.render(**render_kwargs)
+    return image
 
-    return 0 # TODO fix mask segmentation after changing to colored rope for reward to work
+  def segment_image(self, image):
+      green = np.array([56, 168, 106], dtype='uint8').reshape(1, 1, 3)
+      dists = np.linalg.norm(image - green, axis=-1)
+      mask = dists > 40
+      return mask
+
+  def get_reward(self,physics):
+    reward_mask = self.segment_image(self.image).astype(int)
+    line = np.linspace(0,31,num=32)*(-0.5)
+    column = np.concatenate([np.flip(line),line])
+    reward =np.sum(reward_mask* np.exp(column).reshape((W,1)))/111.0
+    return reward
