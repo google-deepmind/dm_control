@@ -71,6 +71,7 @@ class Rope(base.Task):
     """
     self._randomize_gains = randomize_gains
     self._random_pick = random_pick
+    self.n_geoms = 21
     super(Rope, self).__init__(random=random)
 
   def action_spec(self, physics):
@@ -115,8 +116,9 @@ class Rope(base.Task):
     cam_pos = physics.named.data.cam_xpos['fixed'].reshape((3, 1))
     cam = np.concatenate([cam_mat, cam_pos], axis=1)
     cam_pos_all = np.zeros((21, 3, 1))
-    for i in range(21):
-      geom_xpos_added = np.concatenate([physics.data.geom_xpos[i+5], np.array([1])]).reshape((4, 1))
+    for i in range(self.n_geoms):
+      geom_name = 'G{}'.format(i)
+      geom_xpos_added = np.concatenate([physics.named.data.geom_xpos[geom_name], np.array([1])]).reshape((4, 1))
       cam_pos_all[i] = cam_matrix.dot(cam.dot(geom_xpos_added)[:3])
 
     cam_pos_xy = np.rint(cam_pos_all[:, :2].reshape((21, 2)) / cam_pos_all[:, 2])
@@ -145,21 +147,21 @@ class Rope(base.Task):
       #corner_action = index - 5
       #corner_geom = index
 
-      corner_action = index
-      corner_geom = index + 5
+      corner_action = 'B{}'.format(index)
+      corner_geom = 'G{}'.format(index)
 
-      position = goal_position + physics.data.geom_xpos[corner_geom,:2]
-      dist = position - physics.data.geom_xpos[corner_geom,:2]
+      position = goal_position + physics.named.data.geom_xpos[corner_geom,:2]
+      dist = position - physics.named.data.geom_xpos[corner_geom,:2]
 
       loop = 0
       while np.linalg.norm(dist) > 0.025:
         loop += 1
         if loop > 40:
           break
-        physics.data.xfrc_applied[corner_action, :2] = dist * 30
+        physics.named.data.xfrc_applied[corner_action, :2] = dist * 30
         physics.step()
         self.after_step(physics)
-        dist = position - physics.data.geom_xpos[corner_geom,:2]
+        dist = position - physics.named.data.geom_xpos[corner_geom,:2]
   #  else:
   #      if np.all(action != 0):
   #          print('failed', location, action, cam_pos_xy)
