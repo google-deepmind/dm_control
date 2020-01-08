@@ -23,7 +23,7 @@ from dm_control import composer
 from dm_control import mjcf
 import numpy as np
 
-_RENDERED_HEIGHT_IN_2D_MODE = 0.02
+_RENDERED_HEIGHT_IN_2D_MODE = 0.1
 
 
 def _ensure_3d(pos):
