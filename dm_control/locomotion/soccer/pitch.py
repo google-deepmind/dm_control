@@ -107,6 +107,9 @@ class Pitch(composer.Arena):
     self._mjcf_root.visual.headlight.set_attributes(
         ambient=[.4, .4, .4], diffuse=[.8, .8, .8], specular=[.1, .1, .1])
 
+    # Ensure close up geoms are rendered by egocentric cameras.
+    self._mjcf_root.visual.map.znear = 0.0005
+
     # Build groundplane.
     if len(self._size) != 2:
       raise ValueError('`size` should be a sequence of length 2: got {!r}'
