@@ -189,9 +189,6 @@ class Cloth(base.Task):
     image = physics.render(**render_kwargs)
     self.image = image
 
-    import cv2
-    import ipdb; ipdb.set_trace()
-
     # If pick point part of state space, sample a point randomly
     if self._random_pick:
         self.current_loc = self.sample_location(physics)
