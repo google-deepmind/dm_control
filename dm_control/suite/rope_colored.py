@@ -83,6 +83,10 @@ class Rope(base.Task):
       return specs.BoundedArray(
         shape=(4,), dtype=np.float, minimum=[-1.0] * 4, maximum=[1.0] * 4)
 
+  def get_geoms(self, physics):
+      geoms = [physics.named.data.geom_xpos['G{}'.format(i)][:2] for i in range(self.n_geoms)]
+      return np.array(geoms)
+
   def initialize_episode(self,physics):
     render_kwargs = {}
     render_kwargs['camera_id'] = 0
