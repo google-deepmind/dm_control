@@ -1,5 +1,4 @@
 <mujoco model='boxhead'>
-
   <default>
     <mesh scale='.01 .01 .01'/>
     <geom contype='1' conaffinity='1' condim='4' friction='.5 .02 .02'/>
@@ -11,10 +10,12 @@
   <worldbody>
     <body pos='0 0 1.0' quat='1 0 0 -1' name='head_body'>
       <camera name="float_far"  pos="-4 0 2" xyaxes="0 -1 0 .5 0 1" fovy="90"/>
-      <body name='egocentric_camera' pos='0 0.15 0.9' zaxis='0 -0.99503719021 0.09950371902'>
+      <body name='egocentric_camera' pos='0.1 0 0.2' xyaxes='0 -1 0 0.09950371902 0 0.99503719021'>
         <inertial pos='0 0 0' mass='1' diaginertia='1 1 1'/>
-        <joint name='camera_height' type='slide' axis='0 1 0' limited='true' range='-0.5 0.5'/>
-        <joint name='camera_tilt' type='hinge' axis='1 0 0' limited='true' range='-0.35 0.35'/>
+        <joint name='camera_yaw' type='hinge' axis='0 1 0' limited='true' range='-0.5 0.5'/>
+        <joint name='camera_pitch' type='hinge' axis='1 0 0' limited='true' range='-0.35 0.35'/>
+        <geom type='cylinder' name='eye_l' pos='-.14 -0.2 -0.171' size="0.06 0.05" rgba='1 1 1 1' mass='0' contype="0" conaffinity="0"/>
+        <geom type='cylinder' name='eye_r' pos='.14 -0.2 -0.171' size="0.06 0.05" rgba='1 1 1 1' mass='0' contype="0" conaffinity="0"/>
         <camera name='egocentric' fovy='80'/>
       </body>
       <camera name='tracking' pos='1.5 1.5 .7' xyaxes='-1 1 0 -1 -1 4' mode='trackcom'/>
@@ -49,7 +50,7 @@
     <general name='roll' joint='roll' ctrlrange='-1 1' ctrllimited='true' gear='-30' biasprm="0" biastype="affine"/>
     <motor name='steer' joint='steer' ctrlrange='-1 1' ctrllimited='true' gear='55'/>
     <general name='kick' joint='kick' ctrlrange='-1 1' ctrllimited='true' gear='1200' biasprm="0" biastype="affine"/>
-    <velocity name='camera_height' joint='camera_height' ctrlrange='-1 1' ctrllimited='true'/>
-    <velocity name='camera_tilt' joint='camera_tilt' ctrlrange='-1 1' ctrllimited='true'/>
+    <velocity name='camera_yaw' joint='camera_yaw' ctrlrange='-1 1' ctrllimited='true'/>
+    <velocity name='camera_pitch' joint='camera_pitch' ctrlrange='-1 1' ctrllimited='true'/>
   </actuator>
 </mujoco>

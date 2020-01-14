@@ -177,7 +177,7 @@ class BoxHead(legacy_base.Walker):
     self._root_joints = None
     self._camera_control = camera_control
     if not camera_control:
-      for name in ('camera_height', 'camera_tilt'):
+      for name in ('camera_pitch', 'camera_yaw'):
         self._mjcf_root.find('actuator', name).remove()
         self._mjcf_root.find('joint', name).remove()
     self._roll_gear = roll_gear
@@ -193,7 +193,9 @@ class BoxHead(legacy_base.Walker):
   def marker_geoms(self):
     geoms = [
         self._mjcf_root.find('geom', 'arm_l'),
-        self._mjcf_root.find('geom', 'arm_r')
+        self._mjcf_root.find('geom', 'arm_r'),
+        self._mjcf_root.find('geom', 'eye_l'),
+        self._mjcf_root.find('geom', 'eye_r'),
     ]
     if self._walker_id is None:
       geoms.append(self._mjcf_root.find('geom', 'head'))
