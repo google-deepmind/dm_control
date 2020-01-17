@@ -60,7 +60,7 @@ class Physics(mujoco.Physics):
 class Rope(base.Task):
   """A point_mass `Task` to reach target with smooth reward."""
 
-  def __init__(self, randomize_gains, random=None, random_pick=False):
+  def __init__(self, randomize_gains, random=None, random_pick=False, init_flat=False):
     """Initialize an instance of `PointMass`.
 
     Args:
@@ -71,6 +71,7 @@ class Rope(base.Task):
     """
     self._randomize_gains = randomize_gains
     self._random_pick = random_pick
+    self._init_flat = init_flat
     self.n_geoms = 21
     super(Rope, self).__init__(random=random)
 
@@ -96,7 +97,8 @@ class Rope(base.Task):
 
     self.image = image
 
-    physics.named.data.xfrc_applied[CORNER_INDEX_ACTION, :2] = np.random.uniform(-0.8, 0.8, size=8).reshape((4,2))
+    if not  self._init_flat:
+        physics.named.data.xfrc_applied[CORNER_INDEX_ACTION, :2] = np.random.uniform(-0.8, 0.8, size=8).reshape((4,2))
     super(Rope, self).initialize_episode(physics)
 
   def before_step(self, action, physics):

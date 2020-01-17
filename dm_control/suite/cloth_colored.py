@@ -70,7 +70,7 @@ class Physics(mujoco.Physics):
 class Cloth(base.Task):
   """A point_mass `Task` to reach target with smooth reward."""
 
-  def __init__(self, randomize_gains, random=None, random_pick=True):
+  def __init__(self, randomize_gains, random=None, random_pick=True, init_flat=False):
     """Initialize an instance of `PointMass`.
 
     Args:
@@ -81,6 +81,7 @@ class Cloth(base.Task):
     """
     self._randomize_gains = randomize_gains
     self._random_pick = random_pick
+    self._init_flat = init_flat
 
     super(Cloth, self).__init__(random=random)
 
@@ -124,7 +125,7 @@ class Cloth(base.Task):
       else:
           location = self.current_loc
           goal_position = action
-      goal_position = goal_position * 0.05
+      goal_position = goal_position * 0.1
 
       # computing the mapping from geom_xpos to pixel location in image
       cam_fovy = physics.named.model.cam_fovy['fixed']
@@ -133,20 +134,20 @@ class Cloth(base.Task):
       cam_mat = physics.named.data.cam_xmat['fixed'].reshape((3, 3))
       cam_pos = physics.named.data.cam_xpos['fixed'].reshape((3, 1))
       cam = np.concatenate([cam_mat, cam_pos], axis=1)
-      cam_pos_all = np.zeros((86, 3, 1))
+      cam_pos_all = np.zeros((81, 3, 1))
       # num_bodies = len(physics.data.geom_xpos)
-      for i in range(86):
-          geom_xpos_added = np.concatenate([physics.data.geom_xpos[i], np.array([1])]).reshape((4, 1))
+      for i in range(81):
+          geom_xpos_added = np.concatenate([physics.data.geom_xpos[i+5], np.array([1])]).reshape((4, 1))
           cam_pos_all[i] = cam_matrix.dot(cam.dot(geom_xpos_added)[:3])
 
-      cam_pos_xy = np.rint(cam_pos_all[:, :2].reshape((86, 2)) / cam_pos_all[:, 2])
+      cam_pos_xy = np.rint(cam_pos_all[:, :2].reshape((81, 2)) / cam_pos_all[:, 2])
       cam_pos_xy = cam_pos_xy.astype(int)
       cam_pos_xy[:, 1] = W - cam_pos_xy[:, 1]
 
       epsilon = 3
       possible_index = []
       possible_z = []
-      for i in range(86):
+      for i in range(81):
           # flipping the x and y to make sure it corresponds to the real location
           if abs(cam_pos_xy[i][0] - location[1]) < epsilon and abs(
                   cam_pos_xy[i][1] - location[0]) < epsilon and i > 4:
@@ -159,8 +160,8 @@ class Cloth(base.Task):
       if possible_index != []:
           index = possible_index[possible_z.index(max(possible_z))]
 
-          corner_action = index - 4
-          corner_geom = index
+          corner_action = index + 1
+          corner_geom = index + 5
 
 
           # apply consecutive force to move the point to the target position
@@ -194,6 +195,9 @@ class Cloth(base.Task):
         self.current_loc = self.sample_location(physics)
         obs['location'] = np.tile(self.current_loc, 50).reshape(-1).astype('float32') / 63.
     return obs
+
+  def get_geoms(self, physics):
+      return physics.data.geom_xpos[5:, :2]
 
   def sample_location(self, physics):
       image = self.image
