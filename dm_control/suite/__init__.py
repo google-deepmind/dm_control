@@ -38,6 +38,7 @@ from dm_control.suite import lqr
 from dm_control.suite import manipulator
 from dm_control.suite import pendulum
 from dm_control.suite import point_mass
+from dm_control.suite import point_mass_vel
 from dm_control.suite import quadruped
 from dm_control.suite import reacher
 from dm_control.suite import stacker
