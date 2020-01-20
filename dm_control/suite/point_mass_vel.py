@@ -40,20 +40,10 @@ def get_model_and_assets():
 
 
 @SUITE.add('benchmarking', 'easy')
-def easy(time_limit=_DEFAULT_TIME_LIMIT, random=None, environment_kwargs=None):
+def easy(time_limit=_DEFAULT_TIME_LIMIT, random=None, environment_kwargs=None, **kwargs):
   """Returns the easy point_mass task."""
   physics = Physics.from_xml_string(*get_model_and_assets())
-  task = PointMass(randomize_gains=False, random=random)
-  environment_kwargs = environment_kwargs or {}
-  return control.Environment(
-      physics, task, time_limit=time_limit, **environment_kwargs)
-
-
-@SUITE.add()
-def hard(time_limit=_DEFAULT_TIME_LIMIT, random=None, environment_kwargs=None):
-  """Returns the hard point_mass task."""
-  physics = Physics.from_xml_string(*get_model_and_assets())
-  task = PointMass(randomize_gains=True, random=random)
+  task = PointMass(randomize_gains=False, random=random, **kwargs)
   environment_kwargs = environment_kwargs or {}
   return control.Environment(
       physics, task, time_limit=time_limit, **environment_kwargs)
@@ -75,7 +65,7 @@ class Physics(mujoco.Physics):
 class PointMass(base.Task):
   """A point_mass `Task` to reach target with smooth reward."""
 
-  def __init__(self, randomize_gains, random=None):
+  def __init__(self, randomize_gains, random=None, init_flat=False):
     """Initialize an instance of `PointMass`.
 
     Args:
@@ -85,6 +75,7 @@ class PointMass(base.Task):
         automatically (default).
     """
     self._randomize_gains = randomize_gains
+    self._init_flat = init_flat
     super(PointMass, self).__init__(random=random)
 
   def initialize_episode(self, physics):
@@ -97,7 +88,8 @@ class PointMass(base.Task):
     Args:
       physics: An instance of `mujoco.Physics`.
     """
-    randomizers.randomize_limited_and_rotational_joints(physics, self.random)
+    if not self._init_flat:
+        randomizers.randomize_limited_and_rotational_joints(physics, self.random)
     if self._randomize_gains:
       dir1 = self.random.randn(2)
       dir1 /= np.linalg.norm(dir1)
@@ -130,7 +122,7 @@ class PointMass(base.Task):
         dist = goal_position - physics.named.data.geom_xpos['pointmass', :2]
 
   def get_geoms(self, physics):
-      geoms = physics.named.data['pointmass', :2]
+      geoms = physics.named.data.geom_xpos['pointmass', :2]
       return np.array([geoms]).copy()
 
   def get_observation(self, physics):
