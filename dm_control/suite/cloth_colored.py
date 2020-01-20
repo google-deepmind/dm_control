@@ -197,7 +197,7 @@ class Cloth(base.Task):
     return obs
 
   def get_geoms(self, physics):
-      return physics.data.geom_xpos[5:, :2]
+      return physics.data.geom_xpos[5:, :2].copy()
 
   def sample_location(self, physics):
       image = self.image

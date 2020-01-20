@@ -129,6 +129,10 @@ class PointMass(base.Task):
         self.after_step(physics)
         dist = goal_position - physics.named.data.geom_xpos['pointmass', :2]
 
+  def get_geoms(self, physics):
+      geoms = physics.named.data['pointmass', :2]
+      return np.array([geoms]).copy()
+
   def get_observation(self, physics):
     """Returns an observation of the state."""
     obs = collections.OrderedDict()
