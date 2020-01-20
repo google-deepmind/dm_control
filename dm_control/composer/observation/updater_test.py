@@ -46,6 +46,23 @@ class DeterministicSequence(object):
     return six.next(self._iter)
 
 
+class BoundedGeneric(observable.Generic):
+
+  def __init__(self, raw_observation_callable, minimum, maximum, **kwargs):
+    super(BoundedGeneric, self).__init__(
+        raw_observation_callable=raw_observation_callable,
+        **kwargs)
+    self._bounds = (minimum, maximum)
+
+  @property
+  def array_spec(self):
+    datum = np.array(self(None, None))
+    return specs.BoundedArray(shape=datum.shape,
+                              dtype=datum.dtype,
+                              minimum=self._bounds[0],
+                              maximum=self._bounds[1])
+
+
 class UpdaterTest(parameterized.TestCase):
 
   @parameterized.parameters(list, tuple)
@@ -57,12 +74,16 @@ class UpdaterTest(parameterized.TestCase):
             ('three', observable.Generic(lambda _: np.full((2, 2), 3))),
             ('four', observable.Generic(lambda _: [4.])),
             ('five', observable.Generic(lambda _: 5)),
+            ('six', BoundedGeneric(lambda _: [2, 2], 1, 4)),
+            ('seven', BoundedGeneric(lambda _: 2, 1, 4, aggregator='sum')),
         ])
     ))
 
     observables[0]['two'].enabled = True
     observables[1]['three'].enabled = True
     observables[1]['five'].enabled = True
+    observables[1]['six'].enabled = True
+    observables[1]['seven'].enabled = True
 
     observation_updater = updater.Updater(observables)
     observation_updater.reset(physics=fake_physics.FakePhysics(),
@@ -70,12 +91,24 @@ class UpdaterTest(parameterized.TestCase):
 
     def make_spec(obs):
       array = np.array(obs.observation_callable(None, None)())
-      return specs.Array((1,) + array.shape, array.dtype)
+      shape = array.shape if obs.aggregator else (1,) + array.shape
+
+      if (isinstance(obs, BoundedGeneric) and
+          obs.aggregator is not observable.base.AGGREGATORS['sum']):
+        return specs.BoundedArray(shape=shape,
+                                  dtype=array.dtype,
+                                  minimum=obs.array_spec.minimum,
+                                  maximum=obs.array_spec.maximum)
+      else:
+        return specs.Array(shape=shape, dtype=array.dtype)
+
     expected_specs = list_or_tuple((
         {'two': make_spec(observables[0]['two'])},
         collections.OrderedDict([
             ('three', make_spec(observables[1]['three'])),
-            ('five', make_spec(observables[1]['five']))
+            ('five', make_spec(observables[1]['five'])),
+            ('six', make_spec(observables[1]['six'])),
+            ('seven', make_spec(observables[1]['seven'])),
         ])
     ))
 
@@ -85,11 +118,22 @@ class UpdaterTest(parameterized.TestCase):
       self.assertIs(type(actual_dict), type(expected_dict))
       self.assertEqual(actual_dict, expected_dict)
 
+    def make_value(obs):
+      value = obs(physics=None, random_state=None)
+      if obs.aggregator:
+        return value
+      else:
+        value = np.array(value)
+        value = value[np.newaxis, ...]
+        return value
+
     expected_values = list_or_tuple((
-        {'two': observables[0]['two'](physics=None, random_state=None)},
+        {'two': make_value(observables[0]['two'])},
         collections.OrderedDict([
-            ('three', observables[1]['three'](physics=None, random_state=None)),
-            ('five', observables[1]['five'](physics=None, random_state=None))
+            ('three', make_value(observables[1]['three'])),
+            ('five', make_value(observables[1]['five'])),
+            ('six', make_value(observables[1]['six'])),
+            ('seven', make_value(observables[1]['seven'])),
         ])
     ))
 
@@ -103,7 +147,7 @@ class UpdaterTest(parameterized.TestCase):
         actual_name, actual_value = actual
         expected_name, expected_value = expected
         self.assertEqual(actual_name, expected_name)
-        np.testing.assert_array_equal(actual_value[0], expected_value)
+        np.testing.assert_array_equal(actual_value, expected_value)
 
   def assertCorrectSpec(
       self, spec, expected_shape, expected_dtype, expected_name):

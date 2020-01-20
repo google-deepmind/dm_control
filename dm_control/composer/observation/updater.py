@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import print_function
 
 import collections
+from absl import logging
 
 from dm_control.composer.observation import obs_buffer
 from dm_env import specs
@@ -144,13 +145,22 @@ class Updater(object):
   def observation_spec(self):
     """The observation specification for this environment.
 
+    Returns a dict mapping the names of enabled observations to their
+    corresponding `Array` or `BoundedArray` specs.
+
+    If an obs has a BoundedArray spec, but uses an aggregator that
+    does not preserve those bounds (such as `sum`), it will be mapped to an
+    (unbounded) `Array` spec. If using a bounds-preserving custom aggregator
+    `my_agg`, give it an attribute `my_agg.preserves_bounds = True` to indicate
+    to this method that it is bounds-preserving.
+
     The returned specification is only valid as of the previous call
     to `reset`. In particular, it is an error to call this function before
     the first call to `reset`.
 
     Returns:
-      A dict mapping observation name to `Array` spec containing observation
-      shape and dtype.
+      A dict mapping observation name to `Array` or `BoundedArray` spec
+      containing the observation shape and dtype, and possibly bounds.
 
     Raises:
       RuntimeError: If this method is called before `reset` has been called.
@@ -162,14 +172,42 @@ class Updater(object):
       """Makes a dict of enabled observation specs from of observables."""
       out_dict = type(enabled_dict)()
       for name, enabled in six.iteritems(enabled_dict):
-        if enabled.observable.aggregator:
-          aggregated = enabled.observable.aggregator(
-              np.zeros(enabled.buffer.shape, dtype=enabled.buffer.dtype))
-          spec = specs.Array(
-              shape=aggregated.shape, dtype=aggregated.dtype, name=name)
+
+        if isinstance(enabled.observable.array_spec, specs.BoundedArray):
+          bounds = (enabled.observable.array_spec.minimum,
+                    enabled.observable.array_spec.maximum)
         else:
-          spec = specs.Array(
-              shape=enabled.buffer.shape, dtype=enabled.buffer.dtype, name=name)
+          bounds = None
+
+        if enabled.observable.aggregator:
+          aggregator = enabled.observable.aggregator
+          aggregated = aggregator(np.zeros(enabled.buffer.shape,
+                                           dtype=enabled.buffer.dtype))
+          shape = aggregated.shape
+          dtype = aggregated.dtype
+
+          # Ditch bounds if the aggregator isn't known to be bounds-preserving.
+          if bounds:
+            if not hasattr(aggregator, 'preserves_bounds'):
+              logging.warning('Ignoring the bounds of this observable\'s spec, '
+                              'as its aggregator method has no boolean '
+                              '`preserves_bounds` attrubute.')
+              bounds = None
+            elif not aggregator.preserves_bounds:
+              bounds = None
+        else:
+          shape = enabled.buffer.shape
+          dtype = enabled.buffer.dtype
+
+        if bounds:
+          spec = specs.BoundedArray(minimum=bounds[0],
+                                    maximum=bounds[1],
+                                    shape=shape,
+                                    dtype=dtype,
+                                    name=name)
+        else:
+          spec = specs.Array(shape=shape, dtype=dtype, name=name)
+
         out_dict[name] = spec
       return out_dict
 

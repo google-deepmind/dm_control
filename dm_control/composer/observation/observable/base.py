@@ -27,12 +27,18 @@ import numpy as np
 import six
 
 
+def _make_aggregator(np_reducer_func, bounds_preserving):
+  result = functools.partial(np_reducer_func, axis=0)
+  setattr(result, 'bounds_reserving', bounds_preserving)
+  return result
+
+
 AGGREGATORS = {
-    'min': functools.partial(np.min, axis=0),
-    'max': functools.partial(np.max, axis=0),
-    'mean': functools.partial(np.mean, axis=0),
-    'median': functools.partial(np.median, axis=0),
-    'sum': functools.partial(np.sum, axis=0),
+    'min': _make_aggregator(np.min, True),
+    'max': _make_aggregator(np.max, True),
+    'mean': _make_aggregator(np.mean, True),
+    'median': _make_aggregator(np.median, True),
+    'sum': _make_aggregator(np.sum, False),
 }
 
 
