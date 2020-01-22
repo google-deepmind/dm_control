@@ -24,8 +24,10 @@ from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control import composer
 from dm_control import mjcf
+from dm_control.composer.observation import observable
 import dm_env
 import mock
+import numpy as np
 from six.moves import range
 
 
@@ -34,6 +36,12 @@ class DummyTask(composer.NullTask):
   def __init__(self):
     null_entity = composer.ModelWrapperEntity(mjcf.RootElement())
     super(DummyTask, self).__init__(null_entity)
+
+  @property
+  def task_observables(self):
+    time = observable.Generic(lambda physics: physics.time())
+    time.enabled = True
+    return {'time': time}
 
 
 class DummyTaskWithResetFailures(DummyTask):
@@ -83,6 +91,16 @@ class EnvironmentTest(parameterized.TestCase):
     mock_task_get_spec.assert_called_once_with()
     self.assertSameStructure(spec, expected_spec)
 
+  def test_can_provide_observation(self):
+    task = DummyTask()
+    env = composer.Environment(task)
+    obs = env.reset().observation
+    self.assertLen(obs, 1)
+    np.testing.assert_array_equal(obs['time'], env.physics.time())
+    for _ in range(20):
+      obs = env.step([]).observation
+      self.assertLen(obs, 1)
+      np.testing.assert_array_equal(obs['time'], env.physics.time())
 
 if __name__ == '__main__':
   absltest.main()
