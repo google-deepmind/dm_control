@@ -37,7 +37,8 @@ def get_model_and_assets():
   """Returns a tuple containing the model XML string and a dict of assets."""
   # return common.read_model('cloth_v0.xml'), common.ASSETS
   return common.read_model('rope.xml'),common.ASSETS
-N_GEOMS = 3
+N_GEOMS = 21
+FORCE_STRENGTH = 20
 
 @SUITE.add('benchmarking', 'easy')
 def easy(time_limit=_DEFAULT_TIME_LIMIT, random=None, environment_kwargs=None, **kwargs):
@@ -100,7 +101,7 @@ class Rope(base.Task):
       loop += 1
       if loop > 40:
         break
-      physics.named.data.xfrc_applied[action_idx, :2] = dist * 1
+      physics.named.data.xfrc_applied[action_idx, :2] = dist * FORCE_STRENGTH
       physics.step()
       self.after_step(physics)
       dist = goal_position - physics.named.data.geom_xpos[geom_idx,:2]
