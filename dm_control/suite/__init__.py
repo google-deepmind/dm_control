@@ -62,6 +62,7 @@ from dm_control.suite import walker
 #from dm_control.suite import rope_two_hand
 from dm_control.suite import rope_colored
 from dm_control.suite import cloth_colored
+from dm_control.suite import rope
 
 # Find all domains imported.
 _DOMAINS = {name: module for name, module in locals().items()
