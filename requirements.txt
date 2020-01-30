@@ -1,6 +1,6 @@
 absl-py==0.7.0
 dm-env
-dm-tree
+dm-tree!=0.1.2
 enum34==1.1.6
 future==0.17.1
 futures==3.1.1
