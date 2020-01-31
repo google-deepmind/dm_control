@@ -109,7 +109,8 @@ class Cloth(base.Task):
     self.mask = self.segment_image(image).astype(int)
 
     # Apply random force in the beginning for random cloth init state
-    #physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:3]=np.random.uniform(-.5,.5,size=3)
+    if not self._init_flat:
+        physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:3]=np.random.uniform(-.5,.5,size=3)
 
     super(Cloth, self).initialize_episode(physics)
 
@@ -209,7 +210,7 @@ class Cloth(base.Task):
       return location
 
   def segment_image(self, image):
-      return np.any(self.image < 100, axis=-1)
+    return ~np.all(image [:, :, [1]] > 120, axis=2)
 
   def get_reward(self, physics):
     """Returns a reward to the agent."""

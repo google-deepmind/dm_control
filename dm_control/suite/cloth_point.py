@@ -70,8 +70,7 @@ class Physics(mujoco.Physics):
 class Cloth(base.Task):
   """A point_mass `Task` to reach target with smooth reward."""
 
-  def __init__(self, randomize_gains, random=None, random_location=True, pixels_only=False,
-               maxq=False):
+  def __init__(self, randomize_gains, random=None, random_location=True):
     """Initialize an instance of `PointMass`.
 
     Args:
@@ -82,14 +81,13 @@ class Cloth(base.Task):
     """
     self._randomize_gains = randomize_gains
     self._random_location = random_location
-    self._maxq = maxq
 
     super(Cloth, self).__init__(random=random)
 
   def action_spec(self, physics):
     """Returns a `BoundedArraySpec` matching the `physics` actuators."""
 
-    if not self._maxq and not self._random_location:
+    if not self._random_location:
         # first 2 are pixel locations for pick point, last 3 are xyz deltas (place point computed as pick point + delta)
         return specs.BoundedArray(
             shape=(5,), dtype=np.float, minimum=[-1.0] * 5, maximum=[1.0] * 5)
@@ -97,6 +95,9 @@ class Cloth(base.Task):
         # xyz deltas (place point computed as pick point + delta)
         return specs.BoundedArray(
             shape=(3,), dtype=np.float, minimum=[-1.0] * 3, maximum=[1.0] * 3)
+
+  def segment_image(self, image):
+    return ~np.all(image [:, :, [1]] > 120, axis=2)
 
   def initialize_episode(self, physics):
     physics.named.data.xfrc_applied['B3_4', :3] = np.array([0,0,-2])
@@ -108,7 +109,7 @@ class Cloth(base.Task):
     render_kwargs['height'] = W
     image = physics.render(**render_kwargs)
     self.image = image
-    self.mask = np.any(image < 100, axis=-1).astype(int)
+    self.mask = self.segment_image(image).astype(int)
 
     # Apply random force in the beginning for random cloth init state
     physics.named.data.xfrc_applied[CORNER_INDEX_ACTION,:3]=np.random.uniform(-.5,.5,size=3)
@@ -119,7 +120,7 @@ class Cloth(base.Task):
       """Sets the control signal for the actuators to values in `action`."""
       physics.named.data.xfrc_applied[:,:3]=np.zeros((3,))
 
-      if self._maxq:
+      if not self._random_location:
           location = (action[:2] * 0.5 + 0.5) * 63
           location = np.round(location).astype('int32')
           goal_position = action[2:]
