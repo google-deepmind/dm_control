@@ -45,7 +45,7 @@ CORNER_INDEX_POSITION=['G0_0','G0_8','G8_0','G8_8']
 def get_model_and_assets():
   """Returns a tuple containing the model XML string and a dict of assets."""
 
-  return common.read_model('cloth_colored.xml'),common.ASSETS
+  return common.read_model('cloth_grey.xml'),common.ASSETS
 
 
 
@@ -210,7 +210,7 @@ class Cloth(base.Task):
       return location
 
   def segment_image(self, image):
-    return np.any(image < 100, axis=2)
+    return ~np.all(image [:, :, [1]] > 120, axis=2)
 
   def get_reward(self, physics):
     """Returns a reward to the agent."""
