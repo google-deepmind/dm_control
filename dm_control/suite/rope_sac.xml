@@ -37,7 +37,7 @@
     <geom name="wall_neg_y" type="plane" pos="0 .3 .02" zaxis="0 -1 0"  size=".3 .02 .02" rgba="1 1 1 1"/>
 <!--    <geom name="target" pos="0 0 .01" type="sphere" size=".06" rgba=".6 .3 .3 1"/>-->
     <!--  ================= SWIMMER ================= /-->
-    <body name="B10" pos="0 0 0">
+    <body name="B8" pos="0 0 0">
          <camera name="track" mode="trackcom" pos="0 -1 1" xyaxes="1 0 0 0 1 1" />
 <!--        <joint type="slide"  pos="0 0 1" name="slider1" axis="0 0 1"/>-->
         <freejoint name="r1"/>
