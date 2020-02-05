@@ -383,9 +383,9 @@
             <attribute name="dyntype" type="keyword" valid_values="none integrator filter user"/>
             <attribute name="gaintype" type="keyword" valid_values="fixed user"/>
             <attribute name="biastype" type="keyword" valid_values="none affine user"/>
-            <attribute name="dynprm" type="array" array_type="float" array_size="3"/>
-            <attribute name="gainprm" type="array" array_type="float" array_size="3"/>
-            <attribute name="biasprm" type="array" array_type="float" array_size="3"/>
+            <attribute name="dynprm" type="array" array_type="float" array_size="10"/>
+            <attribute name="gainprm" type="array" array_type="float" array_size="10"/>
+            <attribute name="biasprm" type="array" array_type="float" array_size="10"/>
           </attributes>
         </element>
         <element name="motor">
@@ -639,9 +639,9 @@
                 <attribute name="dyntype" type="keyword" valid_values="none integrator filter user"/>
                 <attribute name="gaintype" type="keyword" valid_values="fixed user"/>
                 <attribute name="biastype" type="keyword" valid_values="none affine user"/>
-                <attribute name="dynprm" type="array" array_type="float" array_size="3"/>
-                <attribute name="gainprm" type="array" array_type="float" array_size="3"/>
-                <attribute name="biasprm" type="array" array_type="float" array_size="3"/>
+                <attribute name="dynprm" type="array" array_type="float" array_size="10"/>
+                <attribute name="gainprm" type="array" array_type="float" array_size="10"/>
+                <attribute name="biasprm" type="array" array_type="float" array_size="10"/>
               </attributes>
             </element>
             <element name="motor">
