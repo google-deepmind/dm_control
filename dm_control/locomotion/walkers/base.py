@@ -181,10 +181,6 @@ class WalkerObservables(composer.Observables):
     return observable.MJCFFeature('qpos', self._entity.observable_joints)
 
   @composer.observable
-  def joints_vel(self):
-    return observable.MJCFFeature('qvel', self._entity.observable_joints)
-
-  @composer.observable
   def sensors_gyro(self):
     return observable.MJCFFeature('sensordata',
                                   self._entity.mjcf_model.sensor.gyro)
@@ -193,21 +189,6 @@ class WalkerObservables(composer.Observables):
   def sensors_accelerometer(self):
     return observable.MJCFFeature('sensordata',
                                   self._entity.mjcf_model.sensor.accelerometer)
-
-  @composer.observable
-  def sensors_force(self):
-    return observable.MJCFFeature('sensordata',
-                                  self._entity.mjcf_model.sensor.force)
-
-  @composer.observable
-  def sensors_torque(self):
-    return observable.MJCFFeature('sensordata',
-                                  self._entity.mjcf_model.sensor.torque)
-
-  @composer.observable
-  def sensors_touch(self):
-    return observable.MJCFFeature('sensordata',
-                                  self._entity.mjcf_model.sensor.touch)
 
   # Semantic groupings of Walker observables.
   def _collect_from_attachments(self, attribute_name):
@@ -218,7 +199,7 @@ class WalkerObservables(composer.Observables):
 
   @property
   def proprioception(self):
-    return ([self.joints_pos, self.joints_vel] +
+    return ([self.joints_pos] +
             self._collect_from_attachments('proprioception'))
 
   @property
@@ -228,5 +209,5 @@ class WalkerObservables(composer.Observables):
 
   @property
   def dynamic_sensors(self):
-    return ([self.sensors_force, self.sensors_torque, self.sensors_touch] +
-            self._collect_from_attachments('dynamic_sensors'))
+    return self._collect_from_attachments('dynamic_sensors')
+

@@ -183,6 +183,10 @@ class WalkerObservables(base.WalkerObservables):
   """Legacy base class for Walker obserables."""
 
   @composer.observable
+  def joints_vel(self):
+    return observable.MJCFFeature('qvel', self._entity.observable_joints)
+
+  @composer.observable
   def body_height(self):
     return observable.MJCFFeature('xpos', self._entity.root_body)[2]
 
@@ -242,6 +246,16 @@ class WalkerObservables(base.WalkerObservables):
   def sensors_velocimeter(self):
     return observable.MJCFFeature('sensordata',
                                   self._entity.mjcf_model.sensor.velocimeter)
+
+  @composer.observable
+  def sensors_force(self):
+    return observable.MJCFFeature('sensordata',
+                                  self._entity.mjcf_model.sensor.force)
+
+  @composer.observable
+  def sensors_torque(self):
+    return observable.MJCFFeature('sensordata',
+                                  self._entity.mjcf_model.sensor.torque)
 
   @composer.observable
   def sensors_touch(self):
