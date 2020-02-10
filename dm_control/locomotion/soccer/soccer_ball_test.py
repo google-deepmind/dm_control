@@ -64,7 +64,7 @@ class SoccerBallTest(absltest.TestCase):
 
   def test_has_tracking_cameras(self):
     ball = soccer_ball.SoccerBall(radius=0.35, mass=0.045, name='test_ball')
-    expected_camera_names = ['ball_cam', 'ball_cam_far']
+    expected_camera_names = ['ball_cam_near', 'ball_cam', 'ball_cam_far']
     camera_names = [cam.name for cam in ball.mjcf_model.find_all('camera')]
     self.assertCountEqual(expected_camera_names, camera_names)
 

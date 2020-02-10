@@ -72,6 +72,13 @@ class SoccerBall(props.Primitive):
     # Add some tracking cameras for visualization and logging.
     self._mjcf_root.worldbody.add(
         'camera',
+        name='ball_cam_near',
+        pos=[0, -2, 2],
+        zaxis=[0, -1, 1],
+        fovy=70,
+        mode='trackcom')
+    self._mjcf_root.worldbody.add(
+        'camera',
         name='ball_cam',
         pos=[0, -7, 7],
         zaxis=[0, -1, 1],
