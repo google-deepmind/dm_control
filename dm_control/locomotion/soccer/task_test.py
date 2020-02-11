@@ -97,14 +97,14 @@ class TaskTest(parameterized.TestCase):
       self.assertCountEqual(first, other)
 
   @parameterized.named_parameters(
-      ("1vs1_core", 1, "core", 34, True),
-      ("2vs2_core", 2, "core", 42, True),
-      ("1vs1_interception", 1, "core_interception", 42, True),
-      ("2vs2_interception", 2, "core_interception", 50, True),
-      ("1vs1_core_contact", 1, "core", 34, False),
-      ("2vs2_core_contact", 2, "core", 42, False),
-      ("1vs1_interception_contact", 1, "core_interception", 42, False),
-      ("2vs2_interception_contact", 2, "core_interception", 50, False),
+      ("1vs1_core", 1, "core", 32, True),
+      ("2vs2_core", 2, "core", 40, True),
+      ("1vs1_interception", 1, "core_interception", 40, True),
+      ("2vs2_interception", 2, "core_interception", 48, True),
+      ("1vs1_core_contact", 1, "core", 32, False),
+      ("2vs2_core_contact", 2, "core", 40, False),
+      ("1vs1_interception_contact", 1, "core_interception", 40, False),
+      ("2vs2_interception_contact", 2, "core_interception", 48, False),
   )
   def test_step_environment(self, team_size, observables_adder, num_obs,
                             disable_walker_contacts):
@@ -130,11 +130,11 @@ class TaskTest(parameterized.TestCase):
 
   # TODO(b/124848293): consolidate environment stepping loop for task tests.
   @parameterized.named_parameters(
-      ("1vs2", 1, 2, 38),
-      ("2vs1", 2, 1, 38),
-      ("3vs0", 3, 0, 38),
-      ("0vs2", 0, 2, 34),
-      ("2vs2", 2, 2, 42),
+      ("1vs2", 1, 2, 36),
+      ("2vs1", 2, 1, 36),
+      ("3vs0", 3, 0, 36),
+      ("0vs2", 0, 2, 32),
+      ("2vs2", 2, 2, 40),
       ("0vs0", 0, 0, None),
   )
   def test_num_players(self, home_size, away_size, num_observations):

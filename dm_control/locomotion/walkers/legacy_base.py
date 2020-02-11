@@ -25,7 +25,6 @@ from dm_control import composer
 from dm_control.composer.observation import observable
 from dm_control.locomotion.walkers import base
 from dm_control.locomotion.walkers import initializers
-from dm_control.mujoco import math as mjmath
 from dm_control.mujoco.wrapper.mjbindings import mjlib
 
 import numpy as np
@@ -201,43 +200,6 @@ class WalkerObservables(base.WalkerObservables):
     return observable.Generic(relative_pos_in_egocentric_frame)
 
   @composer.observable
-  def appendages_pos(self):
-    """Equivalent to `end_effectors_pos` with the head's position appended."""
-    def relative_pos_in_egocentric_frame(physics):
-      if hasattr(self._entity, 'head'):
-        appendages = (tuple(self._entity.end_effectors) + (self._entity.head,))
-      else:
-        appendages = self._entity.end_effectors
-      appendages_pos_global = physics.bind(appendages).xpos
-      torso = physics.bind(self._entity.root_body).xpos
-      xmat = np.reshape(physics.bind(self._entity.root_body).xmat, (3, 3))
-      return np.reshape(np.dot(appendages_pos_global - torso, xmat), -1)
-    return observable.Generic(relative_pos_in_egocentric_frame)
-
-  @composer.observable
-  def body_quats(self):
-    """Orientations of the bodies as quaternions, in the egocentric frame."""
-    def body_orientations_in_egocentric_frame(physics):
-      """Compute relative orientation of the bodies."""
-      # Get the bodies
-      if hasattr(self._entity, 'mocap_bodies'):
-        bodies = self._entity.mocap_bodies
-      elif hasattr(self._entity, 'bodies'):
-        bodies = self._entity.bodies[1:]  # remove presumed root
-      else:
-        bodies = self._entity.mjcf_model.find_all('body')
-      # Get the quaternions of all the bodies in the global frame
-      bodies_xquat = physics.bind(bodies).xquat
-      root_xquat = physics.bind(self._entity.root_body).xquat
-      # Compute the relative quaternion of the bodies in the torso frame
-      bodies_quat_diff = []
-      for k in range(len(bodies)):
-        bodies_quat_diff.append(
-            mjmath.mj_quatdiff(root_xquat, bodies_xquat[k]))  # q1^-1 * q2
-      return np.reshape(np.stack(bodies_quat_diff, 0), -1)
-    return observable.Generic(body_orientations_in_egocentric_frame)
-
-  @composer.observable
   def world_zaxis(self):
     """The world's z-vector in this Walker's torso frame."""
     return observable.MJCFFeature('xmat', self._entity.root_body)[6:]
@@ -323,8 +285,7 @@ class WalkerObservables(base.WalkerObservables):
   @property
   def proprioception(self):
     return ([self.joints_pos, self.joints_vel,
-             self.body_height, self.end_effectors_pos,
-             self.appendages_pos, self.body_quats, self.world_zaxis] +
+             self.body_height, self.end_effectors_pos, self.world_zaxis] +
             self._collect_from_attachments('proprioception'))
 
   @property
