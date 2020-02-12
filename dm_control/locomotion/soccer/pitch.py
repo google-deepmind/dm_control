@@ -210,7 +210,7 @@ class Pitch(composer.Arena):
       # Geoms a and b collides if:
       #   (a.contype & b.conaffinity) || (b.contype & a.conaffinity) != 0.
       #   See: http://www.mujoco.org/book/computation.html#Collision
-      ball.geom.contype = (ball.geom.contype or 0) | _FIELD_BOX_CONTACT_BIT
+      ball.geom.contype = (ball.geom.contype or 1) | _FIELD_BOX_CONTACT_BIT
       for wall in self._field_box:
         wall.conaffinity = _FIELD_BOX_CONTACT_BIT
         wall.contype = _FIELD_BOX_CONTACT_BIT
