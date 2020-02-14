@@ -67,7 +67,7 @@
 <!--    <geom name="wall_y" type="plane" pos="0 -1 .02" zaxis="0 1 0"  size="1 .02 .02" material="decoration"/>-->
 <!--    <geom name="wall_neg_x" type="plane" pos="1 0 .02" zaxis="-1 0 0"  size=".02 1 .02" material="decoration"/>-->
 <!--    <geom name="wall_neg_y" type="plane" pos="0 1 .02" zaxis="0 -1 0"  size="1 .02 .02" material="decoration"/>-->
-    <geom name="ground" type="plane" pos="0 0 0" size=".35 .35 .1" material="site"/>
+    <geom name="ground" type="plane" pos="0 0 0" size=".35 .35 .1" rgba="0.35 0.98 0.3 1"/>
     <geom name="wall_x" type="plane" pos="-.35 0 .02" zaxis="1 0 0"  size=".02 .35 .02" rgba="1 1 1 1"/>
     <geom name="wall_y" type="plane" pos="0 -.35 .02" zaxis="0 1 0"  size=".35 .02 .02" rgba="1 1 1 1"/>
     <geom name="wall_neg_x" type="plane" pos=".35 0 .02" zaxis="-1 0 0"  size=".02 .35 .02" rgba="1 1 1 1"/>
