@@ -64,6 +64,11 @@ class WalkerPose(collections.namedtuple(
         xpos=_make_readonly_float64_copy(xpos),
         xquat=_make_readonly_float64_copy(xquat))
 
+  def __eq__(self, other):
+    return (np.all(self.qpos == other.qpos) and
+            np.all(self.xpos == other.xpos) and
+            np.all(self.xquat == other.xquat))
+
 
 @six.add_metaclass(abc.ABCMeta)
 class Walker(composer.Robot):
