@@ -277,15 +277,23 @@ class Stack(base.Task):
         """Returns either features or only sensors (to be used with pixels)."""
         obs = collections.OrderedDict()
 
-        render_kwargs = {}
-        render_kwargs['camera_id'] = 0
-        render_kwargs['width'] = W
-        render_kwargs['height'] = W
-        image = physics.render(**render_kwargs)
+        image = self.get_image(physics)
         self.image = image
 
         if self._random_pick:
-            self.current_loc = self.sample_location(physics)
+            location  = self.sample_location(physics)
+        else:
+            location = [-1, -1]
+            mask = self.segment_image(image)
+            location_range = np.transpose(np.where(mask))
+            self.location_rate = location_range
+            num_loc = np.shape(location_range)[0]
+            self.num_loc = num_loc
+        self.current_loc = location
+
+        if self.current_loc is None:
+            obs['location'] = np.tile([-1, -1], 50).reshape(-1).astype('float32') / 63.
+        else:
             obs['location'] = np.tile(self.current_loc, 50).reshape(-1).astype('float32') / 63.
         return obs
 
@@ -295,12 +303,24 @@ class Stack(base.Task):
         else:
             return None
 
+    def get_image(physics):
+        render_kwargs = {}
+        render_kwargs['camera_id'] = 0
+        render_kwargs['width'] = W
+        render_kwargs['height'] = W
+        image = physics.render(**render_kwargs)
+        return image
+
+    def segment_image(self, image):
+        image_dim_1 = image[:, :, [1]]
+        image_dim_2 = image[:, :, [2]]
+        mask = np.all(image> 200, axis=2) + np.all(image_dim_2 < 40, axis=2) + \
+               (~np.all(image_dim_1 > 135, axis=2))
+        return mask > 0
+
     def sample_location(self, physics):
         image = self.image
-        image_dim_1 = image[:, :, 1].reshape((W, W, 1))
-        image_dim_2 = image[:, :, 2].reshape((W, W, 1))
-        location_range = np.transpose(np.where(
-            np.all(image > 200, axis=2) + np.all(image_dim_2 < 40, axis=2) + (~np.all(image_dim_1 > 135, axis=2))))
+        location_range = np.transpose(np.where(self.segment_image(image)))
         self.location_range = location_range
         num_loc = np.shape(location_range)[0]
         self.num_loc = num_loc
