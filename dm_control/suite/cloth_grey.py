@@ -150,7 +150,7 @@ class Cloth(base.Task):
       for i in range(81):
           # flipping the x and y to make sure it corresponds to the real location
           if abs(cam_pos_xy[i][0] - location[1]) < epsilon and abs(
-                  cam_pos_xy[i][1] - location[0]) < epsilon and i > 4:
+                  cam_pos_xy[i][1] - location[0]) < epsilon:
               possible_index.append(i)
               possible_z.append(physics.data.geom_xpos[i, 2])
 

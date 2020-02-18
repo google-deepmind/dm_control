@@ -280,10 +280,7 @@ class Rope(base.Task):
         return image
 
     def segment_image(self, image):
-        green = np.array([56, 168, 106], dtype='uint8').reshape(1, 1, 3)
-        dists = np.linalg.norm(image - green, axis=-1)
-        mask = dists > 40
-        return mask
+        return np.all(image > 150, axis=2)
 
     def get_reward(self, physics):
         reward_mask = self.segment_image(self.image).astype(int)

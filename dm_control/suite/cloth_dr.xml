@@ -1,0 +1,73 @@
+<mujoco model="planar stacker">
+
+  <include file="./common/visual.xml"/>
+  <include file="./common/skybox.xml"/>
+  <include file="./common/materials.xml"/>
+
+  <size njmax="8000" nconmax="4000"/>
+
+
+    <asset>
+        <texture name="background" builtin="flat" type="2d" mark="random" markrgb="1 1 1" width="800" height="800" rgb1=".2 .3 .4"/>
+        <material name="background" texture="background" texrepeat="1 1" texuniform="true"/>
+        <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="512"/>
+        <texture name="texplane" type="2d" builtin="checker" rgb1=".2 .3 .4" rgb2=".1 0.15 0.2"
+            width="512" height="512" mark="cross" markrgb=".8 .8 .8"/>
+        <texture name="texcolormap" type="2d" file="/home/wilson/dm_control/suite/skin_colormap.png"/>
+        <texture name="texblue" type="2d" file="/home/wilson/dm_control/suite/blue_cloth.png"/>
+        <texture name="texcorner4" type="2d" file="/home/wilson/dm_control/suite/cloth_4c.png"/>
+        <texture name="texcorner" type="2d" file="/home/wilson/dm_control/suite/cloth_3c.png"/>
+        <texture name="texgrey" type="2d" file="/home/wilson/cloth_grey.png"/>
+
+        <texture name="texyellow" type="2d" file="/home/wilson/dm_control/suite/yellow.png"/>
+        <texture name="texwhite" type="2d" file="/home/wilson/dm_control/suite/white.png"/>
+
+        <material name="matcolormap" texture="texcolormap"/>
+        <material name="matgrey" texture="texgrey"/>
+        <material name="matblue" texture="texblue"/>
+        <material name="matplane" reflectance="0.3" texture="texplane" texrepeat="1 1" texuniform="true"/>
+        <material name="matcorner" texture="texcorner"/>
+        <material name="matcorner4" texture="texcorner4"/>
+        <material name="matyellow" texture="texyellow"/>
+        <material name="matwhite" texture="texwhite"/>
+    </asset>
+
+    <default>
+    <joint type="hinge" axis="0 0 1" limited="true" range="-.29 .29" damping="1"/>
+    <motor gear=".1" ctrlrange="-10 10" ctrllimited="true"/>
+  </default>
+  <worldbody>
+    <!-- Arena -->
+    <light name="light" directional="true" diffuse=".6 .6 .6" pos="0 0 1" specular=".3 .3 .3"/>
+    <camera name="fixed" pos="0 0 .5" quat="1 0 0 0"/>
+
+    <geom name="ground" type="plane" pos="0 0 0" size=".35 .35 .1" rgba="0.3 .98 .3 1"/>
+    <geom name="wall_x" type="plane" pos="-.35 0 .02" zaxis="1 0 0"  size=".02 .35 .02" rgba="1 1 1 1"/>
+    <geom name="wall_y" type="plane" pos="0 -.35 .02" zaxis="0 1 0"  size=".35 .02 .02" rgba="1 1 1 1 "/>
+    <geom name="wall_neg_x" type="plane" pos=".35 0 .02" zaxis="-1 0 0"  size=".02 .35 .02" rgba="1 1 1 1"/>
+    <geom name="wall_neg_y" type="plane" pos="0 .35 .02" zaxis="0 -1 0"  size=".35 .02 .02" rgba = '1 1 1 1'/>
+
+    <body name="B3_5" pos="0 0 0.1">
+          <camera name="track" mode="trackcom" pos="0 0 .5" quat="1 0 0 0 "/>
+      <freejoint name="r1"/>
+      <composite type="cloth" count="9 9 1" spacing="0.03" flatinertia="0.01">
+        <joint kind="main" damping="0.002"/>
+        <skin material="matgrey" texcoord="true" inflate="0.005" subgrid="2"/>
+
+        <geom type="capsule" size="0.0075 0.005" rgba=".8 .2 .1 1"/>
+      </composite>
+      <site name="target" type="sphere"/>
+    </body>
+
+
+  </worldbody>
+
+  <sensor>
+  </sensor>
+
+  <actuator>
+        <motor ctrllimited="true" ctrlrange="-1 1" gear="5.0" joint="r1"/>
+
+  </actuator>
+
+</mujoco>
