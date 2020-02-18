@@ -84,7 +84,7 @@ class Rope(base.Task):
         self._randomize_gains = randomize_gains
         self._init_flat = init_flat
         self._random_pick = random_pick
-        self._n_geoms = 21
+        self._n_geoms = 25
         self._use_dr = use_dr
         super(Rope, self).__init__(random=random)
 
