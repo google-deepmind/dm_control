@@ -289,6 +289,12 @@ class Stack(base.Task):
             obs['location'] = np.tile(self.current_loc, 50).reshape(-1).astype('float32') / 63.
         return obs
 
+    def get_termination(self, physics):
+        if self.num_loc < 1:
+            return 1.0
+        else:
+            return None
+
     def sample_location(self, physics):
         image = self.image
         image_dim_1 = image[:, :, 1].reshape((W, W, 1))
@@ -297,6 +303,9 @@ class Stack(base.Task):
             np.all(image > 200, axis=2) + np.all(image_dim_2 < 40, axis=2) + (~np.all(image_dim_1 > 135, axis=2))))
         self.location_range = location_range
         num_loc = np.shape(location_range)[0]
+        self.num_loc = num_loc
+        if num_loc == 0:
+            return None
         index = np.random.randint(num_loc, size=1)
         location = location_range[index][0]
         return location
