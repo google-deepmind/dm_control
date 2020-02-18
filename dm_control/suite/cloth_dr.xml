@@ -13,14 +13,14 @@
         <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="512"/>
         <texture name="texplane" type="2d" builtin="checker" rgb1=".2 .3 .4" rgb2=".1 0.15 0.2"
             width="512" height="512" mark="cross" markrgb=".8 .8 .8"/>
-        <texture name="texcolormap" type="2d" file="/home/wilson/dm_control/suite/skin_colormap.png"/>
-        <texture name="texblue" type="2d" file="/home/wilson/dm_control/suite/blue_cloth.png"/>
-        <texture name="texcorner4" type="2d" file="/home/wilson/dm_control/suite/cloth_4c.png"/>
-        <texture name="texcorner" type="2d" file="/home/wilson/dm_control/suite/cloth_3c.png"/>
-        <texture name="texgrey" type="2d" file="/home/wilson/cloth_grey.png"/>
+        <texture name="texcolormap" type="2d" file="/home/wilson/dm_control/dm_control/suite/skin_colormap.png"/>
+        <texture name="texblue" type="2d" file="/home/wilson/dm_control/dm_control/suite/blue.png"/>
+        <texture name="texcorner4" type="2d" file="/home/wilson/dm_control/dm_control/suite/cloth_4c.png"/>
+        <texture name="texcorner" type="2d" file="/home/wilson/dm_control/dm_control/suite/cloth_3c.png"/>
+        <texture name="texgrey" type="2d" file="/home/wilson/dm_control/dm_control/suite/cloth_grey.png"/>
 
-        <texture name="texyellow" type="2d" file="/home/wilson/dm_control/suite/yellow.png"/>
-        <texture name="texwhite" type="2d" file="/home/wilson/dm_control/suite/white.png"/>
+        <texture name="texyellow" type="2d" file="/home/wilson/dm_control/dm_control/suite/yellow.png"/>
+        <texture name="texwhite" type="2d" file="/home/wilson/dm_control/dm_control/suite/white.png"/>
 
         <material name="matcolormap" texture="texcolormap"/>
         <material name="matgrey" texture="texgrey"/>

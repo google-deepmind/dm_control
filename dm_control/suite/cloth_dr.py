@@ -53,7 +53,7 @@ SUITE = containers.TaggedTasks()
 
 def get_model_and_assets():
     """Returns a tuple containing the model XML string and a dict of assets."""
-    return common.read_model('cloth_visual_64.xml'), common.ASSETS
+    return common.read_model('cloth_dr.xml'), common.ASSETS
 
 
 @SUITE.add('hard')
@@ -298,8 +298,7 @@ class Stack(base.Task):
         self.location_range = location_range
         num_loc = np.shape(location_range)[0]
         index = np.random.randint(num_loc, size=1)
-        location = location_range[index]
-
+        location = location_range[index][0]
         return location
 
     def get_reward(self, physics):
