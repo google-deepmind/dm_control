@@ -283,7 +283,7 @@ class Cloth(base.Task):
 
         return obs
 
-    def get_image(physics):
+    def get_image(self, physics):
         render_kwargs = {}
         render_kwargs['camera_id'] = 0
         render_kwargs['width'] = W
@@ -297,6 +297,9 @@ class Cloth(base.Task):
         mask = np.all(image> 200, axis=2) + np.all(image_dim_2 < 40, axis=2) + \
                (~np.all(image_dim_1 > 135, axis=2))
         return mask > 0
+
+    def get_geoms(self, physics):
+        return physics.data.geom_xpos[5:, :2].copy()
 
     def sample_location(self, physics):
         image = self.image
