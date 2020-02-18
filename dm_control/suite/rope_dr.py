@@ -30,7 +30,6 @@ from dm_control.utils import containers
 from dm_control.utils import rewards
 import numpy as np
 import random
-import mujoco_py
 import os
 import math
 from PIL import Image, ImageColor

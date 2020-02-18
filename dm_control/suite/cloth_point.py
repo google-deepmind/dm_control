@@ -34,7 +34,6 @@ import os
 import math
 import numpy as np
 import random
-import mujoco_py
 
 
 _DEFAULT_TIME_LIMIT = 20

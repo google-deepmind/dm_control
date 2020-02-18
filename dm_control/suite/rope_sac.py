@@ -28,7 +28,6 @@ from dm_control.suite import common
 from dm_control.utils import containers
 import numpy as np
 import random
-import mujoco_py
 import os
 import math
 _DEFAULT_TIME_LIMIT = 20
