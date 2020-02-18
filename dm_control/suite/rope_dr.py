@@ -71,7 +71,7 @@ class Physics(mujoco.Physics):
 class Rope(base.Task):
     """A point_mass `Task` to reach target with smooth reward."""
 
-    def __init__(self, randomize_gains, random=None, random_pick=False, init_flat=True,
+    def __init__(self, randomize_gains, random=None, random_pick=False, init_flat=False,
                  use_dr=False):
         """Initialize an instance of `PointMass`.
 
