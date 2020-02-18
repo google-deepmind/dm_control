@@ -37,7 +37,6 @@ from PIL import Image, ImageColor
 from lxml import etree
 import numpy as np
 import math
-import matplotlib.pyplot as plt
 
 _TOL = 1e-13
 _CLOSE = .01  # (Meters) Distance below which a thing is considered close.
@@ -114,11 +113,6 @@ class Cloth(base.Task):
         image = physics.render(**render_kwargs)
         self.image = image
         self.mask = self.segment_image(image).astype(int)
-
-        self.fig, (self.ax1, self.ax2) = plt.subplots(1, 2)
-        self.im1 = self.ax1.imshow(self.image)
-        self.im2 = self.ax2.imshow(self.mask)
-        plt.ion()
 
         if self._use_dr:
             # initialize the random parameters
@@ -282,9 +276,6 @@ class Cloth(base.Task):
 
         image = self.get_image(physics)
         self.image = image
-        self.im1.set_data(self.image)
-        self.im2.set_data(self.segment_image(image))
-        plt.pause(0.02)
 
         if self._random_pick:
             self.current_loc = self.sample_location(physics)
