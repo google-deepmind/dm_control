@@ -64,6 +64,7 @@ from dm_control.suite import rope_colored
 from dm_control.suite import cloth_grey
 from dm_control.suite import cloth_colored
 from dm_control.suite import rope
+from dm_control.suite import rope_dr
 
 # Find all domains imported.
 _DOMAINS = {name: module for name, module in locals().items()

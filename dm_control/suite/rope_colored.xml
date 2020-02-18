@@ -1,12 +1,5 @@
 
 <mujoco>
-<!--    <default class="main">-->
-<!--        <geom rgba="1 0 0 1"/>-->
-<!--&lt;!&ndash;        <geom rgba="255 255 255 1"/>&ndash;&gt;-->
-<!--        <default class="sub">-->
-<!--            <geom rgba="0 1 0 1"/>-->
-<!--        </default>-->
-<!--    </default>-->
 
   <include file="./common/visual.xml"/>
   <include file="./common/skybox.xml"/>
@@ -17,9 +10,6 @@
             width="512" height="512" mark="cross" markrgb=".8 .8 .8"/>
          <texture name="background" builtin="flat" type="2d" mark="random" markrgb="1 1 1" width="800" height="800" rgb1=".2 .3 .4"/>
         <material name="background" texture="background" texrepeat="1 1" texuniform="true"/>
-<!--         <texture name="textablecenter" type="2d" file="table_center_10.png"/>-->
-
-<!--        <material name="tablecenter"  texture="textablecenter" />-->
     </asset>
     <default>
            <geom rgba="255 255 255 1"/>
@@ -35,8 +25,6 @@
     <geom name="wall_y" type="plane" pos="0 -.3 .02" zaxis="0 1 0"  size=".3 .02 .02" rgba="1 1 1 1"/>
     <geom name="wall_neg_x" type="plane" pos=".3 0 .02" zaxis="-1 0 0"  size=".02 .3 .02" rgba="1 1 1 1"/>
     <geom name="wall_neg_y" type="plane" pos="0 .3 .02" zaxis="0 -1 0"  size=".3 .02 .02" rgba="1 1 1 1"/>
-<!--    <geom name="target" pos="0 0 .01" type="sphere" size=".06" rgba=".6 .3 .3 1"/>-->
-    <!--  ================= SWIMMER ================= /-->
 
       <body name="B10" pos="0 0 0">
           <inertial pos="0 0 0" quat="0.707107 0 0.707107 0" mass="0.0125664" diaginertia="1.98968e-06 1.98968e-06 6.28319e-07" />

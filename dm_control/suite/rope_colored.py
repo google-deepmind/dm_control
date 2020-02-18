@@ -120,13 +120,13 @@ class Rope(base.Task):
     cam_mat = physics.named.data.cam_xmat['fixed'].reshape((3, 3))
     cam_pos = physics.named.data.cam_xpos['fixed'].reshape((3, 1))
     cam = np.concatenate([cam_mat, cam_pos], axis=1)
-    cam_pos_all = np.zeros((21, 3, 1))
+    cam_pos_all = np.zeros((self.n_geoms, 3, 1))
     for i in range(self.n_geoms):
       geom_name = 'G{}'.format(i)
       geom_xpos_added = np.concatenate([physics.named.data.geom_xpos[geom_name], np.array([1])]).reshape((4, 1))
       cam_pos_all[i] = cam_matrix.dot(cam.dot(geom_xpos_added)[:3])
 
-    cam_pos_xy = np.rint(cam_pos_all[:, :2].reshape((21, 2)) / cam_pos_all[:, 2])
+    cam_pos_xy = np.rint(cam_pos_all[:, :2].reshape((self.n_geoms, 2)) / cam_pos_all[:, 2])
     cam_pos_xy = cam_pos_xy.astype(int)
     cam_pos_xy[:, 1] = W - cam_pos_xy[:, 1]
     cam_pos_xy[:, [0, 1]] = cam_pos_xy[:, [1, 0]]

@@ -1,5 +1,5 @@
-
 <mujoco>
+​
   <include file="./common/visual.xml"/>
   <include file="./common/skybox.xml"/>
   <include file="./common/materials.xml"/>
@@ -20,22 +20,23 @@
        <camera name="fixed" pos="0 0 .73" quat="1 0 0 0"/>
       <light name="light" directional="true" diffuse="0 .0 .0" pos="0 0 .5" specular="0 .0 .0"/>
     <geom name="ground" type="plane" pos="0 0 0" size=".6 .6 .1" rgba="0.18 0.545 0.341 1"/>
-    <geom name="wall_x" type="plane" pos="-.3 0 .02" zaxis="1 0 0"  size=".02 .3 .02" rgba="1 1 1 1"/>
-    <geom name="wall_y" type="plane" pos="0 -.3 .02" zaxis="0 1 0"  size=".3 .02 .02" rgba="1 1 1 1"/>
-    <geom name="wall_neg_x" type="plane" pos=".3 0 .02" zaxis="-1 0 0"  size=".02 .3 .02" rgba="1 1 1 1"/>
-    <geom name="wall_neg_y" type="plane" pos="0 .3 .02" zaxis="0 -1 0"  size=".3 .02 .02" rgba="1 1 1 1"/>
+      <geom name="wall_x" type="plane" pos="-.3 0 .02" zaxis="1 0 0"  size=".02 .3 .02" rgba="1 1 1 1"/>
+      <geom name="wall_y" type="plane" pos="0 -.3 .02" zaxis="0 1 0"  size=".3 .02 .02" rgba="1 1 1 1"/>
+      <geom name="wall_neg_x" type="plane" pos=".3 0 .02" zaxis="-1 0 0"  size=".02 .3 .02" rgba="1 1 1 1"/>
+      <geom name="wall_neg_y" type="plane" pos="0 .3 .02" zaxis="0 -1 0"  size=".3 .02 .02" rgba="1 1 1 1"/>
     <body name="B10" pos="0 0 0">
          <camera name="track" mode="trackcom" pos="0 -1 1" xyaxes="1 0 0 0 1 1" />
         <freejoint name="r1"/>
-
+​
         <composite type="rope" count="21 1 1" spacing="0.02" offset="0 0 2">
             <joint kind="main" damping="0.005"/>
             <geom type="capsule" size=".008 .01" rgba=" 1 0.871 0.678 1"/>
         </composite>
     </body>
+​
   </worldbody>
   <sensor>
-
+​
   </sensor>
   <actuator>
     <motor ctrllimited="true" ctrlrange="-1 1" gear="10.0" joint="r1"/>
