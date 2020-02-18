@@ -12,9 +12,6 @@ available from this library.
   <img src="gaps.png" height="200">
 </p>
 
-**NOTE:** Rodent walker model and examples will be made available as part of
-this library before the ICLR 2020 conference.
-
 ## Terminology
 
 This library facilitates the creation of environments that require **walkers**
@@ -80,8 +77,7 @@ papers. Relevant references include:
 
 -   [Neural probabilistic motor primitives for humanoid control (2019)][merel2019b].
 
--   [Deep neuroethology of a virtual rodent (2020)][merel2020] -- code coming
-    soon.
+-   [Deep neuroethology of a virtual rodent (2020)][merel2020].
 
 [installation-and-requirements]: ../../README.md#installation-and-requirements
 [`dm_control.viewer`]: ../viewer/README.md

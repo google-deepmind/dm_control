@@ -12,3 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+"""Walkers for Locomotion tasks."""
+
+from dm_control.locomotion.walkers.rodent import Rat

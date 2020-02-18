@@ -14,9 +14,13 @@
 # ============================================================================
 """Arenas for Locomotion tasks."""
 
+from dm_control.locomotion.arenas.bowl import Bowl
 from dm_control.locomotion.arenas.corridors import EmptyCorridor
 from dm_control.locomotion.arenas.corridors import GapsCorridor
 from dm_control.locomotion.arenas.corridors import WallsCorridor
 from dm_control.locomotion.arenas.floors import Floor
+from dm_control.locomotion.arenas.labmaze_textures import FloorTextures
+from dm_control.locomotion.arenas.labmaze_textures import SkyBox
+from dm_control.locomotion.arenas.labmaze_textures import WallTextures
 from dm_control.locomotion.arenas.mazes import MazeWithTargets
 from dm_control.locomotion.arenas.mazes import RandomMazeWithTargets

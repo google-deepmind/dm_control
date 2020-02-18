@@ -1,4 +1,4 @@
-# Copyright 2019 The dm_control Authors.
+# Copyright 2020 The dm_control Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,7 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Props for Locomotion tasks."""
+"""Tests for locomotion.arenas.bowl."""
 
-from dm_control.locomotion.props.target_sphere import TargetSphere
-from dm_control.locomotion.props.target_sphere import TargetSphereTwoTouch
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+from absl.testing import absltest
+from dm_control import mjcf
+from dm_control.locomotion.arenas import bowl
+
+
+class BowlTest(absltest.TestCase):
+
+  def test_can_compile_mjcf(self):
+
+    arena = bowl.Bowl()
+    mjcf.Physics.from_mjcf_model(arena.mjcf_model)
+
+
+if __name__ == '__main__':
+  absltest.main()

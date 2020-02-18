@@ -261,6 +261,7 @@ class RepeatSingleGoalMaze(NullGoalMaze):
                rotation_bias_factor=0,
                aliveness_reward=0.0,
                aliveness_threshold=DEFAULT_ALIVE_THRESHOLD,
+               contact_termination=True,
                max_repeats=0,
                enable_global_task_observables=False,
                physics_timestep=DEFAULT_PHYSICS_TIMESTEP,
@@ -273,6 +274,7 @@ class RepeatSingleGoalMaze(NullGoalMaze):
         rotation_bias_factor=rotation_bias_factor,
         aliveness_reward=aliveness_reward,
         aliveness_threshold=aliveness_threshold,
+        contact_termination=contact_termination,
         enable_global_task_observables=enable_global_task_observables,
         physics_timestep=physics_timestep,
         control_timestep=control_timestep)
@@ -347,6 +349,7 @@ class ManyHeterogeneousGoalsMaze(NullGoalMaze):
                rotation_bias_factor=0,
                aliveness_reward=0.0,
                aliveness_threshold=DEFAULT_ALIVE_THRESHOLD,
+               contact_termination=True,
                physics_timestep=DEFAULT_PHYSICS_TIMESTEP,
                control_timestep=DEFAULT_CONTROL_TIMESTEP):
     super(ManyHeterogeneousGoalsMaze, self).__init__(
@@ -357,6 +360,7 @@ class ManyHeterogeneousGoalsMaze(NullGoalMaze):
         rotation_bias_factor=rotation_bias_factor,
         aliveness_reward=aliveness_reward,
         aliveness_threshold=aliveness_threshold,
+        contact_termination=contact_termination,
         physics_timestep=physics_timestep,
         control_timestep=control_timestep)
     self._active_targets = []
@@ -449,6 +453,7 @@ class ManyGoalsMaze(ManyHeterogeneousGoalsMaze):
                rotation_bias_factor=0,
                aliveness_reward=0.0,
                aliveness_threshold=DEFAULT_ALIVE_THRESHOLD,
+               contact_termination=True,
                physics_timestep=DEFAULT_PHYSICS_TIMESTEP,
                control_timestep=DEFAULT_CONTROL_TIMESTEP):
     super(ManyGoalsMaze, self).__init__(
@@ -462,6 +467,7 @@ class ManyGoalsMaze(ManyHeterogeneousGoalsMaze):
         rotation_bias_factor=rotation_bias_factor,
         aliveness_reward=aliveness_reward,
         aliveness_threshold=aliveness_threshold,
+        contact_termination=contact_termination,
         physics_timestep=physics_timestep,
         control_timestep=control_timestep)
 
@@ -482,6 +488,7 @@ class RepeatSingleGoalMazeAugmentedWithTargets(RepeatSingleGoalMaze):
                rotation_bias_factor=0,
                aliveness_reward=0.0,
                aliveness_threshold=DEFAULT_ALIVE_THRESHOLD,
+               contact_termination=True,
                physics_timestep=DEFAULT_PHYSICS_TIMESTEP,
                control_timestep=DEFAULT_CONTROL_TIMESTEP):
     super(RepeatSingleGoalMazeAugmentedWithTargets, self).__init__(
@@ -494,6 +501,7 @@ class RepeatSingleGoalMazeAugmentedWithTargets(RepeatSingleGoalMaze):
         rotation_bias_factor=rotation_bias_factor,
         aliveness_reward=aliveness_reward,
         aliveness_threshold=aliveness_threshold,
+        contact_termination=contact_termination,
         physics_timestep=physics_timestep,
         control_timestep=control_timestep)
     self._subtarget_reward_scale = subtarget_reward_scale
