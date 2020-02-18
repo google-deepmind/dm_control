@@ -61,7 +61,7 @@ def easy(time_limit=_TIME_LIMIT, random=None, environment_kwargs=None, **kwargs)
     """Returns stacker task with 2 boxes."""
 
     physics = Physics.from_xml_string(*get_model_and_assets())
-    task = Stack(randomize_gains=False, random=random, **kwargs)
+    task = Cloth(randomize_gains=False, random=random, **kwargs)
     environment_kwargs = environment_kwargs or {}
     return control.Environment(
         physics, task, control_timestep=_CONTROL_TIMESTEP, special_task=True, time_limit=time_limit,
@@ -72,7 +72,7 @@ class Physics(mujoco.Physics):
     """Physics with additional features for the Planar Manipulator domain."""
 
 
-class Stack(base.Task):
+class Cloth(base.Task):
     """A Stack `Task`: stack the boxes."""
 
     def __init__(self, randomize_gains, random=None, random_pick=True, init_flat=False, use_dr=False):
@@ -89,7 +89,7 @@ class Stack(base.Task):
         self._init_flat = init_flat
         self._use_dr = use_dr
 
-        super(Stack, self).__init__(random=random)
+        super(Cloth, self).__init__(random=random)
 
     def action_spec(self, physics):
         """Returns a `BoundedArraySpec` matching the `physics` actuators."""
@@ -105,8 +105,6 @@ class Stack(base.Task):
         physics.named.data.xfrc_applied['B3_4', :3] = np.array([0, 0, -2])
         physics.named.data.xfrc_applied['B4_4', :3] = np.array([0, 0, -2])
 
-        if not self._init_flat:
-            physics.named.data.xfrc_applied[CORNER_INDEX_ACTION, :3] = np.random.uniform(-.3, .3, size=3)
 
         render_kwargs = {}
         render_kwargs['camera_id'] = 0
@@ -114,11 +112,7 @@ class Stack(base.Task):
         render_kwargs['height'] = W
         image = physics.render(**render_kwargs)
         self.image = image
-
-        image_dim_1 = image[:, :, 1].reshape((W, W, 1))
-        image_dim_2 = image[:, :, 2].reshape((W, W, 1))
-        self.mask = (np.all(image > 200, axis=2) + np.all(image_dim_2 < 40, axis=2) + (
-            ~np.all(image_dim_1 > 135, axis=2))).astype(int)
+        self.mask = self.segment_image(image).astype(int)
 
         if self._use_dr:
             # initialize the random parameters
@@ -138,7 +132,10 @@ class Stack(base.Task):
                 [np.zeros((1, 3)), np.tile(np.array([[2.32e-07, 2.32e-07, 4.64e-07]]), (81, 1))], axis=0)
             self.geom_friction = np.tile(np.array([[1, 0.005, 0.001]]), (86, 1))
 
-        super(Stack, self).initialize_episode(physics)
+        if not self._init_flat:
+            physics.named.data.xfrc_applied[CORNER_INDEX_ACTION, :3] = np.random.uniform(-.3, .3, size=3)
+
+        super(Cloth, self).initialize_episode(physics)
 
     def before_step(self, action, physics):
 
@@ -153,7 +150,7 @@ class Stack(base.Task):
 
             ### visual randomization
 
-            #    #light randomization
+            #light randomization
             lightmodder = LightModder(physics)
             # ambient_value=lightmodder.get_ambient('light')
             ambient_value = self.light_ambient.copy() + np.random.uniform(-0.4, 0.4, size=3)
@@ -249,7 +246,7 @@ class Stack(base.Task):
         for i in range(81):
             # flipping the x and y to make sure it corresponds to the real location
             if abs(cam_pos_xy[i][0] - location[1]) < epsilon and abs(
-                    cam_pos_xy[i][1] - location[0]) < epsilon and i > 4:
+                    cam_pos_xy[i][1] - location[0]) < epsilon:
                 possible_index.append(i)
                 possible_z.append(physics.data.geom_xpos[i, 2])
 
@@ -281,27 +278,10 @@ class Stack(base.Task):
         self.image = image
 
         if self._random_pick:
-            location  = self.sample_location(physics)
-        else:
-            location = [-1, -1]
-            mask = self.segment_image(image)
-            location_range = np.transpose(np.where(mask))
-            self.location_rate = location_range
-            num_loc = np.shape(location_range)[0]
-            self.num_loc = num_loc
-        self.current_loc = location
-
-        if self.current_loc is None:
-            obs['location'] = np.tile([-1, -1], 50).reshape(-1).astype('float32') / 63.
-        else:
+            self.current_loc = self.sample_location(physics)
             obs['location'] = np.tile(self.current_loc, 50).reshape(-1).astype('float32') / 63.
-        return obs
 
-    def get_termination(self, physics):
-        if self.num_loc < 1:
-            return 1.0
-        else:
-            return None
+        return obs
 
     def get_image(physics):
         render_kwargs = {}
@@ -321,20 +301,13 @@ class Stack(base.Task):
     def sample_location(self, physics):
         image = self.image
         location_range = np.transpose(np.where(self.segment_image(image)))
-        self.location_range = location_range
         num_loc = np.shape(location_range)[0]
-        self.num_loc = num_loc
-        if num_loc == 0:
-            return None
-        index = np.random.randint(num_loc, size=1)
-        location = location_range[index][0]
+        index = np.random.randint(num_loc)
+        location = location_range[index]
         return location
 
     def get_reward(self, physics):
-        image_dim_1 = self.image[:, :, 1].reshape((W, W, 1))
-        image_dim_2 = self.image[:, :, 2].reshape((W, W, 1))
-        current_mask = (np.all(self.image > 200, axis=2) + np.all(image_dim_2 < 40, axis=2) + (
-            ~np.all(image_dim_1 > 135, axis=2))).astype(int)
+        current_mask = self.segment_image(self.image).astype(int)
         area = np.sum(current_mask * self.mask)
         reward = area / np.sum(self.mask)
         return reward
