@@ -477,6 +477,22 @@ class Entity(object):
     else:
       logging.warning('Cannot set velocity on Entity with no free joint.')
 
+  def configure_joints(self, physics, position):
+    """Configures this entity's internal joints.
+
+    The default implementation of this method simply sets the `qpos` of all
+    joints in this entity to the values specified in the `position` argument.
+    Entity subclasses with actuated joints may override this method to achieve a
+    stable reconfiguration of joint positions, for example the control signal
+    of position actuators may be changed to match the new joint positions.
+
+    Args:
+      physics: An instance of `mjcf.Physics`.
+      position: The desired position of this entity's joints.
+    """
+    joints = self.mjcf_model.find_all('joint', exclude_attachments=True)
+    physics.bind(joints).qpos = position
+
 
 class ModelWrapperEntity(Entity):
   """An entity class that wraps an MJCF model without any additional logic."""
