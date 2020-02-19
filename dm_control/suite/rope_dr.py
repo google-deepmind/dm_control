@@ -136,7 +136,7 @@ class Rope(base.Task):
 
         if not self._random_pick:
             location = (action[:2] * 0.5 + 0.5) * 63
-            goal_position = action[:2]
+            goal_position = action[2:]
             goal_position = goal_position * 0.075
         else:
             goal_position = action
