@@ -45,13 +45,12 @@ def rodent_escape_bowl(random_state=None):
   walker = rodent.Rat(
       observable_options={'egocentric_camera': dict(enabled=True)})
 
-  # Build a corridor-shaped arena that is obstructed by walls.
+  # Build a bowl-shaped arena.
   arena = bowl.Bowl(
       size=(20., 20.),
       aesthetic='outdoor_natural')
 
-  # Build a task that rewards the agent for running down the corridor at a
-  # specific velocity.
+  # Build a task that rewards the agent for being far from the origin.
   task = escape.Escape(
       walker=walker,
       arena=arena,
@@ -149,10 +148,13 @@ def rodent_two_touch(random_state=None):
   walker = rodent.Rat(
       observable_options={'egocentric_camera': dict(enabled=True)})
 
+  # Build an open floor arena
   arena = floors.Floor(
       size=(10., 10.),
       aesthetic='outdoor_natural')
 
+  # Build a task that rewards the walker for touching/reaching orbs with a
+  # specific time interval between touches
   task = reach.TwoTouch(
       walker=walker,
       arena=arena,
