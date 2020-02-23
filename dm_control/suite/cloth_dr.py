@@ -299,7 +299,10 @@ class Cloth(base.Task):
         return mask > 0
 
     def get_geoms(self, physics):
-        return physics.data.geom_xpos[5:, :2].copy()
+        geoms = np.array([[physics.named.data.geom_xpos[f'G{i}_{j}', :2]
+                           for j in range(9)]
+                           for i in range(9)], dtype='float32')
+        return geoms
 
     def sample_location(self, physics):
         image = self.image
