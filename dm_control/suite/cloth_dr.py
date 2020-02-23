@@ -75,7 +75,7 @@ class Physics(mujoco.Physics):
 class Cloth(base.Task):
     """A Stack `Task`: stack the boxes."""
 
-    def __init__(self, randomize_gains, random=None, random_pick=True, init_flat=False, use_dr=False):
+    def __init__(self, randomize_gains, random=None, random_pick=True, init_flat=False, use_dr=False, texture_randomization=True):
         """Initialize an instance of `PointMass`.
 
         Args:
@@ -88,6 +88,7 @@ class Cloth(base.Task):
         self._random_pick = random_pick
         self._init_flat = init_flat
         self._use_dr = use_dr
+        self._texture_randomization = texture_randomization
 
         super(Cloth, self).__init__(random=random)
 
@@ -146,7 +147,8 @@ class Cloth(base.Task):
         physics.named.data.xfrc_applied[:, :3] = np.zeros((3,))
 
         if self._use_dr:
-            physics.named.model.mat_texid[15] = np.random.choice(3, 1) + 9
+            if self._texture_randomization:
+                physics.named.model.mat_texid[15] = np.random.choice(3, 1) + 9
 
             ### visual randomization
 
