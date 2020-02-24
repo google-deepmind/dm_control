@@ -335,6 +335,84 @@ class Entity(object):
   def attachment_site(self):
     return self.mjcf_model
 
+  @property
+  def root_body(self):
+    if self.parent:
+      return mjcf.get_attachment_frame(self.mjcf_model)
+    else:
+      return self.mjcf_model.worldbody
+
+  def global_vector_to_local_frame(self, physics, vec_in_world_frame):
+    """Linearly transforms a world-frame vector into entity's local frame.
+
+    Note that this function does not perform an affine transformation of the
+    vector. In other words, the input vector is assumed to be specified with
+    respect to the same origin as this entity's local frame. This function
+    can also be applied to matrices whose innermost dimensions are either 2 or
+    3. In this case, a matrix with the same leading dimensions is returned
+    where the innermost vectors are replaced by their values computed in the
+    local frame.
+
+    Args:
+      physics: An `mjcf.Physics` instance.
+      vec_in_world_frame: A NumPy array with last dimension of shape (2,) or
+      (3,) that represents a vector quantity in the world frame.
+
+    Returns:
+      The same quantity as `vec_in_world_frame` but reexpressed in this
+      entity's local frame. The returned np.array has the same shape as
+      np.asarray(vec_in_world_frame).
+
+    Raises:
+      ValueError: if `vec_in_world_frame` does not have shape ending with (2,)
+        or (3,).
+    """
+    vec_in_world_frame = np.asarray(vec_in_world_frame)
+
+    xmat = np.reshape(physics.bind(self.root_body).xmat, (3, 3))
+    # The ordering of the np.dot is such that the transformation holds for any
+    # matrix whose final dimensions are (2,) or (3,).
+    if vec_in_world_frame.shape[-1] == 2:
+      return np.dot(vec_in_world_frame, xmat[:2, :2])
+    elif vec_in_world_frame.shape[-1] == 3:
+      return np.dot(vec_in_world_frame, xmat)
+    else:
+      raise ValueError('`vec_in_world_frame` should have shape with final '
+                       'dimension 2 or 3: got {}'.format(
+                           vec_in_world_frame.shape))
+
+  def global_xmat_to_local_frame(self, physics, xmat):
+    """Transforms another entity's `xmat` into this entity's local frame.
+
+    This function takes another entity's (E) xmat, which is an SO(3) matrix
+    from E's frame to the world frame, and turns it to a matrix that transforms
+    from E's frame into this entity's local frame.
+
+    Args:
+      physics: An `mjcf.Physics` instance.
+      xmat: A NumPy array of shape (3, 3) or (9,) that represents another
+        entity's xmat.
+
+    Returns:
+      The `xmat` reexpressed in this entity's local frame. The returned
+      np.array has the same shape as np.asarray(xmat).
+
+    Raises:
+      ValueError: if `xmat` does not have shape (3, 3) or (9,).
+    """
+    xmat = np.asarray(xmat)
+
+    input_shape = xmat.shape
+    if xmat.shape == (9,):
+      xmat = np.reshape(xmat, (3, 3))
+
+    self_xmat = np.reshape(physics.bind(self.root_body).xmat, (3, 3))
+    if xmat.shape == (3, 3):
+      return np.reshape(np.dot(self_xmat.T, xmat), input_shape)
+    else:
+      raise ValueError('`xmat` should have shape (3, 3) or (9,): got {}'.format(
+          xmat.shape))
+
   def get_pose(self, physics):
     """Get the position and orientation of this entity relative to its parent.
 

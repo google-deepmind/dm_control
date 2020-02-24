@@ -105,19 +105,8 @@ class Walker(composer.Robot):
       ValueError: if `vec_in_world_frame` does not have shape ending with (2,)
         or (3,).
     """
-    vec_in_world_frame = np.asarray(vec_in_world_frame)
-
-    xmat = np.reshape(physics.bind(self.root_body).xmat, (3, 3))
-    # The ordering of the np.dot is such that the transformation holds for any
-    # matrix whose final dimensions are (2,) or (3,).
-    if vec_in_world_frame.shape[-1] == 2:
-      return np.dot(vec_in_world_frame, xmat[:2, :2])
-    elif vec_in_world_frame.shape[-1] == 3:
-      return np.dot(vec_in_world_frame, xmat)
-    else:
-      raise ValueError('`vec_in_world_frame` should have shape with final '
-                       'dimension 2 or 3: got {}'.format(
-                           vec_in_world_frame.shape))
+    return super(Walker, self).global_vector_to_local_frame(
+        physics, vec_in_world_frame)
 
   def transform_xmat_to_egocentric_frame(self, physics, xmat):
     """Transforms another entity's `xmat` into this walker's egocentric frame.
@@ -138,18 +127,7 @@ class Walker(composer.Robot):
     Raises:
       ValueError: if `xmat` does not have shape (3, 3) or (9,).
     """
-    xmat = np.asarray(xmat)
-
-    input_shape = xmat.shape
-    if xmat.shape == (9,):
-      xmat = np.reshape(xmat, (3, 3))
-
-    self_xmat = np.reshape(physics.bind(self.root_body).xmat, (3, 3))
-    if xmat.shape == (3, 3):
-      return np.reshape(np.dot(self_xmat.T, xmat), input_shape)
-    else:
-      raise ValueError('`xmat` should have shape (3, 3) or (9,): got {}'.format(
-          xmat.shape))
+    return super(Walker, self).global_xmat_to_local_frame(physics, xmat)
 
   @abc.abstractproperty
   def root_body(self):

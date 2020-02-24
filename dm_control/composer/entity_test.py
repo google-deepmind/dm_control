@@ -292,6 +292,51 @@ class EntityTest(parameterized.TestCase):
     self.assertEqual(
         list(entities[0].iter_entities(exclude_self=True)), entities[1:])
 
+  def testGlobalVectorToLocalFrame(self):
+    parent = TestEntity()
+    parent.mjcf_model.worldbody.add(
+        'site', xyaxes=[0, 1, 0, -1, 0, 0]).attach(self.entity.mjcf_model)
+    physics = mjcf.Physics.from_mjcf_model(parent.mjcf_model)
+
+    # 3D vectors
+    np.testing.assert_allclose(
+        self.entity.global_vector_to_local_frame(physics, [0, 1, 0]),
+        [1, 0, 0], atol=1e-10)
+    np.testing.assert_allclose(
+        self.entity.global_vector_to_local_frame(physics, [-1, 0, 0]),
+        [0, 1, 0], atol=1e-10)
+    np.testing.assert_allclose(
+        self.entity.global_vector_to_local_frame(physics, [0, 0, 1]),
+        [0, 0, 1], atol=1e-10)
+
+    # 2D vectors; z-component is ignored
+    np.testing.assert_allclose(
+        self.entity.global_vector_to_local_frame(physics, [0, 1]),
+        [1, 0], atol=1e-10)
+    np.testing.assert_allclose(
+        self.entity.global_vector_to_local_frame(physics, [-1, 0]),
+        [0, 1], atol=1e-10)
+
+  def testGlobalMatrixToLocalFrame(self):
+    parent = TestEntity()
+    parent.mjcf_model.worldbody.add(
+        'site', xyaxes=[0, 1, 0, -1, 0, 0]).attach(self.entity.mjcf_model)
+    physics = mjcf.Physics.from_mjcf_model(parent.mjcf_model)
+
+    rotation_atob = np.array([[0, 1, 0], [0, 0, -1], [-1, 0, 0]])
+    ego_rotation_atob = np.array([[0, 0, -1], [0, -1, 0], [-1, 0, 0]])
+
+    np.testing.assert_allclose(
+        self.entity.global_xmat_to_local_frame(physics, rotation_atob),
+        ego_rotation_atob, atol=1e-10)
+
+    flat_rotation_atob = np.reshape(rotation_atob, -1)
+    flat_rotation_ego_atob = np.reshape(ego_rotation_atob, -1)
+    np.testing.assert_allclose(
+        self.entity.global_xmat_to_local_frame(
+            physics, flat_rotation_atob),
+        flat_rotation_ego_atob, atol=1e-10)
+
   @parameterized.parameters(*_param_product(
       position=[None, [1., 0., -1.]],
       quaternion=[None, _FORTYFIVE_DEGREES_ABOUT_X, _NINETY_DEGREES_ABOUT_Z],
