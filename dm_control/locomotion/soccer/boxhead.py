@@ -23,6 +23,7 @@ import os
 
 from dm_control import composer
 from dm_control import mjcf
+from dm_control.composer.observation import observable
 from dm_control.locomotion.walkers import legacy_base
 import numpy as np
 from PIL import Image
@@ -102,6 +103,19 @@ def _asset_png_with_background_rgba_bytes(asset_fname, background_rgba):
   return png_encoding
 
 
+class BoxHeadObservables(legacy_base.WalkerObservables):
+
+  def __init__(self, entity, camera_resolution):
+    self._camera_resolution = camera_resolution
+    super(BoxHeadObservables, self).__init__(entity)
+
+  @composer.observable
+  def egocentric_camera(self):
+    width, height = self._camera_resolution
+    return observable.MJCFCamera(self._entity.egocentric_camera,
+                                 width=width, height=height)
+
+
 class BoxHead(legacy_base.Walker):
   """A rollable and jumpable ball with a head."""
 
@@ -109,6 +123,7 @@ class BoxHead(legacy_base.Walker):
              name='walker',
              marker_rgba=None,
              camera_control=False,
+             camera_resolution=(28, 28),
              roll_gear=-60,
              steer_gear=55,
              walker_id=None,
@@ -121,6 +136,7 @@ class BoxHead(legacy_base.Walker):
         walkers (in multi-agent setting).
       camera_control: If `True`, the walker exposes two additional actuated
         degrees of freedom to control the egocentric camera height and tilt.
+      camera_resolution: egocentric camera rendering resolution.
       roll_gear: gear determining forward acceleration.
       steer_gear: gear determining steering (spinning) torque.
       walker_id: (Optional) An integer in [0-10], this number will be shown on
@@ -176,6 +192,7 @@ class BoxHead(legacy_base.Walker):
 
     self._root_joints = None
     self._camera_control = camera_control
+    self._camera_resolution = camera_resolution
     if not camera_control:
       for name in ('camera_pitch', 'camera_yaw'):
         self._mjcf_root.find('actuator', name).remove()
@@ -188,6 +205,9 @@ class BoxHead(legacy_base.Walker):
     # Initialize previous action.
     self._prev_action = np.zeros(shape=self.action_spec.shape,
                                  dtype=self.action_spec.dtype)
+
+  def _build_observables(self):
+    return BoxHeadObservables(self, camera_resolution=self._camera_resolution)
 
   @property
   def marker_geoms(self):
