@@ -41,7 +41,8 @@
     <light name="light" directional="true" diffuse=".6 .6 .6" pos="0 0 1" specular=".3 .3 .3"/>
     <camera name="fixed" pos="0 0 .5" quat="1 0 0 0"/>
 
-    <geom name="ground" type="plane" pos="0 0 0" size=".21 .21 .1" rgba="0.3 .98 .3 1"/>
+    <geom name="ground" type="plane" pos="0 0 0" size=".21 .21 .1" rgba="0.18 0.545 0.341 1"/>
+    <!-- <geom name="ground" type="plane" pos="0 0 0" size=".21 .21 .1" rgba="0.3 .98 .3 1"/> -->
     <geom name="wall_x" type="plane" pos="-.21 0 .02" zaxis="1 0 0"  size=".02 .21 .02" rgba="1 1 1 1"/>
     <geom name="wall_y" type="plane" pos="0 -.21 .02" zaxis="0 1 0"  size=".21 .02 .02" rgba="1 1 1 1 "/>
     <geom name="wall_neg_x" type="plane" pos=".21 0 .02" zaxis="-1 0 0"  size=".02 .21 .02" rgba="1 1 1 1"/>
