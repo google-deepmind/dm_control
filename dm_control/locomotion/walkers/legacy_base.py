@@ -37,7 +37,10 @@ class Walker(base.Walker):
   """Legacy base class for Walker robots."""
 
   def _build(self, initializer=None):
-    self._initializer = initializer or initializers.UprightInitializer()
+    try:
+      self._initializers = tuple(initializer)
+    except TypeError:
+      self._initializers = (initializer or initializers.UprightInitializer(),)
 
   @property
   def upright_pose(self):
@@ -47,7 +50,8 @@ class Walker(base.Walker):
     return WalkerObservables(self)
 
   def reinitialize_pose(self, physics, random_state):
-    self._initializer.initialize_pose(physics, self, random_state)
+    for initializer in self._initializers:
+      initializer.initialize_pose(physics, self, random_state)
 
   def aliveness(self, physics):
     """A measure of the aliveness of the walker.
