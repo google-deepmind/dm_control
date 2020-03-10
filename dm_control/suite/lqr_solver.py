@@ -23,60 +23,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from absl import logging
 from dm_control.mujoco import wrapper
 import numpy as np
-from six.moves import range
-
-try:
-  import scipy.linalg as sp  # pylint: disable=g-import-not-at-top
-except ImportError:
-  sp = None
-
-
-def _solve_dare(a, b, q, r):
-  """Solves the Discrete-time Algebraic Riccati Equation (DARE) by iteration.
-
-  Algebraic Riccati Equation:
-  ```none
-  P_{t-1} = Q + A' * P_{t} * A -
-            A' * P_{t} * B * (R + B' * P_{t} * B)^{-1} * B' * P_{t} * A
-  ```
-
-  Args:
-    a: A 2 dimensional numpy array, transition matrix A.
-    b: A 2 dimensional numpy array, control matrix B.
-    q: A 2 dimensional numpy array, symmetric positive definite cost matrix.
-    r: A 2 dimensional numpy array, symmetric positive definite cost matrix
-
-  Returns:
-    A numpy array, a real symmetric matrix P which is the solution to DARE.
-
-  Raises:
-    RuntimeError: If the computed P matrix is not symmetric and
-      positive-definite.
-  """
-  p = np.eye(len(a))
-  for _ in range(1000000):
-    a_p = a.T.dot(p)  # A' * P_t
-    a_p_b = np.dot(a_p, b)  # A' * P_t * B
-    # Algebraic Riccati Equation.
-    p_next = q + np.dot(a_p, a) - a_p_b.dot(
-        np.linalg.solve(b.T.dot(p.dot(b)) + r, a_p_b.T))
-    p_next += p_next.T
-    p_next *= .5
-    if np.abs(p - p_next).max() < 1e-12:
-      break
-    p = p_next
-  else:
-    logging.warning('DARE solver did not converge')
-  try:
-    # Check that the result is symmetric and positive-definite.
-    np.linalg.cholesky(p_next)
-  except np.linalg.LinAlgError:
-    raise RuntimeError('ARE solver failed: P matrix is not symmetric and '
-                       'positive-definite.')
-  return p_next
+import scipy.linalg as scipy_linalg
 
 
 def solve(env):
@@ -124,15 +73,8 @@ def solve(env):
   # Control cost Hessian r.
   r = env.task.control_cost_coef * np.eye(m)
 
-  if sp:
-    # Use scipy's faster DARE solver if available.
-    solve_dare = sp.solve_discrete_are
-  else:
-    # Otherwise fall back on a slower internal implementation.
-    solve_dare = _solve_dare
-
   # Solve the discrete algebraic Riccati equation.
-  p = solve_dare(a, b, q, r)
+  p = scipy_linalg.solve_discrete_are(a, b, q, r)
   k = -np.linalg.solve(b.T.dot(p.dot(b)) + r, b.T.dot(p.dot(a)))
 
   # Under optimal policy, state tends to 0 like beta^n_timesteps

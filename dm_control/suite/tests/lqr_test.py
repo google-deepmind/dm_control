@@ -20,17 +20,13 @@ from __future__ import division
 from __future__ import print_function
 
 import  math
-import unittest
 
 # Internal dependencies.
 from absl import logging
-
 from absl.testing import absltest
 from absl.testing import parameterized
-
 from dm_control.suite import lqr
 from dm_control.suite import lqr_solver
-
 import numpy as np
 from six.moves import range
 
@@ -43,22 +39,6 @@ class LqrTest(parameterized.TestCase):
   def test_lqr_optimal_policy(self, make_env):
     env = make_env()
     p, k, beta = lqr_solver.solve(env)
-    self.assertPolicyisOptimal(env, p, k, beta)
-
-  @parameterized.named_parameters(
-      ('lqr_2_1', lqr.lqr_2_1),
-      ('lqr_6_2', lqr.lqr_6_2))
-  @unittest.skipUnless(
-      condition=lqr_solver.sp,
-      reason='scipy is not available, so non-scipy DARE solver is the default.')
-  def test_lqr_optimal_policy_no_scipy(self, make_env):
-    env = make_env()
-    old_sp = lqr_solver.sp
-    try:
-      lqr_solver.sp = None  # Force the solver to use the non-scipy code path.
-      p, k, beta = lqr_solver.solve(env)
-    finally:
-      lqr_solver.sp = old_sp
     self.assertPolicyisOptimal(env, p, k, beta)
 
   def assertPolicyisOptimal(self, env, p, k, beta):
