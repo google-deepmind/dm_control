@@ -221,8 +221,26 @@ class MJCFCamera(base.Observable):
 
   @property
   def array_spec(self):
-    return specs.Array(
-        shape=(self._height, self._width, self._n_channels), dtype=self._dtype)
+    if self._depth:
+      # Note that these are loose bounds - the exact bounds are given by:
+      # extent*(znear, zfar), however the values of these parameters are unknown
+      # since we don't have access to the compiled model within this method.
+      minimum = 0.0
+      maximum = np.inf
+    elif self._segmentation:
+      # -1 denotes background pixels. See dm_control.mujoco.Camera.render for
+      # further details.
+      minimum = -1
+      maximum = np.iinfo(self._dtype).max
+    else:
+      minimum = np.iinfo(self._dtype).min
+      maximum = np.iinfo(self._dtype).max
+
+    return specs.BoundedArray(
+        minimum=minimum,
+        maximum=maximum,
+        shape=(self._height, self._width, self._n_channels),
+        dtype=self._dtype)
 
   def _callable(self, physics):
 

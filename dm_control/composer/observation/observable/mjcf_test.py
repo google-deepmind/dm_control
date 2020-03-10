@@ -22,8 +22,10 @@ from __future__ import print_function
 # Internal dependencies.
 
 from absl.testing import absltest
+from absl.testing import parameterized
 from dm_control import mjcf
 from dm_control.composer.observation.observable import mjcf as mjcf_observable
+from dm_env import specs
 import numpy as np
 import six
 
@@ -42,7 +44,7 @@ _MJCF = """
 """
 
 
-class ObservableTest(absltest.TestCase):
+class ObservableTest(parameterized.TestCase):
 
   def testMJCFFeature(self):
     mjcf_root = mjcf.from_xml_string(_MJCF)
@@ -131,6 +133,28 @@ class ObservableTest(absltest.TestCase):
       mjcf_observable.MJCFCamera([camera])
     with six.assertRaisesRegex(self, ValueError, 'expected a <camera>'):
       mjcf_observable.MJCFCamera(mjcf_root.find('body', 'body'))
+
+  @parameterized.parameters(
+      dict(camera_type='rgb', channels=3, dtype=np.uint8,
+           minimum=0, maximum=255),
+      dict(camera_type='depth', channels=1, dtype=np.float32,
+           minimum=0., maximum=np.inf),
+      dict(camera_type='segmentation', channels=2, dtype=np.int32,
+           minimum=-1, maximum=np.iinfo(np.int32).max),
+  )
+  def testMJCFCameraSpecs(self, camera_type, channels, dtype, minimum, maximum):
+    width = 640
+    height = 480
+    shape = (height, width, channels)
+    expected_spec = specs.BoundedArray(
+        shape=shape, dtype=dtype, minimum=minimum, maximum=maximum)
+    mjcf_root = mjcf.from_xml_string(_MJCF)
+    camera = mjcf_root.find('camera', 'world')
+    observable_kwargs = {} if camera_type == 'rgb' else {camera_type: True}
+    camera_observable = mjcf_observable.MJCFCamera(
+        mjcf_element=camera, height=height, width=width, update_interval=7,
+        **observable_kwargs)
+    self.assertEqual(camera_observable.array_spec, expected_spec)
 
   def testMJCFSegCamera(self):
     mjcf_root = mjcf.from_xml_string(_MJCF)
