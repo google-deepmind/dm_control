@@ -32,7 +32,7 @@ _TOP_CAMERA_DISTANCE = 100.
 _WALL_HEIGHT = 10.
 _WALL_THICKNESS = .5
 _SIDE_WIDTH = 32. / 6.
-_GROUND_GEOM_HEIGHT = 0.5
+_GROUND_GEOM_GRID_RATIO = 1. / 100  # Grid size for lighting.
 _FIELD_BOX_CONTACT_BIT = 1 << 7  # Use a higher bit to prevent potential clash.
 
 _DEFAULT_PITCH_SIZE = (12, 9)
@@ -131,7 +131,7 @@ class Pitch(composer.Arena):
         'geom',
         type='plane',
         material=self._ground_material,
-        size=list(self._size) + [_GROUND_GEOM_HEIGHT])
+        size=list(self._size) + [max(self._size) * _GROUND_GEOM_GRID_RATIO])
 
     # Build walls.
     self._walls = []
@@ -323,7 +323,8 @@ class RandomizedPitch(Pitch):
                                                self._top_camera_distance)
 
     # Resize ground geom size.
-    self._ground_geom.size = list(self._size) + [_GROUND_GEOM_HEIGHT]
+    self._ground_geom.size = list(
+        self._size) + [max(self._size) * _GROUND_GEOM_GRID_RATIO]
 
     # Resize and reposition walls and roof geoms.
     for i, (wall_pos, _) in enumerate(_wall_pos_xyaxes(self._size)):
