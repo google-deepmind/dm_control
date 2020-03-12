@@ -114,13 +114,23 @@ class CoreObservablesAdder(ObservablesAdder):
     # Origin callable in xpos, xvel for `player`.
     xpos_xyz_callable = lambda p: p.bind(player.walker.root_body).xpos
     xvel_xyz_callable = lambda p: p.bind(player.walker.root_body).cvel[3:]
-
     # Egocentric observation of other's position, orientation and
     # linear velocities.
     def _cvel_observation(physics, other=other):
       # Velocitmeter reads in local frame but we need world frame observable
       # for egocentric transformation.
       return physics.bind(other.walker.root_body).cvel[3:]
+
+    def _egocentric_end_effectors_xpos(physics, other=other):
+      origin_xpos = xpos_xyz_callable(physics)
+      egocentric_end_effectors_xpos = []
+      for end_effector_body in other.walker.end_effectors:
+        xpos = physics.bind(end_effector_body).xpos
+        delta = xpos - origin_xpos
+        ego_xpos = player.walker.transform_vec_to_egocentric_frame(
+            physics, delta)
+        egocentric_end_effectors_xpos.append(ego_xpos)
+      return np.concatenate(egocentric_end_effectors_xpos)
 
     player.walker.observables.add_egocentric_vector(
         '{}_ego_linear_velocity'.format(prefix),
@@ -133,6 +143,11 @@ class CoreObservablesAdder(ObservablesAdder):
     player.walker.observables.add_egocentric_xmat(
         '{}_ego_orientation'.format(prefix),
         other.walker.observables.orientation)
+
+    # Adds end effectors of the other agents in the player's egocentric frame.
+    player.walker.observables.add_observable(
+        '{}_ego_end_effectors_pos'.format(prefix),
+        base_observable.Generic(_egocentric_end_effectors_xpos))
 
     # Adds end effectors of the other agents in the other's egocentric frame.
     # A is seeing B's hand extended to B's right.
