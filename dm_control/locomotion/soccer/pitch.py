@@ -151,7 +151,7 @@ class Pitch(composer.Arena):
     self._fb_offset = 0.5 if field_box else 0.0
     goal_size = self._get_goal_size()
     self._home_goal = props.PositionDetector(
-        pos=(-self._size[0] + goal_size[0] - self._fb_offset, 0,
+        pos=(-self._size[0] + goal_size[0] + self._fb_offset, 0,
              goal_size[2]),
         size=goal_size,
         rgba=(0, 0, 1, 0.5),
@@ -160,7 +160,7 @@ class Pitch(composer.Arena):
     self.attach(self._home_goal)
 
     self._away_goal = props.PositionDetector(
-        pos=(self._size[0] - goal_size[0] + self._fb_offset, 0, goal_size[2]),
+        pos=(self._size[0] - goal_size[0] - self._fb_offset, 0, goal_size[2]),
         size=goal_size,
         rgba=(1, 0, 0, 0.5),
         visible=True,
