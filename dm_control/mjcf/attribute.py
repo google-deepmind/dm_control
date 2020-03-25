@@ -31,6 +31,8 @@ from dm_control.mujoco.wrapper import util
 import numpy as np
 import six
 
+# Copybara placeholder for internal file handling dependency.
+
 from dm_control.utils import io as resources
 
 
