@@ -24,6 +24,7 @@ from dm_control.mjcf.constants import PREFIX_SEPARATOR
 from dm_control.mjcf.element import RootElement
 
 from dm_control.mjcf.export_with_assets import export_with_assets
+from dm_control.mjcf.export_with_assets_as_zip import export_with_assets_as_zip
 
 from dm_control.mjcf.parser import from_file
 from dm_control.mjcf.parser import from_path
