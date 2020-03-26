@@ -1,0 +1,153 @@
+<!--
+Copyright (c) 2020 Philipp Moritz, The dm_control Authors
+
+Use of this source code is governed by an MIT-style
+license that can be found in the LICENSE file or at
+https://opensource.org/licenses/MIT.
+-->
+<mujoco model="ant">
+  <default>
+    <default class="rangefinder">
+        <site type="capsule" size=".05 .5" rgba="1 0 0 .4" group="4"/>
+    </default>
+  </default>
+
+  <worldbody>
+    <camera name="sideon" pos="0 -10 5" fovy="45" mode="targetbody" target="torso" />
+    <camera name="float_far"  pos="-4 0 2" xyaxes="0 -1 0 .5 0 1" mode="trackcom" fovy="90"/>
+    <body name="torso">
+      <camera name="floating"  pos="-2 0 1" xyaxes="0 -1 0 .5 0 1" mode="trackcom" fovy="90"/>
+      <camera name="egocentric"  pos=".25 0 .11" xyaxes="0 -1 0 0 0 1" fovy="90" />
+
+      <site name="torso_touch" type="box" size="0.26 0.26 0.26" pos="0 0 0" rgba="0 0 1 1" group="4"/>
+      <geom name="torso_geom" type="sphere" size="0.25" pos="0 0 0" density="100.0" condim="3" friction="1 0.5 0.5" solref=".02 1" solimp="0 .8 .01" rgba="0.8 0.6 0.4 1"/>
+      <site name="torso_site" pos="0 0 0" size="0.05" rgba="1 0 0 1"/>
+
+      <site name="rf_xp" class="rangefinder" pos="0.25 0 0.11" zaxis="1 0 0"/>
+      <site name="rf_xn" class="rangefinder" pos="-0.25 0 0.11" zaxis="-1 0 0"/>
+      <site name="rf_yp" class="rangefinder" pos="0 0.25 0.11"  zaxis="0 1 0"/>
+      <site name="rf_yn" class="rangefinder" pos="0 -0.25 0.11"  zaxis="0 -1 0"/>
+      <site name="rf_xpyp" class="rangefinder" pos="0.25 0.25 0.11" zaxis="1 1 0"/>
+      <site name="rf_xpyn" class="rangefinder" pos="0.25 -0.25 0.11"  zaxis="1 -1 0"/>
+      <site name="rf_xnyn" class="rangefinder" pos="-0.25 -0.25 0.11" zaxis="-1 -1 0"/>
+      <site name="rf_xnyp" class="rangefinder" pos="-0.25 0.25 0.11" zaxis="-1 1 0"/>
+
+      <!-- sites that visualize the x-y axis of the ant body, good for debugging -->
+      <site name="x_pos" type="capsule" pos="0.5 0 0" size=".05 .5" zaxis="1 0 0" rgba="1 0 0 1" group="5"/>
+      <site name="x_neg" type="capsule" pos="-0.5 0 0" size=".05 .5"  zaxis="-1 0 0" rgba="0 0 1 1"  group="5"/>
+      <site name="y_pos" type="capsule" pos="0 0.5 0" size=".05 .5"  zaxis="0 1 0" rgba="1 1 1 1" group="5"/>
+      <site name="y_neg" type="capsule" pos="0 -0.5 0" size=".05 .5"  zaxis="0 -1 0" rgba="0 0 0 1" group="5"/>
+      <site name="port_site" pos=".5 0 0" size="0.5" rgba="1 0 0 1" group="5"/>
+      <site name="starboard_site" pos="-.5 0 0" size="0.5" rgba="0 1 0 1" group="5"/>
+
+      <site name="rc1" type="sphere" pos="0 0 0" size=".1" rgba="1 1 1 1"/>
+      <site name="rc2" type="sphere" pos="0 0 0" size=".1" rgba="1 1 1 1"/>
+      <site name="rc3" type="sphere" pos="0 0 0" size=".1" rgba="1 1 1 1"/>
+      <site name="rc4" type="sphere" pos="0 0 0" size=".1" rgba="1 1 1 1"/>
+      <site name="rc5" type="sphere" pos="0 0 0" size=".1" rgba="1 1 1 1"/>
+      <site name="rc6" type="sphere" pos="0 0 0" size=".1" rgba="1 1 1 1"/>
+      <site name="rc7" type="sphere" pos="0 0 0" size=".1" rgba="1 1 1 1"/>
+      <site name="rc8" type="sphere" pos="0 0 0" size=".1" rgba="1 1 1 1"/>
+      <site name="rc9" type="sphere" pos="0 0 0" size=".1" rgba="1 1 1 1"/>
+      <site name="rc10" type="sphere" pos="0 0 0" size=".1" rgba="1 1 1 1"/>
+
+      <body name="front_left_leg" pos="0 0 0">
+        <geom name="front_left_aux_geom" type="capsule" size="0.08" fromto="0.0 0.0 0.0 0.2 0.2 0.0" condim="3" friction="1 0.5 0.5" solref=".02 1" solimp="0 .8 .01" rgba="0.8 0.6 0.4 1" density="50.0"/>
+        <body name="front_left_aux" pos="0.2 0.2 0">
+          <joint name="front_left_hip" type="hinge" pos="0.0 0.0 0.0" axis="0 0 1" range="-0.5235987755982988 0.5235987755982988" limited="true" armature="1" damping="1" stiffness="1"  solreflimit=".04 1" solimplimit="0 .8 .03"/>
+          <geom name="front_left_leg_geom" type="capsule" size="0.08" fromto="0.0 0.0 0.0 0.2 0.2 0.0" condim="3" friction="1 0.5 0.5" solref=".02 1" solimp="0 .8 .01" rgba="0.8 0.6 0.4 1" density="50.0" />
+          <site name="front_left_leg_touch" type="box" pos="0.1 0.1 0" size="0.09 0.09 0.24" zaxis="0.2 0.2 0" rgba="1 1 0 0"/>
+          <body name="front_left_foot" pos="0.2 0.2 0" quat="0.98480775301220802 -0.33428158105097677 0.33428158105097677 0">
+            <joint name="front_left_ankle" type="hinge" pos="0.0 0.0 0.0" axis="1 -1 0" range="-0.3490658503988659 0.3490658503988659" limited="true" armature="1" damping="1" stiffness="1" solreflimit=".04 1" solimplimit="0 .8 .03"/>
+            <geom name="front_left_ankle_geom" type="capsule" size="0.08" fromto="0.0 0.0 0.0 0.4 0.4 0.0" condim="3" friction="1 0.5 0.5" solref=".02 1" solimp="0 .8 .01" rgba="0.8 0.6 0.4 1" density="50.0"/>
+            <site name="front_left_ankle_touch" type="box" pos="0.2 0.2 0" size="0.1 0.1 0.45" zaxis="0.2 0.2 0.0" rgba="1 1 0 0" />
+          </body>
+        </body>
+      </body>
+
+      <body name="front_right_leg" pos="0 0 0">
+        <geom name="front_right_aux_geom" type="capsule" size="0.08" fromto="0.0 0.0 0.0 0.2 -0.2 0.0" condim="3" friction="1 0.5 0.5" solref=".02 1" solimp="0 .8 .01" rgba="0.8 0.6 0.4 1" density="50.0"/>
+        <body name="front_right_aux" pos="0.2 -0.2 0">
+          <joint name="front_right_hip" type="hinge" pos="0.0 0.0 0.0" axis="0 0 1" range="-0.5235987755982988 0.5235987755982988" limited="true" armature="1" damping="1" stiffness="1" solreflimit=".04 1" solimplimit="0 .8 .03"/>
+          <geom name="front_right_leg_geom" type="capsule" size="0.08" fromto="0.0 0.0 0.0 0.2 -0.2 0.0" condim="3" friction="1 0.5 0.5" solref=".02 1" solimp="0 .8 .01" rgba="0.8 0.6 0.4 1" density="50.0"/>
+          <site name="front_right_leg_touch" type="box" pos="0.1 -0.1 0" size="0.09 0.09 0.24" zaxis="0.2 -0.2 0.0" rgba="0 0 1 0"/>
+          <body name="front_right_foot" pos="0.2 -0.2 0" quat="0.98480775301220802 0.33428158105097677 0.33428158105097677 0">
+            <joint name="front_right_ankle" type="hinge" pos="0.0 0.0 0.0" axis="-1 -1 0" range="-0.3490658503988659 0.3490658503988659" limited="true" armature="1" damping="1" stiffness="1" solreflimit=".04 1" solimplimit="0 .8 .03"/>
+            <geom name="front_right_ankle_geom" type="capsule" size="0.08" fromto="0.0 0.0 0.0 0.4 -0.4 0.0" condim="3" friction="1 0.5 0.5" solref=".02 1" solimp="0 .8 .01" rgba="0.8 0.6 0.4 1" density="50.0"/>
+            <site name="front_right_ankle_touch" type="box" pos="0.2 -0.2 0" size="0.09 0.09 0.39" zaxis="0.2 -0.2 0.0" rgba="0 0 1 0"/>
+          </body>
+        </body>
+      </body>
+
+      <body name="back_right_leg" pos="0 0 0">
+        <geom name="back_right_aux_geom" type="capsule" size="0.08" fromto="0.0 0.0 0.0 -0.2 -0.2 0.0" condim="3" friction="1 0.5 0.5" solref=".02 1" solimp="0 .8 .01" rgba="0.8 0.6 0.4 1" density="50.0"/>
+        <body name="back_right_aux" pos="-0.2 -0.2 0">
+          <joint name="back_right_hip" type="hinge" pos="0.0 0.0 0.0" axis="0 0 1" range="-0.5235987755982988 0.5235987755982988" limited="true" armature="1" damping="1" stiffness="1" solreflimit=".04 1" solimplimit="0 .8 .03"/>
+          <geom name="back_right_leg_geom" type="capsule" size="0.08" fromto="0.0 0.0 0.0 -0.2 -0.2 0.0" condim="3" friction="1 0.5 0.5" solref=".02 1" solimp="0 .8 .01" rgba="0.8 0.6 0.4 1" density="50.0"/>
+          <site name="back_right_leg_touch" type="box" pos="-0.1 -0.1 0" size="0.09 0.09 0.24" zaxis="-0.2 -0.2 0.0" rgba="0 0 1 0"/>
+          <body name="back_right_foot" pos="-0.2 -0.2 0" quat="0.98480775301220802 0.33428158105097677 -0.33428158105097677 0">
+            <joint name="back_right_ankle" type="hinge" pos="0.0 0.0 0.0" axis="-1 1 0" range="-0.3490658503988659 0.3490658503988659" limited="true" armature="1" damping="1" stiffness="1" solreflimit=".04 1" solimplimit="0 .8 .03"/>
+            <geom name="back_right_ankle_geom" type="capsule" size="0.08" fromto="0.0 0.0 0.0 -0.4 -0.4 0.0" condim="3" friction="1 0.5 0.5" solref=".02 1" solimp="0 .8 .01" rgba="0.8 0.6 0.4 1" density="50.0"/>
+            <site name="back_right_ankle_touch" type="box" pos="-0.2 -0.2 0" size="0.09 0.09 0.39" zaxis="-0.2 -0.2 0.0" rgba="0 0 1 0"/>
+          </body>
+        </body>
+      </body>
+
+      <body name="back_left_leg" pos="0 0 0">
+        <geom name="back_left_aux_geom" type="capsule" size="0.08" fromto="0.0 0.0 0.0 -0.2 0.2 0.0" condim="3" friction="1 0.5 0.5" solref=".02 1" solimp="0 .8 .01" rgba="0.8 0.6 0.4 1" density="50.0" />
+        <body name="back_left_aux" pos="-0.2 0.2 0">
+          <joint name="back_left_hip" type="hinge" pos="0.0 0.0 0.0" axis="0 0 1" range="-0.5235987755982988 0.5235987755982988" limited="true" armature="1" damping="1" stiffness="1" solreflimit=".04 1" solimplimit="0 .8 .03"/>
+          <geom name="back_left_leg_geom" type="capsule" size="0.08" fromto="0.0 0.0 0.0 -0.2 0.2 0.0" condim="3" friction="1 0.5 0.5" solref=".02 1" solimp="0 .8 .01" rgba="0.8 0.6 0.4 1" density="50.0"/>
+          <site name="back_left_leg_touch" type="box" pos="-0.1 0.1 0" size="0.09 0.09 0.24" zaxis="-0.2 0.2 0.0" rgba="0 0 1 0"/>
+          <body name="back_left_foot" pos="-0.2 0.2 0" quat="0.98480775301220802 -0.33428158105097677 -0.33428158105097677 0">
+            <joint name="back_left_ankle" type="hinge" pos="0.0 0.0 0.0" axis="1 1 0" range="-0.3490658503988659 0.3490658503988659"  limited="true" armature="1" damping="1" stiffness="1" solreflimit=".04 1" solimplimit="0 .8 .03"/>
+            <geom name="back_left_ankle_geom" type="capsule" size="0.08" fromto="0.0 0.0 0.0 -0.4 0.4 0.0" condim="3" friction="1 0.5 0.5" solref=".02 1" solimp="0 .8 .01" rgba="0.8 0.6 0.4 1" density="50.0"/>
+            <site name="back_left_ankle_touch" type="box" pos="-0.2 0.2 0" size="0.09 0.09 0.39" zaxis="-0.2 0.2 0.0" rgba="0 0 1 0"/>
+          </body>
+        </body>
+      </body>
+
+    </body>
+  </worldbody>
+
+  <actuator>
+    <motor name="front_left_hip"   joint="front_left_hip" ctrlrange="-1.0 1.0" ctrllimited="true" gear="75"/>
+    <motor name="front_left_ankle" joint="front_left_ankle" ctrlrange="-1.0 1.0" ctrllimited="true" gear="75"/>
+    <motor name="front_right_hip"   joint="front_right_hip" ctrlrange="-1.0 1.0" ctrllimited="true" gear="75"/>
+    <motor name="front_right_ankle" joint="front_right_ankle" ctrlrange="-1.0 1.0" ctrllimited="true" gear="75"/>
+    <motor name="back_right_hip"   joint="back_right_hip" ctrlrange="-1.0 1.0" ctrllimited="true" gear="75"/>
+    <motor name="back_right_ankle" joint="back_right_ankle" ctrlrange="-1.0 1.0" ctrllimited="true" gear="75"/>
+    <motor name="back_left_hip"   joint="back_left_hip" ctrlrange="-1.0 1.0" ctrllimited="true" gear="75"/>
+    <motor name="back_left_ankle" joint="back_left_ankle" ctrlrange="-1.0 1.0" ctrllimited="true" gear="75"/>
+  </actuator>
+
+  <sensor>
+    <touch name="torso_touch" site="torso_touch"/>
+    <touch name="front_left_leg_touch" site="front_left_leg_touch"/>
+    <touch name="front_left_ankle_touch" site="front_left_ankle_touch"/>
+    <touch name="back_left_leg_touch" site="back_left_leg_touch"/>
+    <touch name="back_left_ankle_touch" site="back_left_ankle_touch"/>
+    <touch name="back_right_leg_touch" site="back_right_leg_touch"/>
+    <touch name="back_right_ankle_touch" site="back_right_ankle_touch"/>
+    <touch name="front_right_leg_touch" site="front_right_leg_touch"/>
+    <touch name="front_right_ankle_touch" site="front_right_ankle_touch"/>
+    <velocimeter name="torso_vel" site="torso_site"/>
+    <gyro name="torso_gyro" site="torso_site"/>
+    <accelerometer name="torso_accel" site="torso_site"/>
+    <rangefinder name="rf_xp" site="rf_xp"/>
+    <rangefinder name="rf_yp" site="rf_yp"/>
+    <rangefinder name="rf_xn" site="rf_xn"/>
+    <rangefinder name="rf_yn" site="rf_yn"/>
+    <rangefinder name="rf_xpyp" site="rf_xpyp"/>
+    <rangefinder name="rf_xpyn" site="rf_xpyn"/>
+    <rangefinder name="rf_xnyp" site="rf_xnyp"/>
+    <rangefinder name="rf_xnyn" site="rf_xnyn"/>
+  </sensor>
+
+  <contact>
+    <exclude body1="torso" body2="front_left_aux"/>
+    <exclude body1="torso" body2="front_right_aux"/>
+    <exclude body1="torso" body2="back_right_aux"/>
+    <exclude body1="torso" body2="back_left_aux"/>
+  </contact>
+</mujoco>
