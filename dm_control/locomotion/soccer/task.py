@@ -1,3 +1,5 @@
+# Lint as: python3
+#
 # Copyright 2019 The dm_control Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,16 +42,19 @@ def _disable_geom_contacts(entities):
 class Task(composer.Task):
   """A task where two teams of walkers play soccer."""
 
-  def __init__(self,
-               players,
-               arena,
-               ball=None,
-               initializer=None,
-               observables=None,
-               disable_walker_contacts=False,
-               nconmax_per_player=200,
-               njmax_per_player=200,
-               control_timestep=0.025):
+  def __init__(
+      self,
+      players,
+      arena,
+      ball=None,
+      initializer=None,
+      observables=None,
+      disable_walker_contacts=False,
+      nconmax_per_player=200,
+      njmax_per_player=200,
+      control_timestep=0.025,
+      tracking_cameras=(),
+  ):
     """Construct an instance of soccer.Task.
 
     This task implements the high-level game logic of multi-agent MuJoCo soccer.
@@ -77,6 +82,8 @@ class Task(composer.Task):
         player. It may be necessary to increase this value if you encounter
         errors due to `mjWARN_CNSTRFULL`.
       control_timestep: control timestep of the agent.
+      tracking_cameras: a sequence of `camera.MultiplayerTrackingCamera`
+        instances to track the players and ball.
     """
     self.arena = arena
     self.players = players
@@ -99,6 +106,8 @@ class Task(composer.Task):
       # Add per-walkers observables.
       self._observables(self, player)
 
+    self._tracking_cameras = tracking_cameras
+
     self.set_timesteps(
         physics_timestep=0.005, control_timestep=control_timestep)
     self.root_entity.mjcf_model.size.nconmax = nconmax_per_player * len(players)
@@ -120,12 +129,33 @@ class Task(composer.Task):
         physics, velocity=np.zeros(3), angular_velocity=np.zeros(3))
     ball.initialize_entity_trackers()
 
+  def _tracked_entity_positions(self, physics):
+    """Return a list of the positions of the ball and all players."""
+    ball_pos, unused_ball_quat = self.ball.get_pose(physics)
+    entity_positions = [ball_pos]
+    for player in self.players:
+      walker_pos, unused_walker_quat = player.walker.get_pose(physics)
+      entity_positions.append(walker_pos)
+    return entity_positions
+
+  def after_compile(self, physics, random_state):
+    super(Task, self).after_compile(physics, random_state)
+    for camera in self._tracking_cameras:
+      camera.after_compile(physics)
+
+  def after_step(self, physics, random_state):
+    super(Task, self).after_step(physics, random_state)
+    for camera in self._tracking_cameras:
+      camera.after_step(self._tracked_entity_positions(physics))
+
   def initialize_episode_mjcf(self, random_state):
     self.arena.initialize_episode_mjcf(random_state)
 
   def initialize_episode(self, physics, random_state):
     self.arena.initialize_episode(physics, random_state)
     self._initializer(self, physics, random_state)
+    for camera in self._tracking_cameras:
+      camera.initialize_episode(self._tracked_entity_positions(physics))
 
   @property
   def root_entity(self):
