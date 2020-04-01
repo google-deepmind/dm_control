@@ -77,7 +77,7 @@ class MultiplayerTrackingCamera(object):
   def after_compile(self, physics):
     """Instantiate the camera and ensure rendering buffer is large enough."""
     buffer_height = max(self._height, physics.model.vis.global_.offheight)
-    buffer_width = max(self._height, physics.model.vis.global_.offwidth)
+    buffer_width = max(self._width, physics.model.vis.global_.offwidth)
     physics.model.vis.global_.offheight = buffer_height
     physics.model.vis.global_.offwidth = buffer_width
     self._camera = engine.MovableCamera(
