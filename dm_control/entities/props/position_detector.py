@@ -23,7 +23,7 @@ from dm_control import composer
 from dm_control import mjcf
 import numpy as np
 
-_RENDERED_HEIGHT_IN_2D_MODE = 0.1
+_RENDERED_HEIGHT_IN_2D_MODE = 0.01
 
 
 def _ensure_3d(pos):
@@ -62,7 +62,8 @@ class PositionDetector(composer.Entity):
              size,
              inverted=False,
              visible=False,
-             rgba=(1, 0, 0, 0.25),
+             rgba=(1, 1, 1, 1),
+             material=None,
              detected_rgba=(0, 1, 0, 0.25),
              name='position_detector'):
     """Builds the detector.
@@ -81,6 +82,7 @@ class PositionDetector(composer.Entity):
         but can be toggled on (e.g. in `dm_control.viewer`) for debugging
         purposes.
       rgba: (optional) The color to render when nothing is detected.
+      material: (optional) The material of the position detector.
       detected_rgba: (optional) The color to render when an entity is detected.
       name: (optional) XML element name of this position detector.
 
@@ -114,7 +116,7 @@ class PositionDetector(composer.Entity):
     self._mjcf_root = mjcf.RootElement(model=name)
     self._site = self._mjcf_root.worldbody.add(
         'site', name='detection_zone', type='box',
-        pos=render_pos, size=render_size, rgba=self._rgba)
+        pos=render_pos, size=render_size, rgba=self._rgba, material=material)
     self._lower_site = self._mjcf_root.worldbody.add(
         'site', name='lower', pos=self._lower_3d, size=[0.05],
         rgba=self._rgba)

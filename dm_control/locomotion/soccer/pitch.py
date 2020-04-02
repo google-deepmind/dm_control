@@ -19,12 +19,25 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import os
+
 from absl import logging
 from dm_control import composer
+from dm_control import mjcf
 from dm_control.composer.variation import distributions
 from dm_control.entities import props
 from dm_control.locomotion.soccer import team
 import numpy as np
+
+from dm_control.utils import io as resources
+
+_ASSETS_PATH = os.path.join(os.path.dirname(__file__), 'assets', 'pitch')
+
+
+def _get_texture(name):
+  contents = resources.GetResource(
+      os.path.join(_ASSETS_PATH, '{}.png'.format(name)))
+  return mjcf.Asset(contents, '.png')
 
 
 _TOP_CAMERA_Y_PADDING_FACTOR = 1.1
@@ -168,11 +181,19 @@ class Pitch(composer.Arena):
     self.attach(self._away_goal)
 
     # Build inverted field position detectors.
+    self._field_texture = self._mjcf_root.asset.add(
+        'texture',
+        type='2d',
+        file=_get_texture('pitch_nologo_s'),
+        name='fieldplane')
+    self._field_material = self._mjcf_root.asset.add(
+        'material', name='fieldplane', texture=self._field_texture)
+
     self._field = props.PositionDetector(
         pos=(0, 0),
         size=(self._size[0] - 2 * goal_size[0],
               self._size[1] - 2 * goal_size[0]),
-        rgba=(1, 0, 0, 0.1),
+        material=self._field_material,
         inverted=True,
         visible=True,
         name='field')
