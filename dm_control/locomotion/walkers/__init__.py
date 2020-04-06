@@ -15,4 +15,5 @@
 """Walkers for Locomotion tasks."""
 
 from dm_control.locomotion.walkers.ant import Ant
+from dm_control.locomotion.walkers.cmu_humanoid import CMUHumanoidPositionControlled
 from dm_control.locomotion.walkers.rodent import Rat
