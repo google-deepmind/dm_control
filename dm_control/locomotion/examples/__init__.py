@@ -12,3 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+"""Walkers for Locomotion tasks."""
+
+from dm_control.locomotion.walkers.cmu_humanoid import CMUHumanoid
+from dm_control.locomotion.walkers.cmu_humanoid import CMUHumanoidPositionControlled
+from dm_control.locomotion.walkers.cmu_humanoid import CMUHumanoidPositionControlledV2020
