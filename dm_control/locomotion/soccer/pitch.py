@@ -123,6 +123,17 @@ class Pitch(composer.Arena):
     # Ensure close up geoms are rendered by egocentric cameras.
     self._mjcf_root.visual.map.znear = 0.0005
 
+    # Add skybox.
+    self._mjcf_root.asset.add(
+        'texture',
+        name='skybox',
+        type='skybox',
+        builtin='gradient',
+        rgb1=(.7, .9, .9),
+        rgb2=(.1, .2, .4),
+        width=400,
+        height=400)
+
     # Build groundplane.
     if len(self._size) != 2:
       raise ValueError('`size` should be a sequence of length 2: got {!r}'
