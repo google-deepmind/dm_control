@@ -101,12 +101,17 @@ class UniformChoice(Distribution):
 
 
 class UniformPointOnSphere(base.Variation):
+  """Samples a point on the unit sphere, i.e. a 3D vector with norm 1."""
   __slots__ = ()
+
+  def __init__(self, single_sample=False):
+    self._single_sample = single_sample
 
   def __call__(self, initial_value=None,
                current_value=None, random_state=None):
     random_state = random_state or np.random
-    size = 3 if initial_value is None else np.append(np.shape(initial_value), 3)
+    size = (3 if self._single_sample or initial_value is None  # pylint: disable=g-long-ternary
+            else np.append(np.shape(initial_value), 3))
     axis = random_state.normal(size=size)
     axis /= np.linalg.norm(axis, axis=-1, keepdims=True)
     return axis
