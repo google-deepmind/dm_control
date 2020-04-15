@@ -286,6 +286,21 @@ class BoxHead(legacy_base.Walker):
           1 - 2 * (quaternion[2] ** 2 + quaternion[3] ** 2))
       physics.bind(self._mjcf_root.find('joint', 'steer')).qpos = z_angle
 
+  def set_velocity(self, physics, velocity=None, angular_velocity=None):
+    if velocity is not None:
+      if self._root_joints is not None:
+        physics.bind(self._root_joints).qvel = velocity
+
+    if angular_velocity is not None:
+      # This walker can only rotate along the z-axis, so we extract only that
+      # component from the angular_velocity.
+      steer_joint = self._mjcf_root.find('joint', 'steer')
+      if isinstance(angular_velocity, float):
+        z_velocity = angular_velocity
+      else:
+        z_velocity = angular_velocity[2]
+      physics.bind(steer_joint).qvel = z_velocity
+
   def initialize_episode(self, physics, random_state):
     self.reinitialize_pose(physics, random_state)
 

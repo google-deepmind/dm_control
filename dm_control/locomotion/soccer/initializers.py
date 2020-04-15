@@ -60,8 +60,6 @@ class UniformInitializer(Initializer):
     rotation = random_state.uniform(-np.pi, np.pi)
     quat = [np.cos(rotation / 2), 0, 0, np.sin(rotation / 2)]
     walker.shift_pose(physics, quaternion=quat)
-    # TODO(b/132759890): `walker.set_velocity` has no effect for walkers without
-    # freejoints, such as `BoxHead`.
     # Note: this method is not always called immediately after `physics.reset()`
     #       so we need to explicitly zero out the velocity.
     walker.set_velocity(physics, velocity=0., angular_velocity=0.)
