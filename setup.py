@@ -166,7 +166,7 @@ def find_data_files(package_dir, patterns):
 
 setup(
     name='dm_control',
-    version='0.0.306617621',
+    version='0.0.306834126',
     description='Continuous control environments and MuJoCo Python bindings.',
     author='DeepMind',
     license='Apache License, Version 2.0',

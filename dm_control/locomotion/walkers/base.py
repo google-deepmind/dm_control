@@ -173,6 +173,11 @@ class WalkerObservables(composer.Observables):
     return observable.MJCFFeature('sensordata',
                                   self._entity.mjcf_model.sensor.accelerometer)
 
+  @composer.observable
+  def sensors_framequat(self):
+    return observable.MJCFFeature('sensordata',
+                                  self._entity.mjcf_model.sensor.framequat)
+
   # Semantic groupings of Walker observables.
   def _collect_from_attachments(self, attribute_name):
     out = []
@@ -187,7 +192,9 @@ class WalkerObservables(composer.Observables):
 
   @property
   def kinematic_sensors(self):
-    return ([self.sensors_gyro, self.sensors_accelerometer] +
+    return ([self.sensors_gyro,
+             self.sensors_accelerometer,
+             self.sensors_framequat] +
             self._collect_from_attachments('kinematic_sensors'))
 
   @property
