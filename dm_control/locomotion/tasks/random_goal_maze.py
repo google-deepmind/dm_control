@@ -254,7 +254,7 @@ class RepeatSingleGoalMaze(NullGoalMaze):
   def __init__(self,
                walker,
                maze_arena,
-               target=target_sphere.TargetSphere(),
+               target=None,
                target_reward_scale=1.0,
                randomize_spawn_position=True,
                randomize_spawn_rotation=True,
@@ -278,6 +278,8 @@ class RepeatSingleGoalMaze(NullGoalMaze):
         enable_global_task_observables=enable_global_task_observables,
         physics_timestep=physics_timestep,
         control_timestep=control_timestep)
+    if target is None:
+      target = target_sphere.TargetSphere()
     self._target = target
     self._rewarded_this_step = False
     self._maze_arena.attach(target)
