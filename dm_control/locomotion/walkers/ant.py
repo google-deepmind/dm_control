@@ -32,8 +32,6 @@ import numpy as np
 _XML_DIRNAME = os.path.join(os.path.dirname(__file__), '../../third_party/ant')
 _XML_FILENAME = 'ant.xml'
 
-_UPRIGHT_POS = (0.0, 0.0, 0.522)
-
 
 class Ant(legacy_base.Walker):
   """A quadruped "Ant" walker."""
@@ -56,6 +54,20 @@ class Ant(legacy_base.Walker):
       for geom in self.marker_geoms:
         geom.set_attributes(rgba=marker_rgba)
 
+    # Initialize previous action.
+    self._prev_action = np.zeros(shape=self.action_spec.shape,
+                                 dtype=self.action_spec.dtype)
+
+  def initialize_episode(self, physics, random_state):
+    self._prev_action = np.zeros(shape=self.action_spec.shape,
+                                 dtype=self.action_spec.dtype)
+
+  def apply_action(self, physics, action, random_state):
+    super(Ant, self).apply_action(physics, action, random_state)
+
+    # Updates previous action.
+    self._prev_action[:] = action
+
   def _build_observables(self):
     return AntObservables(self)
 
@@ -65,7 +77,7 @@ class Ant(legacy_base.Walker):
 
   @property
   def upright_pose(self):
-    return base.WalkerPose(xpos=_UPRIGHT_POS)
+    return base.WalkerPose()
 
   @property
   def marker_geoms(self):
@@ -108,6 +120,10 @@ class Ant(legacy_base.Walker):
     for foot in self._foot_bodies:
       foot_geoms.extend(foot.find_all('geom'))
     return tuple(foot_geoms)
+
+  @property
+  def prev_action(self):
+    return self._prev_action
 
 
 class AntObservables(legacy_base.WalkerObservables):

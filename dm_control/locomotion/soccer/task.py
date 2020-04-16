@@ -153,6 +153,9 @@ class Task(composer.Task):
 
   def initialize_episode(self, physics, random_state):
     self.arena.initialize_episode(physics, random_state)
+    for player in self.players:
+      player.walker.reinitialize_pose(physics, random_state)
+
     self._initializer(self, physics, random_state)
     for camera in self._tracking_cameras:
       camera.initialize_episode(self._tracked_entity_positions(physics))

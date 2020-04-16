@@ -24,7 +24,6 @@ import os
 from dm_control import composer
 from dm_control import mjcf
 from dm_control.composer.observation import observable
-from dm_control.locomotion.walkers import initializers
 from dm_control.locomotion.walkers import legacy_base
 import numpy as np
 from PIL import Image
@@ -185,8 +184,7 @@ class BoxHead(legacy_base.Walker):
     Raises:
       ValueError: if received invalid walker_id.
     """
-    super(BoxHead, self)._build(
-        initializer=initializer or initializers.NoOpInitializer())
+    super(BoxHead, self)._build(initializer=initializer)
     xml_path = os.path.join(_ASSETS_PATH, 'boxhead.xml')
     self._mjcf_root = mjcf.from_xml_string(resources.GetResource(xml_path, 'r'))
     if name:
@@ -302,8 +300,6 @@ class BoxHead(legacy_base.Walker):
       physics.bind(steer_joint).qvel = z_velocity
 
   def initialize_episode(self, physics, random_state):
-    self.reinitialize_pose(physics, random_state)
-
     if self._camera_control:
       _compensate_gravity(physics,
                           self._mjcf_root.find('body', 'egocentric_camera'))
