@@ -33,7 +33,7 @@ from dm_control.mujoco.wrapper.mjbindings import functions
 from dm_control.mujoco.wrapper.mjbindings import mjlib
 from dm_control.mujoco.wrapper.mjbindings import types
 from dm_control.mujoco.wrapper.mjbindings import wrappers
-
+import numpy as np
 import six
 
 # Internal analytics import.
@@ -686,6 +686,33 @@ class MjData(wrappers.MjDataWrapper):
     """
     _finalize(self._ptr)
     del self._ptr
+
+  def object_velocity(self, object_id, object_type, local_frame=False):
+    """Returns the 6D velocity (linear, angular) of a MuJoCo object.
+
+    Args:
+      object_id: Object identifier. Can be either integer ID or String name.
+      object_type: The type of the object. Can be either a lowercase string
+        (e.g. 'body', 'geom') or an `mjtObj` enum value.
+      local_frame: Boolean specifiying whether the velocity is given in the
+        global (worldbody), or local (object) frame.
+
+    Returns:
+      2x3 array with stacked (linear_velocity, angular_velocity)
+
+    Raises:
+      Error: If `object_type` is not a valid MuJoCo object type, or if no object
+        with the corresponding name and type was found.
+    """
+    if not isinstance(object_type, int):
+      object_type = _str2type(object_type)
+    velocity = np.empty(6, dtype=np.float64)
+    if not isinstance(object_id, int):
+      object_id = self.model.name2id(object_id, object_type)
+    mjlib.mj_objectVelocity(self.model.ptr, self.ptr,
+                            object_type, object_id, velocity, local_frame)
+    #  MuJoCo returns velocities in (angular, linear) order, which we flip here.
+    return velocity.reshape(2, 3)[::-1]
 
   @property
   def model(self):

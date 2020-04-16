@@ -412,6 +412,59 @@ class CoreTest(parameterized.TestCase):
       del wrapper
       gc.collect()
 
+  @parameterized.parameters(
+      # The tip is .5 meters from the cart so we expect its horizontal velocity
+      # to be 1m/s + .5m*1rad/s = 1.5m/s.
+      dict(
+          qpos=[0., 0.],  # Pole pointing upwards.
+          qvel=[1., 1.],
+          expected_linvel=[1.5, 0., 0.],
+          expected_angvel=[0., 1., 0.],
+      ),
+      # For the same velocities but with the pole pointing down, we expect the
+      # velocities to cancel, making the global tip velocity now equal to
+      # 1m/s - 0.5m*1rad/s = 0.5m/s.
+      dict(
+          qpos=[0., np.pi],  # Pole pointing downwards.
+          qvel=[1., 1.],
+          expected_linvel=[0.5, 0., 0.],
+          expected_angvel=[0., 1., 0.],
+      ),
+      # In the site's local frame, which is now flipped w.r.t the world, the
+      # velocity is in the negative x direction.
+      dict(
+          qpos=[0., np.pi],  # Pole pointing downwards.
+          qvel=[1., 1.],
+          expected_linvel=[-0.5, 0., 0.],
+          expected_angvel=[0., 1., 0.],
+          local=True,
+      ),
+  )
+  def testObjectVelocity(
+      self, qpos, qvel, expected_linvel, expected_angvel, local=False):
+    cartpole = """
+    <mujoco>
+      <worldbody>
+        <body name='cart'>
+          <joint type='slide' axis='1 0 0'/>
+          <geom name='cart' type='box' size='0.2 0.2 0.2'/>
+          <body name='pole'>
+            <joint name='hinge' type='hinge' axis='0 1 0'/>
+            <geom name='mass' pos='0 0 .5' size='0.04'/>
+          </body>
+        </body>
+      </worldbody>
+    </mujoco>
+    """
+    model = core.MjModel.from_xml_string(cartpole)
+    data = core.MjData(model)
+    data.qpos[:] = qpos
+    data.qvel[:] = qvel
+    mjlib.mj_step1(model.ptr, data.ptr)
+    linvel, angvel = data.object_velocity("mass", "geom", local_frame=local)
+    np.testing.assert_array_almost_equal(linvel, expected_linvel)
+    np.testing.assert_array_almost_equal(angvel, expected_angvel)
+
   def testFreeMjrContext(self):
     for _ in range(5):
       renderer = _render.Renderer(640, 480)
