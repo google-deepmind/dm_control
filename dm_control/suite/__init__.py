@@ -55,11 +55,11 @@ from dm_control.suite import walker
 #from dm_control.suite import cloth_corner
 from dm_control.suite import cloth_point
 #from dm_control.suite import cloth_point_state
-#from dm_control.suite import cloth_two_hand
+from dm_control.suite import cloth_two_hand
 #from dm_control.suite import rope_v1
 #from dm_control.suite import rope_v2
 from dm_control.suite import rope_sac
-#from dm_control.suite import rope_two_hand
+from dm_control.suite import rope_two_hand
 from dm_control.suite import rope_colored
 from dm_control.suite import cloth_grey
 from dm_control.suite import cloth_colored
