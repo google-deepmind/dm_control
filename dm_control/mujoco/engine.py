@@ -719,17 +719,22 @@ class Camera(object):
     if depth and segmentation:
       raise ValueError(_BOTH_SEGMENTATION_AND_DEPTH_ENABLED)
 
-    # Enable flags to compute segmentation labels
-    if segmentation:
-      self._scene.flags[enums.mjtRndFlag.mjRND_SEGMENT] = True
-      self._scene.flags[enums.mjtRndFlag.mjRND_IDCOLOR] = True
-
     # Update scene geometry.
     self.update(scene_option=scene_option)
 
+    # Enable flags to compute segmentation labels
+    if segmentation:
+      overrides = {
+          enums.mjtRndFlag.mjRND_SEGMENT: True,
+          enums.mjtRndFlag.mjRND_IDCOLOR: True,
+      }
+    else:
+      overrides = {}
+
     # Render scene and text overlays, read contents of RGB or depth buffer.
-    with self._physics.contexts.gl.make_current() as ctx:
-      ctx.call(self._render_on_gl_thread, depth=depth, overlays=overlays)
+    with self.scene.override_flags(overrides):
+      with self._physics.contexts.gl.make_current() as ctx:
+        ctx.call(self._render_on_gl_thread, depth=depth, overlays=overlays)
 
     if depth:
       # Get the distances to the near and far clipping planes.

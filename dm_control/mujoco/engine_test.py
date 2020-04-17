@@ -246,6 +246,13 @@ class MujocoEngineTest(parameterized.TestCase):
         ValueError, engine._BOTH_SEGMENTATION_AND_DEPTH_ENABLED):
       self._physics.render(depth=True, segmentation=True)
 
+  def testRenderFlagOverridesAreNotPersistent(self):
+    camera = engine.Camera(self._physics)
+    first_rgb = camera.render().copy()
+    camera.render(segmentation=True)
+    second_rgb = camera.render().copy()
+    np.testing.assert_array_equal(first_rgb, second_rgb)
+
   def testExceptionIfOverlaysAndDepthOrSegmentation(self):
     overlay = engine.TextOverlay()
     with self.assertRaisesWithLiteralMatch(

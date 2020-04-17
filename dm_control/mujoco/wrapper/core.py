@@ -838,6 +838,28 @@ class MjvScene(wrappers.MjvSceneWrapper):  # pylint: disable=missing-docstring
 
     super(MjvScene, self).__init__(scene_ptr)
 
+  @contextlib.contextmanager
+  def override_flags(self, new_flags):
+    """Context manager for temporarily overriding rendering flags.
+
+    Args:
+      new_flags: A mapping from `enums.mjtRndFlag` values to the corresponding
+        overridden flag values.
+
+    Yields:
+      None
+    """
+    if not new_flags:
+      yield
+    else:
+      original_flags = self.flags.copy()
+      for index, value in new_flags.items():
+        self.flags[index] = value
+      try:
+        yield
+      finally:
+        np.copyto(self.flags, original_flags)
+
   def free(self):
     """Frees the native resources held by this MjvScene.
 
