@@ -19,30 +19,33 @@ from __future__ import division
 from __future__ import print_function
 
 import os
-import shutil
 import zipfile
 
 # Internal dependencies.
 
+from absl import flags
 from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control import mjcf
 from dm_control.mujoco.wrapper import util
-
 import six
+
+FLAGS = flags.FLAGS
 
 _ASSETS_DIR = os.path.join(os.path.dirname(__file__), 'test_assets')
 _TEST_MODEL_WITH_ASSETS = os.path.join(_ASSETS_DIR, 'model_with_assets.xml')
 _TEST_MODEL_WITHOUT_ASSETS = os.path.join(_ASSETS_DIR, 'lego_brick.xml')
-_OUT_DIR = os.path.join(absltest.get_default_test_tmpdir(), 'export')
+
+
+def setUpModule():
+  # Flags are not parsed when this test is invoked by `nosetests`, so we fall
+  # back on using the default value for `--test_tmpdir`.
+  if not FLAGS.is_parsed():
+    FLAGS.test_tmpdir = absltest.get_default_test_tmpdir()
+    FLAGS.mark_as_parsed()
 
 
 class ExportWithAssetsAsZipTest(parameterized.TestCase):
-
-  def setUp(self):
-    super(ExportWithAssetsAsZipTest, self).setUp()
-    # Remove any existing export directory and its contents between tests.
-    shutil.rmtree(_OUT_DIR, ignore_errors=True)
 
   @parameterized.named_parameters(
       ('with_assets', _TEST_MODEL_WITH_ASSETS, 'mujoco_with_assets'),
@@ -50,15 +53,16 @@ class ExportWithAssetsAsZipTest(parameterized.TestCase):
   )
   def test_export_model(self, xml_path, model_name):
     """Save processed MJCF model."""
+    out_dir = self.create_tempdir().full_path
     mjcf_model = mjcf.from_path(xml_path)
     mjcf.export_with_assets_as_zip(
-        mjcf_model, out_dir=_OUT_DIR, model_name=model_name)
+        mjcf_model, out_dir=out_dir, model_name=model_name)
 
     # Read the .zip file in the output directory.
     # Check that the only directory is named `model_name`/, and put all the
     # contents under any directory in a dict a directory in a dict.
     zip_file_contents = {}
-    zip_filename = os.path.join(_OUT_DIR, (model_name + '.zip'))
+    zip_filename = os.path.join(out_dir, (model_name + '.zip'))
     self.assertTrue(zipfile.is_zipfile(zip_filename))
     with zipfile.ZipFile(zip_filename, 'r') as zip_file:
       for zip_info in zip_file.infolist():
@@ -87,10 +91,11 @@ class ExportWithAssetsAsZipTest(parameterized.TestCase):
                        zip_file_contents[os.path.join(model_name, asset_name)])
 
   def test_default_model_filename(self):
+    out_dir = self.create_tempdir().full_path
     mjcf_model = mjcf.from_path(_TEST_MODEL_WITH_ASSETS)
-    mjcf.export_with_assets_as_zip(mjcf_model, _OUT_DIR, model_name=None)
+    mjcf.export_with_assets_as_zip(mjcf_model, out_dir, model_name=None)
     expected_name = mjcf_model.model + '.zip'
-    self.assertTrue(os.path.isfile(os.path.join(_OUT_DIR, expected_name)))
+    self.assertTrue(os.path.isfile(os.path.join(out_dir, expected_name)))
 
 
 if __name__ == '__main__':

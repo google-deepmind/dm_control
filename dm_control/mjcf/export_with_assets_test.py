@@ -20,9 +20,9 @@ from __future__ import division
 from __future__ import print_function
 
 import os
-import shutil
 
 # Internal dependencies.
+from absl import flags
 from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control import mjcf
@@ -30,32 +30,37 @@ from dm_control.mujoco import wrapper
 from dm_control.mujoco.wrapper import util
 import six
 
+FLAGS = flags.FLAGS
+
 _ASSETS_DIR = os.path.join(os.path.dirname(__file__), 'test_assets')
 _TEST_MODEL_WITH_ASSETS = os.path.join(_ASSETS_DIR, 'model_with_assets.xml')
 _TEST_MODEL_WITHOUT_ASSETS = os.path.join(_ASSETS_DIR, 'lego_brick.xml')
-_OUT_DIR = os.path.join(absltest.get_default_test_tmpdir(), 'export')
+
+
+def setUpModule():
+  # Flags are not parsed when this test is invoked by `nosetests`, so we fall
+  # back on using the default value for ``--test_tmpdir`.
+  if not FLAGS.is_parsed():
+    FLAGS.test_tmpdir = absltest.get_default_test_tmpdir()
+    FLAGS.mark_as_parsed()
 
 
 class ExportWithAssetsTest(parameterized.TestCase):
-
-  def setUp(self):
-    super(ExportWithAssetsTest, self).setUp()
-    # Remove any existing export directory and its contents between tests.
-    shutil.rmtree(_OUT_DIR, ignore_errors=True)
 
   @parameterized.named_parameters(
       ('with_assets', _TEST_MODEL_WITH_ASSETS, 'mujoco_with_assets.xml'),
       ('without_assets', _TEST_MODEL_WITHOUT_ASSETS, 'mujoco.xml'),)
   def test_export_model(self, xml_path, out_xml_name):
     """Save processed MJCF model."""
+    out_dir = self.create_tempdir().full_path
     mjcf_model = mjcf.from_path(xml_path)
     mjcf.export_with_assets(
-        mjcf_model, out_dir=_OUT_DIR, out_file_name=out_xml_name)
+        mjcf_model, out_dir=out_dir, out_file_name=out_xml_name)
 
     # Read the files in the output directory and put their contents in a dict.
     out_dir_contents = {}
-    for filename in os.listdir(_OUT_DIR):
-      with open(os.path.join(_OUT_DIR, filename), 'rb') as f:
+    for filename in os.listdir(out_dir):
+      with open(os.path.join(out_dir, filename), 'rb') as f:
         out_dir_contents[filename] = f.read()
 
     # Check that the output directory contains an XML file of the correct name.
@@ -74,7 +79,7 @@ class ExportWithAssetsTest(parameterized.TestCase):
     # Check that we can construct an MjModel instance using the path to the
     # output file.
     from_exported = wrapper.MjModel.from_xml_path(
-        os.path.join(_OUT_DIR, out_xml_name))
+        os.path.join(out_dir, out_xml_name))
 
     # Check that this model is identical to one constructed directly from
     # `mjcf_model`.
@@ -83,15 +88,17 @@ class ExportWithAssetsTest(parameterized.TestCase):
     self.assertEqual(from_exported.to_bytes(), from_mjcf.to_bytes())
 
   def test_default_model_filename(self):
+    out_dir = self.create_tempdir().full_path
     mjcf_model = mjcf.from_path(_TEST_MODEL_WITH_ASSETS)
-    mjcf.export_with_assets(mjcf_model, _OUT_DIR, out_file_name=None)
+    mjcf.export_with_assets(mjcf_model, out_dir, out_file_name=None)
     expected_name = mjcf_model.model + '.xml'
-    self.assertTrue(os.path.isfile(os.path.join(_OUT_DIR, expected_name)))
+    self.assertTrue(os.path.isfile(os.path.join(out_dir, expected_name)))
 
   def test_exceptions(self):
+    out_dir = self.create_tempdir().full_path
     mjcf_model = mjcf.from_path(_TEST_MODEL_WITH_ASSETS)
     with six.assertRaisesRegex(self, ValueError, 'must end with \'.xml\''):
-      mjcf.export_with_assets(mjcf_model, _OUT_DIR,
+      mjcf.export_with_assets(mjcf_model, out_dir,
                               out_file_name='invalid_extension.png')
 
 
