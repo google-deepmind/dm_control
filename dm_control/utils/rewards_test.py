@@ -45,7 +45,7 @@ class ToleranceTest(parameterized.TestCase):
 
   @parameterized.parameters(("gaussian",), ("hyperbolic",), ("long_tail",),
                             ("cosine",), ("tanh_squared",), ("linear",),
-                            ("quadratic"))
+                            ("quadratic",), ("reciprocal",))
   def test_tolerance_sigmoids(self, sigmoid):
     margins = [0.01, 1.0, 100, 10000]
     values_at_margin = [0.1, 0.5, 0.9]

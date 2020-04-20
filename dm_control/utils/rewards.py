@@ -62,6 +62,10 @@ def _sigmoids(x, value_at_1, sigmoid):
     scale = np.sqrt(1/value_at_1 - 1)
     return 1 / ((x*scale)**2 + 1)
 
+  elif sigmoid == 'reciprocal':
+    scale = 1/value_at_1 - 1
+    return 1 / (abs(x)*scale + 1)
+
   elif sigmoid == 'cosine':
     scale = np.arccos(2*value_at_1 - 1) / np.pi
     scaled_x = x*scale
