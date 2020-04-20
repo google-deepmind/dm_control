@@ -51,6 +51,27 @@ _FIELD_BOX_CONTACT_BIT = 1 << 7  # Use a higher bit to prevent potential clash.
 _DEFAULT_PITCH_SIZE = (12, 9)
 _DEFAULT_GOAL_LENGTH_RATIO = 0.33  # Goal length / pitch width.
 
+_GOALPOST_RELATIVE_SIZE = 0.07  # Ratio of the goalpost radius to goal size.
+_NET_RELATIVE_SIZE = 0.01  # Ratio of the net thickness to goal size.
+_SUPPORT_POST_RATIO = 0.75  # Ratio of support post to goalpost radius.
+# Goalposts defined in the unit box [-1, 1]**3 facing to the positive X.
+_GOALPOSTS = {'right_post': (1, -1, -1, 1, -1, 1),
+              'left_post': (1, 1, -1, 1, 1, 1),
+              'top_post': (1, -1, 1, 1, 1, 1),
+              'right_base': (1, -1, -1, -1, -1, -1),
+              'left_base': (1, 1, -1, -1, 1, -1),
+              'back_base': (-1, -1, -1, -1, 1, -1),
+              'right_support': (-1, -1, -1, .2, -1, 1),
+              'right_top_support': (.2, -1, 1, 1, -1, 1),
+              'left_support': (-1, 1, -1, .2, 1, 1),
+              'left_top_support': (.2, 1, 1, 1, 1, 1)}
+# Vertices of net polygons, reshaped to 4x3 arrays.
+_NET = {'top': _GOALPOSTS['right_top_support'] + _GOALPOSTS['left_top_support'],
+        'back': _GOALPOSTS['right_support'] + _GOALPOSTS['left_support'],
+        'left': _GOALPOSTS['left_base'] + _GOALPOSTS['left_top_support'],
+        'right': _GOALPOSTS['right_base'] + _GOALPOSTS['right_top_support']}
+_NET = {key: np.array(value).reshape(4, 3) for key, value in _NET.items()}
+
 
 def _top_down_cam_fovy(size, top_camera_distance):
   return (360 / np.pi) * np.arctan2(_TOP_CAMERA_Y_PADDING_FACTOR * max(size),
@@ -82,6 +103,166 @@ def _wall_pos_xyaxes(size):
 
 def _roof_size(size):
   return (size[0], size[1], _WALL_THICKNESS)
+
+
+def _goalpost_radius(size):
+  """Compute goal post radius as scaled average goal size."""
+  return _GOALPOST_RELATIVE_SIZE * sum(size) / 3.
+
+
+def _post_radius(goalpost_name, goalpost_radius):
+  """Compute the radius of a specific goalpost."""
+  radius = goalpost_radius
+  if 'top' in goalpost_name:
+    radius *= 1.01  # Prevent z-fighting at the corners.
+  if 'support' in goalpost_name:
+    radius *= _SUPPORT_POST_RATIO  # Suport posts are a bit narrower.
+  return radius
+
+
+def _goalpost_fromto(unit_fromto, size, pos, direction):
+  """Rotate, scale and translate the `fromto` attribute of a goalpost.
+
+  The goalposts are defined in the unit cube [-1, 1]**3 using MuJoCo fromto
+  specifier for capsules, they are then flipped according to whether they face
+  in the +x or -x, scaled and moved.
+
+  Args:
+    unit_fromto: two concatenated 3-vectors in the unit cube in xyzxyz order.
+    size: a 3-vector, scaling of the goal.
+    pos: a 3-vector, goal position.
+    direction: a 3-vector, either (1,1,1) or (-1,01,1), direction of the goal
+      along the x-axis.
+
+  Returns:
+    two concatenated 3-vectors, the `fromto` of a goal geom.
+  """
+  fromto = np.array(unit_fromto) * np.hstack((direction, direction))
+  return fromto*np.array(size+size) + np.array(pos+pos)
+
+
+class Goal(props.PositionDetector):
+  """Goal for soccer-like games: A PositionDetector with goalposts."""
+
+  def _make_net_vertices(self, size=(1, 1, 1)):
+    """Make vertices for the four net meshes by offsetting net polygons."""
+    thickness = _NET_RELATIVE_SIZE * sum(size) / 3
+    # Get mesh offsets, compensate for mesh.scale deformation.
+    dx = np.array((thickness / size[0], 0, 0))
+    dy = np.array((0, thickness / size[1], 0))
+    dz = np.array((0, 0, thickness / size[2]))
+    # Make mesh vertices with specified thickness.
+    top = [v+dz for v in _NET['top']] + [v-dz for v in _NET['top']]
+    right = [v+dy for v in _NET['right']] + [v-dy for v in _NET['right']]
+    left = [v+dy for v in _NET['left']] + [v-dy for v in _NET['left']]
+    back = ([v+dz for v in _NET['back'] if v[2] == 1] +
+            [v-dz for v in _NET['back'] if v[2] == 1] +
+            [v+dx for v in _NET['back'] if v[2] == -1] +
+            [v-dx for v in _NET['back'] if v[2] == -1])
+    vertices = {'top': top, 'back': back, 'left': left, 'right': right}
+    return  {key: (val*self._direction).flatten()
+             for key, val in vertices.items()}
+
+  def _move_goal(self, pos, size):
+    """Translate and scale the goal."""
+    for geom in self._goal_geoms:
+      unit_fromto = _GOALPOSTS[geom.name]
+      geom.fromto = _goalpost_fromto(unit_fromto, size, pos, self._direction)
+      geom.size = (_post_radius(geom.name, self._goalpost_radius),)
+    if self._make_net:
+      net_vertices = self._make_net_vertices(size)
+      for geom in self._net_geoms:
+        geom.pos = pos
+        geom.mesh.vertex = net_vertices[geom.mesh.name]
+        geom.mesh.scale = size
+
+  def _build(self, direction, net_rgba=(1, 1, 1, .15), make_net=True, **kwargs):
+    """Builds the goalposts and net.
+
+    Args:
+      direction: Is the goal oriented towards positive or negative x-axis.
+      net_rgba: rgba value of the net geoms.
+      make_net: Where to add net geoms.
+      **kwargs: arguments of PositionDetector superclass, see therein.
+
+    Raises:
+      ValueError: If either `pos` or `size` arrays are not of length 3.
+      ValueError: If direction in not 1 or -1.
+    """
+    if len(kwargs['size']) != 3 or len(kwargs['pos']) != 3:
+      raise ValueError('Only 3D Goals are supported.')
+    if direction not in [1, -1]:
+      raise ValueError('direction must be either 1 or -1.')
+    # Flip both x and y, to maintain left / right name correctness.
+    self._direction = np.array((direction, direction, 1))
+    self._make_net = make_net
+
+    # Force the underlying PositionDetector to a non visible site group.
+    kwargs['visible'] = False
+    # Make a Position_Detector.
+    super(Goal, self)._build(**kwargs)
+
+    # Add goalpost geoms.
+    size = kwargs['size']
+    pos = kwargs['pos']
+    self._goalpost_radius = _goalpost_radius(size)
+    self._goal_geoms = []
+    for geom_name, unit_fromto in _GOALPOSTS.items():
+      geom_fromto = _goalpost_fromto(unit_fromto, size, pos, self._direction)
+      geom_size = (_post_radius(geom_name, self._goalpost_radius),)
+      self._goal_geoms.append(
+          self._mjcf_root.worldbody.add(
+              'geom',
+              type='capsule',
+              name=geom_name,
+              size=geom_size,
+              fromto=geom_fromto,
+              rgba=self.goalpost_rgba))
+
+    # Add net meshes and geoms.
+    if self._make_net:
+      net_vertices = self._make_net_vertices()
+      self._net_geoms = []
+      for name, vertex in net_vertices.items():
+        mesh = self._mjcf_root.asset.add('mesh', name=name, vertex=vertex)
+        geom = self._mjcf_root.worldbody.add('geom', type='mesh', mesh=mesh,
+                                             name=name, rgba=net_rgba,
+                                             contype=0, conaffinity=0)
+        self._net_geoms.append(geom)
+
+  def resize(self, pos, size):
+    """Call PositionDetector.resize(), move the goal."""
+    super(Goal, self).resize(pos, size)
+    self._goalpost_radius = _goalpost_radius(size)
+    self._move_goal(pos, size)
+
+  def set_position(self, physics, pos):
+    """Call PositionDetector.set_position(), move the goal."""
+    super(Goal, self).set_position(pos)
+    size = 0.5*(self.upper - self.lower)
+    self._move_goal(pos, size)
+
+  def _update_detection(self, physics):
+    """Call PositionDetector._update_detection(), then recolor the goalposts."""
+    super(Goal, self)._update_detection(physics)
+    if self._detected and not self._previously_detected:
+      physics.bind(self._goal_geoms).rgba = self.goalpost_detected_rgba
+    elif self._previously_detected and not self._detected:
+      physics.bind(self._goal_geoms).rgba = self.goalpost_rgba
+
+  @property
+  def goalpost_rgba(self):
+    """Goalposts are always opaque."""
+    rgba = self._rgba.copy()
+    rgba[3] = 1
+    return rgba
+
+  @property
+  def goalpost_detected_rgba(self):
+    """Goalposts are always opaque."""
+    detected_rgba = self._detected_rgba.copy()
+    detected_rgba[3] = 1
+    return detected_rgba
 
 
 class Pitch(composer.Arena):
@@ -153,6 +334,7 @@ class Pitch(composer.Arena):
         'material', name='groundplane', texture=self._ground_texture)
     self._ground_geom = self._mjcf_root.worldbody.add(
         'geom',
+        name='ground',
         type='plane',
         material=self._ground_material,
         size=list(self._size) + [max(self._size) * _GROUND_GEOM_GRID_RATIO])
@@ -174,19 +356,23 @@ class Pitch(composer.Arena):
     # goal position detector before bouncing off the field_box.
     self._fb_offset = 0.5 if field_box else 0.0
     goal_size = self._get_goal_size()
-    self._home_goal = props.PositionDetector(
+    self._home_goal = Goal(
+        direction=1,
+        make_net=False,
         pos=(-self._size[0] + goal_size[0] + self._fb_offset, 0,
              goal_size[2]),
         size=goal_size,
-        rgba=(0, 0, 1, 0.5),
+        rgba=(.2, .2, 1, 0.5),
         visible=True,
         name='home_goal')
     self.attach(self._home_goal)
 
-    self._away_goal = props.PositionDetector(
+    self._away_goal = Goal(
+        direction=-1,
+        make_net=False,
         pos=(self._size[0] - goal_size[0] - self._fb_offset, 0, goal_size[2]),
         size=goal_size,
-        rgba=(1, 0, 0, 0.5),
+        rgba=(1, .2, .2, 0.5),
         visible=True,
         name='away_goal')
     self.attach(self._away_goal)

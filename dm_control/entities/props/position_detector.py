@@ -225,7 +225,7 @@ class PositionDetector(composer.Entity):
             and np.all(self._upper > xpos[:len(self._upper)]))
 
   def _update_detection(self, physics):
-    previously_detected = self._detected
+    self._previously_detected = self._detected
     self._detected = False
     for detection in self._entities:
       detection.detected = False
@@ -235,9 +235,9 @@ class PositionDetector(composer.Entity):
           self._detected = True
           break
 
-    if self._detected and not previously_detected:
+    if self._detected and not self._previously_detected:
       physics.bind(self._site).rgba = self._detected_rgba
-    elif previously_detected and not self._detected:
+    elif self._previously_detected and not self._detected:
       physics.bind(self._site).rgba = self._rgba
 
   def site_pos(self, physics):
