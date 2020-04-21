@@ -253,6 +253,22 @@ class MujocoEngineTest(parameterized.TestCase):
     second_rgb = camera.render().copy()
     np.testing.assert_array_equal(first_rgb, second_rgb)
 
+  def testCustomRenderFlags(self):
+    default = self._physics.render()
+    wireframe_string_key = self._physics.render(
+        render_flag_overrides=dict(wireframe=True))
+    self.assertFalse((default == wireframe_string_key).all())
+    wireframe_enum_key = self._physics.render(
+        render_flag_overrides={enums.mjtRndFlag.mjRND_WIREFRAME: True})
+    np.testing.assert_array_equal(wireframe_string_key, wireframe_enum_key)
+
+  @parameterized.parameters(dict(depth=True), dict(segmentation=True))
+  def testExceptionIfRenderFlagOverridesAndDepthOrSegmentation(self, **kwargs):
+    with self.assertRaisesWithLiteralMatch(
+        ValueError,
+        engine._RENDER_FLAG_OVERRIDES_NOT_SUPPORTED_FOR_DEPTH_OR_SEGMENTATION):
+      self._physics.render(render_flag_overrides=dict(wireframe=True), **kwargs)
+
   def testExceptionIfOverlaysAndDepthOrSegmentation(self):
     overlay = engine.TextOverlay()
     with self.assertRaisesWithLiteralMatch(

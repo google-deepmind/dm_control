@@ -817,6 +817,14 @@ class MjrContext(wrappers.MjrContextWrapper):  # pylint: disable=missing-docstri
     del self._ptr
 
 
+# A mapping from human-readable short names to mjtRndFlag enum values, i.e.
+# {'shadow': mjtRndFlag.mjRND_SHADOW, 'fog': mjtRndFlag.mjRND_FOG, ...}
+_NAME_TO_RENDER_FLAG_ENUM_VALUE = {
+    name[len("mjRND_"):].lower(): getattr(enums.mjtRndFlag, name)
+    for name in enums.mjtRndFlag._fields[:-1]  # Exclude mjRND_NUMRNDFLAG entry.
+}
+
+
 class MjvScene(wrappers.MjvSceneWrapper):  # pylint: disable=missing-docstring
 
   def __init__(self, model=None, max_geom=1000):
@@ -839,21 +847,25 @@ class MjvScene(wrappers.MjvSceneWrapper):  # pylint: disable=missing-docstring
     super(MjvScene, self).__init__(scene_ptr)
 
   @contextlib.contextmanager
-  def override_flags(self, new_flags):
+  def override_flags(self, overrides):
     """Context manager for temporarily overriding rendering flags.
 
     Args:
-      new_flags: A mapping from `enums.mjtRndFlag` values to the corresponding
-        overridden flag values.
+      overrides: A mapping specifying rendering flags to override. The keys can
+        be either lowercase strings or `mjtRndFlag` enum values, and the values
+        are the overridden flag values, e.g. `{'wireframe': True}` or
+        `{enums.mjtRndFlag.mjRND_WIREFRAME: True}`. See `enums.mjtRndFlag` for
+        the set of valid flags.
 
     Yields:
       None
     """
-    if not new_flags:
+    if not overrides:
       yield
     else:
       original_flags = self.flags.copy()
-      for index, value in new_flags.items():
+      for key, value in overrides.items():
+        index = _NAME_TO_RENDER_FLAG_ENUM_VALUE.get(key, key)
         self.flags[index] = value
       try:
         yield

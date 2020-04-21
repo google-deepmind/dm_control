@@ -80,6 +80,9 @@ _INVALID_PHYSICS_STATE = (
     'Physics state is invalid. Warning(s) raised: {warning_names}')
 _OVERLAYS_NOT_SUPPORTED_FOR_DEPTH_OR_SEGMENTATION = (
     'Overlays are not supported with depth or segmentation rendering.')
+_RENDER_FLAG_OVERRIDES_NOT_SUPPORTED_FOR_DEPTH_OR_SEGMENTATION = (
+    '`render_flag_overrides` are not supported for depth or segmentation '
+    'rendering.')
 
 
 class Physics(_control.Physics):
@@ -164,8 +167,17 @@ class Physics(_control.Physics):
 
       mjlib.mj_step1(self.model.ptr, self.data.ptr)
 
-  def render(self, height=240, width=320, camera_id=-1, overlays=(),
-             depth=False, segmentation=False, scene_option=None):
+  def render(
+      self,
+      height=240,
+      width=320,
+      camera_id=-1,
+      overlays=(),
+      depth=False,
+      segmentation=False,
+      scene_option=None,
+      render_flag_overrides=None,
+  ):
     """Returns a camera view as a NumPy array of pixel values.
 
     Args:
@@ -186,6 +198,12 @@ class Physics(_control.Physics):
       scene_option: An optional `wrapper.MjvOption` instance that can be used to
         render the scene with custom visualization options. If None then the
         default options will be used.
+      render_flag_overrides: Optional mapping specifying rendering flags to
+        override. The keys can be either lowercase strings or `mjtRndFlag` enum
+        values, and the values are the overridden flag values, e.g.
+        `{'wireframe': True}` or `{enums.mjtRndFlag.mjRND_WIREFRAME: True}`. See
+        `enums.mjtRndFlag` for the set of valid flags. Must be None if either
+        `depth` or `segmentation` is True.
 
     Returns:
       The rendered RGB, depth or segmentation image.
@@ -194,7 +212,7 @@ class Physics(_control.Physics):
         physics=self, height=height, width=width, camera_id=camera_id)
     image = camera.render(
         overlays=overlays, depth=depth, segmentation=segmentation,
-        scene_option=scene_option)
+        scene_option=scene_option, render_flag_overrides=render_flag_overrides)
     camera._scene.free()  # pylint: disable=protected-access
     return image
 
@@ -681,8 +699,14 @@ class Camera(object):
         self._rect,
         self._physics.contexts.mujoco.ptr)
 
-  def render(self, overlays=(), depth=False, segmentation=False,
-             scene_option=None):
+  def render(
+      self,
+      overlays=(),
+      depth=False,
+      segmentation=False,
+      scene_option=None,
+      render_flag_overrides=None,
+  ):
     """Renders the camera view as a numpy array of pixel values.
 
     Args:
@@ -695,6 +719,12 @@ class Camera(object):
         True.
       scene_option: A custom `wrapper.MjvOption` instance to use to render
         the scene instead of the default.  If None, will use the default.
+      render_flag_overrides: Optional mapping containing rendering flags to
+        override. The keys can be either lowercase strings or `mjtRndFlag` enum
+        values, and the values are the overridden flag values, e.g.
+        `{'wireframe': True}` or `{enums.mjtRndFlag.mjRND_WIREFRAME: True}`. See
+        `enums.mjtRndFlag` for the set of valid flags. Must be empty if either
+        `depth` or `segmentation` is True.
 
     Returns:
       The rendered scene.
@@ -709,30 +739,36 @@ class Camera(object):
           (-1, -1).
 
     Raises:
-      ValueError: If overlays are requested with depth rendering.
+      ValueError: If either `overlays` or `render_flag_overrides` is requested
+        when `depth` or `segmentation` rendering is enabled.
       ValueError: If both depth and segmentation flags are set together.
     """
 
     if overlays and (depth or segmentation):
       raise ValueError(_OVERLAYS_NOT_SUPPORTED_FOR_DEPTH_OR_SEGMENTATION)
 
+    if render_flag_overrides and (depth or segmentation):
+      raise ValueError(
+          _RENDER_FLAG_OVERRIDES_NOT_SUPPORTED_FOR_DEPTH_OR_SEGMENTATION)
+
     if depth and segmentation:
       raise ValueError(_BOTH_SEGMENTATION_AND_DEPTH_ENABLED)
+
+    if render_flag_overrides is None:
+      render_flag_overrides = {}
 
     # Update scene geometry.
     self.update(scene_option=scene_option)
 
     # Enable flags to compute segmentation labels
     if segmentation:
-      overrides = {
+      render_flag_overrides.update({
           enums.mjtRndFlag.mjRND_SEGMENT: True,
           enums.mjtRndFlag.mjRND_IDCOLOR: True,
-      }
-    else:
-      overrides = {}
+      })
 
     # Render scene and text overlays, read contents of RGB or depth buffer.
-    with self.scene.override_flags(overrides):
+    with self.scene.override_flags(render_flag_overrides):
       with self._physics.contexts.gl.make_current() as ctx:
         ctx.call(self._render_on_gl_thread, depth=depth, overlays=overlays)
 
