@@ -23,6 +23,7 @@ import abc
 import operator
 
 from dm_control.composer.variation import variation_values
+import numpy as np
 import six
 
 
@@ -82,6 +83,9 @@ class Variation(object):
   def __rpow__(self, other):
     return _BinaryOperation(operator.pow, other, self)
 
+  def __getitem__(self, index):
+    return _GetItemOperation(self, index)
+
 
 class _BinaryOperation(Variation):
   """Represents the result of applying a binary operator to two Variations."""
@@ -97,3 +101,15 @@ class _BinaryOperation(Variation):
     second_value = variation_values.evaluate(
         self._second, initial_value, current_value, random_state)
     return self._op(first_value, second_value)
+
+
+class _GetItemOperation(Variation):
+
+  def __init__(self, variation, index):
+    self._variation = variation
+    self._index = index
+
+  def __call__(self, initial_value=None, current_value=None, random_state=None):
+    value = variation_values.evaluate(
+        self._variation, initial_value, current_value, random_state)
+    return np.asarray(value)[self._index]

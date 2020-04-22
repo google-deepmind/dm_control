@@ -24,11 +24,13 @@ from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control.composer import variation
 from dm_control.composer.variation import deterministic
+import numpy as np
 
 
 class VariationTest(parameterized.TestCase):
 
   def setUp(self):
+    super(VariationTest, self).setUp()
     self.value_1 = 3
     self.variation_1 = deterministic.Constant(self.value_1)
     self.value_2 = 5
@@ -47,6 +49,11 @@ class VariationTest(parameterized.TestCase):
         variation.evaluate(func(self.variation_1, self.variation_2)),
         func(self.value_1, self.value_2))
 
+  def test_getitem(self):
+    value = deterministic.Constant(np.array([4, 5, 6, 7, 8]))
+    np.testing.assert_array_equal(
+        variation.evaluate(value[[3, 1]]),
+        [7, 5])
 
 if __name__ == '__main__':
   absltest.main()
