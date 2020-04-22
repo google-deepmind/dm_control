@@ -319,24 +319,19 @@ class Pitch(composer.Arena):
     if len(self._size) != 2:
       raise ValueError('`size` should be a sequence of length 2: got {!r}'
                        .format(self._size))
-    self._ground_texture = self._mjcf_root.asset.add(
+    self._field_texture = self._mjcf_root.asset.add(
         'texture',
         type='2d',
-        builtin='checker',
-        name='groundplane',
-        rgb1=[0.3, 0.8, 0.3],
-        rgb2=[0.1, 0.6, 0.1],
-        width=300,
-        height=300,
-        mark='edge',
-        markrgb=[0.8, 0.8, 0.8])
-    self._ground_material = self._mjcf_root.asset.add(
-        'material', name='groundplane', texture=self._ground_texture)
+        file=_get_texture('pitch_nologo_s'),
+        name='fieldplane')
+    self._field_material = self._mjcf_root.asset.add(
+        'material', name='fieldplane', texture=self._field_texture)
+
     self._ground_geom = self._mjcf_root.worldbody.add(
         'geom',
         name='ground',
         type='plane',
-        material=self._ground_material,
+        material=self._field_material,
         size=list(self._size) + [max(self._size) * _GROUND_GEOM_GRID_RATIO])
 
     # Build walls.
@@ -378,23 +373,27 @@ class Pitch(composer.Arena):
     self.attach(self._away_goal)
 
     # Build inverted field position detectors.
-    self._field_texture = self._mjcf_root.asset.add(
-        'texture',
-        type='2d',
-        file=_get_texture('pitch_nologo_s'),
-        name='fieldplane')
-    self._field_material = self._mjcf_root.asset.add(
-        'material', name='fieldplane', texture=self._field_texture)
-
     self._field = props.PositionDetector(
         pos=(0, 0),
         size=(self._size[0] - 2 * goal_size[0],
               self._size[1] - 2 * goal_size[0]),
-        material=self._field_material,
         inverted=True,
-        visible=True,
+        visible=False,
         name='field')
     self.attach(self._field)
+
+    # Build field perimeter.
+    def _visual_plane():
+      return self._mjcf_root.worldbody.add(
+          'geom',
+          type='plane',
+          size=(1, 1, 1),
+          rgba=(0.306, 0.682, 0.223, 1),
+          contype=0,
+          conaffinity=0)
+
+    self._perimeter = [_visual_plane() for _ in range(8)]
+    self._update_perimeter()
 
     # Build field box.
     self._field_box = []
@@ -409,6 +408,22 @@ class Pitch(composer.Arena):
                 pos=wall_pos,
                 size=[1e-7, 1e-7, 1e-7],
                 xyaxes=wall_xyaxes))
+
+  def _update_perimeter(self):
+    # Resize and reposition visual perimeter plane geoms.
+    width = self._get_goal_size()[0]
+    counter = 0
+    for x in [-1, 0, 1]:
+      for y in [-1, 0, 1]:
+        if x == 0 and y == 0:
+          continue
+        size_0 = self._size[0]-2*width if x == 0 else width
+        size_1 = self._size[1]-2*width if y == 0 else width
+        size = [size_0, size_1, max(self._size) * _GROUND_GEOM_GRID_RATIO]
+        pos = (x*(self._size[0]-width), y*(self._size[1]-width), 0)
+        self._perimeter[counter].size = size
+        self._perimeter[counter].pos = pos
+        counter += 1
 
   def _get_goal_size(self):
     goal_size = self._goal_size
@@ -540,9 +555,8 @@ class RandomizedPitch(Pitch):
     self._top_camera.fovy = _top_down_cam_fovy(self._size,
                                                self._top_camera_distance)
 
-    # Resize ground geom size.
-    self._ground_geom.size = list(
-        self._size) + [max(self._size) * _GROUND_GEOM_GRID_RATIO]
+    # Resize ground perimeter.
+    self._update_perimeter()
 
     # Resize and reposition walls and roof geoms.
     for i, (wall_pos, _) in enumerate(_wall_pos_xyaxes(self._size)):
@@ -552,10 +566,12 @@ class RandomizedPitch(Pitch):
     self._resize_goals(goal_size)
 
     # Resize inverted field position detectors.
-    self._field.resize(
-        pos=(0, 0),
-        size=(self._size[0] - 2 * goal_size[0],
-              self._size[1] - 2 * goal_size[0]))
+    field_size = (self._size[0] -2*goal_size[0], self._size[1] -2*goal_size[0])
+    self._field.resize(pos=(0, 0), size=field_size)
+
+    # Resize ground geom size.
+    self._ground_geom.size = list(
+        field_size) + [max(self._size) * _GROUND_GEOM_GRID_RATIO]
 
     # Resize and reposition field box geoms.
     if self._field_box:
