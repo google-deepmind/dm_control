@@ -273,6 +273,7 @@ class Pitch(composer.Arena):
              goal_size=None,
              top_camera_distance=_TOP_CAMERA_DISTANCE,
              field_box=False,
+             field_box_offset=0.5,
              name='pitch'):
     """Construct a pitch with walls and position detectors.
 
@@ -284,6 +285,7 @@ class Pitch(composer.Arena):
       top_camera_distance: the distance of the top-down camera to the pitch.
       field_box: adds a "field box" that collides with the ball but not the
         walkers.
+      field_box_offset: offset for the fieldbox if used.
       name: the name of this arena.
     """
     super(Pitch, self)._build(name=name)
@@ -349,7 +351,7 @@ class Pitch(composer.Arena):
     # Build goal position detectors.
     # If field_box is enabled, offset goal by 1.0 such that ball reaches the
     # goal position detector before bouncing off the field_box.
-    self._fb_offset = 0.5 if field_box else 0.0
+    self._fb_offset = field_box_offset if field_box else 0.0
     goal_size = self._get_goal_size()
     self._home_goal = Goal(
         direction=1,
@@ -492,6 +494,7 @@ class RandomizedPitch(Pitch):
                keep_aspect_ratio=False,
                goal_size=None,
                field_box=False,
+               field_box_offset=0.5,
                top_camera_distance=_TOP_CAMERA_DISTANCE,
                name='randomized_pitch'):
     """Construct a randomized pitch.
@@ -508,6 +511,7 @@ class RandomizedPitch(Pitch):
         default ratio.
       field_box: optional indicating if we should construct field box containing
         the ball (but not the walkers).
+      field_box_offset: offset for the fieldbox if used.
       top_camera_distance: the distance of the top-down camera to the pitch.
       name: the name of this arena.
     """
@@ -516,6 +520,7 @@ class RandomizedPitch(Pitch):
         goal_size=goal_size,
         top_camera_distance=top_camera_distance,
         field_box=field_box,
+        field_box_offset=field_box_offset,
         name=name)
 
     self._min_size = min_size
