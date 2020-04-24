@@ -105,6 +105,20 @@ def _roof_size(size):
   return (size[0], size[1], _WALL_THICKNESS)
 
 
+def _reposition_corner_lights(lights, size):
+  """Place four lights at the corner of the pitch."""
+  mean_size = 0.5 * sum(size)
+  height = mean_size * 2/3
+  counter = 0
+  for x in [-size[0], size[0]]:
+    for y in [-size[1], size[1]]:
+      position = np.array((x, y, height))
+      direction = -np.array((x, y, height*2))
+      lights[counter].pos = position
+      lights[counter].dir = direction
+      counter += 1
+
+
 def _goalpost_radius(size):
   """Compute goal post radius as scaled average goal size."""
   return _GOALPOST_RELATIVE_SIZE * sum(size) / 3.
@@ -300,9 +314,6 @@ class Pitch(composer.Arena):
         zaxis=[0, 0, 1],
         fovy=_top_down_cam_fovy(self._size, top_camera_distance))
 
-    self._mjcf_root.visual.headlight.set_attributes(
-        ambient=[.4, .4, .4], diffuse=[.8, .8, .8], specular=[.1, .1, .1])
-
     # Ensure close up geoms are rendered by egocentric cameras.
     self._mjcf_root.visual.map.znear = 0.0005
 
@@ -316,6 +327,14 @@ class Pitch(composer.Arena):
         rgb2=(.1, .2, .4),
         width=400,
         height=400)
+
+    # Add and position corner lights.
+    self._corner_lights = [self._mjcf_root.worldbody.add('light', cutoff=60)
+                           for _ in range(4)]
+    _reposition_corner_lights(self._corner_lights, size)
+
+    # Increase shadow resolution, (default is 1024).
+    self._mjcf_root.visual.quality.shadowsize = 4096
 
     # Build groundplane.
     if len(self._size) != 2:
@@ -583,3 +602,6 @@ class RandomizedPitch(Pitch):
       for i, (pos, _) in enumerate(
           _wall_pos_xyaxes((self._field.upper - self._field.lower) / 2.0)):
         self._field_box[i].pos = pos
+
+    # Reposition corner lights.
+    _reposition_corner_lights(self._corner_lights, self._size)
