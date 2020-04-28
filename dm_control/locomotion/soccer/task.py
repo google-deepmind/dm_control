@@ -1,5 +1,3 @@
-# Lint as: python3
-#
 # Copyright 2019 The dm_control Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
