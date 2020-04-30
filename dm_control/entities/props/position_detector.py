@@ -65,6 +65,7 @@ class PositionDetector(composer.Entity):
              rgba=(1, 1, 1, 1),
              material=None,
              detected_rgba=(0, 1, 0, 0.25),
+             retain_substep_detections=False,
              name='position_detector'):
     """Builds the detector.
 
@@ -84,6 +85,9 @@ class PositionDetector(composer.Entity):
       rgba: (optional) The color to render when nothing is detected.
       material: (optional) The material of the position detector.
       detected_rgba: (optional) The color to render when an entity is detected.
+      retain_substep_detections: (optional) If `True`, the detector will remain
+        activated at the end of a control step if it became activated at any
+        substep. If `False`, the detector reports its instantaneous state.
       name: (optional) XML element name of this position detector.
 
     Raises:
@@ -95,6 +99,7 @@ class PositionDetector(composer.Entity):
 
     self._inverted = inverted
     self._detected = False
+    self._retain_substep_detections = retain_substep_detections
     self._lower = np.array(pos) - np.array(size)
     self._upper = np.array(pos) + np.array(size)
     self._lower_3d = _ensure_3d(self._lower)
@@ -217,6 +222,10 @@ class PositionDetector(composer.Entity):
   def initialize_episode(self, physics, unused_random_state):
     self._update_detection(physics)
 
+  def before_step(self, physics, unused_random_state):
+    for detection in self._entities:
+      detection.detected = False
+
   def after_substep(self, physics, unused_random_state):
     self._update_detection(physics)
 
@@ -228,7 +237,8 @@ class PositionDetector(composer.Entity):
     self._previously_detected = self._detected
     self._detected = False
     for detection in self._entities:
-      detection.detected = False
+      if not self._retain_substep_detections:
+        detection.detected = False
       for geom in self._entity_geoms[detection.entity]:
         if self._is_in_zone(physics.bind(geom).xpos) != self._inverted:
           detection.detected = True

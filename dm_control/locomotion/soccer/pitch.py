@@ -214,7 +214,7 @@ class Goal(props.PositionDetector):
     # Force the underlying PositionDetector to a non visible site group.
     kwargs['visible'] = False
     # Make a Position_Detector.
-    super(Goal, self)._build(**kwargs)
+    super(Goal, self)._build(retain_substep_detections=True, **kwargs)
 
     # Add goalpost geoms.
     size = kwargs['size']
