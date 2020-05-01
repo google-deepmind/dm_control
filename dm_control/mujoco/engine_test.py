@@ -311,6 +311,22 @@ class MujocoEngineTest(parameterized.TestCase):
   def testReload(self):
     self._physics.reload_from_xml_path(MODEL_PATH)
 
+  def testReset(self):
+    self._physics.reset()
+    self.assertEqual(self._physics.data.qpos[1], 0)
+    keyframe_id = 0
+    self._physics.reset(keyframe_id=keyframe_id)
+    self.assertEqual(self._physics.data.qpos[1],
+                     self._physics.model.key_qpos[keyframe_id, 1])
+    out_of_range = [-1, 3]
+    max_valid = self._physics.model.nkey - 1
+    for actual in out_of_range:
+      with self.assertRaisesWithLiteralMatch(
+          ValueError,
+          engine._KEYFRAME_ID_OUT_OF_RANGE.format(
+              max_valid=max_valid, actual=actual)):
+        self._physics.reset(keyframe_id=actual)
+
   def testLoadAndReloadFromStringWithAssets(self):
     physics = engine.Physics.from_xml_string(
         MODEL_WITH_ASSETS, assets=ASSETS)

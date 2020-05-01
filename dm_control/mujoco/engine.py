@@ -83,6 +83,8 @@ _OVERLAYS_NOT_SUPPORTED_FOR_DEPTH_OR_SEGMENTATION = (
 _RENDER_FLAG_OVERRIDES_NOT_SUPPORTED_FOR_DEPTH_OR_SEGMENTATION = (
     '`render_flag_overrides` are not supported for depth or segmentation '
     'rendering.')
+_KEYFRAME_ID_OUT_OF_RANGE = (
+    '`keyframe_id` must be between 0 and {max_valid} inclusive, got: {actual}.')
 
 
 class Physics(_control.Physics):
@@ -267,9 +269,22 @@ class Physics(_control.Physics):
     new_obj._reload_from_data(new_data)  # pylint: disable=protected-access
     return new_obj
 
-  def reset(self):
-    """Resets internal variables of the physics simulation."""
-    mjlib.mj_resetData(self.model.ptr, self.data.ptr)
+  def reset(self, keyframe_id=None):
+    """Resets internal variables of the simulation, possibly to a keyframe.
+
+    Args:
+      keyframe_id: Optional int. If specified, the keyframe (saved state) to
+        which to set the state.
+
+    """
+    if keyframe_id is None:
+      mjlib.mj_resetData(self.model.ptr, self.data.ptr)
+    else:
+      if not 0 <= keyframe_id < self.model.nkey:
+        raise ValueError(_KEYFRAME_ID_OUT_OF_RANGE.format(
+            max_valid=self.model.nkey-1, actual=keyframe_id))
+      mjlib.mj_resetDataKeyframe(self.model.ptr, self.data.ptr, keyframe_id)
+
     # Disable actuation since we don't yet have meaningful control inputs.
     with self.model.disable('actuation'):
       self.forward()

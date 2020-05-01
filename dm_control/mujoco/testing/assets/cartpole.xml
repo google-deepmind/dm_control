@@ -14,6 +14,8 @@ Actuators (name/actuator/parameter):
 <mujoco model='test_cartpole'>
   <compiler inertiafromgeom='true' coordinate='local'/>
 
+  <size nkey="1"/>
+
   <custom>
     <numeric name="control_timestep" data="0.04" />
     <numeric name="three_numbers" data="1.0 2.0 3.0" />
@@ -65,5 +67,9 @@ Actuators (name/actuator/parameter):
     <accelerometer name="accelerometer" site="cart sensor"/>
     <touch name="collision" site="cart sensor"/>
   </sensor>
+
+  <keyframe>
+    <key name="hanging_down" qpos="0 1.57"/>
+  </keyframe>
 
 </mujoco>
