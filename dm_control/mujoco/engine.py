@@ -273,9 +273,12 @@ class Physics(_control.Physics):
     """Resets internal variables of the simulation, possibly to a keyframe.
 
     Args:
-      keyframe_id: Optional int. If specified, the keyframe (saved state) to
-        which to set the state.
+      keyframe_id: Optional integer specifying the index of a keyframe defined
+        in the model XML to which the simulation state should be initialized.
+        Must be between 0 and `self.model.nkey - 1` (inclusive).
 
+    Raises:
+      ValueError: If `keyframe_id` is out of range.
     """
     if keyframe_id is None:
       mjlib.mj_resetData(self.model.ptr, self.data.ptr)
