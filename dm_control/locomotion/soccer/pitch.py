@@ -19,6 +19,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import colorsys
 import os
 
 from absl import logging
@@ -71,6 +72,9 @@ _NET = {'top': _GOALPOSTS['right_top_support'] + _GOALPOSTS['left_top_support'],
         'left': _GOALPOSTS['left_base'] + _GOALPOSTS['left_top_support'],
         'right': _GOALPOSTS['right_base'] + _GOALPOSTS['right_top_support']}
 _NET = {key: np.array(value).reshape(4, 3) for key, value in _NET.items()}
+
+# Number of visual hoarding boxes per side of the pitch.
+_NUM_HOARDING = 30
 
 
 def _top_down_cam_fovy(size, top_camera_distance):
@@ -288,6 +292,7 @@ class Pitch(composer.Arena):
              top_camera_distance=_TOP_CAMERA_DISTANCE,
              field_box=False,
              field_box_offset=0.5,
+             hoarding_color_scheme_id=0,
              name='pitch'):
     """Construct a pitch with walls and position detectors.
 
@@ -300,12 +305,15 @@ class Pitch(composer.Arena):
       field_box: adds a "field box" that collides with the ball but not the
         walkers.
       field_box_offset: offset for the fieldbox if used.
+      hoarding_color_scheme_id: An integer with value 0, 1, 2, or 3, specifying
+        a preset scheme for the hoarding colors.
       name: the name of this arena.
     """
     super(Pitch, self)._build(name=name)
     self._size = size
     self._goal_size = goal_size
     self._top_camera_distance = top_camera_distance
+    self._hoarding_color_scheme_id = hoarding_color_scheme_id
 
     self._top_camera = self._mjcf_root.worldbody.add(
         'camera',
@@ -324,7 +332,7 @@ class Pitch(composer.Arena):
         type='skybox',
         builtin='gradient',
         rgb1=(.7, .9, .9),
-        rgb2=(.1, .2, .4),
+        rgb2=(.03, .09, .27),
         width=400,
         height=400)
 
@@ -343,7 +351,7 @@ class Pitch(composer.Arena):
     self._field_texture = self._mjcf_root.asset.add(
         'texture',
         type='2d',
-        file=_get_texture('pitch_nologo_s'),
+        file=_get_texture('pitch_nologo_l'),
         name='fieldplane')
     self._field_material = self._mjcf_root.asset.add(
         'material', name='fieldplane', texture=self._field_texture)
@@ -429,6 +437,55 @@ class Pitch(composer.Arena):
                 pos=wall_pos,
                 size=[1e-7, 1e-7, 1e-7],
                 xyaxes=wall_xyaxes))
+
+    # Build hoarding sites.
+    def _box_site():
+      return self._mjcf_root.worldbody.add('site', type='box', size=(1, 1, 1))
+    self._hoarding = [_box_site() for _ in range(4 * _NUM_HOARDING)]
+    self._update_hoarding()
+
+  def _update_hoarding(self):
+    # Resize, reposition and re-color visual perimeter box geoms.
+    num_boxes = _NUM_HOARDING
+    counter = 0
+    for dim in [0, 1]:  # Semantics are [x, y]
+      width = self._get_goal_size()[2] / 8  # Eighth of the goal height.
+      height = self._get_goal_size()[2] / 2  # Half of the goal height.
+      length = self._size[dim]
+      if dim == 1:  # Stretch the y-dim length in order to cover the corners.
+        length += 2 * width
+      box_size = height * np.ones(3)
+      box_size[dim] = length / num_boxes
+      box_size[1-dim] = width
+      dim_pos = np.linspace(-length, length, num_boxes, endpoint=False)
+      dim_pos += length / num_boxes  # Offset to center.
+      for sign in [-1, 1]:
+        alt_pos = sign * (self._size[1-dim] * np.ones(num_boxes) + width)
+        dim_alt = (dim_pos, alt_pos)
+        for box in range(num_boxes):
+          box_pos = np.array((dim_alt[dim][box], dim_alt[1-dim][box], width))
+          if self._hoarding_color_scheme_id == 0:
+            # Red to blue through green + blue hoarding behind blue goal
+            angle = np.pi + np.arctan2(box_pos[0], -np.abs(box_pos[1]))
+          elif self._hoarding_color_scheme_id == 1:
+            # Red to blue through green + blue hoarding behind red goal
+            angle = np.arctan2(box_pos[0], np.abs(box_pos[1]))
+          elif self._hoarding_color_scheme_id == 2:
+            # Red to blue through purple + blue hoarding behind red goal
+            angle = np.arctan2(box_pos[0], -np.abs(box_pos[1]))
+          elif self._hoarding_color_scheme_id == 3:
+            # Red to blue through purple + blue hoarding behind blue goal
+            angle = np.pi + np.arctan2(box_pos[0], np.abs(box_pos[1]))
+          hue = 0.5 + angle / (2*np.pi)  # In [0, 1]
+          hue_offset = .25
+          hue = (hue - hue_offset) % 1.0  # Apply offset and wrap back to [0, 1]
+          saturation = .7
+          value = 1.0
+          col_r, col_g, col_b = colorsys.hsv_to_rgb(hue, saturation, value)
+          self._hoarding[counter].pos = box_pos
+          self._hoarding[counter].size = box_size
+          self._hoarding[counter].rgba = (col_r, col_g, col_b, 1.)
+          counter += 1
 
   def _update_perimeter(self):
     # Resize and reposition visual perimeter plane geoms.
@@ -605,3 +662,6 @@ class RandomizedPitch(Pitch):
 
     # Reposition corner lights.
     _reposition_corner_lights(self._corner_lights, self._size)
+
+    # Resize, reposition and recolor hoarding geoms.
+    self._update_hoarding()
