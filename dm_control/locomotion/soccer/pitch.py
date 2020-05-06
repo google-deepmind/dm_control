@@ -105,6 +105,49 @@ def _wall_pos_xyaxes(size):
   ]
 
 
+def _fieldbox_pos_size(field_size, goal_size):
+  """Infers position and size of fieldbox given pitch size.
+
+  Walls are placed around the field so that the ball cannot travel beyond
+  `field` but walkers can walk outside of the `field` but not the surrounding
+  pitch. Holes are left in the fieldbox at the goal positions to enable scoring.
+
+  Args:
+    field_size: a tuple of (length, width) of the field.
+    goal_size: a tuple of (unused_depth, width, height) of the goal.
+
+  Returns:
+    a list of 8 tuples, each representing the position and size of a wall box.
+  """
+
+  box_half_height = 20.
+  corner_pos_y = 0.5 * (field_size[1] + goal_size[1])
+  corner_size_y = 0.5 * (field_size[1] - goal_size[1])
+  thickness = 1.0
+  top_pos_z = box_half_height + goal_size[2]
+  top_size_z = box_half_height - goal_size[2]
+  wall_offset_x = field_size[0] + thickness
+  wall_offset_y = field_size[1] + thickness
+  return [
+      ((0., -wall_offset_y, box_half_height),
+       (field_size[0], thickness, box_half_height)),  # near side
+      ((0., wall_offset_y, box_half_height),
+       (field_size[0], thickness, box_half_height)),  # far side
+      ((-wall_offset_x, -corner_pos_y, box_half_height),
+       (thickness, corner_size_y, box_half_height)),  # left near corner
+      ((-wall_offset_x, 0., top_pos_z),
+       (thickness, goal_size[1], top_size_z)),  # left top corner
+      ((-wall_offset_x, corner_pos_y, box_half_height),
+       (thickness, corner_size_y, box_half_height)),  # left far corner
+      ((wall_offset_x, -corner_pos_y, box_half_height),
+       (thickness, corner_size_y, box_half_height)),  # right near corner
+      ((wall_offset_x, 0., top_pos_z),
+       (thickness, goal_size[1], top_size_z)),  # right top corner
+      ((wall_offset_x, corner_pos_y, box_half_height),
+       (thickness, corner_size_y, box_half_height)),  # right far corner
+  ]
+
+
 def _roof_size(size):
   return (size[0], size[1], _WALL_THICKNESS)
 
@@ -291,7 +334,7 @@ class Pitch(composer.Arena):
              goal_size=None,
              top_camera_distance=_TOP_CAMERA_DISTANCE,
              field_box=False,
-             field_box_offset=0.5,
+             field_box_offset=0.0,
              hoarding_color_scheme_id=0,
              name='pitch'):
     """Construct a pitch with walls and position detectors.
@@ -427,16 +470,15 @@ class Pitch(composer.Arena):
     # Build field box.
     self._field_box = []
     if field_box:
-      for wall_pos, wall_xyaxes in _wall_pos_xyaxes(
-          (self._field.upper - self._field.lower) / 2.0):
+      for box_pos, box_size in _fieldbox_pos_size(
+          (self._field.upper - self._field.lower) / 2.0, goal_size):
         self._field_box.append(
             self._mjcf_root.worldbody.add(
                 'geom',
-                type='plane',
-                rgba=[.3, .3, .3, .3],
-                pos=wall_pos,
-                size=[1e-7, 1e-7, 1e-7],
-                xyaxes=wall_xyaxes))
+                type='box',
+                rgba=[.3, .3, .3, .0],
+                pos=box_pos,
+                size=box_size))
 
     # Build hoarding sites.
     def _box_site():
@@ -570,7 +612,7 @@ class RandomizedPitch(Pitch):
                keep_aspect_ratio=False,
                goal_size=None,
                field_box=False,
-               field_box_offset=0.5,
+               field_box_offset=0.0,
                top_camera_distance=_TOP_CAMERA_DISTANCE,
                name='randomized_pitch'):
     """Construct a randomized pitch.
@@ -656,9 +698,11 @@ class RandomizedPitch(Pitch):
 
     # Resize and reposition field box geoms.
     if self._field_box:
-      for i, (pos, _) in enumerate(
-          _wall_pos_xyaxes((self._field.upper - self._field.lower) / 2.0)):
+      for i, (pos, size) in enumerate(
+          _fieldbox_pos_size((self._field.upper - self._field.lower) / 2.0,
+                             goal_size)):
         self._field_box[i].pos = pos
+        self._field_box[i].size = size
 
     # Reposition corner lights.
     _reposition_corner_lights(self._corner_lights, self._size)
