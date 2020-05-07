@@ -705,7 +705,10 @@ class RandomizedPitch(Pitch):
         self._field_box[i].size = size
 
     # Reposition corner lights.
-    _reposition_corner_lights(self._corner_lights, self._size)
+    _reposition_corner_lights(
+        self._corner_lights,
+        size=(self._size[0] - 2 * goal_size[0],
+              self._size[1] - 2 * goal_size[0]))
 
     # Resize, reposition and recolor hoarding geoms.
     self._update_hoarding()
