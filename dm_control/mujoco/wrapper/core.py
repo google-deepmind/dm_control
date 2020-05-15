@@ -52,6 +52,10 @@ _VFS_FILENAME_TOO_LONG = (
 _INVALID_FONT_SCALE = ("`font_scale` must be one of {}, got {{}}."
                        .format(enums.mjtFontScale))
 
+_CONTACT_ID_OUT_OF_RANGE = (
+    "`contact_id` must be between 0 and {max_valid} (inclusive), got: {actual}."
+)
+
 # Global cache used to store finalizers for freeing ctypes pointers.
 # Contains {pointer_address: weakref_object} pairs.
 _FINALIZERS = {}
@@ -713,6 +717,27 @@ class MjData(wrappers.MjDataWrapper):
                             object_type, object_id, velocity, local_frame)
     #  MuJoCo returns velocities in (angular, linear) order, which we flip here.
     return velocity.reshape(2, 3)[::-1]
+
+  def contact_force(self, contact_id):
+    """Returns the wrench of a contact as a 2 x 3 array of (forces, torques).
+
+    Args:
+      contact_id: Integer, the index of the contact within the contact buffer
+        (`self.contact`).
+
+    Returns:
+      2x3 array with stacked (force, torque). Note that the order of dimensions
+        is (normal, tangent, tangent), in the contact's frame.
+
+    Raises:
+      ValueError: If `contact_id` is negative or bigger than ncon-1.
+    """
+    if not 0 <= contact_id < self.ncon:
+      raise ValueError(_CONTACT_ID_OUT_OF_RANGE
+                       .format(max_valid=self.ncon-1, actual=contact_id))
+    wrench = np.empty(6, dtype=np.float64)
+    mjlib.mj_contactForce(self.model.ptr, self.ptr, contact_id, wrench)
+    return wrench.reshape(2, 3)
 
   @property
   def model(self):

@@ -465,6 +465,77 @@ class CoreTest(parameterized.TestCase):
     np.testing.assert_array_almost_equal(linvel, expected_linvel)
     np.testing.assert_array_almost_equal(angvel, expected_angvel)
 
+  def testContactForce(self):
+    box_on_floor = """
+    <mujoco>
+      <worldbody>
+        <geom name='floor' type='plane' size='1 1 1'/>
+        <body name='box' pos='0 0 .1'>
+          <freejoint/>
+          <geom name='box' type='box' size='.1 .1 .1'/>
+        </body>
+      </worldbody>
+    </mujoco>
+    """
+    model = core.MjModel.from_xml_string(box_on_floor)
+    data = core.MjData(model)
+    # Settle for 500 timesteps (1 second):
+    for _ in range(500):
+      mjlib.mj_step(model.ptr, data.ptr)
+    normal_force = 0.
+    for contact_id in range(data.ncon):
+      force = data.contact_force(contact_id)
+      normal_force += force[0, 0]
+    box_id = 1
+    box_weight = -model.opt.gravity[2]*model.body_mass[box_id]
+    self.assertAlmostEqual(normal_force, box_weight)
+    # Test raising of out-of-range errors:
+    bad_ids = [-1, data.ncon]
+    for bad_id in bad_ids:
+      with self.assertRaisesWithLiteralMatch(
+          ValueError,
+          core._CONTACT_ID_OUT_OF_RANGE.format(
+              max_valid=data.ncon - 1, actual=bad_id)):
+        data.contact_force(bad_id)
+
+  @parameterized.parameters(
+      dict(
+          condim=3,  # Only sliding friction.
+          expected_torques=[False, False, False],  # No torques.
+      ),
+      dict(
+          condim=4,  # Sliding and torsional friction.
+          expected_torques=[True, False, False],  # Only torsional torque.
+      ),
+      dict(
+          condim=6,  # Sliding, torsional and rolling.
+          expected_torques=[True, True, True],  # All torques are nonzero.
+      ),
+  )
+  def testContactTorque(self, condim, expected_torques):
+    ball_on_floor = """
+    <mujoco>
+      <worldbody>
+        <geom name='floor' type='plane' size='1 1 1'/>
+        <body name='ball' pos='0 0 .1'>
+          <freejoint/>
+          <geom name='ball' size='.1' friction='1 .1 .1'/>
+        </body>
+      </worldbody>
+    </mujoco>
+    """
+    model = core.MjModel.from_xml_string(ball_on_floor)
+    data = core.MjData(model)
+    model.geom_condim[:] = condim
+    data.qvel[3:] = np.array((1., 1., 1.))
+    # Settle for 10 timesteps (20 milliseconds):
+    for _ in range(10):
+      mjlib.mj_step(model.ptr, data.ptr)
+    contact_id = 0  # This model has only one contact.
+    _, torque = data.contact_force(contact_id)
+    nonzero_torques = torque != 0
+    np.testing.assert_array_equal(nonzero_torques, np.array((expected_torques)))
+
   def testFreeMjrContext(self):
     for _ in range(5):
       renderer = _render.Renderer(640, 480)
