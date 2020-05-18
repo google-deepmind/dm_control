@@ -86,6 +86,22 @@ class Variation(object):
   def __getitem__(self, index):
     return _GetItemOperation(self, index)
 
+  def __neg__(self):
+    return _UnaryOperation(operator.neg, self)
+
+
+class _UnaryOperation(Variation):
+  """Represents the result of applying a unary operator to a Variation."""
+
+  def __init__(self, op, variation):
+    self._op = op
+    self._variation = variation
+
+  def __call__(self, initial_value=None, current_value=None, random_state=None):
+    value = variation_values.evaluate(
+        self._variation, initial_value, current_value, random_state)
+    return self._op(value)
+
 
 class _BinaryOperation(Variation):
   """Represents the result of applying a binary operator to two Variations."""

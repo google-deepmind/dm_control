@@ -36,8 +36,15 @@ class VariationTest(parameterized.TestCase):
     self.value_2 = 5
     self.variation_2 = deterministic.Constant(self.value_2)
 
+  @parameterized.parameters(['neg'])
+  def test_unary_operator(self, name):
+    func = getattr(operator, name)
+    self.assertEqual(
+        variation.evaluate(func(self.variation_1)),
+        func(self.value_1))
+
   @parameterized.parameters(['add', 'sub', 'mul', 'truediv', 'floordiv', 'pow'])
-  def test_operator(self, name):
+  def test_binary_operator(self, name):
     func = getattr(operator, name)
     self.assertEqual(
         variation.evaluate(func(self.value_1, self.variation_2)),
