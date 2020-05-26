@@ -210,8 +210,9 @@ class MazeWithTargets(composer.Arena):
     """The grid-coordinate position at which the agent should be spawned."""
     return self._spawn_grid_positions
 
-  def regenerate(self):
+  def regenerate(self, random_state=np.random.RandomState()):
     """Generates a new maze layout."""
+    del random_state
     self._maze.regenerate()
     logging.debug('GENERATED MAZE:\n%s', self._maze.entity_layer)
     self._find_spawn_and_target_positions()
