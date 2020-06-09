@@ -197,7 +197,7 @@ class DomainTest(parameterized.TestCase):
                  'Actual: {!r}'.format(material_name, expected, actual))
       np.testing.assert_array_almost_equal(expected, actual, err_msg=err_msg)
 
-  @parameterized.parameters(*suite.ALL_TASKS)
+  @parameterized.parameters(*suite.REWARD_VIZ)
   def test_visualize_reward(self, domain, task):
     env = suite.load(domain, task)
     env.task.visualize_reward = True

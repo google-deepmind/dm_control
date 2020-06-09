@@ -19,6 +19,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import os
+
 
 def GetResource(name, mode='rb'):
   with open(name, mode=mode) as f:
@@ -28,5 +30,10 @@ def GetResource(name, mode='rb'):
 def GetResourceFilename(name, mode='rb'):
   del mode  # Unused.
   return name
+
+
+def WalkResources(path):
+  return os.walk(path)
+
 
 GetResourceAsFile = open  # pylint: disable=invalid-name
