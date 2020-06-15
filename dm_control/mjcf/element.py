@@ -401,7 +401,8 @@ class _ElementImpl(base.Element):
       raise ValueError(
           '`identifier` should be a string: got {!r}'.format(identifier))
     if namespace not in schema.FINDABLE_NAMESPACES:
-      raise ValueError('{!r} is not a valid namespace.'.format(namespace))
+      raise ValueError('{!r} is not a valid namespace. Available: {}.'.format(
+          namespace, schema.FINDABLE_NAMESPACES))
     if constants.PREFIX_SEPARATOR in identifier:
       scope_name = identifier.split(constants.PREFIX_SEPARATOR)[0]
       try:
@@ -450,7 +451,8 @@ class _ElementImpl(base.Element):
       ValueError: if `namespace` is not a valid namespace.
     """
     if namespace not in schema.FINDABLE_NAMESPACES:
-      raise ValueError('{!r} is not a valid namespace.'.format(namespace))
+      raise ValueError('{!r} is not a valid namespace. Available: {}'.format(
+          namespace, schema.FINDABLE_NAMESPACES))
     out = []
     children = self._children if exclude_attachments else self.all_children()
     for child in children:
