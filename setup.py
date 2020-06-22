@@ -15,14 +15,14 @@
 
 """Install script for setuptools."""
 
+from distutils import cmd
+from distutils import log
 import fnmatch
 import os
 import platform
 import subprocess
 import sys
 
-from distutils import cmd
-from distutils import log
 from setuptools import find_packages
 from setuptools import setup
 from setuptools.command import install
@@ -153,20 +153,31 @@ class TestCommand(test.test):
     test.test.run(self)
 
 
-def find_data_files(package_dir, patterns):
+def find_data_files(package_dir, patterns, excludes=()):
   """Recursively finds files whose names match the given shell patterns."""
   paths = set()
+
+  def is_excluded(s):
+    for exclude in excludes:
+      if fnmatch.fnmatch(s, exclude):
+        return True
+    return False
+
   for directory, _, filenames in os.walk(package_dir):
+    if is_excluded(directory):
+      continue
     for pattern in patterns:
       for filename in fnmatch.filter(filenames, pattern):
         # NB: paths must be relative to the package directory.
         relative_dirpath = os.path.relpath(directory, package_dir)
-        paths.add(os.path.join(relative_dirpath, filename))
+        full_path = os.path.join(relative_dirpath, filename)
+        if not is_excluded(full_path):
+          paths.add(full_path)
   return list(paths)
 
 setup(
     name='dm_control',
-    version='0.0.317105039',
+    version='0.0.317658938',
     description='Continuous control environments and MuJoCo Python bindings.',
     author='DeepMind',
     license='Apache License, Version 2.0',
@@ -200,7 +211,8 @@ setup(
     package_data={
         'dm_control': find_data_files(package_dir='dm_control',
                                       patterns=['*.amc', '*.msh', '*.png',
-                                                '*.skn', '*.stl', '*.xml']),
+                                                '*.skn', '*.stl', '*.xml'],
+                                      excludes=['*/dog_assets/extras/*']),
     },
     cmdclass={
         'build_mjbindings': BuildMJBindingsCommand,

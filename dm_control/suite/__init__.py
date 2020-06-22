@@ -29,6 +29,7 @@ from dm_control.suite import acrobot
 from dm_control.suite import ball_in_cup
 from dm_control.suite import cartpole
 from dm_control.suite import cheetah
+from dm_control.suite import dog
 from dm_control.suite import finger
 from dm_control.suite import fish
 from dm_control.suite import hopper
