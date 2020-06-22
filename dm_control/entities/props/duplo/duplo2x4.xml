@@ -1,0 +1,109 @@
+<mujoco model='duplo2x4'>
+
+  <default>
+    <site type='sphere' size='0.001' group='5' rgba='1 0 0 0.3'/>
+    <geom friction='.35' solimp=".99 .999 .001" solref=".01 1" rgba=".5 .5 .5 1"/>
+
+    <default class='base'>
+      <geom type='box' pos='0 0 0.0096' size='0.0159 0.0318 0.0096' contype='3' conaffinity='2' rgba='0 0 1 0.3' group='4' mass='0'/>
+    </default>
+    <default class='wall'>
+      <geom type='box' contype='4' conaffinity='0'/>
+    </default>
+    <default class='flange'>
+      <geom type='box' size='.0008 .00055 .0087' contype='0' conaffinity='0'/>
+    </default>
+    <default class='stud'>
+      <geom type='cylinder' size='.0047 .0023' density='500' margin='.0001' contype='5' conaffinity='4'/>
+    </default>
+    <default class='stud-capsule'>
+      <geom type='capsule' size='.005 .0023' density='500' group='3' mass='0' contype='0' conaffinity='0'/>
+    </default>
+    <default class='tube'>
+      <geom type='cylinder' size='.0066999 .0078' density='300' contype='4' conaffinity='0'/>
+    </default>
+
+  </default>
+
+  <worldbody>
+    <geom name='base' class='base'/>
+
+    <geom name='wall_x0' class='wall' pos='-.0151 0 .0088' size='.0008 .0302 .0088'/>
+    <geom name='wall_x1' class='wall' pos='+.0151 0 .0088' size='.0008 .0302 .0088'/>
+    <geom name='wall_y0' class='wall' pos='0  -.031 .0088' size='.0159 .0008 .0088'/>
+    <geom name='wall_y1' class='wall' pos='0  +.031 .0088' size='.0159 .0008 .0088'/>
+    <geom name='wall_z1' class='wall' pos='0      0 .0184' size='.0159 .0318 .0008'/>
+
+    <!-- Site that fully encloses all of the geoms in the brick. -->
+    <site name='bounding_box' type='box' size='0.016 0.0319 0.012' pos='0 0 0.0119' group='3'/>
+
+    <!-- Sites used to determine whether or not two bricks are clicked together. -->
+    <site name='stud_00' pos='-.008 -.024 .0238'/>
+    <site name='stud_01' pos='-.008 -.008 .0238'/>
+    <site name='stud_02' pos='-.008 +.008 .0238'/>
+    <site name='stud_03' pos='-.008 +.024 .0238'/>
+    <site name='stud_10' pos='+.008 -.024 .0238'/>
+    <site name='stud_11' pos='+.008 -.008 .0238'/>
+    <site name='stud_12' pos='+.008 +.008 .0238'/>
+    <site name='stud_13' pos='+.008 +.024 .0238'/>
+
+    <site name='hole_00' pos='-.008 -.024 .0046'/>
+    <site name='hole_01' pos='-.008 -.008 .0046'/>
+    <site name='hole_02' pos='-.008 +.008 .0046'/>
+    <site name='hole_03' pos='-.008 +.024 .0046'/>
+    <site name='hole_10' pos='+.008 -.024 .0046'/>
+    <site name='hole_11' pos='+.008 -.008 .0046'/>
+    <site name='hole_12' pos='+.008 +.008 .0046'/>
+    <site name='hole_13' pos='+.008 +.024 .0046'/>
+
+    <geom name='stud_00' class='stud' pos='-.00805 -.024 .0215'/>
+    <geom name='stud_01' class='stud' pos='-.00805 -.008 .0215'/>
+    <geom name='stud_02' class='stud' pos='-.00805 +.008 .0215'/>
+    <geom name='stud_03' class='stud' pos='-.00805 +.024 .0215'/>
+    <geom name='stud_10' class='stud' pos='+.00805 -.024 .0215'/>
+    <geom name='stud_11' class='stud' pos='+.00805 -.008 .0215'/>
+    <geom name='stud_12' class='stud' pos='+.00805 +.008 .0215'/>
+    <geom name='stud_13' class='stud' pos='+.00805 +.024 .0215'/>
+
+    <geom name='studcap_00' class='stud-capsule' pos='-.008 -.024 .0215'/>
+    <geom name='studcap_01' class='stud-capsule' pos='-.008 -.008 .0215'/>
+    <geom name='studcap_02' class='stud-capsule' pos='-.008 +.008 .0215'/>
+    <geom name='studcap_03' class='stud-capsule' pos='-.008 +.024 .0215'/>
+    <geom name='studcap_10' class='stud-capsule' pos='+.008 -.024 .0215'/>
+    <geom name='studcap_11' class='stud-capsule' pos='+.008 -.008 .0215'/>
+    <geom name='studcap_12' class='stud-capsule' pos='+.008 +.008 .0215'/>
+    <geom name='studcap_13' class='stud-capsule' pos='+.008 +.024 .0215'/>
+
+    <geom name='flange_00' class='flange' pos='-.0135 -.024 .00885'/>
+    <geom name='flange_01' class='flange' pos='-.0135 -.008 .00885'/>
+    <geom name='flange_02' class='flange' pos='-.0135 +.008 .00885'/>
+    <geom name='flange_03' class='flange' pos='-.0135 +.024 .00885'/>
+    <geom name='flange_10' class='flange' pos='+.0135 -.024 .00885'/>
+    <geom name='flange_11' class='flange' pos='+.0135 -.008 .00885'/>
+    <geom name='flange_12' class='flange' pos='+.0135 +.008 .00885'/>
+    <geom name='flange_13' class='flange' pos='+.0135 +.024 .00885'/>
+
+    <geom name='flange_00y' class='flange' pos='-.00805 -.02945 .00885' quat='1 0 0 1'/>
+    <geom name='flange_01y' class='flange' pos='-.00805 +.02945 .00885' quat='1 0 0 1'/>
+    <geom name='flange_10y' class='flange' pos='+.00805 -.02945 .00885' quat='1 0 0 1'/>
+    <geom name='flange_11y' class='flange' pos='+.00805 +.02945 .00885' quat='1 0 0 1'/>
+
+    <geom name='tube_0' class='tube' pos='0 -.016 .0098'/>
+    <geom name='tube_1' class='tube' pos='0 0     .0098'/>
+    <geom name='tube_2' class='tube' pos='0 +.016 .0098'/>
+
+    <geom name='inner_x0' class='wall' pos='-.01045  0 .011' size='.00385 .00055 .0066'/>
+    <geom name='inner_x1' class='wall' pos='+.01045  0 .011' size='.00385 .00055 .0066'/>
+    <geom name='inner_y0' class='wall' pos='0    -.008 .0132' size='.0004 .0014 .0044'/>
+    <geom name='inner_y1' class='wall' pos='0     .008 .0132' size='.0004 .0014 .0044'/>
+  </worldbody>
+
+  <sensor>
+    <framepos name='position' objtype='site' objname='bounding_box'/>
+    <framequat name='orientation' objtype='site' objname='bounding_box'/>
+    <framelinvel name='linear_velocity' objtype='site' objname='bounding_box'/>
+    <frameangvel name='angular_velocity' objtype='site' objname='bounding_box'/>
+    <force name='force' site='bounding_box'/>
+  </sensor>
+
+</mujoco>
