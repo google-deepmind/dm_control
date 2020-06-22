@@ -1,0 +1,76 @@
+<mujoco model="jaco_arm">
+  <compiler angle="radian" meshdir="meshes_decimated/"/>
+  <include file="common.xml"/>
+
+  <asset>
+    <mesh name="base" file="base.stl"/>
+    <mesh name="shoulder" file="shoulder.stl"/>
+    <mesh name="arm" file="arm.stl"/>
+    <mesh name="forearm" file="forearm.stl"/>
+    <mesh name="wrist" file="wrist.stl"/>
+  </asset>
+
+  <default>
+    <geom type="mesh" material="dark_gray" condim="3" contype="3" conaffinity="2"/>
+    <joint type="hinge" damping="0.01"/>
+    <default class="large_joint">
+      <joint armature="4" frictionloss="2"/>
+    </default>
+    <default class="small_joint">
+      <joint armature="2" frictionloss="1"/>
+    </default>
+    <default class="ring">
+      <geom type="cylinder" material="light_gray" mass="0"/>
+      <default class="large_ring">
+        <geom size="0.044 0.011"/>
+      </default>
+      <default class="small_ring">
+        <geom size="0.035 0.009"/>
+      </default>
+    </default>
+  </default>
+
+  <worldbody>
+    <body name="b_base">
+      <geom name="base" mesh="base" mass="0.718306"/>
+      <body name="b_1" pos="0 0 0.15675" quat="0 0 1 0">
+        <joint name="joint_1" class="large_joint"/>
+        <geom name="link_1" mesh="shoulder" mass="0.643205"/>
+        <geom name="ring_1" class="large_ring"/>
+        <body name="b_2" pos="0 0.0016 -0.11875" quat="0 0 -0.707107 0.707107">
+          <joint name="joint_2"  class="large_joint" limited="true" range="0.820305 5.462881" />
+          <geom name="link_2" mesh="arm" mass="1.16915"/>
+          <geom name="ring_2" class="large_ring"/>
+          <body name="b_3" pos="0 -0.41 0" quat="0 0 1 0">
+            <joint name="joint_3"  class="large_joint" limited="true" range="0.331613 5.951573"/>
+            <geom name="link_3" mesh="forearm" mass="0.673443"/>
+            <geom name="ring_3" class="large_ring"/>
+            <body name="b_4" pos="0 0.2073 -0.0114" quat="0 0 -0.707107 0.707107">
+              <joint name="joint_4" class="small_joint"/>
+              <geom name="link_4" mesh="wrist" mass="0.221432"/>
+              <geom name="ring_4" class="small_ring"/>
+              <body name="b_5" pos="0 -0.03703 -0.06414" quat="0 0 0.5 0.866025">
+                <joint name="joint_5" class="small_joint"/>
+                <geom name="link_5" mesh="wrist" mass="0.221432"/>
+                <geom name="ring_5" class="small_ring"/>
+                <body name="b_6" pos="0 -0.03703 -0.06414" quat="0 0 0.5 0.866025">
+                  <joint name="joint_6" class="small_joint"/>
+                  <!-- This geom has a tiny mass because MuJoCo doesn't allow massless bodies with
+                       DOFs. Normally the gripper would be attached as a child of this body. -->
+                  <geom name="ring_6" class="small_ring" mass="1e-9"/>
+                  <site name="wristsite" quat="0. 0.70710678118 0.70710678118 0."/>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <!-- Prevent contact between the base and the first body when the base is a direct child of the worldbody. -->
+  <contact>
+    <exclude body1='b_base' body2='b_1'/>
+  </contact>
+
+</mujoco>

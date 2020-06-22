@@ -1,0 +1,63 @@
+<mujoco model="jaco_hand">
+  <compiler angle="radian" meshdir="meshes_decimated/"/>
+  <include file="common.xml"/>
+
+  <asset>
+    <mesh name="hand_3finger_main" file="hand_3finger_main.stl"/>
+    <mesh name="hand_3finger_insert" file="hand_3finger_insert.stl"/>
+    <mesh name="finger_proximal" file="finger_proximal.stl"/>
+    <mesh name="finger_distal" file="finger_distal.stl"/>
+  </asset>
+
+  <default>
+    <geom type="mesh" material="dark_gray" condim="3" contype="3" conaffinity="2"/>
+    <joint type="hinge" limited="true" range="0.15 1.35" frictionloss="0.1" armature="0.1" damping="0.75"/>
+    <default class="finger">
+      <geom type="mesh" material="light_gray" condim="4"/>
+      <default class="finger_proximal">
+        <geom mesh="finger_proximal" mass="0.0255204"/>
+      </default>
+      <default class="finger_distal">
+        <geom mesh="finger_distal" mass="0.0132655"/>
+      </default>
+    </default>
+  </default>
+
+  <worldbody>
+    <body name="hand" quat="0. 0.70710678118 0.70710678118 0.">
+      <site name="gripsite" pos="0 -0.0001 -.159" quat="0 0.70710678118 0.70710678118 0"/>
+      <site name="pinchsite" pos="0.015 0.0024 -0.193" quat="0 0.70710678118 0.70710678118 0"/>
+      <geom name="link_6_main" mesh="hand_3finger_main" mass="0.54719"/>
+      <geom name="link_6_insert" mesh="hand_3finger_insert" material="light_gray" mass="0"/>
+      <body name="b_finger_1" pos="0.00279 0.03126 -0.11467" quat="0.24396 -0.63159 -0.38818 0.62521" childclass="finger_proximal">
+        <joint name="finger_1"/>
+        <geom name="finger_knuckle_1"/>
+        <body name="b_finger_tip_1" pos="0.044 -0.003 0" childclass="finger_distal">
+          <geom name="finger_tip_1"/>
+        </body>
+      </body>
+      <body name="b_finger_2" pos="-0.02226 -0.02707 -0.11482" quat="0.601679 -0.254671 0.659653 -0.37146" childclass="finger_proximal">
+        <joint name="finger_2"/>
+        <geom name="finger_knuckle_2"/>
+        <body name="b_finger_tip_2" pos="0.044 -0.003 0" childclass="finger_distal">
+          <geom name="finger_tip_2"/>
+        </body>
+      </body>
+      <body name="b_finger_3" pos="0.02226 -0.02707 -0.11482" quat="0.659653 -0.37146 0.601679 -0.254671" childclass="finger_proximal">
+        <joint name="finger_3"/>
+        <geom name="finger_knuckle_3"/>
+        <body name="b_finger_tip_3" pos="0.044 -0.003 0" childclass="finger_distal">
+          <geom name="finger_tip_3"/>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <!-- Prevents contacts between the hand and the fingers when the hand is a direct child of the worldbody. -->
+  <contact>
+    <exclude body1='hand' body2='b_finger_1'/>
+    <exclude body1='hand' body2='b_finger_2'/>
+    <exclude body1='hand' body2='b_finger_3'/>
+  </contact>
+
+</mujoco>

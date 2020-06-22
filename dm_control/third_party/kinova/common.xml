@@ -1,0 +1,12 @@
+<mujoco>
+  <asset>
+    <material name="dark_gray" rgba="0.1 0.1 0.1 1"/>
+    <material name="light_gray" rgba="0.7 0.7 0.7 1"/>
+    <material name="reference_site" rgba="1 0 0 0.5"/>
+  </asset>
+  <default>
+    <!-- These values yield contacts that are significantly harder than with MuJoCo's defaults. -->
+    <geom solimp="0.99 0.999 0.001" solref="0.01 1"/>
+    <site type="sphere" size="0.01" material="reference_site" group="4"/>
+  </default>
+</mujoco>
