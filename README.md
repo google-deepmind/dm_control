@@ -1,6 +1,13 @@
-# `dm_control`: The DeepMind Control Suite and Package
+# `dm_control`: DeepMind Infrastructure for Physics-Based Simulation.
 
-# ![all domains](all_domains.png)
+DeepMind's software stack for physics-based simulation and Reinforcement
+Learning environments, using MuJoCo physics.
+
+An **introductory tutorial** for this package is available as a Colaboratory
+notebook:
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/deepmind/dm_control/blob/master/tutorial.ipynb)
+
+## Overview
 
 This package consists of the following "core" components:
 
@@ -48,10 +55,10 @@ If you use this package, please cite our accompanying [tech report]:
 `dm_control` is regularly tested using the following platforms and Python
 versions:
 
-|              | Python 2.7 | Python 3.5 |
-| ------------ | ---------- | ---------- |
-| Ubuntu 14.04 | &#x2713;   | &#x2713;   |
-| Ubuntu 16.04 |            | &#x2713;   |
+             | Python 2.7 | Python 3.5
+------------ | ---------- | ----------
+Ubuntu 14.04 | &#x2713;   | &#x2713;
+Ubuntu 16.04 |            | &#x2713;
 
 Various people have been successful in getting `dm_control` to work on other
 Linux distros, OS X, and Windows. We do not provide active support for these,
