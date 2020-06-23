@@ -177,7 +177,7 @@ def find_data_files(package_dir, patterns, excludes=()):
 
 setup(
     name='dm_control',
-    version='0.0.317899335',
+    version='0.0.317909328',
     description='Continuous control environments and MuJoCo Python bindings.',
     author='DeepMind',
     license='Apache License, Version 2.0',
@@ -209,10 +209,14 @@ setup(
     test_suite='nose.collector',
     packages=find_packages(),
     package_data={
-        'dm_control': find_data_files(package_dir='dm_control',
-                                      patterns=['*.amc', '*.msh', '*.png',
-                                                '*.skn', '*.stl', '*.xml'],
-                                      excludes=['*/dog_assets/extras/*']),
+        'dm_control':
+            find_data_files(
+                package_dir='dm_control',
+                patterns=['*.amc', '*.msh', '*.png', '*.skn', '*.stl', '*.xml'],
+                excludes=[
+                    '*/dog_assets/extras/*',
+                    '*/kinova/meshes/*',  # Exclude non-decimated meshes.
+                ]),
     },
     cmdclass={
         'build_mjbindings': BuildMJBindingsCommand,
