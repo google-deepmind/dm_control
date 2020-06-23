@@ -52,13 +52,13 @@ If you use this package, please cite our accompanying [tech report]:
 
 ## Requirements and Installation
 
-`dm_control` is regularly tested using the following platforms and Python
+`dm_control` is regularly tested on Ubuntu 16.04 against the following Python
 versions:
 
-             | Python 2.7 | Python 3.5
------------- | ---------- | ----------
-Ubuntu 14.04 | &#x2713;   | &#x2713;
-Ubuntu 16.04 |            | &#x2713;
+*   2.7
+*   3.5
+*   3.6
+*   3.7
 
 Various people have been successful in getting `dm_control` to work on other
 Linux distros, OS X, and Windows. We do not provide active support for these,
