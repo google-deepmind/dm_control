@@ -42,7 +42,7 @@
     </element>
     <element name="option">
       <attributes>
-        <attribute name="timestep" type="float"/>
+        <attribute name="timestep" type="float" conflict_allowed="true" conflict_behavior="min"/>
         <attribute name="apirate" type="float"/>
         <attribute name="gravity" type="array" array_type="float" array_size="3"/>
         <attribute name="wind" type="array" array_type="float" array_size="3"/>
@@ -58,12 +58,12 @@
         <attribute name="cone" type="keyword" valid_values="pyramidal elliptic"/>
         <attribute name="jacobian" type="keyword" valid_values="dense sparse auto"/>
         <attribute name="solver" type="keyword" valid_values="PGS CG Newton"/>
-        <attribute name="iterations" type="int"/>
-        <attribute name="tolerance" type="float"/>
-        <attribute name="noslip_iterations" type="int"/>
-        <attribute name="noslip_tolerance" type="float"/>
-        <attribute name="mpr_iterations" type="int"/>
-        <attribute name="mpr_tolerance" type="float"/>
+        <attribute name="iterations" type="int" conflict_allowed="true" conflict_behavior="max"/>
+        <attribute name="tolerance" type="float" conflict_allowed="true" conflict_behavior="min"/>
+        <attribute name="noslip_iterations" type="int" conflict_allowed="true" conflict_behavior="max"/>
+        <attribute name="noslip_tolerance" type="float" conflict_allowed="true" conflict_behavior="min"/>
+        <attribute name="mpr_iterations" type="int" conflict_allowed="true" conflict_behavior="max"/>
+        <attribute name="mpr_tolerance" type="float" conflict_allowed="true" conflict_behavior="min"/>
       </attributes>
       <children>
         <element name="flag">
