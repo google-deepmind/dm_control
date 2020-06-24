@@ -35,18 +35,15 @@ complex control tasks:
 If you use this package, please cite our accompanying [tech report]:
 
 ```
-@techreport{deepmindcontrolsuite2018,
-  title = {Deep{Mind} Control Suite},
-  author = {Yuval Tassa and Yotam Doron and Alistair Muldal and Tom Erez
-            and Yazhe Li and Diego de Las Casas and David Budden and Abbas
-            Abdolmaleki and Josh Merel and Andrew Lefrancq and Timothy Lillicrap
-            and Martin Riedmiller},
-  year = 2018,
-  month = jan,
-  howpublished = {https://arxiv.org/abs/1801.00690},
-  url = {https://arxiv.org/abs/1801.00690},
-  volume = {abs/1504.04804},
-  institution = {DeepMind},
+@misc{tassa2020dmcontrol,
+    title={dm_control: Software and Tasks for Continuous Control},
+    author={Yuval Tassa and Saran Tunyasuvunakool and Alistair Muldal and
+            Yotam Doron and Siqi Liu and Steven Bohez and Josh Merel and
+            Tom Erez and Timothy Lillicrap and Nicolas Heess},
+    year={2020},
+    eprint={2006.12983},
+    archivePrefix={arXiv},
+    primaryClass={cs.RO}
 }
 ```
 
@@ -143,7 +140,7 @@ environment variable to `"glfw"`, `"egl"`, or `"osmesa"`, respectively.
 [EXT_platform_device]: https://www.khronos.org/registry/EGL/extensions/EXT/EGL_EXT_platform_device.txt
 [MuJoCo license key page]: https://www.roboti.us/license.html
 [MuJoCo website]: http://www.mujoco.org/
-[tech report]: https://arxiv.org/abs/1801.00690
+[tech report]: https://arxiv.org/abs/2006.12983
 [`ctypes`]: https://docs.python.org/2/library/ctypes.html
 [`dm_control.mjcf`]: dm_control/mjcf/README.md
 [`dm_control.mujoco`]: dm_control/mujoco/README.md
