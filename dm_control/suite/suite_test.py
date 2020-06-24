@@ -31,6 +31,11 @@ from six.moves import range
 from six.moves import zip
 
 
+_DOMAINS_AND_TASKS = [
+    dict(domain=domain, task=task) for domain, task in suite.ALL_TASKS
+]
+
+
 def uniform_random_policy(action_spec, random=None):
   lower_bounds = action_spec.minimum
   upper_bounds = action_spec.maximum
@@ -64,7 +69,7 @@ def make_trajectory(domain, task, seed, **trajectory_kwargs):
   return step_environment(env, policy, **trajectory_kwargs)
 
 
-class DomainTest(parameterized.TestCase):
+class SuiteTest(parameterized.TestCase):
   """Tests run on all the tasks registered."""
 
   def test_constants(self):
@@ -107,7 +112,7 @@ class DomainTest(parameterized.TestCase):
     for b in upper_bounds:
       self.assertEqual(b, 1.0)
 
-  @parameterized.parameters(*suite.ALL_TASKS)
+  @parameterized.parameters(_DOMAINS_AND_TASKS)
   def test_components_have_names(self, domain, task):
     env = suite.load(domain, task)
     model = env.physics.model
@@ -138,7 +143,7 @@ class DomainTest(parameterized.TestCase):
                             msg='Model {!r} contains unnamed {!r} with ID {}.'
                             .format(model.name, object_type, idx))
 
-  @parameterized.parameters(*suite.ALL_TASKS)
+  @parameterized.parameters(_DOMAINS_AND_TASKS)
   def test_model_has_at_least_2_cameras(self, domain, task):
     env = suite.load(domain, task)
     model = env.physics.model
@@ -146,7 +151,7 @@ class DomainTest(parameterized.TestCase):
                             'Model {!r} should have at least 2 cameras, has {}.'
                             .format(model.name, model.ncam))
 
-  @parameterized.parameters(*suite.ALL_TASKS)
+  @parameterized.parameters(_DOMAINS_AND_TASKS)
   def test_task_conforms_to_spec(self, domain, task):
     """Tests that the environment timesteps conform to specifications."""
     is_benchmark = (domain, task) in suite.BENCHMARKING
@@ -167,7 +172,7 @@ class DomainTest(parameterized.TestCase):
       if is_benchmark:
         self._validate_reward_range(time_step)
 
-  @parameterized.parameters(*suite.ALL_TASKS)
+  @parameterized.parameters(_DOMAINS_AND_TASKS)
   def test_environment_is_deterministic(self, domain, task):
     """Tests that identical seeds and actions produce identical trajectories."""
     seed = 0
@@ -227,7 +232,7 @@ class DomainTest(parameterized.TestCase):
       mock_get_reward.assert_called_with(env.physics)
       self.assertCorrectColors(env.physics, reward=mock_get_reward.return_value)
 
-  @parameterized.parameters(*suite.ALL_TASKS)
+  @parameterized.parameters(_DOMAINS_AND_TASKS)
   def test_task_supports_environment_kwargs(self, domain, task):
     env = suite.load(domain, task,
                      environment_kwargs=dict(flat_observation=True))
@@ -235,7 +240,7 @@ class DomainTest(parameterized.TestCase):
     self.assertSetEqual(set(env.observation_spec()),
                         {control.FLAT_OBSERVATION_KEY})
 
-  @parameterized.parameters(*suite.ALL_TASKS)
+  @parameterized.parameters(_DOMAINS_AND_TASKS)
   def test_observation_arrays_dont_share_memory(self, domain, task):
     env = suite.load(domain, task)
     first_timestep = env.reset()
@@ -247,7 +252,7 @@ class DomainTest(parameterized.TestCase):
           np.may_share_memory(first_array, second_array),
           msg='Consecutive observations of {!r} may share memory.'.format(name))
 
-  @parameterized.parameters(*suite.ALL_TASKS)
+  @parameterized.parameters(_DOMAINS_AND_TASKS)
   def test_observations_dont_contain_constant_elements(self, domain, task):
     env = suite.load(domain, task)
     trajectory = make_trajectory(domain=domain, task=task, seed=0,
@@ -278,7 +283,7 @@ class DomainTest(parameterized.TestCase):
         .format('\n'.join(':\t'.join([name, str(is_constant)])
                           for (name, is_constant) in failures)))
 
-  @parameterized.parameters(*suite.ALL_TASKS)
+  @parameterized.parameters(_DOMAINS_AND_TASKS)
   def test_initial_state_is_randomized(self, domain, task):
     env = suite.load(domain, task, task_kwargs={'random': 42})
     obs1 = env.reset().observation

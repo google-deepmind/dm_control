@@ -53,7 +53,7 @@ def _get_fix_seed():
   return _FIX_SEED
 
 
-class DomainTest(parameterized.TestCase):
+class ManipulationTest(parameterized.TestCase):
   """Tests run on all the tasks registered."""
 
   def _validate_observation(self, observation, observation_spec):
