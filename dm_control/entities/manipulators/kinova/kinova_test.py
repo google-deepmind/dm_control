@@ -49,7 +49,7 @@ class JacoArmTest(parameterized.TestCase):
     physics = mjcf.Physics.from_mjcf_model(arm.mjcf_model)
     physics.step()
 
-  # TODO(b/113800263): Investigate why the mass does not match the datasheet.
+  # TODO(b/159974149): Investigate why the mass does not match the datasheet.
   @unittest.expectedFailure
   def test_mass(self):
     arm = kinova.JacoArm()
@@ -158,7 +158,7 @@ class JacoHandTest(parameterized.TestCase):
     physics = mjcf.Physics.from_mjcf_model(hand.mjcf_model)
     physics.step()
 
-  # TODO(b/113800263): Investigate why the mass does not match the datasheet.
+  # TODO(b/159974149): Investigate why the mass does not match the datasheet.
   @unittest.expectedFailure
   def test_hand_mass(self):
     hand = kinova.JacoHand()
