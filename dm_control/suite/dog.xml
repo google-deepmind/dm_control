@@ -41,7 +41,7 @@
       <joint group="3" pos="0.012 0 0.01" armature="0.01" damping="3.0"/>
       <general gainprm="40"/>
       <default class="lumbar_extend">
-        <joint stiffness="30.0" range="-17.5 8.75"/>
+        <joint stiffness="30.0" range="-17.5 17.5"/>
         <general gainprm="60"/>
       </default>
       <default class="lumbar_bend">
@@ -58,7 +58,7 @@
         <general gainprm="20"/>
       </default>
       <default class="cervical_bend">
-        <joint range="-17.5 17.5"/>
+        <joint range="-35 35"/>
         <general gainprm="20"/>
       </default>
       <default class="cervical_twist">
@@ -74,10 +74,10 @@
       <joint group="3" springdamper="5e-05 15"/>
       <general gainprm="2"/>
       <default class="caudal_extend">
-        <joint range="-5 5"/>
+        <joint range="-15 15"/>
       </default>
       <default class="caudal_bend">
-        <joint range="-5 5"/>
+        <joint range="-15 15"/>
       </default>
     </default>
     <default class="mandible">
@@ -88,10 +88,10 @@
       <joint armature="0.01" damping="0.5"/>
       <general gainprm="10"/>
       <default class="hip_supinate">
-        <joint range="-30 30"/>
+        <joint range="-10 30"/>
       </default>
       <default class="hip_abduct">
-        <joint range="-20 60"/>
+        <joint range="-40 120"/>
       </default>
       <default class="hip_extend">
         <joint range="-90 60"/>
@@ -99,11 +99,11 @@
       </default>
     </default>
     <default class="knee">
-      <joint range="-60 10" damping="0.5"/>
+      <joint range="-120 10" damping="0.5"/>
       <general gainprm="30"/>
     </default>
     <default class="ankle">
-      <joint range="-50 20" damping="0.3"/>
+      <joint range="-100 20" damping="0.3"/>
       <general gainprm="20"/>
     </default>
     <default class="toe">
@@ -114,13 +114,13 @@
       <joint damping="0.5"/>
       <general gainprm="30"/>
       <default class="scapula_supinate">
-        <joint pos="0 0.05 0" range="-10 10"/>
+        <joint pos="0 0.05 0" range="-30 30"/>
       </default>
       <default class="scapula_abduct">
-        <joint pos="0 0.05 -0.1" range="-10 4"/>
+        <joint pos="0 0.05 -0.1" range="0 10"/>
       </default>
       <default class="scapula_extend">
-        <joint pos="0 0 0" range="-10 20"/>
+        <joint pos="0 0 0" range="-20 40"/>
         <general gainprm="30"/>
       </default>
     </default>
@@ -420,6 +420,7 @@
   <worldbody>
     <geom name="floor" type="plane" size="10 10 0.1" material="grid"/>
     <body name="torso" pos="0.040403 0 0.41522">
+      <site name="root" type="sphere" size="0.01" rgba="0 1 0 1"/>
       <freejoint name="root"/>
       <light name="light" mode="trackcom" pos="0 0 3"/>
       <camera name="y-axis" mode="trackcom" pos="0 -1.5 0.8" xyaxes="1 0 0 0 0.6 1"/>
@@ -653,6 +654,7 @@
                                                             <geom name="Ca_20" class="bone" pos="0.69616 -3.7346e-05 -0.33139" mesh="Ca_20"/>
                                                             <body name="Ca_21" pos="-0.020294 4.4629e-05 0.0048627">
                                                             <geom name="Ca_21" class="bone" pos="0.71646 -8.1976e-05 -0.33625" mesh="Ca_21"/>
+                                                            <site name="tail_tip" class="sensor" size="0.005"/>
                                                             <joint name="Ca_21_extend" class="caudal_extend" pos="0.010185 -2.2399e-05 -0.0024405" axis="0 1 0"/>
                                                             <geom name="Ca_21_collision" class="collision_primitive" size="0.0023331 0.014653 0.010474" pos="3.7435e-06 0 2.826e-07" quat="-0.017531 0.80227 -0.023589 0.59624"/>
                                                             </body>
@@ -887,7 +889,7 @@
       <body name="scapula_L" pos="0.08 0.02 0.14">
         <geom name="Scapula_L" class="bone" pos="-0.1204 -0.02 -0.55522" mesh="Scapula_L"/>
         <joint name="scapula_L_supinate" class="scapula_supinate" pos="0 -0.05 0" axis="0 0 1"/>
-        <joint name="scapula_L_abduct" class="scapula_abduct" pos="0 -0.05 -0.1" axis="1 0 0"/>
+        <joint name="scapula_L_abduct" class="scapula_abduct" pos="0 0 0" axis="1 0 0"/>
         <joint name="scapula_L_extend" class="scapula_extend" pos="0 0 0" axis="0.3 1 0"/>
         <body name="upper_arm_L" pos="0.075 0.033 -0.13">
           <geom name="humerus_L" class="bone" pos="-0.1954 -0.053 -0.42522" mesh="humerus_L"/>
@@ -948,7 +950,7 @@
       <body name="scapula_R" pos="0.08 -0.02 0.14">
         <geom name="Scapula_R" class="bone" pos="-0.1204 0.02 -0.55522" mesh="Scapula_R"/>
         <joint name="scapula_R_supinate" class="scapula_supinate" pos="0 0.05 0" axis="0 0 -1"/>
-        <joint name="scapula_R_abduct" class="scapula_abduct" pos="0 0.05 -0.1" axis="-1 0 0"/>
+        <joint name="scapula_R_abduct" class="scapula_abduct" pos="0 0 0" axis="-1 0 0"/>
         <joint name="scapula_R_extend" class="scapula_extend" pos="0 0 0" axis="-0.3 1 0"/>
         <body name="upper_arm_R" pos="0.075 -0.033 -0.13">
           <geom name="humerus_R" class="bone" pos="-0.1954 0.053 -0.42522" mesh="humerus_R"/>
