@@ -117,7 +117,7 @@
         <joint pos="0 0.05 0" range="-30 30"/>
       </default>
       <default class="scapula_abduct">
-        <joint pos="0 0.05 -0.1" range="0 10"/>
+        <joint pos="0 0 0" range="-20 10"/>
       </default>
       <default class="scapula_extend">
         <joint pos="0 0 0" range="-20 40"/>
@@ -125,8 +125,14 @@
       </default>
     </default>
     <default class="shoulder">
-      <joint range="-30 60" damping="0.5"/>
+      <joint damping="0.5"/>
       <general gainprm="30"/>
+      <default class="shoulder_extend">
+        <joint range="-30 60"/>
+      </default>
+      <default class="shoulder_supinate">
+        <joint range="-30 15"/>
+      </default>
     </default>
     <default class="elbow">
       <joint range="-90 30" damping="0.3"/>
@@ -153,7 +159,7 @@
   <visual>
     <global offwidth="1920" offheight="1080"/>
     <map znear="0.001"/>
-    <scale jointlength="8.0" jointwidth="0.5"/>
+    <scale jointlength="8.0" jointwidth="0.5" framelength="2.0" framewidth="0.3"/>
   </visual>
   <statistic meansize="0.01" extent="1.0"/>
   <asset>
@@ -187,10 +193,6 @@
     <mesh name="Ca_9" file="BONECa_9.stl"/>
     <mesh name="Calcaneal_tuber_L" file="BONECalcaneal_tuber_L.stl"/>
     <mesh name="Calcaneal_tuber_R" file="BONECalcaneal_tuber_R.stl"/>
-    <mesh name="Canine_Bottom_L" file="BONECanine_Bottom_L.stl"/>
-    <mesh name="Canine_Bottom_R" file="BONECanine_Bottom_R.stl"/>
-    <mesh name="Canine_Top_L" file="BONECanine_Top_L.stl"/>
-    <mesh name="Canine_Top_R" file="BONECanine_Top_R.stl"/>
     <mesh name="Carpal_III_L" file="BONECarpal_III_L.stl"/>
     <mesh name="Carpal_III_R" file="BONECarpal_III_R.stl"/>
     <mesh name="Carpal_II_L" file="BONECarpal_II_L.stl"/>
@@ -207,7 +209,6 @@
     <mesh name="Carpal_accessory_R" file="BONECarpal_accessory_R.stl"/>
     <mesh name="Carpal_ulnar_L" file="BONECarpal_ulnar_L.stl"/>
     <mesh name="Carpal_ulnar_R" file="BONECarpal_ulnar_R.stl"/>
-    <mesh name="Ethmoid" file="BONEEthmoid.stl"/>
     <mesh name="Femoris_L" file="BONEFemoris_L.stl"/>
     <mesh name="Femoris_R" file="BONEFemoris_R.stl"/>
     <mesh name="Femoris_fabellae_L_1" file="BONEFemoris_fabellae_L_1.stl"/>
@@ -216,18 +217,7 @@
     <mesh name="Femoris_fabellae_R_2" file="BONEFemoris_fabellae_R_2.stl"/>
     <mesh name="Fibula_L" file="BONEFibula_L.stl"/>
     <mesh name="Fibula_R" file="BONEFibula_R.stl"/>
-    <mesh name="Incisors_Bottom_L_1" file="BONEIncisors_Bottom_L_1.stl"/>
-    <mesh name="Incisors_Bottom_L_2" file="BONEIncisors_Bottom_L_2.stl"/>
-    <mesh name="Incisors_Bottom_L_3" file="BONEIncisors_Bottom_L_3.stl"/>
-    <mesh name="Incisors_Bottom_R_1" file="BONEIncisors_Bottom_R_1.stl"/>
-    <mesh name="Incisors_Bottom_R_2" file="BONEIncisors_Bottom_R_2.stl"/>
-    <mesh name="Incisors_Bottom_R_3" file="BONEIncisors_Bottom_R_3.stl"/>
-    <mesh name="Incisors_Top_L_1" file="BONEIncisors_Top_L_1.stl"/>
-    <mesh name="Incisors_Top_L_2" file="BONEIncisors_Top_L_2.stl"/>
-    <mesh name="Incisors_Top_L_3" file="BONEIncisors_Top_L_3.stl"/>
-    <mesh name="Incisors_Top_R_1" file="BONEIncisors_Top_R_1.stl"/>
-    <mesh name="Incisors_Top_R_2" file="BONEIncisors_Top_R_2.stl"/>
-    <mesh name="Incisors_Top_R_3" file="BONEIncisors_Top_R_3.stl"/>
+    <mesh name="Jaw" file="BONEJaw.stl"/>
     <mesh name="L_1" file="BONEL_1.stl"/>
     <mesh name="L_2" file="BONEL_2.stl"/>
     <mesh name="L_3" file="BONEL_3.stl"/>
@@ -235,7 +225,7 @@
     <mesh name="L_5" file="BONEL_5.stl"/>
     <mesh name="L_6" file="BONEL_6.stl"/>
     <mesh name="L_7" file="BONEL_7.stl"/>
-    <mesh name="Mandible" file="BONEMandible.stl"/>
+    <mesh name="MergedSkull" file="BONEMergedSkull.stl"/>
     <mesh name="Metatarsi_L_1" file="BONEMetatarsi_L_1.stl"/>
     <mesh name="Metatarsi_L_2" file="BONEMetatarsi_L_2.stl"/>
     <mesh name="Metatarsi_L_3" file="BONEMetatarsi_L_3.stl"/>
@@ -244,16 +234,6 @@
     <mesh name="Metatarsi_R_2" file="BONEMetatarsi_R_2.stl"/>
     <mesh name="Metatarsi_R_3" file="BONEMetatarsi_R_3.stl"/>
     <mesh name="Metatarsi_R_4" file="BONEMetatarsi_R_4.stl"/>
-    <mesh name="Molars_Bottom_3L" file="BONEMolars_Bottom_3L.stl"/>
-    <mesh name="Molars_Bottom_L_1" file="BONEMolars_Bottom_L_1.stl"/>
-    <mesh name="Molars_Bottom_L_2" file="BONEMolars_Bottom_L_2.stl"/>
-    <mesh name="Molars_Bottom_R_1" file="BONEMolars_Bottom_R_1.stl"/>
-    <mesh name="Molars_Bottom_R_2" file="BONEMolars_Bottom_R_2.stl"/>
-    <mesh name="Molars_Bottom_R_3" file="BONEMolars_Bottom_R_3.stl"/>
-    <mesh name="Molars_Top_1L" file="BONEMolars_Top_1L.stl"/>
-    <mesh name="Molars_Top_2L" file="BONEMolars_Top_2L.stl"/>
-    <mesh name="Molars_Top_R_1" file="BONEMolars_Top_R_1.stl"/>
-    <mesh name="Molars_Top_R_2" file="BONEMolars_Top_R_2.stl"/>
     <mesh name="Os_metacarpale_III_L" file="BONEOs_metacarpale_III_L.stl"/>
     <mesh name="Os_metacarpale_III_R" file="BONEOs_metacarpale_III_R.stl"/>
     <mesh name="Os_metacarpale_II_L" file="BONEOs_metacarpale_II_L.stl"/>
@@ -319,75 +299,12 @@
     <mesh name="Phalanxpmxinutlis_digiti_IV_R" file="BONEPhalanxpmxinutlis_digiti_IV_R.stl"/>
     <mesh name="Phalanxpmxinutlis_digiti_V_L" file="BONEPhalanxpmxinutlis_digiti_V_L.stl"/>
     <mesh name="Phalanxpmxinutlis_digiti_V_R" file="BONEPhalanxpmxinutlis_digiti_V_R.stl"/>
-    <mesh name="Premolars_Bottom_L_1" file="BONEPremolars_Bottom_L_1.stl"/>
-    <mesh name="Premolars_Bottom_L_2" file="BONEPremolars_Bottom_L_2.stl"/>
-    <mesh name="Premolars_Bottom_L_3" file="BONEPremolars_Bottom_L_3.stl"/>
-    <mesh name="Premolars_Bottom_L_4" file="BONEPremolars_Bottom_L_4.stl"/>
-    <mesh name="Premolars_Bottom_R_1" file="BONEPremolars_Bottom_R_1.stl"/>
-    <mesh name="Premolars_Bottom_R_2" file="BONEPremolars_Bottom_R_2.stl"/>
-    <mesh name="Premolars_Bottom_R_3" file="BONEPremolars_Bottom_R_3.stl"/>
-    <mesh name="Premolars_Bottom_R_4" file="BONEPremolars_Bottom_R_4.stl"/>
-    <mesh name="Premolars_Top_L_1" file="BONEPremolars_Top_L_1.stl"/>
-    <mesh name="Premolars_Top_L_2" file="BONEPremolars_Top_L_2.stl"/>
-    <mesh name="Premolars_Top_L_3" file="BONEPremolars_Top_L_3.stl"/>
-    <mesh name="Premolars_Top_L_4" file="BONEPremolars_Top_L_4.stl"/>
-    <mesh name="Premolars_Top_R_1" file="BONEPremolars_Top_R_1.stl"/>
-    <mesh name="Premolars_Top_R_2" file="BONEPremolars_Top_R_2.stl"/>
-    <mesh name="Premolars_Top_R_3" file="BONEPremolars_Top_R_3.stl"/>
-    <mesh name="Premolars_Top_R_7" file="BONEPremolars_Top_R_7.stl"/>
     <mesh name="Radius_L" file="BONERadius_L.stl"/>
     <mesh name="Radius_R" file="BONERadius_R.stl"/>
-    <mesh name="Rib_L_1" file="BONERib_L_1.stl"/>
-    <mesh name="Rib_L_10" file="BONERib_L_10.stl"/>
-    <mesh name="Rib_L_11" file="BONERib_L_11.stl"/>
-    <mesh name="Rib_L_12" file="BONERib_L_12.stl"/>
-    <mesh name="Rib_L_13" file="BONERib_L_13.stl"/>
-    <mesh name="Rib_L_2" file="BONERib_L_2.stl"/>
-    <mesh name="Rib_L_3" file="BONERib_L_3.stl"/>
-    <mesh name="Rib_L_4" file="BONERib_L_4.stl"/>
-    <mesh name="Rib_L_5" file="BONERib_L_5.stl"/>
-    <mesh name="Rib_L_6" file="BONERib_L_6.stl"/>
-    <mesh name="Rib_L_7" file="BONERib_L_7.stl"/>
-    <mesh name="Rib_L_8" file="BONERib_L_8.stl"/>
-    <mesh name="Rib_L_9" file="BONERib_L_9.stl"/>
-    <mesh name="Rib_R_1" file="BONERib_R_1.stl"/>
-    <mesh name="Rib_R_10" file="BONERib_R_10.stl"/>
-    <mesh name="Rib_R_11" file="BONERib_R_11.stl"/>
-    <mesh name="Rib_R_12" file="BONERib_R_12.stl"/>
-    <mesh name="Rib_R_13" file="BONERib_R_13.stl"/>
-    <mesh name="Rib_R_2" file="BONERib_R_2.stl"/>
-    <mesh name="Rib_R_3" file="BONERib_R_3.stl"/>
-    <mesh name="Rib_R_4" file="BONERib_R_4.stl"/>
-    <mesh name="Rib_R_5" file="BONERib_R_5.stl"/>
-    <mesh name="Rib_R_6" file="BONERib_R_6.stl"/>
-    <mesh name="Rib_R_7" file="BONERib_R_7.stl"/>
-    <mesh name="Rib_R_8" file="BONERib_R_8.stl"/>
-    <mesh name="Rib_R_9" file="BONERib_R_9.stl"/>
+    <mesh name="Ribcage" file="BONERibcage.stl"/>
     <mesh name="Sacrum" file="BONESacrum.stl"/>
     <mesh name="Scapula_L" file="BONEScapula_L.stl"/>
     <mesh name="Scapula_R" file="BONEScapula_R.stl"/>
-    <mesh name="Skull" file="BONESkull.stl"/>
-    <mesh name="Sternum_1" file="BONESternum_1.stl"/>
-    <mesh name="Sternum_2" file="BONESternum_2.stl"/>
-    <mesh name="Sternum_3" file="BONESternum_3.stl"/>
-    <mesh name="Sternum_4" file="BONESternum_4.stl"/>
-    <mesh name="Sternum_5" file="BONESternum_5.stl"/>
-    <mesh name="Sternum_6" file="BONESternum_6.stl"/>
-    <mesh name="Sternum_7" file="BONESternum_7.stl"/>
-    <mesh name="Sternum_8" file="BONESternum_8.stl"/>
-    <mesh name="T_1" file="BONET_1.stl"/>
-    <mesh name="T_10" file="BONET_10.stl"/>
-    <mesh name="T_11" file="BONET_11.stl"/>
-    <mesh name="T_12" file="BONET_12.stl"/>
-    <mesh name="T_13" file="BONET_13.stl"/>
-    <mesh name="T_2" file="BONET_2.stl"/>
-    <mesh name="T_3" file="BONET_3.stl"/>
-    <mesh name="T_4" file="BONET_4.stl"/>
-    <mesh name="T_5" file="BONET_5.stl"/>
-    <mesh name="T_6" file="BONET_6.stl"/>
-    <mesh name="T_7" file="BONET_7.stl"/>
-    <mesh name="T_8" file="BONET_8.stl"/>
-    <mesh name="T_9" file="BONET_9.stl"/>
     <mesh name="Tarsus_L_I" file="BONETarsus_L_I.stl"/>
     <mesh name="Tarsus_L_II" file="BONETarsus_L_II.stl"/>
     <mesh name="Tarsus_L_III" file="BONETarsus_L_III.stl"/>
@@ -404,13 +321,10 @@
     <mesh name="Tibial_tarsal_R" file="BONETibial_tarsal_R.stl"/>
     <mesh name="Ulna_L" file="BONEUlna_L.stl"/>
     <mesh name="Ulna_R" file="BONEUlna_R.stl"/>
-    <mesh name="Vomer" file="BONEVomer.stl"/>
-    <mesh name="Xiphoid_cartilage" file="BONEXiphoid_cartilage.stl"/>
     <mesh name="eye_L" file="BONEeye_L.stl"/>
     <mesh name="eye_R" file="BONEeye_R.stl"/>
     <mesh name="humerus_L" file="BONEhumerus_L.stl"/>
     <mesh name="humerus_R" file="BONEhumerus_R.stl"/>
-    <mesh name="skin" file="SKINbody.stl"/>
     <texture name="skin" type="2d" file="skin_texture.png"/>
     <material name="skin" texture="skin"/>
     <skin name="skin" file="dog_skin.skn" material="skin"/>
@@ -420,59 +334,10 @@
   <worldbody>
     <geom name="floor" type="plane" size="10 10 0.1" material="grid"/>
     <body name="torso" pos="0.040403 0 0.41522">
-      <site name="root" type="sphere" size="0.01" rgba="0 1 0 1"/>
       <freejoint name="root"/>
       <light name="light" mode="trackcom" pos="0 0 3"/>
       <camera name="y-axis" mode="trackcom" pos="0 -1.5 0.8" xyaxes="1 0 0 0 0.6 1"/>
       <camera name="x-axis" mode="trackcom" pos="2 0 0.5" xyaxes="0 1 0 -0.3 0 1"/>
-      <geom name="T_1" class="light_bone" pos="-0.040403 0 -0.41522" mesh="T_1"/>
-      <geom name="T_10" class="light_bone" pos="-0.040403 0 -0.41522" mesh="T_10"/>
-      <geom name="T_11" class="light_bone" pos="-0.040403 0 -0.41522" mesh="T_11"/>
-      <geom name="T_12" class="light_bone" pos="-0.040403 0 -0.41522" mesh="T_12"/>
-      <geom name="T_13" class="light_bone" pos="-0.040403 0 -0.41522" mesh="T_13"/>
-      <geom name="T_2" class="light_bone" pos="-0.040403 0 -0.41522" mesh="T_2"/>
-      <geom name="T_3" class="light_bone" pos="-0.040403 0 -0.41522" mesh="T_3"/>
-      <geom name="T_4" class="light_bone" pos="-0.040403 0 -0.41522" mesh="T_4"/>
-      <geom name="T_5" class="light_bone" pos="-0.040403 0 -0.41522" mesh="T_5"/>
-      <geom name="T_6" class="light_bone" pos="-0.040403 0 -0.41522" mesh="T_6"/>
-      <geom name="T_7" class="light_bone" pos="-0.040403 0 -0.41522" mesh="T_7"/>
-      <geom name="T_8" class="light_bone" pos="-0.040403 0 -0.41522" mesh="T_8"/>
-      <geom name="T_9" class="light_bone" pos="-0.040403 0 -0.41522" mesh="T_9"/>
-      <geom name="Rib_L_1" class="light_bone" pos="-0.040403 0 -0.41522" mesh="Rib_L_1"/>
-      <geom name="Rib_L_10" class="light_bone" pos="-0.040403 0 -0.41522" mesh="Rib_L_10"/>
-      <geom name="Rib_L_11" class="light_bone" pos="-0.040403 0 -0.41522" mesh="Rib_L_11"/>
-      <geom name="Rib_L_12" class="light_bone" pos="-0.040403 0 -0.41522" mesh="Rib_L_12"/>
-      <geom name="Rib_L_13" class="light_bone" pos="-0.040403 0 -0.41522" mesh="Rib_L_13"/>
-      <geom name="Rib_L_2" class="light_bone" pos="-0.040403 0 -0.41522" mesh="Rib_L_2"/>
-      <geom name="Rib_L_3" class="light_bone" pos="-0.040403 0 -0.41522" mesh="Rib_L_3"/>
-      <geom name="Rib_L_4" class="light_bone" pos="-0.040403 0 -0.41522" mesh="Rib_L_4"/>
-      <geom name="Rib_L_5" class="light_bone" pos="-0.040403 0 -0.41522" mesh="Rib_L_5"/>
-      <geom name="Rib_L_6" class="light_bone" pos="-0.040403 0 -0.41522" mesh="Rib_L_6"/>
-      <geom name="Rib_L_7" class="light_bone" pos="-0.040403 0 -0.41522" mesh="Rib_L_7"/>
-      <geom name="Rib_L_8" class="light_bone" pos="-0.040403 0 -0.41522" mesh="Rib_L_8"/>
-      <geom name="Rib_L_9" class="light_bone" pos="-0.040403 0 -0.41522" mesh="Rib_L_9"/>
-      <geom name="Rib_R_1" class="light_bone" pos="-0.040403 0 -0.41522" mesh="Rib_R_1"/>
-      <geom name="Rib_R_10" class="light_bone" pos="-0.040403 0 -0.41522" mesh="Rib_R_10"/>
-      <geom name="Rib_R_11" class="light_bone" pos="-0.040403 0 -0.41522" mesh="Rib_R_11"/>
-      <geom name="Rib_R_12" class="light_bone" pos="-0.040403 0 -0.41522" mesh="Rib_R_12"/>
-      <geom name="Rib_R_13" class="light_bone" pos="-0.040403 0 -0.41522" mesh="Rib_R_13"/>
-      <geom name="Rib_R_2" class="light_bone" pos="-0.040403 0 -0.41522" mesh="Rib_R_2"/>
-      <geom name="Rib_R_3" class="light_bone" pos="-0.040403 0 -0.41522" mesh="Rib_R_3"/>
-      <geom name="Rib_R_4" class="light_bone" pos="-0.040403 0 -0.41522" mesh="Rib_R_4"/>
-      <geom name="Rib_R_5" class="light_bone" pos="-0.040403 0 -0.41522" mesh="Rib_R_5"/>
-      <geom name="Rib_R_6" class="light_bone" pos="-0.040403 0 -0.41522" mesh="Rib_R_6"/>
-      <geom name="Rib_R_7" class="light_bone" pos="-0.040403 0 -0.41522" mesh="Rib_R_7"/>
-      <geom name="Rib_R_8" class="light_bone" pos="-0.040403 0 -0.41522" mesh="Rib_R_8"/>
-      <geom name="Rib_R_9" class="light_bone" pos="-0.040403 0 -0.41522" mesh="Rib_R_9"/>
-      <geom name="Sternum_1" class="light_bone" pos="-0.040403 0 -0.41522" mesh="Sternum_1"/>
-      <geom name="Sternum_2" class="light_bone" pos="-0.040403 0 -0.41522" mesh="Sternum_2"/>
-      <geom name="Sternum_3" class="light_bone" pos="-0.040403 0 -0.41522" mesh="Sternum_3"/>
-      <geom name="Sternum_4" class="light_bone" pos="-0.040403 0 -0.41522" mesh="Sternum_4"/>
-      <geom name="Sternum_5" class="light_bone" pos="-0.040403 0 -0.41522" mesh="Sternum_5"/>
-      <geom name="Sternum_6" class="light_bone" pos="-0.040403 0 -0.41522" mesh="Sternum_6"/>
-      <geom name="Sternum_7" class="light_bone" pos="-0.040403 0 -0.41522" mesh="Sternum_7"/>
-      <geom name="Sternum_8" class="light_bone" pos="-0.040403 0 -0.41522" mesh="Sternum_8"/>
-      <geom name="Xiphoid_cartilage" class="light_bone" pos="-0.040403 0 -0.41522" mesh="Xiphoid_cartilage"/>
       <geom name="collision_torso" class="nonself_collision_primitive" type="ellipsoid" size="0.2 0.09 0.11" density="200.0" pos="0 0 0" euler="0 10 0"/>
       <body name="L_1" pos="-0.1235 0 0.09287">
         <geom name="L_1" class="bone" pos="0.083094 0 -0.50809" mesh="L_1"/>
@@ -654,8 +519,8 @@
                                                             <geom name="Ca_20" class="bone" pos="0.69616 -3.7346e-05 -0.33139" mesh="Ca_20"/>
                                                             <body name="Ca_21" pos="-0.020294 4.4629e-05 0.0048627">
                                                             <geom name="Ca_21" class="bone" pos="0.71646 -8.1976e-05 -0.33625" mesh="Ca_21"/>
-                                                            <site name="tail_tip" class="sensor" size="0.005"/>
                                                             <joint name="Ca_21_extend" class="caudal_extend" pos="0.010185 -2.2399e-05 -0.0024405" axis="0 1 0"/>
+                                                            <site name="tail_tip" class="sensor" size="0.005"/>
                                                             <geom name="Ca_21_collision" class="collision_primitive" size="0.0023331 0.014653 0.010474" pos="3.7435e-06 0 2.826e-07" quat="-0.017531 0.80227 -0.023589 0.59624"/>
                                                             </body>
                                                             <joint name="Ca_20_bend" class="caudal_bend" pos="0.012076 2.9547e-05 -0.0018119" axis="-0.14838 0 -0.98893"/>
@@ -759,29 +624,6 @@
                     <joint name="C_1_extend" class="cervical_extend" pos="-0.011471 0 -0.015955" axis="0 1 0"/>
                     <joint name="C_1_bend" class="cervical_bend" pos="-0.011471 0 -0.015955" axis="-0.81194 0 0.58375"/>
                     <body name="skull" pos="0.077928 0 0.017833">
-                      <geom name="Canine_Top_L" class="visible_bone" pos="-0.34104 0 -0.69452" mesh="Canine_Top_L"/>
-                      <geom name="Canine_Top_R" class="visible_bone" pos="-0.34104 0 -0.69452" mesh="Canine_Top_R"/>
-                      <geom name="Incisors_Top_L_1" class="visible_bone" pos="-0.34104 0 -0.69452" mesh="Incisors_Top_L_1"/>
-                      <geom name="Incisors_Top_L_2" class="visible_bone" pos="-0.34104 0 -0.69452" mesh="Incisors_Top_L_2"/>
-                      <geom name="Incisors_Top_L_3" class="visible_bone" pos="-0.34104 0 -0.69452" mesh="Incisors_Top_L_3"/>
-                      <geom name="Incisors_Top_R_1" class="visible_bone" pos="-0.34104 0 -0.69452" mesh="Incisors_Top_R_1"/>
-                      <geom name="Incisors_Top_R_2" class="visible_bone" pos="-0.34104 0 -0.69452" mesh="Incisors_Top_R_2"/>
-                      <geom name="Incisors_Top_R_3" class="visible_bone" pos="-0.34104 0 -0.69452" mesh="Incisors_Top_R_3"/>
-                      <geom name="Molars_Top_1L" class="visible_bone" pos="-0.34104 0 -0.69452" mesh="Molars_Top_1L"/>
-                      <geom name="Molars_Top_2L" class="visible_bone" pos="-0.34104 0 -0.69452" mesh="Molars_Top_2L"/>
-                      <geom name="Molars_Top_R_1" class="visible_bone" pos="-0.34104 0 -0.69452" mesh="Molars_Top_R_1"/>
-                      <geom name="Molars_Top_R_2" class="visible_bone" pos="-0.34104 0 -0.69452" mesh="Molars_Top_R_2"/>
-                      <geom name="Premolars_Top_L_1" class="visible_bone" pos="-0.34104 0 -0.69452" mesh="Premolars_Top_L_1"/>
-                      <geom name="Premolars_Top_L_2" class="visible_bone" pos="-0.34104 0 -0.69452" mesh="Premolars_Top_L_2"/>
-                      <geom name="Premolars_Top_L_3" class="visible_bone" pos="-0.34104 0 -0.69452" mesh="Premolars_Top_L_3"/>
-                      <geom name="Premolars_Top_L_4" class="visible_bone" pos="-0.34104 0 -0.69452" mesh="Premolars_Top_L_4"/>
-                      <geom name="Premolars_Top_R_1" class="visible_bone" pos="-0.34104 0 -0.69452" mesh="Premolars_Top_R_1"/>
-                      <geom name="Premolars_Top_R_2" class="visible_bone" pos="-0.34104 0 -0.69452" mesh="Premolars_Top_R_2"/>
-                      <geom name="Premolars_Top_R_3" class="visible_bone" pos="-0.34104 0 -0.69452" mesh="Premolars_Top_R_3"/>
-                      <geom name="Premolars_Top_R_7" class="visible_bone" pos="-0.34104 0 -0.69452" mesh="Premolars_Top_R_7"/>
-                      <geom name="Skull" class="light_bone" pos="-0.34104 0 -0.69452" mesh="Skull"/>
-                      <geom name="Ethmoid" class="light_bone" pos="-0.34104 0 -0.69452" mesh="Ethmoid"/>
-                      <geom name="Vomer" class="light_bone" pos="-0.34104 0 -0.69452" mesh="Vomer"/>
                       <geom name="eye_L" class="visible_bone" rgba="1 1 1 1" pos="-0.34104 0 -0.69452" mesh="eye_L"/>
                       <geom name="eye_R" class="visible_bone" rgba="1 1 1 1" pos="-0.34104 0 -0.69452" mesh="eye_R"/>
                       <geom name="iris_L" class="visible_bone" type="ellipsoid" size="0.003 0.007 0.007" rgba="0.45 0.45 0.225 0.4" pos="0.023 0.027 0.01" euler="0 0 20"/>
@@ -797,29 +639,6 @@
                       <site name="head" class="sensor" type="box" size="0.01 0.01 0.01"/>
                       <site name="upper_bite" class="sensor" size="0.005" pos="0.065 0 -0.07"/>
                       <body name="jaw" pos="0.0082923 0 -0.058237">
-                        <geom name="Canine_Bottom_L" class="visible_bone" pos="-0.34933 0 -0.63629" mesh="Canine_Bottom_L"/>
-                        <geom name="Canine_Bottom_R" class="visible_bone" pos="-0.34933 0 -0.63629" mesh="Canine_Bottom_R"/>
-                        <geom name="Incisors_Bottom_L_1" class="visible_bone" pos="-0.34933 0 -0.63629" mesh="Incisors_Bottom_L_1"/>
-                        <geom name="Incisors_Bottom_L_2" class="visible_bone" pos="-0.34933 0 -0.63629" mesh="Incisors_Bottom_L_2"/>
-                        <geom name="Incisors_Bottom_L_3" class="visible_bone" pos="-0.34933 0 -0.63629" mesh="Incisors_Bottom_L_3"/>
-                        <geom name="Incisors_Bottom_R_1" class="visible_bone" pos="-0.34933 0 -0.63629" mesh="Incisors_Bottom_R_1"/>
-                        <geom name="Incisors_Bottom_R_2" class="visible_bone" pos="-0.34933 0 -0.63629" mesh="Incisors_Bottom_R_2"/>
-                        <geom name="Incisors_Bottom_R_3" class="visible_bone" pos="-0.34933 0 -0.63629" mesh="Incisors_Bottom_R_3"/>
-                        <geom name="Molars_Bottom_3L" class="visible_bone" pos="-0.34933 0 -0.63629" mesh="Molars_Bottom_3L"/>
-                        <geom name="Molars_Bottom_L_1" class="visible_bone" pos="-0.34933 0 -0.63629" mesh="Molars_Bottom_L_1"/>
-                        <geom name="Molars_Bottom_L_2" class="visible_bone" pos="-0.34933 0 -0.63629" mesh="Molars_Bottom_L_2"/>
-                        <geom name="Molars_Bottom_R_1" class="visible_bone" pos="-0.34933 0 -0.63629" mesh="Molars_Bottom_R_1"/>
-                        <geom name="Molars_Bottom_R_2" class="visible_bone" pos="-0.34933 0 -0.63629" mesh="Molars_Bottom_R_2"/>
-                        <geom name="Molars_Bottom_R_3" class="visible_bone" pos="-0.34933 0 -0.63629" mesh="Molars_Bottom_R_3"/>
-                        <geom name="Premolars_Bottom_L_1" class="visible_bone" pos="-0.34933 0 -0.63629" mesh="Premolars_Bottom_L_1"/>
-                        <geom name="Premolars_Bottom_L_2" class="visible_bone" pos="-0.34933 0 -0.63629" mesh="Premolars_Bottom_L_2"/>
-                        <geom name="Premolars_Bottom_L_3" class="visible_bone" pos="-0.34933 0 -0.63629" mesh="Premolars_Bottom_L_3"/>
-                        <geom name="Premolars_Bottom_L_4" class="visible_bone" pos="-0.34933 0 -0.63629" mesh="Premolars_Bottom_L_4"/>
-                        <geom name="Premolars_Bottom_R_1" class="visible_bone" pos="-0.34933 0 -0.63629" mesh="Premolars_Bottom_R_1"/>
-                        <geom name="Premolars_Bottom_R_2" class="visible_bone" pos="-0.34933 0 -0.63629" mesh="Premolars_Bottom_R_2"/>
-                        <geom name="Premolars_Bottom_R_3" class="visible_bone" pos="-0.34933 0 -0.63629" mesh="Premolars_Bottom_R_3"/>
-                        <geom name="Premolars_Bottom_R_4" class="visible_bone" pos="-0.34933 0 -0.63629" mesh="Premolars_Bottom_R_4"/>
-                        <geom name="Mandible" class="light_bone" pos="-0.34933 0 -0.63629" mesh="Mandible"/>
                         <geom name="jaw0_collision" class="collision_primitive" type="box" size="0.03 0.028 0.008" pos="-0.03 0 0.01" euler="0 55 0"/>
                         <geom name="jaw1_collision" class="collision_primitive" type="box" size="0.02 0.022 0.005" pos="0 0 -0.012" euler="0 30 0"/>
                         <geom name="jaw2_collision" class="collision_primitive" type="box" size="0.02 0.018 0.005" pos="0.03 0 -0.028" euler="0 25 0"/>
@@ -848,6 +667,8 @@
                         <geom name="Premolars_Bottom_R_2_collision" class="tooth_primitive" type="ellipsoid" size="0.0020521 0.0051826 0.0057164" pos="0.039534 -0.014079 -0.024161" quat="0.50558 0.39424 0.47483 0.60291"/>
                         <geom name="Premolars_Bottom_R_3_collision" class="tooth_primitive" type="ellipsoid" size="0.0020628 0.0052806 0.0059829" pos="0.028975 -0.016126 -0.019807" quat="0.54639 0.34017 0.40808 0.64746"/>
                         <geom name="Premolars_Bottom_R_4_collision" class="tooth_primitive" type="ellipsoid" size="0.002223 0.0060011 0.0069385" pos="0.017719 -0.018186 -0.015" quat="0.53095 0.37559 0.43869 0.62015"/>
+                        <inertial pos="-0.0015134 0 -0.00096033" quat="0 0.89706 0 0.44191" mass="0.1332899051442993" diaginertia="0.0002144 0.00018551 6.3481e-05"/>
+                        <geom name="Jaw" class="bone" pos="-0.35599 0 -0.63249" mesh="Jaw"/>
                       </body>
                       <geom name="Canine_Top_L_collision" class="tooth_primitive" type="ellipsoid" size="0.0025499 0.0043559 0.014793" pos="0.084079 0.014638 -0.037877" quat="0.72471 -0.012602 -0.14496 0.67351"/>
                       <geom name="Canine_Top_R_collision" class="tooth_primitive" type="ellipsoid" size="0.0025499 0.0043559 0.014793" pos="0.084079 -0.014638 -0.037877" quat="0.67351 -0.14496 -0.012602 0.72471"/>
@@ -869,6 +690,8 @@
                       <geom name="Premolars_Top_R_2_collision" class="tooth_primitive" type="ellipsoid" size="0.0022037 0.0054716 0.0060794" pos="0.063298 -0.017151 -0.039565" quat="0.29136 0.52903 0.68555 0.40653"/>
                       <geom name="Premolars_Top_R_3_collision" class="tooth_primitive" type="ellipsoid" size="0.0022548 0.0059774 0.0065176" pos="0.05089 -0.021051 -0.03949" quat="0.19462 0.47043 0.78683 0.34888"/>
                       <geom name="Premolars_Top_R_7_collision" class="tooth_primitive" type="ellipsoid" size="0.0036198 0.0076569 0.010082" pos="0.035357 -0.025889 -0.040495" quat="0.41821 0.43612 0.58019 0.54615"/>
+                      <inertial pos="-0.0023917 0 0.0023167" quat="0 0.81647 0 0.57739" mass="0.3579225852102398" diaginertia="0.00072864 0.00064468 0.00028384"/>
+                      <geom name="MergedSkull" class="bone" pos="-0.34765 0 -0.69098" mesh="MergedSkull"/>
                     </body>
                   </body>
                   <joint name="C_2_twist" class="cervical_twist" pos="-0.0048286 0 -0.023533" axis="0.201 0 0.97959"/>
@@ -893,7 +716,8 @@
         <joint name="scapula_L_extend" class="scapula_extend" pos="0 0 0" axis="0.3 1 0"/>
         <body name="upper_arm_L" pos="0.075 0.033 -0.13">
           <geom name="humerus_L" class="bone" pos="-0.1954 -0.053 -0.42522" mesh="humerus_L"/>
-          <joint name="shoulder_L" class="shoulder" axis="0 1 0"/>
+          <joint name="shoulder_L_supinate" class="shoulder_supinate" axis="-1 0 1"/>
+          <joint name="shoulder_L_extend" class="shoulder_extend" axis="0 -1 0"/>
           <body name="lower_arm_L" pos="-0.05 0.015 -0.145">
             <geom name="Carpal_accessory_L" class="bone" pos="-0.1454 -0.068 -0.28022" mesh="Carpal_accessory_L"/>
             <geom name="Carpal_ulnar_L" class="bone" pos="-0.1454 -0.068 -0.28022" mesh="Carpal_ulnar_L"/>
@@ -954,7 +778,8 @@
         <joint name="scapula_R_extend" class="scapula_extend" pos="0 0 0" axis="-0.3 1 0"/>
         <body name="upper_arm_R" pos="0.075 -0.033 -0.13">
           <geom name="humerus_R" class="bone" pos="-0.1954 0.053 -0.42522" mesh="humerus_R"/>
-          <joint name="shoulder_R" class="shoulder" axis="0 1 0"/>
+          <joint name="shoulder_R_supinate" class="shoulder_supinate" axis="1 0 -1"/>
+          <joint name="shoulder_R_extend" class="shoulder_extend" axis="0 1 0"/>
           <body name="lower_arm_R" pos="-0.05 -0.015 -0.145">
             <geom name="Carpal_accessory_R" class="bone" pos="-0.1454 0.068 -0.28022" mesh="Carpal_accessory_R"/>
             <geom name="Carpal_ulnar_R" class="bone" pos="-0.1454 0.068 -0.28022" mesh="Carpal_ulnar_R"/>
@@ -1008,6 +833,8 @@
         </body>
         <geom name="Scapula_R_collision" class="collision_primitive" type="box" size="0.01758 0.03491 0.057492" pos="0.038823 -0.030833 -0.064928" quat="0.59948 -0.27169 -0.16444 0.73469"/>
       </body>
+      <inertial pos="-1.5426e-07 0 2.4738e-07" quat="0.45517 0.54113 0.54113 0.45517" mass="2.6757659178332736" diaginertia="0.026026 0.023326 0.011595"/>
+      <geom name="Ribcage" class="bone" pos="-0.052791 -0.00036588 -0.42183" mesh="Ribcage"/>
     </body>
     <body name="ball" pos="0.5 0 0.1">
       <freejoint name="ball_root"/>
@@ -1135,14 +962,16 @@
     <general name="scapula_L_supinate" class="scapula_supinate" joint="scapula_L_supinate"/>
     <general name="scapula_L_abduct" class="scapula_abduct" joint="scapula_L_abduct"/>
     <general name="scapula_L_extend" class="scapula_extend" joint="scapula_L_extend"/>
-    <general name="shoulder_L" class="shoulder" joint="shoulder_L"/>
+    <general name="shoulder_L_supinate" class="shoulder_supinate" joint="shoulder_L_supinate"/>
+    <general name="shoulder_L_extend" class="shoulder_extend" joint="shoulder_L_extend"/>
     <general name="elbow_L" class="elbow" joint="elbow_L"/>
     <general name="wrist_L" class="wrist" joint="wrist_L"/>
     <general name="finger_L" class="finger" joint="finger_L"/>
     <general name="scapula_R_supinate" class="scapula_supinate" joint="scapula_R_supinate"/>
     <general name="scapula_R_abduct" class="scapula_abduct" joint="scapula_R_abduct"/>
     <general name="scapula_R_extend" class="scapula_extend" joint="scapula_R_extend"/>
-    <general name="shoulder_R" class="shoulder" joint="shoulder_R"/>
+    <general name="shoulder_R_supinate" class="shoulder_supinate" joint="shoulder_R_supinate"/>
+    <general name="shoulder_R_extend" class="shoulder_extend" joint="shoulder_R_extend"/>
     <general name="elbow_R" class="elbow" joint="elbow_R"/>
     <general name="wrist_R" class="wrist" joint="wrist_R"/>
     <general name="finger_R" class="finger" joint="finger_R"/>

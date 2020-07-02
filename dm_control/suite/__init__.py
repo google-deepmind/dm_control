@@ -56,10 +56,6 @@ def _get_tasks(tag):
 
   for domain_name in sorted(_DOMAINS.keys()):
 
-    # TODO(b/159786444): Fix VFS-related error affecting dog domain
-    if domain_name == 'dog':
-      continue
-
     domain = _DOMAINS[domain_name]
 
     if tag is None:
