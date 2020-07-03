@@ -295,14 +295,16 @@ class RenderSettingsTest(absltest.TestCase):
 
 class SceneCameraTest(parameterized.TestCase):
 
-  def setUp(self):
+  @mock.patch.object(renderer.wrapper.core,
+                     '_estimate_max_renderable_geoms',
+                     return_value=1000)
+  @mock.patch.object(renderer.wrapper.core.mjlib, 'mjv_makeScene')
+  def setUp(self, mock_make_scene, _):
     super(SceneCameraTest, self).setUp()
     self.model = mock.MagicMock()
     self.data = mock.MagicMock()
     self.options = mock.MagicMock()
-    with mock.patch.object(renderer.wrapper.core.mjlib,
-                           'mjv_makeScene') as mock_make_scene:
-      self.camera = renderer.SceneCamera(self.model, self.data, self.options)
+    self.camera = renderer.SceneCamera(self.model, self.data, self.options)
     mock_make_scene.assert_called_once()
 
   def test_freelook_mode(self):
@@ -394,16 +396,18 @@ class SceneCameraTest(parameterized.TestCase):
 
 class RaycastsTest(absltest.TestCase):
 
-  def setUp(self):
+  @mock.patch.object(renderer.wrapper.core,
+                     '_estimate_max_renderable_geoms',
+                     return_value=1000)
+  @mock.patch.object(renderer.wrapper.core.mjlib, 'mjv_makeScene')
+  def setUp(self, mock_make_scene, _):
     super(RaycastsTest, self).setUp()
     self.model = mock.MagicMock()
     self.data = mock.MagicMock()
     self.options = mock.MagicMock()
 
     self.viewport = mock.MagicMock()
-    with mock.patch.object(renderer.wrapper.core.mjlib,
-                           'mjv_makeScene') as mock_make_scene:
-      self.camera = renderer.SceneCamera(self.model, self.data, self.options)
+    self.camera = renderer.SceneCamera(self.model, self.data, self.options)
     mock_make_scene.assert_called_once()
     self.initialize_camera(True)
 

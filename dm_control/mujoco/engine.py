@@ -590,7 +590,7 @@ class Camera(object):
                height=240,
                width=320,
                camera_id=-1,
-               max_geom=1000):
+               max_geom=None):
     """Initializes a new `Camera`.
 
     Args:
@@ -601,8 +601,9 @@ class Camera(object):
         camera, which is always defined. A nonnegative integer or string
         corresponds to a fixed camera, which must be defined in the model XML.
         If `camera_id` is a string then the camera must also be named.
-      max_geom: (optional) An integer specifying the maximum number of geoms
-        that can be represented in the scene.
+      max_geom: Optional integer specifying the maximum number of geoms that can
+        be rendered in the same scene. If None this will be chosen automatically
+        based on the estimated maximum number of renderable geoms in the model.
     Raises:
       ValueError: If `camera_id` is outside the valid range, or if `width` or
         `height` exceed the dimensions of MuJoCo's offscreen framebuffer.

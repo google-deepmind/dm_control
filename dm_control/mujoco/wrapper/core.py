@@ -850,18 +850,47 @@ _NAME_TO_RENDER_FLAG_ENUM_VALUE = {
 }
 
 
+def _estimate_max_renderable_geoms(model):
+  """Estimates the maximum number of renderable geoms for a given model."""
+  # Only one type of object frame can be rendered at once.
+  max_nframes = max(
+      [model.nbody, model.ngeom, model.nsite, model.ncam, model.nlight])
+  # This is probably an underestimate, but it is unlikely that all possible
+  # rendering options will be enabled simultaneously, or that all renderable
+  # geoms will be present within the viewing frustum at the same time.
+  return (
+      3 * max_nframes +  # 1 geom per axis for each frame.
+      4 * model.ngeom +  # geom itself + contacts + 2 * split contact forces.
+      3 * model.nbody +  # COM + inertia box + perturbation force.
+      model.nsite +
+      model.ntendon +
+      model.njnt +
+      model.nu +
+      model.nskin +
+      model.ncam +
+      model.nlight)
+
+
 class MjvScene(wrappers.MjvSceneWrapper):  # pylint: disable=missing-docstring
 
-  def __init__(self, model=None, max_geom=1000):
+  def __init__(self, model=None, max_geom=None):
     """Initializes a new `MjvScene` instance.
 
     Args:
       model: (optional) An `MjModel` instance.
       max_geom: (optional) An integer specifying the maximum number of geoms
-        that can be represented in the scene.
+        that can be represented in the scene. If None, this will be chosen
+        automatically based on `model`.
     """
     model_ptr = model.ptr if model is not None else None
     scene_ptr = ctypes.pointer(types.MJVSCENE())
+
+    if max_geom is None:
+      if model is None:
+        max_renderable_geoms = 0
+      else:
+        max_renderable_geoms = _estimate_max_renderable_geoms(model)
+      max_geom = max(1000, max_renderable_geoms)
 
     # Allocate and initialize resources for the abstract scene.
     mjlib.mjv_makeScene(model_ptr, scene_ptr, max_geom)
