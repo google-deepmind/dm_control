@@ -6,7 +6,7 @@
   <option timestep="0.005" noslip_iterations="4"/>
   <size njmax="900" nconmax="300" nkey="1"/>
   <default>
-    <joint limited="true" solreflimit="0.01 1" solimplimit="0.9 0.99 0.01" stiffness="1.0" armature="1e-05" damping="0.01"/>
+    <joint limited="true" solreflimit="0.01 1" solimplimit="0.9 0.99 0.01" stiffness="0.1" armature="0.0001" damping="0.01"/>
     <geom friction="0.9" solref="0.01 1" solimp="0.95 0.99 0.001"/>
     <tendon rgba="0.5 0 0 1"/>
     <general ctrllimited="true" ctrlrange="-1 1" dyntype="filter" dynprm="0.05" gainprm="0.02"/>
@@ -41,14 +41,14 @@
       <joint group="3" pos="0.012 0 0.01" armature="0.01" damping="3.0"/>
       <general gainprm="40"/>
       <default class="lumbar_extend">
-        <joint stiffness="30.0" range="-17.5 17.5"/>
+        <joint stiffness="30.0" range="-24.5 24.5"/>
         <general gainprm="60"/>
       </default>
       <default class="lumbar_bend">
-        <joint stiffness="45.0" range="-17.5 17.5"/>
+        <joint stiffness="45.0" range="-21 21"/>
       </default>
       <default class="lumbar_twist">
-        <joint stiffness="45.0" range="-23.333 23.333"/>
+        <joint stiffness="45.0" range="-16.333 16.333"/>
       </default>
     </default>
     <default class="cervical">
@@ -85,16 +85,16 @@
       <general gainprm="3"/>
     </default>
     <default class="hip">
-      <joint armature="0.01" damping="0.5"/>
+      <joint stiffness="5.0" armature="0.01" damping="0.5"/>
       <general gainprm="10"/>
       <default class="hip_supinate">
-        <joint range="-10 30"/>
+        <joint range="-20 20"/>
       </default>
       <default class="hip_abduct">
-        <joint range="-40 120"/>
+        <joint range="-30 90"/>
       </default>
       <default class="hip_extend">
-        <joint range="-90 60"/>
+        <joint range="-130 60"/>
         <general gainprm="40"/>
       </default>
     </default>
@@ -111,39 +111,39 @@
       <general gainprm="2"/>
     </default>
     <default class="scapula">
-      <joint damping="0.5"/>
+      <joint stiffness="10.0" damping="1.5"/>
       <general gainprm="30"/>
       <default class="scapula_supinate">
-        <joint pos="0 0.05 0" range="-30 30"/>
+        <joint pos="-0.03 0.02 0" range="-15 35"/>
       </default>
       <default class="scapula_abduct">
-        <joint pos="0 0 0" range="-20 10"/>
+        <joint pos="0 0.05 -0.07" range="-15 20"/>
       </default>
       <default class="scapula_extend">
-        <joint pos="0 0 0" range="-20 40"/>
+        <joint pos="0 0 0" range="-30 30"/>
         <general gainprm="30"/>
       </default>
     </default>
     <default class="shoulder">
-      <joint damping="0.5"/>
+      <joint stiffness="5.0" damping="1.0"/>
       <general gainprm="30"/>
       <default class="shoulder_extend">
-        <joint range="-30 60"/>
+        <joint range="-40 60"/>
       </default>
       <default class="shoulder_supinate">
         <joint range="-30 15"/>
       </default>
     </default>
     <default class="elbow">
-      <joint range="-90 30" damping="0.3"/>
+      <joint range="-100 30" damping="0.3"/>
       <general gainprm="20"/>
     </default>
     <default class="wrist">
-      <joint range="-90 10" damping="0.2"/>
+      <joint range="-110 10" damping="0.2"/>
       <general gainprm="10"/>
     </default>
     <default class="finger">
-      <joint stiffness="2.0" range="-15 100" damping="0.02"/>
+      <joint stiffness="1.0" range="-15 100" damping="0.02"/>
       <general gainprm="2"/>
     </default>
     <default class="sensor">
@@ -711,13 +711,13 @@
       </body>
       <body name="scapula_L" pos="0.08 0.02 0.14">
         <geom name="Scapula_L" class="bone" pos="-0.1204 -0.02 -0.55522" mesh="Scapula_L"/>
-        <joint name="scapula_L_supinate" class="scapula_supinate" pos="0 -0.05 0" axis="0 0 1"/>
-        <joint name="scapula_L_abduct" class="scapula_abduct" pos="0 0 0" axis="1 0 0"/>
+        <joint name="scapula_L_supinate" class="scapula_supinate" pos="-0.03 -0.02 0" axis="0 0 1"/>
+        <joint name="scapula_L_abduct" class="scapula_abduct" pos="0 -0.05 -0.07" axis="1 0 0"/>
         <joint name="scapula_L_extend" class="scapula_extend" pos="0 0 0" axis="0.3 1 0"/>
         <body name="upper_arm_L" pos="0.075 0.033 -0.13">
           <geom name="humerus_L" class="bone" pos="-0.1954 -0.053 -0.42522" mesh="humerus_L"/>
           <joint name="shoulder_L_supinate" class="shoulder_supinate" axis="-1 0 1"/>
-          <joint name="shoulder_L_extend" class="shoulder_extend" axis="0 -1 0"/>
+          <joint name="shoulder_L_extend" class="shoulder_extend" axis="0 1 0"/>
           <body name="lower_arm_L" pos="-0.05 0.015 -0.145">
             <geom name="Carpal_accessory_L" class="bone" pos="-0.1454 -0.068 -0.28022" mesh="Carpal_accessory_L"/>
             <geom name="Carpal_ulnar_L" class="bone" pos="-0.1454 -0.068 -0.28022" mesh="Carpal_ulnar_L"/>
@@ -773,8 +773,8 @@
       </body>
       <body name="scapula_R" pos="0.08 -0.02 0.14">
         <geom name="Scapula_R" class="bone" pos="-0.1204 0.02 -0.55522" mesh="Scapula_R"/>
-        <joint name="scapula_R_supinate" class="scapula_supinate" pos="0 0.05 0" axis="0 0 -1"/>
-        <joint name="scapula_R_abduct" class="scapula_abduct" pos="0 0 0" axis="-1 0 0"/>
+        <joint name="scapula_R_supinate" class="scapula_supinate" pos="-0.03 0.02 0" axis="0 0 -1"/>
+        <joint name="scapula_R_abduct" class="scapula_abduct" pos="0 0.05 -0.07" axis="-1 0 0"/>
         <joint name="scapula_R_extend" class="scapula_extend" pos="0 0 0" axis="-0.3 1 0"/>
         <body name="upper_arm_R" pos="0.075 -0.033 -0.13">
           <geom name="humerus_R" class="bone" pos="-0.1954 0.053 -0.42522" mesh="humerus_R"/>
@@ -874,6 +874,11 @@
     <exclude name="C_6:upper_arm_L" body1="C_6" body2="upper_arm_L"/>
     <exclude name="C_7:upper_arm_R" body1="C_7" body2="upper_arm_R"/>
     <exclude name="C_7:upper_arm_L" body1="C_7" body2="upper_arm_L"/>
+    <exclude name="upper_leg_L:upper_leg_R" body1="upper_leg_L" body2="upper_leg_R"/>
+    <exclude name="lower_leg_L:pelvis" body1="lower_leg_L" body2="pelvis"/>
+    <exclude name="upper_leg_L:foot_L" body1="upper_leg_L" body2="foot_L"/>
+    <exclude name="lower_leg_R:pelvis" body1="lower_leg_R" body2="pelvis"/>
+    <exclude name="upper_leg_R:foot_R" body1="upper_leg_R" body2="foot_R"/>
   </contact>
   <tendon>
     <fixed name="lumbar_extend" class="lumbar_extend">
@@ -911,29 +916,29 @@
       <joint joint="C_2_twist" coef="0.9830546474175812"/>
     </fixed>
     <fixed name="caudal_extend" class="caudal_extend">
-      <joint joint="Ca_1_extend" coef="1.585212438496664"/>
-      <joint joint="Ca_3_extend" coef="1.5092144163496837"/>
-      <joint joint="Ca_5_extend" coef="1.434267539913014"/>
-      <joint joint="Ca_7_extend" coef="1.3200085004200355"/>
-      <joint joint="Ca_9_extend" coef="1.1849671743539292"/>
-      <joint joint="Ca_11_extend" coef="1.0076637929265857"/>
-      <joint joint="Ca_13_extend" coef="0.831265817932085"/>
-      <joint joint="Ca_15_extend" coef="0.6716092953124334"/>
-      <joint joint="Ca_17_extend" coef="0.5504233626395751"/>
-      <joint joint="Ca_19_extend" coef="0.4641789339295947"/>
-      <joint joint="Ca_21_extend" coef="0.4411887277264022"/>
+      <joint joint="Ca_1_extend" coef="1.4175697632800168"/>
+      <joint joint="Ca_3_extend" coef="1.3533291916469086"/>
+      <joint joint="Ca_5_extend" coef="1.2905602895468757"/>
+      <joint joint="Ca_7_extend" coef="1.1963357977448668"/>
+      <joint joint="Ca_9_extend" coef="1.0882282181745322"/>
+      <joint joint="Ca_11_extend" coef="0.9549416058705948"/>
+      <joint joint="Ca_13_extend" coef="0.839068010247595"/>
+      <joint joint="Ca_15_extend" coef="0.7575627896787993"/>
+      <joint joint="Ca_17_extend" coef="0.71516710400689"/>
+      <joint joint="Ca_19_extend" coef="0.6955591082173007"/>
+      <joint joint="Ca_21_extend" coef="0.6916781215856203"/>
     </fixed>
     <fixed name="caudal_bend" class="caudal_bend">
-      <joint joint="Ca_2_bend" coef="1.4722857289046498"/>
-      <joint joint="Ca_4_bend" coef="1.4595403124101172"/>
-      <joint joint="Ca_6_bend" coef="1.4049733036039511"/>
-      <joint joint="Ca_8_bend" coef="1.2854001814166311"/>
-      <joint joint="Ca_10_bend" coef="1.1181742628264588"/>
-      <joint joint="Ca_12_bend" coef="0.9265329038167585"/>
-      <joint joint="Ca_14_bend" coef="0.7506502848605311"/>
-      <joint joint="Ca_16_bend" coef="0.6151123875017204"/>
-      <joint joint="Ca_18_bend" coef="0.5110887932431558"/>
-      <joint joint="Ca_20_bend" coef="0.4562418414160279"/>
+      <joint joint="Ca_2_bend" coef="1.3236846643142188"/>
+      <joint joint="Ca_4_bend" coef="1.3130782401287662"/>
+      <joint joint="Ca_6_bend" coef="1.2679178338493764"/>
+      <joint joint="Ca_8_bend" coef="1.170681278111726"/>
+      <joint joint="Ca_10_bend" coef="1.0404777760545052"/>
+      <joint joint="Ca_12_bend" coef="0.9053320718072471"/>
+      <joint joint="Ca_14_bend" coef="0.8040064645300866"/>
+      <joint joint="Ca_16_bend" coef="0.7475697729484704"/>
+      <joint joint="Ca_18_bend" coef="0.7188107117102569"/>
+      <joint joint="Ca_20_bend" coef="0.7084411865453454"/>
     </fixed>
   </tendon>
   <actuator>
