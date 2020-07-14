@@ -52,7 +52,6 @@ If you use this package, please cite our accompanying [tech report]:
 `dm_control` is regularly tested on Ubuntu 16.04 against the following Python
 versions:
 
-*   2.7
 *   3.5
 *   3.6
 *   3.7
@@ -141,7 +140,7 @@ environment variable to `"glfw"`, `"egl"`, or `"osmesa"`, respectively.
 [MuJoCo license key page]: https://www.roboti.us/license.html
 [MuJoCo website]: http://www.mujoco.org/
 [tech report]: https://arxiv.org/abs/2006.12983
-[`ctypes`]: https://docs.python.org/2/library/ctypes.html
+[`ctypes`]: https://docs.python.org/3/library/ctypes.html
 [`dm_control.mjcf`]: dm_control/mjcf/README.md
 [`dm_control.mujoco`]: dm_control/mujoco/README.md
 [`dm_control.suite`]: dm_control/suite/README.md

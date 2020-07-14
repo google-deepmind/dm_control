@@ -177,7 +177,7 @@ def find_data_files(package_dir, patterns, excludes=()):
 
 setup(
     name='dm_control',
-    version='0.0.320948823',
+    version='0.0.321254901',
     description='Continuous control environments and MuJoCo Python bindings.',
     author='DeepMind',
     license='Apache License, Version 2.0',
@@ -188,7 +188,6 @@ setup(
         'dm-env',
         'dm-tree != 0.1.2',
         'future',
-        'futures; python_version == "2.7"',
         'glfw',
         'lxml',
         'numpy',

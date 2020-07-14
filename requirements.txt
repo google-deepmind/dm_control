@@ -3,7 +3,6 @@ dm-env
 dm-tree!=0.1.2
 enum34==1.1.10
 future==0.18.2
-futures==3.1.1
 glfw==1.11.0
 labmaze
 lxml==4.5.0
