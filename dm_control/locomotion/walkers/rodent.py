@@ -162,7 +162,7 @@ class Rat(legacy_base.Walker):
     return tuple(self._mjcf_root.find_all('body'))
 
   @composer.cached_property
-  def mocap_bodies(self):
+  def mocap_tracking_bodies(self):
     """Return bodies for mocap comparison."""
     return tuple(body for body in self._mjcf_root.find_all('body')
                  if not re.match(r'(vertebra|hand|toe)', body.name))

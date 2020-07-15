@@ -76,7 +76,7 @@ class RatTest(parameterized.TestCase):
   @parameterized.parameters([
       'actuators',
       'bodies',
-      'mocap_bodies',
+      'mocap_tracking_bodies',
       'end_effectors',
       'mocap_joints',
       'observable_joints',

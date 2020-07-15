@@ -92,6 +92,15 @@ class Ant(legacy_base.Walker):
   def root_body(self):
     return self._mjcf_root.find('body', 'torso')
 
+  @composer.cached_property
+  def bodies(self):
+    return tuple(self.mjcf_model.find_all('body'))
+
+  @composer.cached_property
+  def mocap_tracking_bodies(self):
+    """Collection of bodies for mocap tracking."""
+    return tuple(self.mjcf_model.find_all('body'))
+
   @property
   def _foot_bodies(self):
     return (self._mjcf_root.find('body', 'front_left_foot'),
@@ -147,7 +156,7 @@ class AntObservables(legacy_base.WalkerObservables):
     def bodies_orientations_in_egocentric_frame(physics):
       """Compute relative orientation of the bodies."""
       # Get the bodies
-      bodies = self._entity.mjcf_model.find_all('body')
+      bodies = self._entity.bodies
       # Get the quaternions of all the bodies &root in the global frame
       bodies_xquat = physics.bind(bodies).xquat
       root_xquat = physics.bind(self._entity.root_body).xquat
@@ -165,7 +174,7 @@ class AntObservables(legacy_base.WalkerObservables):
     def bodies_pos_in_egocentric_frame(physics):
       """Compute relative orientation of the bodies."""
       # Get the bodies
-      bodies = self._entity.mjcf_model.find_all('body')
+      bodies = self._entity.bodies
       # Get the positions of all the bodies & root in the global frame
       bodies_xpos = physics.bind(bodies).xpos
       root_xpos = physics.bind(self._entity.root_body).xpos
