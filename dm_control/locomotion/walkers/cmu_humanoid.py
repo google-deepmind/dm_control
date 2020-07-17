@@ -325,8 +325,9 @@ class _CMUHumanoidBase(legacy_base.Walker):
   def mocap_tracking_bodies(self):
     """Collection of bodies for mocap tracking."""
     # remove root body
+    root_body = self._mjcf_root.find('body', 'root')
     return tuple(
-        b for b in self._mjcf_root.find_all('body') if b != self.root_body)  # pylint: disable=comparison-with-callable
+        b for b in self._mjcf_root.find_all('body') if b != root_body)
 
   @composer.cached_property
   def egocentric_camera(self):

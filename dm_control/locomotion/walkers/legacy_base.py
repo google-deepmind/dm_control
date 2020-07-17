@@ -181,6 +181,10 @@ class Walker(base.Walker):
     # TODO(b/123065920): Consider using a `subtreelinvel` sensor instead.
     mjlib.mj_subtreeVel(physics.model.ptr, physics.data.ptr)
 
+  @composer.cached_property
+  def mocap_joints(self):
+    return tuple(self.mjcf_model.find_all('joints'))
+
 
 class WalkerObservables(base.WalkerObservables):
   """Legacy base class for Walker obserables."""

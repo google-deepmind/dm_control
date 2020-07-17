@@ -1,4 +1,4 @@
-# Copyright 2019 The dm_control Authors.
+# Copyright 2020 The dm_control Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,4 +16,5 @@
 
 from dm_control.locomotion.walkers.ant import Ant
 from dm_control.locomotion.walkers.cmu_humanoid import CMUHumanoidPositionControlled
+from dm_control.locomotion.walkers.cmu_humanoid import CMUHumanoidPositionControlledV2020
 from dm_control.locomotion.walkers.rodent import Rat

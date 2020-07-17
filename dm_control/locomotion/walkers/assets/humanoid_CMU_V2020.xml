@@ -1,6 +1,7 @@
 <!-- This model has been rescaled and better supports the incorporation of hands. -->
 <mujoco model="humanoid_CMU">
   <compiler angle="radian"/>
+  <size njmax="500" nconmax="500"/>
   <asset>
     <material name="self" rgba=".7 .5 .3 1"/>
   </asset>
