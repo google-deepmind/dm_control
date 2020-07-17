@@ -1,7 +1,6 @@
 absl-py==0.9.0
 dm-env
 dm-tree!=0.1.2
-enum34==1.1.10
 future==0.18.2
 glfw==1.11.0
 labmaze

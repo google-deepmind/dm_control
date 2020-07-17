@@ -177,14 +177,14 @@ def find_data_files(package_dir, patterns, excludes=()):
 
 setup(
     name='dm_control',
-    version='0.0.321746460',
+    version='0.0.321753288',
     description='Continuous control environments and MuJoCo Python bindings.',
     author='DeepMind',
     license='Apache License, Version 2.0',
     keywords='machine learning control physics MuJoCo AI',
+    python_requires='>=3.6, <3.10',
     install_requires=[
         'absl-py>=0.7.0',
-        'enum34; python_version < "3.4"',
         'dm-env',
         'dm-tree != 0.1.2',
         'future',
