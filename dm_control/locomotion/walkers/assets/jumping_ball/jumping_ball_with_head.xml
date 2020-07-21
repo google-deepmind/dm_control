@@ -1,0 +1,59 @@
+<mujoco model="jumping_ball">
+  <compiler meshdir="./" texturedir="./" />
+  <asset>
+    <texture name="body" type="cube" gridsize="2 3" gridlayout = "ULFRBD" file="jumping_ball_body.png"/>
+    <material name="body" texture="body"/>
+  </asset>
+
+  <default>
+    <mesh scale=".01 .01 .01"/>
+    <geom contype="1" conaffinity="1" condim="4" friction=".5 .02 .02"/>
+    <default class="root">
+      <joint pos="0 0 0" limited="false" armature="0" damping="0" stiffness="0"/>
+    </default>
+    <default class="head">
+      <geom type="cylinder" contype="1" conaffinity="1"/>
+    </default>
+  </default>
+
+  <worldbody>
+    <body pos="0 0 0.6" quat="1 0 0 -1" name="head_body">
+      <body name="egocentric_camera" pos="0 0.15 0.9" zaxis="0 -0.99503719021 0.09950371902">
+        <inertial pos="0 0 0" mass="1" diaginertia="1 1 1"/>
+        <joint name="camera_height" type="slide" axis="0 1 0" limited="true" range="-0.5 0.5"/>
+        <joint name="camera_tilt" type="hinge" axis="1 0 0" limited="true" range="-0.35 0.35"/>
+        <camera name="egocentric" fovy="80"/>
+      </body>
+      <camera name="tracking" pos="1.5 1.5 .7" xyaxes="-1 1 0 -1 -1 4" mode="trackcom"/>
+      <joint name="steer" type="hinge" axis="0 0 -1" class="root" damping="4"/>
+
+      <inertial pos="0 0 -0.08" quat="0.05876879 0.70466036 -0.05876879 0.70466036" mass="20" diaginertia="0.14683229 0.10987294 0.10986016"/>
+      <geom name="head" class="head" size="0.1 0.06" pos="0 0 -0.07" rgba="0.757 0.757 0.757 1.0"/>
+      <geom name="face" class="head" size="0.05 0.035" zaxis="0 1 0" pos="0 0.1 -0.07" rgba="0.0 0.85 0.5 1.0"/>
+      <geom name="neck" class="head" size="0.07 0.02" pos="0 0 -0.13" rgba="0.0 0.85 0.5 1.0"/>
+
+      <site name="torso_site" pos="0 0 0" size="0.05" rgba="1 0 0 1" group="4"/>
+
+      <body pos="0 0 -.4" name="torso">
+        <!-- wheel -->
+        <joint name="kick" type="slide" damping="100" limited="true" range="0 .4" axis="0 0 -1" stiffness="0" solimplimit=".95 .99 .001" springref="-.4"/>
+        <joint name="roll" type="hinge" axis="-1 0 0" damping="2"/>
+        <geom name="shell" type="sphere" size=".2" material="body" mass="1"/>
+      </body>
+    </body>
+  </worldbody>
+
+  <sensor>
+    <velocimeter site="torso_site" name="sensor_torso_vel"/>
+    <gyro site="torso_site" name="sensor_torso_gyro"/>
+    <accelerometer site="torso_site" name="sensor_torso_accel"/>
+  </sensor>
+
+  <actuator>
+    <general name="roll" joint="roll" ctrlrange="-1 1" ctrllimited="true" gear="-50" biasprm="0" biastype="affine"/>
+    <motor name="steer" joint="steer" ctrlrange="-1 1" ctrllimited="true" gear="30"/>
+    <general name="kick" joint="kick" ctrlrange="-1 1" ctrllimited="true" gear="1000" biasprm="0" biastype="affine"/>
+    <velocity name="camera_height" joint="camera_height" ctrlrange="-1 1" ctrllimited="true"/>
+    <velocity name="camera_tilt" joint="camera_tilt" ctrlrange="-1 1" ctrllimited="true"/>
+  </actuator>
+</mujoco>

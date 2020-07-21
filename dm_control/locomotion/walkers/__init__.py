@@ -17,4 +17,6 @@
 from dm_control.locomotion.walkers.ant import Ant
 from dm_control.locomotion.walkers.cmu_humanoid import CMUHumanoidPositionControlled
 from dm_control.locomotion.walkers.cmu_humanoid import CMUHumanoidPositionControlledV2020
+from dm_control.locomotion.walkers.jumping_ball import JumpingBallWithHead
+from dm_control.locomotion.walkers.jumping_ball import RollingBallWithHead
 from dm_control.locomotion.walkers.rodent import Rat
