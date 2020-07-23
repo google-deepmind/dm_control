@@ -1,0 +1,190 @@
+syntax = "proto3";
+
+package dm_control.locomotion.mocap;
+
+// A motion capture tracking marker.
+message Marker {
+  // The name that identifies this marker.
+  string name = 1;
+
+  // The name of the parent frame to which this marker is attached.
+  string parent = 2;
+
+  // The position of this marker within the parent frame.
+  repeated double position = 3 [packed = true];
+
+  // The orientation of this marker within the parent frame.
+  repeated double quaternion = 4 [packed = true];
+
+  // NEXT_ID: 5
+}
+
+// A collection of Markers.
+message Markers {
+  repeated Marker marker = 1;
+}
+
+// Scaling information for a single subtree within a walker's model.
+message SubtreeScaling {
+  // The name of the body at which this scaling is specified.
+  string body_name = 1;
+
+  // The desired length of the parent at which the above body is attached.
+  double parent_length = 2;
+
+  // The factor by which to scale the size of each geom in this subtree.
+  double size_factor = 3;
+
+  // NEXT_ID: 5
+}
+
+// Scaling information for a walker's model.
+message WalkerScaling {
+  repeated SubtreeScaling subtree = 1;
+}
+
+message Walker {
+  // A name that identifies this walker.
+  string name = 1;
+
+  enum Model {
+    UNSPECIFIED = 0;
+    CMU_2019 = 1;
+    RESERVED_MODEL_ID_2 = 2;
+    RESERVED_MODEL_ID_3 = 3;
+    CMU_2020 = 4;
+    // NEXT_ID: 5
+  }
+  Model model = 2;
+
+  // Factors used to scale the base model to fit the mocap actor.
+  // Scaling must be applied in the same order as listed in the proto.
+  WalkerScaling scaling = 3;
+
+  // Mocap markers placed on this walker.
+  Markers markers = 4;
+
+  // Total mass of the walker, in kilograms.
+  double mass = 5;
+
+  //  Names of end effectors as present in WalkerPose.
+  repeated string end_effector_names = 6;
+
+  // Names of appendages as present in WalkerPose.
+  repeated string appendage_names = 7;
+
+  // NEXT_ID: 8
+}
+
+message Prop {
+  // A name that identifies this prop.
+  string name = 1;
+
+  enum Shape {
+    UNSPECIFIED = 0;
+    SPHERE = 1;
+    BOX = 2;
+  }
+  Shape shape = 2;
+
+  // Size of this prop, in meters.
+  // These are the half-lengths of each dimension on the prop. The number of
+  // dimensions depend on the prop type, e.g. a sphere only requires one number
+  // to specify its radius, whereas a box requires three numbers for each of
+  // the axis.
+  repeated double size = 3 [packed = true];
+
+  // Mass of this prop, in kilograms.
+  double mass = 4;
+
+  // NEXT_ID: 5
+}
+
+message WalkerPose {
+  // Cartesian position of the walker's root frame origin. Must be of length 3.
+  repeated double position = 1 [packed = true];
+
+  // Quaternion orientation of the walker's root frame.
+  // Must be of length 4 and normalized.
+  repeated double quaternion = 2 [packed = true];
+
+  // Joint positions of the walker.
+  repeated double joints = 3 [packed = true];
+
+  // Cartesian position of the walker's center of mass.
+  repeated double center_of_mass = 4 [packed = true];
+
+  // Cartesian position of the walker's end effectors in egocentric coordinates.
+  // Length must be a multiple of 3.
+  repeated double end_effectors = 5 [packed = true];
+
+  // Linear velocity of the walker's root frame origin.
+  // May be approximated by finite differences.
+  repeated double velocity = 6 [packed = true];
+
+  // Angular velocity of the walker's root frame origin.
+  // May be approximated by finite differences.
+  repeated double angular_velocity = 7 [packed = true];
+
+  // Velocity of the walker's joints.
+  // May be approximated by finite differences.
+  repeated double joints_velocity = 8 [packed = true];
+
+  // Cartesian position of the walker's appendages in egocentric coordinates.
+  // Length must be a multiple of 3.
+  repeated double appendages = 9 [packed = true];
+
+  // Cartesian position in global coordinates of the walker's body parts
+  // Length must be a multiple of 3.
+  repeated double body_positions = 10 [packed = true];
+
+  // Orientation of the walker's body parts
+  repeated double body_quaternions = 11 [packed = true];
+
+  // NEXT_ID: 12
+}
+
+message PropPose {
+  // Cartesian position of the prop. Must be of length 3.
+  repeated double position = 1 [packed = true];
+
+  // Quaternion orientation of the prop. Must be of length 4 and normalized.
+  repeated double quaternion = 2 [packed = true];
+
+  // Linear velocity of the prop. May be approximated by finite differences.
+  repeated double velocity = 3 [packed = true];
+
+  // Angular velocity of the prop. May be approximated by finite differences.
+  repeated double angular_velocity = 4 [packed = true];
+
+  // NEXT_ID: 5
+}
+
+message TimestepData {
+  repeated WalkerPose walkers = 1;
+  repeated PropPose props = 2;
+  // NEXT_ID: 3
+}
+
+// A motion-captured sequence that has been fitted to some rigid-body models.
+message FittedTrajectory {
+  // A string that uniquely identifies this motion capture trajectory.
+  string identifier = 1;
+
+  // The date on which this trajectory was captured.
+  int32 year = 2;
+  int32 month = 3;
+  int32 day = 4;
+
+  // The interval (in seconds) between successive timesteps in this trajectory.
+  double dt = 5;
+
+  // Strings identifying each walker model in this trajectory.
+  repeated Walker walkers = 6;
+
+  // Strings identifying each prop in this trajectory.
+  repeated Prop props = 7;
+
+  repeated TimestepData timesteps = 8;
+  // NEXT_ID: 9
+}

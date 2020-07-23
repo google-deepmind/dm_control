@@ -177,7 +177,7 @@ def find_data_files(package_dir, patterns, excludes=()):
 
 setup(
     name='dm_control',
-    version='0.0.322764312',
+    version='0.0.322773188',
     description='Continuous control environments and MuJoCo Python bindings.',
     author='DeepMind',
     license='Apache License, Version 2.0',
@@ -189,17 +189,19 @@ setup(
         'dm-tree != 0.1.2',
         'future',
         'glfw',
+        'h5py',
+        'labmaze',
         'lxml',
         'numpy',
+        'protobuf',
         'pyopengl >= 3.1.4',
         'pyparsing',
+        'requests',
         'setuptools',
         'scipy',
         'six',
+        'tqdm',
     ],
-    extras_require={
-        'locomotion_mazes': ['labmaze'],
-    },
     tests_require=[
         'mock',
         'nose',
@@ -211,7 +213,8 @@ setup(
         'dm_control':
             find_data_files(
                 package_dir='dm_control',
-                patterns=['*.amc', '*.msh', '*.png', '*.skn', '*.stl', '*.xml'],
+                patterns=['*.amc', '*.msh', '*.png', '*.skn', '*.stl', '*.xml',
+                          '*.textproto', '*.h5'],
                 excludes=[
                     '*/dog_assets/extras/*',
                     '*/kinova/meshes/*',  # Exclude non-decimated meshes.
