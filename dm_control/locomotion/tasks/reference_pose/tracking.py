@@ -533,8 +533,8 @@ class ReferencePosesTask(composer.Task):
   def get_reward(self, physics: 'mjcf.Physics') -> float:
     reference_observations = self.get_all_reference_observations(physics)
     reward, unused_debug_outputs, reward_channels = self._reward_fn(
-        self._termination_error,
-        self._termination_error_threshold,
+        termination_error=self._termination_error,
+        termination_error_threshold=self._termination_error_threshold,
         reference_features=self._current_reference_features,
         walker_features=self._walker_features,
         reference_observations=reference_observations)
