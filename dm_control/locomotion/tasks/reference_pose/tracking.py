@@ -20,7 +20,6 @@ import collections
 import typing
 from typing import Any, Callable, Mapping, Optional, Sequence, Text, Union
 
-from absl import flags
 from absl import logging
 from dm_control import composer
 from dm_control.composer.observation import observable as base_observable
@@ -47,13 +46,8 @@ if typing.TYPE_CHECKING:
   from dm_control import mjcf
 
 mjlib = mjbindings.mjlib
-FLAGS = flags.FLAGS
 DEFAULT_PHYSICS_TIMESTEP = 0.005
 _MAX_END_STEP = 10000
-
-# Spanner query load spreading parameters.
-_TASKS_PER_BIN = 20
-_SECONDS_PER_BIN = 5
 
 
 def _strip_reference_prefix(dictionary: Mapping[Text, Any], prefix: Text):
