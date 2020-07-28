@@ -25,7 +25,7 @@ def add_walker(walker_fn, arena, name='walker', ghost=False, visible=True):
 
   if ghost:
     # if the walker has a built-in tracking light remove it.
-    light = walker._mjcf_root.find('light', 'tracking_light')  # pylint: disable=protected-access
+    light = walker.mjcf_model.find('light', 'tracking_light')
     if light:
       light.remove()
 
@@ -38,6 +38,14 @@ def add_walker(walker_fn, arena, name='walker', ghost=False, visible=True):
           contype=0,
           conaffinity=0,
           rgba=(0.5, 0.5, 0.5, .999 if visible else 0.0))
+
+    skin = walker.mjcf_model.find('skin', 'skin')
+    if skin:
+      if visible:
+        skin.set_attributes(rgba=(0.5, 0.5, 0.5, 0.999))
+      else:
+        skin.set_attributes(rgba=(0.5, 0.5, 0.5, 0.))
+
   walker.create_root_joints(arena.attach(walker))
 
   return walker
