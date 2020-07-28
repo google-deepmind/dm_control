@@ -183,7 +183,7 @@ class Walker(base.Walker):
 
   @composer.cached_property
   def mocap_joints(self):
-    return tuple(self.mjcf_model.find_all('joints'))
+    return tuple(self.mjcf_model.find_all('joint'))
 
 
 class WalkerObservables(base.WalkerObservables):
