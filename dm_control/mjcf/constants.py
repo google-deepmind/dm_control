@@ -38,6 +38,7 @@ BODY = 'body'
 DEFAULT = 'default'
 MESH = 'mesh'
 SITE = 'site'
+SKIN = 'skin'
 TENDON = 'tendon'
 WORLDBODY = 'worldbody'
 

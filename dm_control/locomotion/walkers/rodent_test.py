@@ -112,5 +112,17 @@ class RatTest(parameterized.TestCase):
     for item in walker.observables.proprioception:
       self.assertIsInstance(item, observable_base.Observable)
 
+  def test_can_create_two_rats(self):
+    rat1 = rodent.Rat(name='rat1')
+    rat2 = rodent.Rat(name='rat2')
+    arena = corr_arenas.EmptyCorridor()
+    arena.add_free_entity(rat1)
+    arena.add_free_entity(rat2)
+    mjcf.Physics.from_mjcf_model(arena.mjcf_model)  # Should not raise an error.
+
+    rat1.mjcf_model.model = 'rat3'
+    rat2.mjcf_model.model = 'rat4'
+    mjcf.Physics.from_mjcf_model(arena.mjcf_model)  # Should not raise an error.
+
 if __name__ == '__main__':
   absltest.main()

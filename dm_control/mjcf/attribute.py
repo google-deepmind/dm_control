@@ -27,6 +27,7 @@ import os
 from dm_control.mjcf import base
 from dm_control.mjcf import constants
 from dm_control.mjcf import debugging
+from dm_control.mjcf import skin
 from dm_control.mujoco.wrapper import util
 import numpy as np
 import six
@@ -401,20 +402,12 @@ class BasePath(_Attribute):
     return None
 
 
-class Asset(object):
-  """Class representing a binary asset."""
+class BaseAsset(object):
+  """Base class for binary assets."""
 
-  __slots__ = ('contents', 'extension', 'prefix')
+  __slots__ = ('extension', 'prefix')
 
-  def __init__(self, contents, extension, prefix=''):
-    """Initializes a new `Asset`.
-
-    Args:
-      contents: The contents of the file as a bytestring.
-      extension: A string specifying the file extension (e.g. '.png', '.stl').
-      prefix: (optional) A prefix applied to the filename given in MuJoCo's VFS.
-    """
-    self.contents = contents
+  def __init__(self, extension, prefix=''):
     self.extension = extension
     self.prefix = prefix
 
@@ -439,6 +432,44 @@ class Asset(object):
     # An extension is needed because MuJoCo's compiler looks at this when
     # deciding how to load meshes and heightfields.
     return filename + self.extension
+
+
+class Asset(BaseAsset):
+  """Class representing a binary asset."""
+
+  __slots__ = ('contents',)
+
+  def __init__(self, contents, extension, prefix=''):
+    """Initializes a new `Asset`.
+
+    Args:
+      contents: The contents of the file as a bytestring.
+      extension: A string specifying the file extension (e.g. '.png', '.stl').
+      prefix: (optional) A prefix applied to the filename given in MuJoCo's VFS.
+    """
+    self.contents = contents
+    super(Asset, self).__init__(extension, prefix)
+
+
+class SkinAsset(BaseAsset):
+  """Class representing a binary asset corresponding to a skin."""
+
+  __slots__ = ('skin', 'parent', '_cached_revision', '_cached_contents')
+
+  def __init__(self, contents, parent, extension, prefix=''):
+    self.skin = skin.parse(
+        contents, lambda body_name: parent.root.find('body', body_name))
+    self.parent = parent
+    self._cached_revision = -1
+    self._cached_contents = None
+    super(SkinAsset, self).__init__(extension, prefix)
+
+  @property
+  def contents(self):
+    if self._cached_revision < self.parent.namescope.revision:
+      self._cached_contents = skin.serialize(self.skin)
+      self._cached_revision = self.parent.namescope.revision
+    return self._cached_contents
 
 
 class File(_Attribute):
@@ -486,9 +517,13 @@ class File(_Attribute):
       except KeyError:
         pass
       path_parts.append(path)
-      full_path = os.path.join(*path_parts)
+      full_path = os.path.join(*path_parts)  # pylint: disable=no-value-for-parameter
       contents = resources.GetResource(full_path)
-    return Asset(contents=contents, extension=extension, prefix=filename)
+    if self._parent.tag == constants.SKIN:
+      return SkinAsset(contents=contents, parent=self._parent,
+                       extension=extension, prefix=filename)
+    else:
+      return Asset(contents=contents, extension=extension, prefix=filename)
 
   def _validate_extension(self, extension):
     if self._parent.tag == constants.MESH:
