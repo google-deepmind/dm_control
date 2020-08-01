@@ -46,13 +46,15 @@ def sort_dict(d):
   return collections.OrderedDict(sorted(d.items()))
 
 
-def compute_squared_differences(walker_features, reference_features):
+def compute_squared_differences(walker_features, reference_features,
+                                exclude_keys=()):
   """Computes squared differences of features."""
   squared_differences = {}
   for k in walker_features:
-    if 'quaternion' not in k:
-      squared_differences[k] = np.sum(
-          (walker_features[k] - reference_features[k])**2)
+    if k not in exclude_keys:
+      if 'quaternion' not in k:
+        squared_differences[k] = np.sum(
+            (walker_features[k] - reference_features[k])**2)
   quat_dists = np.array([
       bounded_quat_dist(w, r)
       for w, r in zip(walker_features['body_quaternions'],
