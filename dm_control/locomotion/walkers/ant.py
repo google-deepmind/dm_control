@@ -102,6 +102,10 @@ class Ant(legacy_base.Walker):
     return tuple(self.mjcf_model.find_all('body'))
 
   @property
+  def mocap_joints(self):
+    return self.mjcf_model.find_all('joint')
+
+  @property
   def _foot_bodies(self):
     return (self._mjcf_root.find('body', 'front_left_foot'),
             self._mjcf_root.find('body', 'front_right_foot'),
