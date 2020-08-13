@@ -71,8 +71,8 @@
       <general gainprm="10"/>
     </default>
     <default class="caudal">
-      <joint group="3" springdamper="5e-05 15"/>
-      <general gainprm="2"/>
+      <joint group="3" springdamper="0.001 50"/>
+      <general gainprm="0.5"/>
       <default class="caudal_extend">
         <joint range="-15 15"/>
       </default>
@@ -986,6 +986,7 @@
     <velocimeter name="velocimeter" site="head"/>
     <gyro name="gyro" site="head"/>
     <subtreelinvel name="torso_linvel" body="torso"/>
+    <subtreeangmom name="torso_angmom" body="torso"/>
     <touch name="palm_L" site="palm_L"/>
     <touch name="palm_R" site="palm_R"/>
     <touch name="sole_L" site="sole_L"/>
