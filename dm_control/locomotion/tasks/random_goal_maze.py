@@ -166,6 +166,8 @@ class NullGoalMaze(composer.Task):
     if self._randomize_spawn_position:
       self._spawn_position = self._maze_arena.spawn_positions[
           random_state.randint(0, len(self._maze_arena.spawn_positions))]
+    else:
+      self._spawn_position = self._maze_arena.spawn_positions[0]
 
     if self._randomize_spawn_rotation:
       # Move walker up out of the way before raycasting.
