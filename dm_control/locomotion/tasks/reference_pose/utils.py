@@ -102,8 +102,8 @@ def get_features(physics, walker):
 
   walker_features = {}
   root_pos, root_quat = walker.get_pose(physics)
-  walker_features['position'] = root_pos
-  walker_features['quaternion'] = root_quat
+  walker_features['position'] = np.array(root_pos)
+  walker_features['quaternion'] = np.array(root_quat)
   joints = np.array(physics.bind(walker.mocap_joints).qpos)
   walker_features['joints'] = joints
   freejoint_frame = mjcf.get_attachment_frame(walker.mjcf_model)
@@ -123,8 +123,8 @@ def get_features(physics, walker):
   xquat = np.array(physics.bind(walker_bodies).xquat)
   walker_features['body_quaternions'] = xquat
   root_vel, root_angvel = walker.get_velocity(physics)
-  walker_features['velocity'] = root_vel
-  walker_features['angular_velocity'] = root_angvel
+  walker_features['velocity'] = np.array(root_vel)
+  walker_features['angular_velocity'] = np.array(root_angvel)
   joints_vel = np.array(physics.bind(walker.mocap_joints).qvel)
   walker_features['joints_velocity'] = joints_vel
   return walker_features
