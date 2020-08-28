@@ -181,7 +181,7 @@ class AntObservables(legacy_base.WalkerObservables):
       bodies = self._entity.bodies
       # Get the positions of all the bodies & root in the global frame
       bodies_xpos = physics.bind(bodies).xpos
-      root_xpos = physics.bind(self._entity.root_body).xpos
+      root_xpos, _ = self._entity.get_pose(physics)
       # Compute the relative position of the bodies in the root frame
       root_xmat = np.reshape(physics.bind(self._entity.root_body).xmat, (3, 3))
       return np.reshape(
