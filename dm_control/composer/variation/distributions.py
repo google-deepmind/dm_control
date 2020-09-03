@@ -63,6 +63,15 @@ class Distribution(base.Variation):
                                               size=size,
                                               **local_kwargs)
 
+  def __getattr__(self, name):
+    if name.startswith('__'):
+      raise AttributeError  # Stops infinite recursion during deepcopy.
+    elif name in self._kwargs:
+      return self._kwargs[name]
+    else:
+      raise AttributeError(
+          '{!r} object has no attribute {!r}'.format(type(self).__name__, name))
+
   @abc.abstractmethod
   def _callable(self, random_state):
     raise NotImplementedError
