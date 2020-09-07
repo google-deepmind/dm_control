@@ -686,6 +686,46 @@ class Camera(object):
     """Returns the `mujoco.MjvScene` instance used by the camera."""
     return self._scene
 
+  @property
+  def matrix(self):
+    """Returns the 3x4 camera matrix.
+
+       For a description of the camera matrix see, e.g.,
+       https://en.wikipedia.org/wiki/Camera_matrix.
+       For a usage example, see the associated test.
+    """
+    camera_id = self._render_camera.fixedcamid
+    if camera_id == -1:
+      # If the camera is a 'free' camera, we get its position and orientation
+      # from the scene data structure. It is a stereo camera, so we average over
+      # the left and right channels. Note: we call `self.update()` in order to
+      # ensure that the contents of `scene.camera` are correct.
+      self.update()
+      pos = np.mean(self.scene.camera.pos, axis=0)
+      z = -np.mean(self.scene.camera.forward, axis=0)
+      y = np.mean(self.scene.camera.up, axis=0)
+      rot = np.vstack((np.cross(y, z), y, z))
+      fov = self._physics.model.vis.global_.fovy
+    else:
+      pos = self._physics.data.cam_xpos[camera_id]
+      rot = self._physics.data.cam_xmat[camera_id].reshape(3, 3).T
+      fov = self._physics.model.cam_fovy[camera_id]
+
+    # Translation matrix (4x4).
+    translation = np.eye(4)
+    translation[0:3, 3] = -pos
+    # Rotation matrix (4x4).
+    rotation = np.eye(4)
+    rotation[0:3, 0:3] = rot
+    # Focal transformation matrix (3x4).
+    focal_scaling = (1./np.tan(np.deg2rad(fov)/2)) * self.height / 2.0
+    focal = np.diag([-focal_scaling, focal_scaling, 1.0, 0])[0:3, :]
+    # Image matrix (3x3).
+    image = np.eye(3)
+    image[0, 2] = (self.width - 1) / 2.0
+    image[1, 2] = (self.height - 1) / 2.0
+    return image.dot(focal).dot(rotation).dot(translation)
+
   def update(self, scene_option=None):
     """Updates geometry used for rendering.
 

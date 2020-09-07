@@ -191,6 +191,60 @@ class MujocoEngineTest(parameterized.TestCase):
     selected = camera.select(coordinates)
     self.assertEqual(expected_selection, selected[:2])
 
+  @parameterized.parameters(
+      dict(camera_id='cam0', height=200, width=300),
+      dict(camera_id=1, height=300, width=200),
+      dict(camera_id=-1, height=400, width=400),
+  )
+  def testCameraMatrix(self, camera_id, height, width):
+    """Tests the camera_matrix() method.
+
+       Creates a model with two cameras and two small geoms. We render the scene
+       with one of the cameras and check that the geom locations, projected into
+       pixel space, are correct, using segmenation rendering.
+       xyz2pixels() shows how the transformation is used. For a description
+       of the camera matrix see https://en.wikipedia.org/wiki/Camera_matrix.
+
+    Args:
+      camera_id: One of the two cameras. Can be either integer or String.
+      height: The height of the image (pixels).
+      width: The width of the image (pixels).
+    """
+
+    def xyz2pixels(x, y, z, camera_matrix):
+      """Transforms from world coordinates to pixel coordinates."""
+      xs, ys, s = camera_matrix.dot(np.array([x, y, z, 1.0]))
+      return xs/s, ys/s
+
+    two_geoms_and_two_cameras = """
+    <mujoco>
+      <visual>
+        <global fovy="55"/>
+      </visual>
+      <worldbody>
+        <light name="top" pos="0 0 1"/>
+        <geom name="red" pos=".2 0 0" size=".005" rgba="1 0 0 1"/>
+        <geom name="green" pos=".2 .2 .1" size=".005" rgba="0 1 0 1"/>
+        <camera name="cam0" pos="1 .5 1" zaxis="1 .5 1" fovy="20"/>
+        <camera name="cam1" pos=".1 .1 1" xyaxes="1 1 0 -1 0 0"/>
+      </worldbody>
+    </mujoco>
+    """
+    physics = engine.Physics.from_xml_string(two_geoms_and_two_cameras)
+    camera = engine.Camera(physics, width=width, height=height,
+                           camera_id=camera_id)
+    camera_matrix = camera.matrix  # Get camera matrix.
+    pixels = camera.render(segmentation=True)  # Render a segmentation frame.
+    for geom_id in [0, 1]:
+      # Compute the location of the geom in pixel space using the camera matrix.
+      x, y = xyz2pixels(*physics.data.geom_xpos[geom_id], camera_matrix)
+      row = int(round(y))
+      column = int(round(x))
+      # Compare segmentation values of nearest pixel to corresponding geom.
+      [obj_id, obj_type] = pixels[row, column, :]
+      self.assertEqual(obj_type, enums.mjtObj.mjOBJ_GEOM)
+      self.assertEqual(obj_id, geom_id)
+
   def testMovableCameraSetGetPose(self):
     height, width = 240, 320
 
