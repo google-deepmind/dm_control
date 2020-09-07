@@ -389,10 +389,10 @@ class ReferencePosesTask(composer.Task):
   def get_reference_rel_joints(self, physics: 'mjcf.Physics'):
     """Observation of the reference joints relative to walker."""
     del physics  # physics unused by reference observations.
-
     time_steps = self._time_step + self._ref_steps
-    return (self._clip_reference_features['joints'][time_steps] -
-            self._walker_joints).flatten()
+    diff = (self._clip_reference_features['joints'][time_steps] -
+            self._walker_joints)
+    return diff[:, self._walker.mocap_to_observable_joint_order].flatten()
 
   def get_reference_rel_bodies_pos_global(self, physics: 'mjcf.Physics'):
     """Observation of the reference bodies relative to walker."""
@@ -492,7 +492,8 @@ class ReferencePosesTask(composer.Task):
 
     joints_curr, joints_prev = (self._walker_features['joints'],
                                 self._walker_features_prev['joints'])
-    return (joints_curr - joints_prev) / self._control_timestep
+    return (joints_curr - joints_prev)[
+        self._walker.mocap_to_observable_joint_order]/self._control_timestep
 
   def get_clip_id(self, physics: 'mjcf.Physics'):
     """Observation of the clip id."""

@@ -185,6 +185,16 @@ class Walker(base.Walker):
   def mocap_joints(self):
     return tuple(self.mjcf_model.find_all('joint'))
 
+  @composer.cached_property
+  def mocap_to_observable_joint_order(self):
+    mocap_to_obs = [self.mocap_joints.index(j) for j in self.observable_joints]
+    return mocap_to_obs
+
+  @composer.cached_property
+  def observable_to_mocap_joint_order(self):
+    obs_to_mocap = [self.observable_joints.index(j) for j in self.mocap_joints]
+    return obs_to_mocap
+
 
 class WalkerObservables(base.WalkerObservables):
   """Legacy base class for Walker obserables."""
