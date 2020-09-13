@@ -132,13 +132,13 @@ def _parse(xml_root, escape_separators=False,
     An `mjcf.RootElement`.
 
   Raises:
-    ValueError: If `xml_root`'s tag is not 'mujoco'.
+    ValueError: If `xml_root`'s tag is not 'mujoco.*'.
   """
 
   assets = assets or {}
 
-  if xml_root.tag != 'mujoco':
-    raise ValueError('Root element of the XML should be <mujoco>: got <{}>'
+  if not xml_root.tag.startswith('mujoco'):
+    raise ValueError('Root element of the XML should be <mujoco.*>: got <{}>'
                      .format(xml_root.tag))
 
   with debugging.freeze_current_stack_trace():
