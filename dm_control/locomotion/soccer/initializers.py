@@ -54,7 +54,14 @@ class UniformInitializer(Initializer):
     self._max_retries = max_collision_avoidance_retries
 
   def _initialize_ball(self, ball, spawn_range, physics, random_state):
-    x, y = random_state.uniform(-spawn_range, spawn_range)
+    """Initialize ball in given spawn_range."""
+    if isinstance(spawn_range, np.ndarray):
+      x, y = random_state.uniform(-spawn_range, spawn_range)
+    elif isinstance(spawn_range, (list, tuple)) and len(spawn_range) == 2:
+      x, y = random_state.uniform(spawn_range[0], spawn_range[1])
+    else:
+      raise ValueError(
+          'Unsupported spawn_range. Must be ndarray or list/tuple of length 2.')
     ball.set_pose(physics, [x, y, self._init_ball_z])
     # Note: this method is not always called immediately after `physics.reset()`
     #       so we need to explicitly zero out the velocity.
