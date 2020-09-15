@@ -29,9 +29,9 @@ from absl import logging
 import six
 
 # Lower bound of the time multiplier set through TimeMultiplier class.
-_MIN_TIME_MULTIPLIER = 1./16.
+_MIN_TIME_MULTIPLIER = 1./32.
 # Upper bound of the time multiplier set through TimeMultiplier class.
-_MAX_TIME_MULTIPLIER = 64.
+_MAX_TIME_MULTIPLIER = 1.
 
 
 def is_scalar(value):

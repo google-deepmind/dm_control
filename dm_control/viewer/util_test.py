@@ -124,12 +124,12 @@ class TimeMultiplierTests(absltest.TestCase):
     super(TimeMultiplierTests, self).setUp()
     self.factor = util.TimeMultiplier(initial_time_multiplier=1.0)
 
-  def custom_initial_factor(self):
-    initial_value = 5.0
+  def test_custom_initial_factor(self):
+    initial_value = 0.5
     factor = util.TimeMultiplier(initial_time_multiplier=initial_value)
     self.assertEqual(initial_value, factor.get())
 
-  def initial_factor_clamped_to_valid_value_range(self):
+  def test_initial_factor_clamped_to_valid_value_range(self):
     too_large_multiplier = util._MAX_TIME_MULTIPLIER + 1.
     too_small_multiplier = util._MIN_TIME_MULTIPLIER - 1.
 
@@ -140,8 +140,10 @@ class TimeMultiplierTests(absltest.TestCase):
     self.assertEqual(util._MIN_TIME_MULTIPLIER, factor.get())
 
   def test_increase(self):
+    self.factor.decrease()
+    self.factor.decrease()
     self.factor.increase()
-    self.assertEqual(self.factor._real_time_multiplier, 2.0)
+    self.assertEqual(self.factor._real_time_multiplier, 0.5)
 
   def test_increase_limit(self):
     self.factor._real_time_multiplier = util._MAX_TIME_MULTIPLIER
@@ -157,13 +159,6 @@ class TimeMultiplierTests(absltest.TestCase):
     self.factor._real_time_multiplier = util._MIN_TIME_MULTIPLIER
     self.factor.decrease()
     self.assertEqual(util._MIN_TIME_MULTIPLIER, self.factor.get())
-
-  def test_stringify_when_greater_than_one(self):
-    self.assertEqual('1', str(self.factor))
-    self.factor.increase()
-    self.assertEqual('2', str(self.factor))
-    self.factor.increase()
-    self.assertEqual('4', str(self.factor))
 
   def test_stringify_when_less_than_one(self):
     self.assertEqual('1', str(self.factor))
@@ -216,7 +211,7 @@ class AtomicActionTests(absltest.TestCase):
     self.callback.reset_mock()
 
     self.action.end(1)
-    self.assertEqual(None, self.action.watermark)
+    self.assertIsNone(self.action.watermark)
     self.callback.assert_called_once_with(None)
 
   def test_trying_to_interrupt_with_another_action(self):
