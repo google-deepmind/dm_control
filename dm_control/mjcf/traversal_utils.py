@@ -19,6 +19,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import six
+
+_ACTUATOR_TAGS = ('general', 'motor', 'position',
+                  'velocity', 'cylinder', 'muscle')
+
 
 def get_freejoint(element):
   """Retrieves the free joint of a body. Returns `None` if there isn't one."""
@@ -50,3 +55,33 @@ def get_frame_joints(mjcf_model):
     return frame.find_all('joint', immediate_children_only=True)
   else:
     return None
+
+
+def commit_defaults(element, attributes=None):
+  """Commits default values into attributes of the specified element.
+
+  Args:
+    element: A PyMJCF element.
+    attributes: (optional) A list of strings specifying the attributes to be
+      copied from defaults, or `None` if all attributes should be copied.
+  """
+  dclass = element.dclass
+  parent = element.parent
+  while dclass is None and parent != element.root:
+    dclass = getattr(parent, 'childclass', None)
+    parent = parent.parent
+  if dclass is None:
+    dclass = element.root.default
+
+  while dclass != element.root:
+    if element.tag in _ACTUATOR_TAGS:
+      tags = _ACTUATOR_TAGS
+    else:
+      tags = (element.tag,)
+    for tag in tags:
+      default_element = getattr(dclass, tag)
+      for name, value in six.iteritems(default_element.get_attributes()):
+        if attributes is None or name in attributes:
+          if hasattr(element, name) and getattr(element, name) is None:
+            setattr(element, name, value)
+    dclass = dclass.parent
