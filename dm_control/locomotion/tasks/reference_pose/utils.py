@@ -19,7 +19,8 @@ from dm_control.utils import transformations as tr
 import numpy as np
 
 
-def add_walker(walker_fn, arena, name='walker', ghost=False, visible=True):
+def add_walker(walker_fn, arena, name='walker', ghost=False, visible=True,
+               position=(0, 0, 0)):
   """Create a walker."""
   walker = walker_fn(name=name)
 
@@ -46,7 +47,12 @@ def add_walker(walker_fn, arena, name='walker', ghost=False, visible=True):
       else:
         skin.set_attributes(rgba=(0.5, 0.5, 0.5, 0.))
 
-  walker.create_root_joints(arena.attach(walker))
+  if position == (0, 0, 0):
+    walker.create_root_joints(arena.attach(walker))
+  else:
+    spawn_site = arena.mjcf_model.worldbody.add('site', pos=position)
+    walker.create_root_joints(arena.attach(walker, spawn_site))
+    spawn_site.remove()
 
   return walker
 
