@@ -267,7 +267,8 @@ class RepeatSingleGoalMaze(NullGoalMaze):
                max_repeats=0,
                enable_global_task_observables=False,
                physics_timestep=DEFAULT_PHYSICS_TIMESTEP,
-               control_timestep=DEFAULT_CONTROL_TIMESTEP):
+               control_timestep=DEFAULT_CONTROL_TIMESTEP,
+               regenerate_maze_on_repeat=False):
     super(RepeatSingleGoalMaze, self).__init__(
         walker=walker,
         maze_arena=maze_arena,
@@ -288,6 +289,7 @@ class RepeatSingleGoalMaze(NullGoalMaze):
     self._target_reward_scale = target_reward_scale
     self._max_repeats = max_repeats
     self._targets_obtained = 0
+    self._regenerate_maze_on_repeat = regenerate_maze_on_repeat
 
     if enable_global_task_observables:
       xpos_origin_callable = lambda phys: phys.bind(walker.root_body).xpos
@@ -318,6 +320,9 @@ class RepeatSingleGoalMaze(NullGoalMaze):
       self._rewarded_this_step = True
       self._targets_obtained += 1
       if self._targets_obtained <= self._max_repeats:
+        if self._regenerate_maze_on_repeat:
+          self.initialize_episode_mjcf(random_state)
+          self._target.set_pose(physics, self._target_position)
         self._respawn(physics, random_state)
         self._target.reset(physics)
     else:
