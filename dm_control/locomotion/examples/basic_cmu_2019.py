@@ -48,7 +48,8 @@ def cmu_humanoid_run_walls(random_state=None):
       wall_width=distributions.Uniform(1, 7),
       wall_height=3.0,
       corridor_width=10,
-      corridor_length=100)
+      corridor_length=100,
+      include_initial_padding=False)
 
   # Build a task that rewards the agent for running down the corridor at a
   # specific velocity.

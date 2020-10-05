@@ -349,6 +349,7 @@ class WallsCorridor(EmptyCorridor):
              corridor_width=4,
              corridor_length=40,
              visible_side_planes=False,
+             include_initial_padding=True,
              name='walls_corridor'):
     """Builds the corridor.
 
@@ -370,6 +371,8 @@ class WallsCorridor(EmptyCorridor):
         specifies the length of the corridor.
       visible_side_planes: Whether to the side planes that bound the corridor's
         perimeter should be rendered.
+      include_initial_padding: Whether to include initial offset before first
+        obstacle.
       name: The name of this arena.
     """
     super(WallsCorridor, self)._build(
@@ -383,6 +386,7 @@ class WallsCorridor(EmptyCorridor):
     self._wall_gap = wall_gap
     self._wall_width = wall_width
     self._swap_wall_side = swap_wall_side
+    self._include_initial_padding = include_initial_padding
 
   def regenerate(self, random_state):
     """Regenerates this corridor.
@@ -398,8 +402,11 @@ class WallsCorridor(EmptyCorridor):
         `Variation` objects.
     """
     super(WallsCorridor, self).regenerate(random_state)
+
     wall_x = variation.evaluate(
         self._wall_gap, random_state=random_state) - _CORRIDOR_X_PADDING
+    if self._include_initial_padding:
+      wall_x += 2*_CORRIDOR_X_PADDING
     wall_side = 0
     wall_id = 0
     while wall_x < self._current_corridor_length:
