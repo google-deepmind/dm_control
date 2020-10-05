@@ -23,17 +23,19 @@ from dm_control import composer
 from dm_control.locomotion.arenas import assets as locomotion_arenas_assets
 import numpy as np
 
-_TOP_CAMERA_DISTANCE = 100
-_TOP_CAMERA_Y_PADDING_FACTOR = 1.1
+_GROUNDPLANE_QUAD_SIZE = 0.25
 
 
 class Floor(composer.Arena):
   """A simple floor arena with a checkered pattern."""
 
   def _build(self, size=(8, 8), reflectance=.2, aesthetic='default',
-             name='floor'):
+             name='floor', top_camera_y_padding_factor=1.1,
+             top_camera_distance=100):
     super(Floor, self)._build(name=name)
     self._size = size
+    self._top_camera_y_padding_factor = top_camera_y_padding_factor
+    self._top_camera_distance = top_camera_distance
 
     self._mjcf_root.visual.headlight.set_attributes(
         ambient=[.4, .4, .4], diffuse=[.8, .8, .8], specular=[.1, .1, .1])
@@ -62,14 +64,14 @@ class Floor(composer.Arena):
           type='2d',
           builtin='checker',
           name='groundplane',
-          width=300,
-          height=300,
+          width=200,
+          height=200,
           mark='edge',
           markrgb=[0.8, 0.8, 0.8])
       self._ground_material = self._mjcf_root.asset.add(
           'material',
           name='groundplane',
-          texrepeat=[3, 3],
+          texrepeat=[2, 2],  # Makes white squares exactly 1x1 length units.
           texuniform=True,
           reflectance=reflectance,
           texture=self._ground_texture)
@@ -80,16 +82,16 @@ class Floor(composer.Arena):
         type='plane',
         name='groundplane',
         material=self._ground_material,
-        size=list(size) + [0.5])
+        size=list(size) + [_GROUNDPLANE_QUAD_SIZE])
 
     # Choose the FOV so that the floor always fits nicely within the frame
     # irrespective of actual floor size.
-    fovy_radians = 2 * np.arctan2(_TOP_CAMERA_Y_PADDING_FACTOR * size[1],
-                                  _TOP_CAMERA_DISTANCE)
+    fovy_radians = 2 * np.arctan2(top_camera_y_padding_factor * size[1],
+                                  top_camera_distance)
     self._top_camera = self._mjcf_root.worldbody.add(
         'camera',
         name='top_camera',
-        pos=[0, 0, _TOP_CAMERA_DISTANCE],
+        pos=[0, 0, top_camera_distance],
         zaxis=[0, 0, 1],
         fovy=np.rad2deg(fovy_radians))
 
