@@ -19,6 +19,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import warnings
 import numpy as np
 
 # The value returned by tolerance() at `margin` distance from `bounds` interval.
@@ -69,7 +70,11 @@ def _sigmoids(x, value_at_1, sigmoid):
   elif sigmoid == 'cosine':
     scale = np.arccos(2*value_at_1 - 1) / np.pi
     scaled_x = x*scale
-    return np.where(abs(scaled_x) < 1, (1 + np.cos(np.pi*scaled_x))/2, 0.0)
+    with warnings.catch_warnings():
+      warnings.filterwarnings(
+          action='ignore', message='invalid value encountered in cos')
+      cos_pi_scaled_x = np.cos(np.pi*scaled_x)
+    return np.where(abs(scaled_x) < 1, (1 + cos_pi_scaled_x)/2, 0.0)
 
   elif sigmoid == 'linear':
     scale = 1-value_at_1
