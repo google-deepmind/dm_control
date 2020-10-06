@@ -42,7 +42,7 @@ import six
 import tree
 
 if typing.TYPE_CHECKING:
-  from dm_control.locomotion.walkers import base
+  from dm_control.locomotion.walkers import legacy_base
   from dm_control import mjcf
 
 mjlib = mjbindings.mjlib
@@ -66,14 +66,14 @@ class ReferencePosesTask(composer.Task):
 
   def __init__(
       self,
-      walker: Union['base.Walker', Callable],  # pylint: disable=g-bare-generic
+      walker: Callable[..., 'legacy_base.Walker'],
       arena: composer.Arena,
       ref_path: Text,
       ref_steps: Sequence[int],
       dataset: Union[Text, types.ClipCollection],
       termination_error_threshold: float = 0.3,
       min_steps: int = 10,
-      reward_type: Text = 'default',
+      reward_type: Text = 'termination_reward',
       physics_timestep: float = DEFAULT_PHYSICS_TIMESTEP,
       always_init_at_clip_start: bool = False,
       proto_modifier: Optional[Any] = None,
@@ -590,14 +590,14 @@ class MultiClipMocapTracking(ReferencePosesTask):
 
   def __init__(
       self,
-      walker: Union['base.Walker', Callable],  # pylint: disable=g-bare-generic
+      walker: Callable[..., 'legacy_base.Walker'],
       arena: composer.Arena,
       ref_path: Text,
       ref_steps: Sequence[int],
       dataset: Union[Text, Sequence[Any]],
       termination_error_threshold: float = 0.3,
       min_steps: int = 10,
-      reward_type: Text = 'default',
+      reward_type: Text = 'termination_reward',
       physics_timestep: float = DEFAULT_PHYSICS_TIMESTEP,
       always_init_at_clip_start: bool = False,
       proto_modifier: Optional[Any] = None,
