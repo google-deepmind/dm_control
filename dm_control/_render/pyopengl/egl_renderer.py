@@ -46,7 +46,18 @@ from OpenGL import error
 
 def create_initialized_headless_egl_display():
   """Creates an initialized EGL display directly on a device."""
-  for device in EGL.eglQueryDevicesEXT():
+  all_devices = EGL.eglQueryDevicesEXT()
+  selected_device = os.environ.get('EGL_DEVICE_ID', None)
+  if selected_device is None:
+    candidates = all_devices
+  else:
+    device_idx = int(selected_device)
+    if not 0 <= device_idx < len(all_devices):
+      raise RuntimeError(
+          f'EGL_DEVICE_ID must be an integer between 0 and '
+          f'{len(all_devices) - 1} (inclusive), got {device_idx}.')
+    candidates = all_devices[device_idx:device_idx + 1]
+  for device in candidates:
     display = EGL.eglGetPlatformDisplayEXT(
         EGL.EGL_PLATFORM_DEVICE_EXT, device, None)
     if display != EGL.EGL_NO_DISPLAY and EGL.eglGetError() == EGL.EGL_SUCCESS:
