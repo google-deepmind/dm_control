@@ -41,7 +41,7 @@ class FloorsTest(absltest.TestCase):
     arena = floors.Floor(size=[floor_width, floor_height])
 
     self.assertGreater(arena._top_camera_y_padding_factor, 1)
-    np.testing.assert_array_equal(arena._top_camera.zaxis, (0, 0, 1))
+    np.testing.assert_array_equal(arena._top_camera.quat, (1, 0, 0, 0))
 
     expected_camera_y = floor_height * arena._top_camera_y_padding_factor
     np.testing.assert_allclose(

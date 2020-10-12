@@ -92,7 +92,7 @@ class Floor(composer.Arena):
         'camera',
         name='top_camera',
         pos=[0, 0, top_camera_distance],
-        zaxis=[0, 0, 1],
+        quat=[1, 0, 0, 0],
         fovy=np.rad2deg(fovy_radians))
 
   @property
