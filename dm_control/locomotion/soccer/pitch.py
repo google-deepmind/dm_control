@@ -365,8 +365,13 @@ class Pitch(composer.Arena):
         zaxis=[0, 0, 1],
         fovy=_top_down_cam_fovy(self._size, top_camera_distance))
 
-    # Ensure close up geoms are rendered by egocentric cameras.
-    self._mjcf_root.visual.map.znear = 0.0005
+    # Set the `extent`, an "average distance" to 0.1 * pitch length.
+    extent = 0.1 * max(self._size)
+    self._mjcf_root.statistic.extent = extent
+    self._mjcf_root.statistic.center = (0, 0, extent)
+    # The near and far clipping planes are scaled by `extent`.
+    self._mjcf_root.visual.map.zfar = 50             # 5 pitch lengths
+    self._mjcf_root.visual.map.znear = 0.1 / extent  # 10 centimeters
 
     # Add skybox.
     self._mjcf_root.asset.add(
@@ -385,7 +390,7 @@ class Pitch(composer.Arena):
     _reposition_corner_lights(self._corner_lights, size)
 
     # Increase shadow resolution, (default is 1024).
-    self._mjcf_root.visual.quality.shadowsize = 4096
+    self._mjcf_root.visual.quality.shadowsize = 8192
 
     # Build groundplane.
     if len(self._size) != 2:
