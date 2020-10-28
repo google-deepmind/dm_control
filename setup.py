@@ -177,7 +177,7 @@ def find_data_files(package_dir, patterns, excludes=()):
 
 setup(
     name='dm_control',
-    version='0.0.337282940',
+    version='0.0.339468801',
     description='Continuous control environments and MuJoCo Python bindings.',
     author='DeepMind',
     license='Apache License, Version 2.0',
@@ -205,7 +205,7 @@ setup(
     tests_require=[
         'mock',
         'nose',
-        'pillow',
+        'pillow>=7.1.0',  # https://github.com/advisories/GHSA-8843-m7mw-mxqm
     ],
     test_suite='nose.collector',
     packages=find_packages(),
