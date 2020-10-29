@@ -45,6 +45,7 @@ from dm_control import _render
 from dm_control.mujoco import index
 from dm_control.mujoco import wrapper
 from dm_control.mujoco.wrapper import util
+from dm_control.mujoco.wrapper.mjbindings import constants
 from dm_control.mujoco.wrapper.mjbindings import enums
 from dm_control.mujoco.wrapper.mjbindings import mjlib
 from dm_control.mujoco.wrapper.mjbindings import types
@@ -996,8 +997,8 @@ def action_spec(physics):
   num_actions = physics.model.nu
   is_limited = physics.model.actuator_ctrllimited.ravel().astype(np.bool)
   control_range = physics.model.actuator_ctrlrange
-  minima = np.full(num_actions, fill_value=-np.inf, dtype=np.float)
-  maxima = np.full(num_actions, fill_value=np.inf, dtype=np.float)
+  minima = np.full(num_actions, fill_value=-constants.mjMAXVAL, dtype=np.float)
+  maxima = np.full(num_actions, fill_value=constants.mjMAXVAL, dtype=np.float)
   minima[is_limited], maxima[is_limited] = control_range[is_limited].T
 
   return specs.BoundedArray(

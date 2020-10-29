@@ -23,6 +23,7 @@ from __future__ import print_function
 from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control import suite
+from dm_control.mujoco.wrapper.mjbindings import constants
 from dm_control.rl import control
 import mock
 import numpy as np
@@ -39,9 +40,12 @@ _DOMAINS_AND_TASKS = [
 def uniform_random_policy(action_spec, random=None):
   lower_bounds = action_spec.minimum
   upper_bounds = action_spec.maximum
-  # Draw values between -1 and 1 for unbounded actions.
-  lower_bounds = np.where(np.isinf(lower_bounds), -1.0, lower_bounds)
-  upper_bounds = np.where(np.isinf(upper_bounds), 1.0, upper_bounds)
+  # Draw values between -1 and 1 for actions where the min/max is set to
+  # MuJoCo's internal limit.
+  lower_bounds = np.where(
+      np.abs(lower_bounds) >= constants.mjMAXVAL, -1.0, lower_bounds)
+  upper_bounds = np.where(
+      np.abs(upper_bounds) >= constants.mjMAXVAL, 1.0, upper_bounds)
   random_state = np.random.RandomState(random)
   def policy(time_step):
     del time_step  # Unused.

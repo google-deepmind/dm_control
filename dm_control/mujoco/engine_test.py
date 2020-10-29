@@ -26,6 +26,7 @@ from dm_control.mujoco import engine
 from dm_control.mujoco import wrapper
 from dm_control.mujoco.testing import assets
 from dm_control.mujoco.wrapper import mjbindings
+from dm_control.mujoco.wrapper.mjbindings import constants
 from dm_control.mujoco.wrapper.mjbindings import enums
 from dm_control.rl import control
 import mock
@@ -525,8 +526,8 @@ class MujocoEngineTest(parameterized.TestCase):
     physics = engine.Physics.from_xml_string(xml)
     spec = engine.action_spec(physics)
     self.assertEqual(np.float, spec.dtype)
-    np.testing.assert_array_equal(spec.minimum, [-np.inf, -1.0])
-    np.testing.assert_array_equal(spec.maximum, [np.inf, 2.0])
+    np.testing.assert_array_equal(spec.minimum, [-constants.mjMAXVAL, -1.0])
+    np.testing.assert_array_equal(spec.maximum, [constants.mjMAXVAL, 2.0])
 
   def _check_valid_rotation_matrix(self, data_field_name):
     name = 'foo'
