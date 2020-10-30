@@ -91,7 +91,7 @@ class ThreadSafetyTest(absltest.TestCase):
     for _ in range(NUM_STEPS):
       physics.step()
       frame = physics.render(width=320, height=240, camera_id=0)
-      unique_frames.add(frame.tostring())
+      unique_frames.add(frame.tobytes())
 
     self.assertLen(unique_frames, NUM_STEPS)
 
