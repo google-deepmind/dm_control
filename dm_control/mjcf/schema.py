@@ -245,3 +245,21 @@ def _attachment_frame_spec(is_world_attachment):
 
 ATTACHMENT_FRAME = _attachment_frame_spec(is_world_attachment=False)
 WORLD_ATTACHMENT_FRAME = _attachment_frame_spec(is_world_attachment=True)
+
+
+def override_schema(schema_xml_path):
+  """Override the schema with a custom xml.
+
+  This method updates several global variables and care should be taken not to
+  call it if the pre-update values have already been used.
+
+  Args:
+    schema_xml_path: Path to schema xml file.
+  """
+  global MUJOCO
+  global FINDABLE_NAMESPACES
+
+  MUJOCO = parse_schema(schema_xml_path)
+  FINDABLE_NAMESPACES = frozenset(
+      collect_namespaces(MUJOCO).union(_ADDITIONAL_FINDABLE_NAMESPACES))
+

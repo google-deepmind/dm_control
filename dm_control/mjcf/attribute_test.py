@@ -40,13 +40,9 @@ import six
 mjlib = mjbindings.mjlib
 
 ASSETS_DIR = os.path.join(os.path.dirname(__file__), 'test_assets')
-SCHEMA_FILENAME = 'attribute_test_schema.xml'
+FAKE_SCHEMA_FILENAME = 'attribute_test_schema.xml'
 
-ORIGINAL_MUJOCO = schema.MUJOCO
-ORIGINAL_FINDABLE_NAMESPACES = schema.FINDABLE_NAMESPACES
-
-FAKE_MUJOCO = schema.parse_schema(os.path.join(ASSETS_DIR, SCHEMA_FILENAME))
-FAKE_FINDABLE_NAMESPACES = frozenset(schema.collect_namespaces(FAKE_MUJOCO))
+ORIGINAL_SCHEMA_PATH = os.path.join(os.path.dirname(__file__), 'schema.xml')
 
 
 class AttributeTest(parameterized.TestCase):
@@ -58,8 +54,7 @@ class AttributeTest(parameterized.TestCase):
 
   def setUp(self):
     super(AttributeTest, self).setUp()
-    schema.MUJOCO = FAKE_MUJOCO
-    schema.FINDABLE_NAMESPACES = FAKE_FINDABLE_NAMESPACES
+    schema.override_schema(os.path.join(ASSETS_DIR, FAKE_SCHEMA_FILENAME))
     self._alpha = namescope.NameScope('alpha', None)
     self._beta = namescope.NameScope('beta', None)
     self._beta.parent = self._alpha
@@ -68,8 +63,7 @@ class AttributeTest(parameterized.TestCase):
 
   def tearDown(self):
     super(AttributeTest, self).tearDown()
-    schema.MUJOCO = ORIGINAL_MUJOCO
-    schema.FINDABLE_NAMESPACES = ORIGINAL_FINDABLE_NAMESPACES
+    schema.override_schema(ORIGINAL_SCHEMA_PATH)
 
   def assertXMLStringIsNone(self, mjcf_element, attribute_name):
     for prefix_root in (self._alpha, self._beta, self._mujoco.namescope, None):
@@ -380,8 +374,8 @@ class AttributeTest(parameterized.TestCase):
     self.assertCorrectXMLStringForDefaultsClass(subentity, 'class', 'main')
 
   @parameterized.named_parameters(
-      ('NoBasepath', '', os.path.join(ASSETS_DIR, SCHEMA_FILENAME)),
-      ('WithBasepath', ASSETS_DIR, SCHEMA_FILENAME))
+      ('NoBasepath', '', os.path.join(ASSETS_DIR, FAKE_SCHEMA_FILENAME)),
+      ('WithBasepath', ASSETS_DIR, FAKE_SCHEMA_FILENAME))
   def testFileFromPath(self, basepath, value):
     mujoco = self._mujoco
     full_path = os.path.join(basepath, value)
@@ -459,7 +453,7 @@ class AttributeTest(parameterized.TestCase):
         ('float_array', [1.5, 2.5, 3.5]), ('int_array', [4, 5]),
         ('keyword', 'alpha'), ('identifier', 'thing'),
         ('reference', 'other_thing'), ('basepath', ASSETS_DIR),
-        ('file', SCHEMA_FILENAME)
+        ('file', FAKE_SCHEMA_FILENAME)
     )
 
     # Removing any one of the required attributes should cause initialization
