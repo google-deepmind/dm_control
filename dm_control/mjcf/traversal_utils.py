@@ -15,10 +15,6 @@
 
 """Utility functions that operate on MJCF elements."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import six
 
 _ACTUATOR_TAGS = ('general', 'motor', 'position',

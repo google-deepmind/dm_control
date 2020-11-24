@@ -14,12 +14,7 @@
 # ============================================================================
 """Calculates a covering of text mazes with overlapping rectangular walls."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import collections
-
 import numpy as np
 from six.moves import range
 

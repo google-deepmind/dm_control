@@ -15,20 +15,14 @@
 
 """Tests for the pixel wrapper."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import collections
 
-# Internal dependencies.
 from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control.suite import cartpole
 from dm_control.suite.wrappers import pixels
 import dm_env
 from dm_env import specs
-
 import numpy as np
 
 

@@ -15,9 +15,6 @@
 
 """Detects the presence of registered entities within a cuboidal region."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 
 from dm_control import composer
 from dm_control import mjcf

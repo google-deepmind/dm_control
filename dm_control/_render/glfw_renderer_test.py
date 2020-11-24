@@ -15,18 +15,11 @@
 
 """Tests for GLFWContext."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import unittest
-
-# Internal dependencies.
 from absl.testing import absltest
 from dm_control import _render
 from dm_control.mujoco import wrapper
 from dm_control.mujoco.testing import decorators
-
 
 import mock  # pylint: disable=g-import-not-at-top
 

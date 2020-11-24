@@ -14,15 +14,12 @@
 # ============================================================================
 """Environment's execution runtime."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import collections
 import copy
+import enum
+
 from dm_control.mujoco.wrapper import mjbindings
 from dm_control.viewer import util
-import enum
 import numpy as np
 import six
 

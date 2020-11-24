@@ -15,10 +15,6 @@
 
 """Abstract base classes for robot arms and hands."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import abc
 
 from dm_control import composer

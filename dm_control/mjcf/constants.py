@@ -15,9 +15,6 @@
 
 """Magic constants used within `dm_control.mjcf`."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 
 PREFIX_SEPARATOR = '/'
 PREFIX_SEPARATOR_ESCAPE = '\\'

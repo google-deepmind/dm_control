@@ -14,10 +14,6 @@
 # ============================================================================
 """Windowing system that uses GLFW library."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import functools
 from dm_control import _render
 from dm_control._render import glfw_renderer

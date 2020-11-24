@@ -15,12 +15,7 @@
 
 """Tests for locomotion.tasks.soccer."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import unittest
-# Internal dependencies.
 
 from absl.testing import absltest
 from absl.testing import parameterized

@@ -15,10 +15,6 @@
 
 """The base empty arena that defines global settings for Composer."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import os
 
 from dm_control import mjcf

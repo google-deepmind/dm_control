@@ -15,10 +15,6 @@
 
 """A task where the goal is to move the hand close to a target prop or site."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import collections
 
 from dm_control import composer

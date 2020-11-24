@@ -15,9 +15,7 @@
 
 """Multi-agent MuJoCo soccer environment."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+import enum
 
 from dm_control import composer
 from dm_control.locomotion import walkers
@@ -34,8 +32,6 @@ from dm_control.locomotion.soccer.soccer_ball import SoccerBall
 from dm_control.locomotion.soccer.task import Task
 from dm_control.locomotion.soccer.team import Player
 from dm_control.locomotion.soccer.team import Team
-
-import enum
 from six.moves import range
 
 

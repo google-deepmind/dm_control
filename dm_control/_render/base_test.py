@@ -15,12 +15,7 @@
 
 """Tests for the base rendering module."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import threading
-# Internal dependencies.
 from absl.testing import absltest
 from dm_control._render import base
 from dm_control._render import executor

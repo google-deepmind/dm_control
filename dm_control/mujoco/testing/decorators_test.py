@@ -15,14 +15,7 @@
 
 """Tests of the decorators module."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
-# Internal dependencies.
-
 from absl.testing import absltest
-
 from dm_control.mujoco.testing import decorators
 import mock
 from six.moves import range

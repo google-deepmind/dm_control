@@ -15,10 +15,6 @@
 
 """Tasks involving assembly and/or disassembly of bricks."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import collections
 
 from absl import logging

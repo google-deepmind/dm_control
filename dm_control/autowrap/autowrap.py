@@ -32,21 +32,15 @@ Example usage:
            --output_dir=/path/to/mjbindings
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import collections
 import io
 import os
 
-# Internal dependencies.
 from absl import app
 from absl import flags
 from absl import logging
 from dm_control.autowrap import binding_generator
 from dm_control.autowrap import codegen_util
-
 import six
 
 _MJMODEL_H = "mjmodel.h"

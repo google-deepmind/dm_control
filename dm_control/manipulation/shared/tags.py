@@ -15,9 +15,6 @@
 
 """String constants used to annotate task constructors."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 
 FEATURES = 'features'
 VISION = 'vision'

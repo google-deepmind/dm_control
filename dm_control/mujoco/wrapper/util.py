@@ -15,10 +15,6 @@
 
 """Various helper functions and classes."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import ctypes
 import ctypes.util
 import functools

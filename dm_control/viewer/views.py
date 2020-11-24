@@ -14,16 +14,12 @@
 # ============================================================================
 """Components and views that render custom images into Mujoco render frame."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import abc
+import enum
 
 from dm_control.mujoco.wrapper import mjbindings
 from dm_control.mujoco.wrapper import util
 from dm_control.viewer import renderer
-import enum
 import numpy as np
 import six
 

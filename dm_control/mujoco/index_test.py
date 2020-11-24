@@ -14,20 +14,13 @@
 # ============================================================================
 
 """Tests for index."""
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
-# Internal dependencies.
 
 from absl.testing import absltest
 from absl.testing import parameterized
-
 from dm_control.mujoco import index
 from dm_control.mujoco import wrapper
 from dm_control.mujoco.testing import assets
 from dm_control.mujoco.wrapper.mjbindings import sizes
-
 import numpy as np
 import six
 

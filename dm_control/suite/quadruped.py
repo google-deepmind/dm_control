@@ -15,10 +15,6 @@
 
 """Quadruped Domain."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import collections
 
 from dm_control import mujoco
@@ -29,7 +25,6 @@ from dm_control.suite import common
 from dm_control.utils import containers
 from dm_control.utils import rewards
 from dm_control.utils import xml_tools
-
 from lxml import etree
 import numpy as np
 from scipy import ndimage
@@ -66,8 +61,8 @@ def make_model(floor_size=None, terrain=False, rangefinders=False,
 
   # Set floor size.
   if floor_size is not None:
-    floor_geom = mjcf.find('.//geom[@name={!r}]'.format('floor'))
-    floor_geom.attrib['size'] = '{} {} .5'.format(floor_size, floor_size)
+    floor_geom = mjcf.find('.//geom[@name=\'floor\']')
+    floor_geom.attrib['size'] = f'{floor_size} {floor_size} .5'
 
   # Remove walls, ball and target.
   if not walls_and_ball:

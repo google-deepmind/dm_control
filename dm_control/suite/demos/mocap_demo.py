@@ -22,19 +22,12 @@ To run the demo, supply a path to a `.amc` file:
 CMU motion capture clips are available at mocap.cs.cmu.edu
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import time
-# Internal dependencies.
 
 from absl import app
 from absl import flags
-
 from dm_control.suite import humanoid_CMU
 from dm_control.suite.utils import parse_amc
-
 import matplotlib.pyplot as plt
 import numpy as np
 

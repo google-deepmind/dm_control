@@ -15,9 +15,6 @@
 
 """"A task where players play a soccer game."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 
 from dm_control import composer
 from dm_control.locomotion.soccer import initializers

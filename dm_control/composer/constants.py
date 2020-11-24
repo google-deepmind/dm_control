@@ -15,8 +15,5 @@
 
 """Module defining constant values for Composer."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 
 SENSOR_SITES_GROUP = 4

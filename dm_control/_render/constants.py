@@ -15,10 +15,6 @@
 
 """String constants for the rendering module."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 # Name of the environment variable that selects a renderer platform.
 MUJOCO_GL = 'MUJOCO_GL'
 

@@ -15,10 +15,6 @@
 
 """A soccer pitch with home/away goals and one field with position detection."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import colorsys
 import os
 

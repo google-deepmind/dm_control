@@ -22,10 +22,6 @@ following line number in a dict. This allows test cases to look up the line
 number by name, rather than brittly hard-coding in the line number.
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import collections
 import os
 import re

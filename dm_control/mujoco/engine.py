@@ -31,10 +31,6 @@ viewport to an array using the `render` method, and can query for objects
 visible at specific positions using the `select` method. The `Physics` class
 also provides a `render` method that returns a pixel array directly.
 """
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import collections
 import contextlib
 import threading
@@ -51,7 +47,6 @@ from dm_control.mujoco.wrapper.mjbindings import mjlib
 from dm_control.mujoco.wrapper.mjbindings import types
 from dm_control.rl import control as _control
 from dm_env import specs
-
 import numpy as np
 import six
 

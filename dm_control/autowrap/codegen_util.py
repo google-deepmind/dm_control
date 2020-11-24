@@ -15,14 +15,9 @@
 
 """Misc helper functions needed by autowrap.py."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import collections
 import keyword
 import re
-
 import six
 from six.moves import builtins
 
@@ -34,10 +29,6 @@ if not six.PY2:
 
 class Indenter(object):
   r"""Callable context manager for tracking string indentation levels.
-
-  Args:
-    level: The initial indentation level.
-    indent_str: The string used to indent each line.
 
   Example usage:
 
@@ -55,6 +46,12 @@ class Indenter(object):
   """
 
   def __init__(self, level=0, indent_str="  "):
+    """Initializes an Indenter.
+
+    Args:
+      level: The initial indentation level.
+      indent_str: The string used to indent each line.
+    """
     self.indent_str = indent_str
     self.level = level
 

@@ -15,14 +15,9 @@
 
 """Tests for the Jaco arm class."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import itertools
 import unittest
 
-# Internal dependencies.
 from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control import composer

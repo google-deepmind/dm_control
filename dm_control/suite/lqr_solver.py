@@ -19,9 +19,6 @@ LQR control problem is described in
 https://en.wikipedia.org/wiki/Linear-quadratic_regulator#Infinite-horizon.2C_discrete-time_LQR
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 
 from dm_control.mujoco import wrapper
 import numpy as np

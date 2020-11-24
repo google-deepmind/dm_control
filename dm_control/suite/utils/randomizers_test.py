@@ -15,11 +15,6 @@
 
 """Tests for randomizers.py."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
-# Internal dependencies.
 from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control import mujoco
@@ -34,6 +29,7 @@ mjlib = mjbindings.mjlib
 class RandomizeUnlimitedJointsTest(parameterized.TestCase):
 
   def setUp(self):
+    super().setUp()
     self.rand = np.random.RandomState(100)
 
   def test_single_joint_of_each_type(self):

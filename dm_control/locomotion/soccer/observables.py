@@ -14,10 +14,6 @@
 # ============================================================================
 """Soccer observables modules."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import abc
 
 from dm_control.composer.observation import observable as base_observable

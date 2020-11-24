@@ -20,10 +20,6 @@ If Mujoco raises a compile error on the generated XML model, we would then be
 able to find the original source line that created the offending element.
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import collections
 import contextlib
 import copy

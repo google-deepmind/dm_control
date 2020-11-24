@@ -14,10 +14,6 @@
 # ============================================================================
 """A quadruped "ant" walker."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import os
 
 from dm_control import composer
@@ -26,7 +22,6 @@ from dm_control.composer.observation import observable
 from dm_control.locomotion.walkers import base
 from dm_control.locomotion.walkers import legacy_base
 from dm_control.mujoco import math as mjmath
-
 import numpy as np
 
 _XML_DIRNAME = os.path.join(os.path.dirname(__file__), '../../third_party/ant')

@@ -15,10 +15,6 @@
 
 """An object to manage the scoping of identifiers in MJCF models."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import collections
 
 from dm_control.mjcf import constants

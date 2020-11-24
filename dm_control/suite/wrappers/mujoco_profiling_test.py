@@ -14,17 +14,11 @@
 # ============================================================================
 """Tests for the mujoco_profiling wrapper."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import collections
 
-# Internal dependencies.
 from absl.testing import absltest
 from dm_control.suite import cartpole
 from dm_control.suite.wrappers import mujoco_profiling
-
 import numpy as np
 
 

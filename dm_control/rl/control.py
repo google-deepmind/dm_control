@@ -15,14 +15,9 @@
 
 """A dm_env.Environment subclass for control-specific environments."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import abc
 import collections
 import contextlib
-
 import dm_env
 from dm_env import specs
 import numpy as np

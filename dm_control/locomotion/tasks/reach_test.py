@@ -14,10 +14,6 @@
 # ============================================================================
 """Tests for locomotion.tasks.reach."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import functools
 from absl.testing import absltest
 
@@ -26,7 +22,6 @@ from dm_control.locomotion.arenas import floors
 from dm_control.locomotion.props import target_sphere
 from dm_control.locomotion.tasks import reach
 from dm_control.locomotion.walkers import rodent
-
 import numpy as np
 
 _CONTROL_TIMESTEP = .02

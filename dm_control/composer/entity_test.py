@@ -15,12 +15,7 @@
 
 """Tests for composer.Entity."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import itertools
-# Internal dependencies.
 
 from absl.testing import absltest
 from absl.testing import parameterized
@@ -155,9 +150,9 @@ class EntityTest(parameterized.TestCase):
     for obs in self.entity.observables.as_dict().values():
       self.assertEqual(obs.update_interval, 2)
       self.assertEqual(obs.delay, 1)
-      self.assertEqual(obs.buffer_size, None)
-      self.assertEqual(obs.aggregator, None)
-      self.assertEqual(obs.corruptor, None)
+      self.assertIsNone(obs.buffer_size)
+      self.assertIsNone(obs.aggregator)
+      self.assertIsNone(obs.corruptor)
 
   def testObservableOptionsInvalidName(self):
     options = {'asdf': None}
@@ -186,16 +181,16 @@ class EntityTest(parameterized.TestCase):
     observables = self.entity.observables.as_dict()
     self.assertEqual(observables['observable0'].update_interval, 2)
     self.assertEqual(observables['observable0'].delay, 3)
-    self.assertEqual(observables['observable0'].buffer_size, None)
-    self.assertEqual(observables['observable0'].aggregator, None)
-    self.assertEqual(observables['observable0'].corruptor, None)
+    self.assertIsNone(observables['observable0'].buffer_size)
+    self.assertIsNone(observables['observable0'].aggregator)
+    self.assertIsNone(observables['observable0'].corruptor)
     self.assertFalse(observables['observable0'].enabled)
 
     self.assertEqual(observables['observable1'].update_interval, 4)
     self.assertEqual(observables['observable1'].delay, 5)
-    self.assertEqual(observables['observable1'].buffer_size, None)
-    self.assertEqual(observables['observable1'].aggregator, None)
-    self.assertEqual(observables['observable1'].corruptor, None)
+    self.assertIsNone(observables['observable1'].buffer_size)
+    self.assertIsNone(observables['observable1'].aggregator)
+    self.assertIsNone(observables['observable1'].corruptor)
     self.assertFalse(observables['observable1'].enabled)
 
   def testObservableOptionsEntityConstructor(self):
@@ -213,16 +208,16 @@ class EntityTest(parameterized.TestCase):
     observables = ent.observables.as_dict()
     self.assertEqual(observables['observable0'].update_interval, 2)
     self.assertEqual(observables['observable0'].delay, 3)
-    self.assertEqual(observables['observable0'].buffer_size, None)
-    self.assertEqual(observables['observable0'].aggregator, None)
-    self.assertEqual(observables['observable0'].corruptor, None)
+    self.assertIsNone(observables['observable0'].buffer_size)
+    self.assertIsNone(observables['observable0'].aggregator)
+    self.assertIsNone(observables['observable0'].corruptor)
     self.assertFalse(observables['observable0'].enabled)
 
     self.assertEqual(observables['observable1'].update_interval, 4)
     self.assertEqual(observables['observable1'].delay, 5)
-    self.assertEqual(observables['observable1'].buffer_size, None)
-    self.assertEqual(observables['observable1'].aggregator, None)
-    self.assertEqual(observables['observable1'].corruptor, None)
+    self.assertIsNone(observables['observable1'].buffer_size)
+    self.assertIsNone(observables['observable1'].aggregator)
+    self.assertIsNone(observables['observable1'].corruptor)
     self.assertFalse(observables['observable1'].enabled)
 
   def testObservablePartialOptions(self):
@@ -231,16 +226,16 @@ class EntityTest(parameterized.TestCase):
     observables = self.entity.observables.as_dict()
     self.assertEqual(observables['observable0'].update_interval, 2)
     self.assertEqual(observables['observable0'].delay, 3)
-    self.assertEqual(observables['observable0'].buffer_size, None)
-    self.assertEqual(observables['observable0'].aggregator, None)
-    self.assertEqual(observables['observable0'].corruptor, None)
+    self.assertIsNone(observables['observable0'].buffer_size)
+    self.assertIsNone(observables['observable0'].aggregator)
+    self.assertIsNone(observables['observable0'].corruptor)
     self.assertFalse(observables['observable0'].enabled)
 
     self.assertEqual(observables['observable1'].update_interval, 1)
-    self.assertEqual(observables['observable1'].delay, None)
-    self.assertEqual(observables['observable1'].buffer_size, None)
-    self.assertEqual(observables['observable1'].aggregator, None)
-    self.assertEqual(observables['observable1'].corruptor, None)
+    self.assertIsNone(observables['observable1'].delay)
+    self.assertIsNone(observables['observable1'].buffer_size)
+    self.assertIsNone(observables['observable1'].aggregator)
+    self.assertIsNone(observables['observable1'].corruptor)
     self.assertFalse(observables['observable1'].enabled)
 
   def testAttach(self):

@@ -14,17 +14,12 @@
 # ============================================================================
 """A (visuomotor) task consisting of reaching to targets for reward."""
 
-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import collections
+import enum
 import itertools
 
 from dm_control import composer
 from dm_control.composer.observation import observable as dm_observable
-import enum
 import numpy as np
 from six.moves import range
 from six.moves import zip

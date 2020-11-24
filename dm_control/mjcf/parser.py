@@ -15,10 +15,6 @@
 
 """Functions for parsing XML into an MJCF object model."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import os
 import sys
 

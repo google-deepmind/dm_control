@@ -15,10 +15,6 @@
 
 """Python representations of C declarations."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import textwrap
 from dm_control.autowrap import codegen_util
 from dm_control.autowrap import header_parsing

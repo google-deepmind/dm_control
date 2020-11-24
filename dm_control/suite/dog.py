@@ -15,12 +15,7 @@
 
 """Dog Domain."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import collections
-
 import os
 
 from dm_control import mujoco

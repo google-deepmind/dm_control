@@ -15,11 +15,6 @@
 
 """Tests for the action scale wrapper."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
-# Internal dependencies.
 from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control.rl import control
@@ -36,7 +31,6 @@ def make_action_spec(lower=(-1.,), upper=(1.,)):
 
 
 def make_mock_env(action_spec):
-  action_spec = action_spec
   env = mock.Mock(spec=control.Environment)
   env.action_spec.return_value = action_spec
   return env

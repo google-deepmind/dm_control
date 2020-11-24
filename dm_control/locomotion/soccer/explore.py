@@ -15,10 +15,6 @@
 
 """Interactive viewer for MuJoCo soccer enviornmnet."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import functools
 from absl import app
 from dm_control import viewer

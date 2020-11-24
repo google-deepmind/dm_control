@@ -15,10 +15,6 @@
 
 """Parses MuJoCo header files and generates Python bindings."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import os
 import pprint
 import textwrap
@@ -32,13 +28,6 @@ import six
 
 # Absolute path to the top-level module.
 _MODULE = "dm_control.mujoco.wrapper"
-
-# Imports used in all generated source files.
-_BOILERPLATE_IMPORTS = [
-    "from __future__ import absolute_import",
-    "from __future__ import division",
-    "from __future__ import print_function\n",
-]
 
 
 class Error(Exception):
@@ -458,8 +447,7 @@ class BindingGenerator(object):
     """.format(scriptname=os.path.split(__file__)[-1],
                mujoco_version=self.consts_dict["mjVERSION_HEADER"]))
     docstring = docstring[1:]  # Strip the leading line break.
-    return "\n".join(
-        [docstring] + _BOILERPLATE_IMPORTS + list(imports) + ["\n"])
+    return "\n".join([docstring] + list(imports) + ["\n"])
 
   def write_consts(self, fname):
     """Write constants."""

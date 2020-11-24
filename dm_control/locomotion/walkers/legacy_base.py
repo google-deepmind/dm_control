@@ -15,10 +15,6 @@
 
 """Base class for Walkers."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import abc
 
 from dm_control import composer
@@ -26,7 +22,6 @@ from dm_control.composer.observation import observable
 from dm_control.locomotion.walkers import base
 from dm_control.locomotion.walkers import initializers
 from dm_control.mujoco.wrapper.mjbindings import mjlib
-
 import numpy as np
 
 _RANGEFINDER_SCALE = 10.0

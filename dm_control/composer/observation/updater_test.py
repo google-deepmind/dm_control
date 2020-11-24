@@ -15,15 +15,9 @@
 
 """Tests for observation.observation_updater."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import collections
 import itertools
 import math
-
-# Internal dependencies.
 
 from absl.testing import absltest
 from absl.testing import parameterized

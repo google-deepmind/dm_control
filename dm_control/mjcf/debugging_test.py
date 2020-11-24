@@ -15,20 +15,14 @@
 
 """Tests for `mjcf.debugging`."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import contextlib
 import os
 import re
 import shutil
 import sys
 
-# Internal dependencies.
 from absl.testing import absltest
 from dm_control import mjcf
-
 from dm_control.mjcf import code_for_debugging_test as test_code
 from dm_control.mjcf import debugging
 from dm_control.mujoco import wrapper as mujoco_wrapper

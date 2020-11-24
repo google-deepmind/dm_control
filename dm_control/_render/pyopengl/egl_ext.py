@@ -15,10 +15,6 @@
 
 """Extends OpenGL.EGL with definitions necessary for headless rendering."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import ctypes
 from OpenGL.platform import ctypesloader  # pylint: disable=g-bad-import-order
 try:

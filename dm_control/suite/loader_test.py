@@ -15,14 +15,7 @@
 
 """Tests for the dm_control.suite loader."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
-# Internal dependencies.
-
 from absl.testing import absltest
-
 from dm_control import suite
 from dm_control.rl import control
 

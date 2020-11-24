@@ -15,12 +15,7 @@
 
 """OpenGL utility for rendering numpy arrays as images on a quad surface."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import ctypes
-
 import numpy as np
 from OpenGL import GL
 from OpenGL.GL import shaders

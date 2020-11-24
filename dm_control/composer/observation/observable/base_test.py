@@ -13,13 +13,7 @@
 # limitations under the License.
 # ============================================================================
 
-"""Tests for observable."""
-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
-# Internal dependencies.
+"""Tests for observable classes."""
 
 from absl.testing import absltest
 from dm_control import mujoco

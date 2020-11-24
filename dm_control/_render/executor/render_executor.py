@@ -27,16 +27,12 @@ dedicated thread on which the OpenGL context is created and made current. All
 subsequent rendering calls are then offloaded onto this dedicated thread.
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import abc
 import collections
+from concurrent import futures
 import contextlib
 import threading
 
-from concurrent import futures
 import six
 
 _NOT_IN_CONTEXT = 'Cannot be called outside of an `execution_context`.'

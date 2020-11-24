@@ -15,9 +15,6 @@
 
 """Task for a walker to move to a target."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 
 from dm_control import composer
 from dm_control.composer import variation

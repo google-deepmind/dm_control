@@ -14,14 +14,8 @@
 # ============================================================================
 """Tests for props.target_sphere."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
-# Internal dependencies.
 from absl.testing import absltest
 from dm_control import composer
-
 from dm_control.entities.props import primitive
 from dm_control.locomotion.arenas import floors
 from dm_control.locomotion.props import target_sphere

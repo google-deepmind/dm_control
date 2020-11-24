@@ -15,9 +15,6 @@
 
 """Custom robot constructors with manipulation-specific defaults."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 
 from dm_control.entities.manipulators import kinova
 from dm_control.manipulation.shared import observations

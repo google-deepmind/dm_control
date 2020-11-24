@@ -15,10 +15,6 @@
 
 """A collection of MuJoCo-based Reinforcement Learning environments."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import collections
 import inspect
 import itertools

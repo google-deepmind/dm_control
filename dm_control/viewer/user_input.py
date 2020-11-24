@@ -14,10 +14,6 @@
 # ============================================================================
 """Utilities for handling keyboard events."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import collections
 
 
@@ -183,7 +179,7 @@ class Range(collections.namedtuple('Range', 'collection')):
   When triggered, the index of the triggering key combination will be passed
   as an argument to the callback.
 
-  Args:
+  Attributes:
     callback: A callable accepting a single argument - an integer index of the
       triggered callback.
     collection: A collection of combinations. Combinations may either be raw key

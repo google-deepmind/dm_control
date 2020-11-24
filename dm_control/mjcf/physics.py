@@ -15,10 +15,6 @@
 
 """Helpers for MJCF elements to interact with `dm_control.mujoco.Physics`."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import collections
 import re
 import weakref

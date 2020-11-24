@@ -15,13 +15,8 @@
 
 """Tests that generated XML string is valid."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import os
 
-# Internal dependencies.
 from absl.testing import absltest
 from dm_control.mjcf import parser
 from dm_control.mujoco import wrapper

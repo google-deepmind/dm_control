@@ -15,10 +15,6 @@
 
 """pyparsing definitions and helper functions for parsing MuJoCo headers."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import pyparsing as pp
 import six
 from six.moves import map

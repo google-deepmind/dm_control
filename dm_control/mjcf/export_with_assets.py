@@ -15,10 +15,6 @@
 
 """Saves Mujoco models with relevant assets."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import os
 from dm_control.mujoco.wrapper import util
 import six

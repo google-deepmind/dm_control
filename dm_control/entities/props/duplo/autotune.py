@@ -15,10 +15,6 @@
 
 """Script for tuning Duplo stud sizes to give desired separation forces."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import collections
 import pprint
 from absl import app

@@ -15,14 +15,10 @@
 
 """Tests for dm_control.locomotion.walkers.base."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 
 from absl.testing import absltest
 from dm_control import mjcf
 from dm_control.locomotion.walkers import base
-
 import numpy as np
 
 
