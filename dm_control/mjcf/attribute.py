@@ -38,7 +38,7 @@ from dm_control.utils import io as resources
 
 
 _INVALID_REFERENCE_TYPE = (
-    'Reference should be an MJCF Element whose type is one of {valid_types!r}: '
+    'Reference should be an MJCF Element whose type is {valid_type!r}: '
     'got {actual_type!r}.')
 
 _MESH_EXTENSIONS = ('.stl', '.msh')
@@ -295,7 +295,8 @@ class Reference(_Attribute):
   @property
   def reference_namespace(self):
     if isinstance(self._reference_namespace, _Attribute):
-      return self._reference_namespace.value
+      return constants.INDIRECT_REFERENCE_ATTRIB.get(
+          self._reference_namespace.value, self._reference_namespace.value)
     else:
       return self._reference_namespace
 
@@ -309,16 +310,9 @@ class Reference(_Attribute):
       if isinstance(value, base.Element):
         value_namespace = (
             value.spec.namespace.split(constants.NAMESPACE_SEPARATOR)[0])
-        if isinstance(self._reference_namespace, _Attribute):
-          try:
-            self._reference_namespace.value = value_namespace
-          except ValueError:
-            raise ValueError(_INVALID_REFERENCE_TYPE.format(
-                valid_types=self._reference_namespace.valid_values,
-                actual_type=value_namespace))
-        elif value_namespace != self._reference_namespace:
+        if value_namespace != self.reference_namespace:
           raise ValueError(_INVALID_REFERENCE_TYPE.format(
-              valid_types=[self._reference_namespace],
+              valid_type=self.reference_namespace,
               actual_type=value_namespace))
       self._value = value
 

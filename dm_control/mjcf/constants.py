@@ -71,3 +71,7 @@ MAX_VFS_FILENAME_LENGTH = 98
 # The prefix used in the schema to denote reference_namespace that are defined
 # via another attribute.
 INDIRECT_REFERENCE_NAMESPACE_PREFIX = 'attrib:'
+
+INDIRECT_REFERENCE_ATTRIB = {
+    'xbody': 'body',
+}

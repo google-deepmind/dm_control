@@ -300,6 +300,7 @@ class AttributeTest(parameterized.TestCase):
     # or 'optional' namespaces. First we assign an 'identified' element to the
     # reference attribute. These are part of the 'optional' namespace.
     bar = mujoco.add('identified', identifier='bar')
+    mujoco.optional.reftype = 'optional'
     mujoco.optional.reference = bar
     self.assertXMLStringIsCorrectlyScoped(mujoco.optional, 'reference', 'bar')
 
@@ -311,6 +312,7 @@ class AttributeTest(parameterized.TestCase):
     # Now assign an 'entity' element to the reference attribute. These are part
     # of the 'entity' namespace.
     baz = mujoco.worldentity.add('entity', name='baz')
+    mujoco.optional.reftype = 'entity'
     mujoco.optional.reference = baz
     self.assertXMLStringIsCorrectlyScoped(mujoco.optional, 'reference', 'baz')
     # The `reftype` should change to 'entity' accordingly.
@@ -326,13 +328,14 @@ class AttributeTest(parameterized.TestCase):
     mujoco = self._mujoco
     bar = mujoco.worldentity.add('entity', name='bar')
     baz = bar.add('subentity', name='baz')
+    mujoco.optional.reftype = 'entity'
     with self.assertRaisesWithLiteralMatch(
         ValueError, attribute._INVALID_REFERENCE_TYPE.format(
-            valid_types=['entity', 'optional'], actual_type='subentity')):
+            valid_type='entity', actual_type='subentity')):
       mujoco.optional.reference = baz
     with self.assertRaisesWithLiteralMatch(
         ValueError, attribute._INVALID_REFERENCE_TYPE.format(
-            valid_types=['optional'], actual_type='subentity')):
+            valid_type='optional', actual_type='subentity')):
       mujoco.optional.fixed_type_ref = baz
 
   def testDefaults(self):
