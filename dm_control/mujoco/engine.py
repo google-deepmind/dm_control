@@ -725,7 +725,7 @@ class Camera(object):
     image = np.eye(3)
     image[0, 2] = (self.width - 1) / 2.0
     image[1, 2] = (self.height - 1) / 2.0
-    return image.dot(focal).dot(rotation).dot(translation)
+    return image @ focal @ rotation @ translation
 
   def update(self, scene_option=None):
     """Updates geometry used for rendering.
