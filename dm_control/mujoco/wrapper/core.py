@@ -273,6 +273,13 @@ def _create_finalizer(ptr, free_func):
         return
       else:
         # Turn the address back into a pointer to be freed.
+        if ctypes.cast is None:
+          return
+          # `ctypes.cast` might be None if the interpreter is in the process of
+          # exiting. In this case it doesn't really matter whether or not we
+          # explicitly free the pointer, since any remaining pointers will be
+          # freed anyway when the process terminates. We bail out silently in
+          # order to avoid logging an unsightly (but harmless) error.
         temp_ptr = ctypes.cast(address, ptr_type)
         free_func(temp_ptr)
         logging.debug("Freed %s at %x", ptr_type.__name__, address)

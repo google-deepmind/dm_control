@@ -17,10 +17,11 @@
 
 from dm_control.locomotion.tasks.corridors import RunThroughCorridor
 from dm_control.locomotion.tasks.escape import Escape
+# Import removed.
+# Import removed.
 from dm_control.locomotion.tasks.go_to_target import GoToTarget
 from dm_control.locomotion.tasks.random_goal_maze import ManyGoalsMaze
 from dm_control.locomotion.tasks.random_goal_maze import ManyHeterogeneousGoalsMaze
 from dm_control.locomotion.tasks.random_goal_maze import RepeatSingleGoalMaze
 from dm_control.locomotion.tasks.random_goal_maze import RepeatSingleGoalMazeAugmentedWithTargets
 from dm_control.locomotion.tasks.reach import TwoTouch
-
