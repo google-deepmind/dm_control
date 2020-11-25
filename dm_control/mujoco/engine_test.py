@@ -15,6 +15,7 @@
 
 """Tests for `engine`."""
 
+import pickle
 import unittest
 
 from absl.testing import absltest
@@ -28,9 +29,6 @@ from dm_control.mujoco.wrapper.mjbindings import enums
 from dm_control.rl import control
 import mock
 import numpy as np
-import six
-from six.moves import cPickle
-from six.moves import range
 
 mjlib = mjbindings.mjlib
 
@@ -274,13 +272,13 @@ class MujocoEngineTest(parameterized.TestCase):
     max_width = self._physics.model.vis.global_.offwidth
     max_height = self._physics.model.vis.global_.offheight
     max_camid = self._physics.model.ncam - 1
-    with six.assertRaisesRegex(self, ValueError, 'width'):
+    with self.assertRaisesRegex(ValueError, 'width'):
       self._physics.render(max_height, max_width + 1, camera_id=max_camid)
-    with six.assertRaisesRegex(self, ValueError, 'height'):
+    with self.assertRaisesRegex(ValueError, 'height'):
       self._physics.render(max_height + 1, max_width, camera_id=max_camid)
-    with six.assertRaisesRegex(self, ValueError, 'camera_id'):
+    with self.assertRaisesRegex(ValueError, 'camera_id'):
       self._physics.render(max_height, max_width, camera_id=max_camid + 1)
-    with six.assertRaisesRegex(self, ValueError, 'camera_id'):
+    with self.assertRaisesRegex(ValueError, 'camera_id'):
       self._physics.render(max_height, max_width, camera_id=-2)
 
   def testPhysicsRenderMethod(self):
@@ -463,7 +461,7 @@ class MujocoEngineTest(parameterized.TestCase):
 
   @parameterized.named_parameters(
       ('_copy', lambda x: x.copy()),
-      ('_pickle_and_unpickle', lambda x: cPickle.loads(cPickle.dumps(x))),
+      ('_pickle_and_unpickle', lambda x: pickle.loads(pickle.dumps(x))),
   )
   def testCopyOrPicklePhysics(self, func):
     for _ in range(10):

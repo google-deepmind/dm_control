@@ -19,12 +19,9 @@ import abc
 from dm_control.composer.observation import observable as base_observable
 from dm_control.locomotion.soccer import team as team_lib
 import numpy as np
-import six
-from six.moves import zip
 
 
-@six.add_metaclass(abc.ABCMeta)
-class ObservablesAdder(object):
+class ObservablesAdder(metaclass=abc.ABCMeta):
   """A callable that adds a set of per-player observables for a task."""
 
   @abc.abstractmethod

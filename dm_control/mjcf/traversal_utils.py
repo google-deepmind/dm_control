@@ -15,8 +15,6 @@
 
 """Utility functions that operate on MJCF elements."""
 
-import six
-
 _ACTUATOR_TAGS = ('general', 'motor', 'position',
                   'velocity', 'cylinder', 'muscle')
 
@@ -76,7 +74,7 @@ def commit_defaults(element, attributes=None):
       tags = (element.tag,)
     for tag in tags:
       default_element = getattr(dclass, tag)
-      for name, value in six.iteritems(default_element.get_attributes()):
+      for name, value in default_element.get_attributes().items():
         if attributes is None or name in attributes:
           if hasattr(element, name) and getattr(element, name) is None:
             setattr(element, name, value)

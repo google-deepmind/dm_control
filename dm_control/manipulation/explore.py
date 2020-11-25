@@ -20,7 +20,6 @@ import functools
 from absl import app
 from absl import flags
 from dm_control import manipulation
-from six.moves import input
 
 from dm_control import viewer
 

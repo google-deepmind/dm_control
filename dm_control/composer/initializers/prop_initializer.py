@@ -25,7 +25,6 @@ from dm_control.composer.variation import rotations
 from dm_control.rl import control
 import numpy as np
 import six
-from six.moves import range
 
 
 # Absolute velocity threshold for a prop joint to be considered settled.

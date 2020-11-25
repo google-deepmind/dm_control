@@ -20,7 +20,6 @@ from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control import manipulation
 import numpy as np
-from six.moves import range
 
 
 flags.DEFINE_boolean(

@@ -23,7 +23,6 @@ from dm_control.locomotion.arenas import floors
 from dm_control.locomotion.tasks import go_to_target
 from dm_control.locomotion.walkers import cmu_humanoid
 import numpy as np
-from six.moves import range
 
 
 class GoToTargetTest(absltest.TestCase):

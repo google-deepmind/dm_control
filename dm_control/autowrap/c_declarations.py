@@ -18,7 +18,6 @@
 import textwrap
 from dm_control.autowrap import codegen_util
 from dm_control.autowrap import header_parsing
-import six
 
 
 class CDeclBase(object):
@@ -26,13 +25,12 @@ class CDeclBase(object):
 
   def __init__(self, **attrs):
     self._attrs = attrs
-    for k, v in six.iteritems(attrs):
+    for k, v in attrs.items():
       setattr(self, k, v)
 
   def __repr__(self):
     """Pretty string representation."""
-    attr_str = ", ".join("{0}={1!r}".format(k, v)
-                         for k, v in six.iteritems(self._attrs))
+    attr_str = ", ".join(f"{k}={v!r}" for k, v in self._attrs.items())
     return "{0}({1})".format(type(self).__name__, attr_str)
 
   @property
@@ -84,7 +82,7 @@ class Struct(CDeclBase):
     lines.append(textwrap.dedent("""
     class {0.ctypes_typename}(ctypes.Structure):
       \"\"\"{0.docstring}\"\"\"""".format(self)))
-    anonymous_fields = [member.name for member in six.itervalues(self.members)
+    anonymous_fields = [member.name for member in self.members.values()
                         if isinstance(member, AnonymousUnion)]
     with indent:
       if anonymous_fields:
@@ -99,7 +97,7 @@ class Struct(CDeclBase):
         lines.append(indent("_fields_ = ["))
         with indent:
           with indent:
-            for member in six.itervalues(self.members):
+            for member in self.members.values():
               lines.append(indent(member.ctypes_field_decl + ","))
         lines.append(indent("]\n"))
     return "\n".join(lines)
@@ -126,9 +124,9 @@ class Struct(CDeclBase):
     class {0.wrapper_name}(util.WrapperBase):
       \"\"\"{0.docstring}\"\"\"""".format(self))]
     with indent:
-      for member in six.itervalues(self.members):
+      for member in self.members.values():
         if isinstance(member, AnonymousUnion):
-          for submember in six.itervalues(member.members):
+          for submember in member.members.values():
             lines.append(indent(submember.getters_setters))
         else:
           lines.append(indent(member.getters_setters))
@@ -174,7 +172,7 @@ class AnonymousUnion(CDeclBase):
         lines.append(indent("_fields_ = ["))
         with indent:
           with indent:
-            for member in six.itervalues(self.members):
+            for member in self.members.values():
               lines.append(indent(member.ctypes_field_decl + ","))
         lines.append(indent("]\n"))
     return "\n".join(lines)
@@ -354,7 +352,7 @@ class DynamicNDArray(CDeclBase):
     rs = []
     for d in self.shape:
       # dynamically-sized dimension
-      if isinstance(d, six.string_types):
+      if isinstance(d, str):
         if self.parent and d in self.parent.members:
           rs.append("self.{}".format(d))
         else:
@@ -405,8 +403,7 @@ class Function(CDeclBase):
       lines.append("{0}.{1}.argtypes = [".format(cdll_name, self.name))
       with indent:
         with indent:
-          lines.extend(indent(a.arg + ",")
-                       for a in six.itervalues(self.arguments))
+          lines.extend(indent(a.arg + ",") for a in self.arguments.values())
       lines.append("]")
     else:
       lines.append("{0}.{1}.argtypes = None".format(cdll_name, self.name))
@@ -426,7 +423,7 @@ class Function(CDeclBase):
     if self.arguments:
       lines.append("\nArgs:")
       with indent:
-        for a in six.itervalues(self.arguments):
+        for a in self.arguments.values():
           s = "{a.name}: {a.arg}{const}".format(
               a=a, const=(" <const>" if a.is_const else ""))
           lines.append(indent(s))

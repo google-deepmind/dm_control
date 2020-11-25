@@ -33,7 +33,6 @@ from concurrent import futures
 import contextlib
 import threading
 
-import six
 
 _NOT_IN_CONTEXT = 'Cannot be called outside of an `execution_context`.'
 _ALREADY_TERMINATED = 'This executor has already been terminated.'
@@ -58,8 +57,7 @@ class _FakeLock(object):
 _FAKE_LOCK = _FakeLock()
 
 
-@six.add_metaclass(abc.ABCMeta)
-class BaseRenderExecutor(object):
+class BaseRenderExecutor(object, metaclass=abc.ABCMeta):
   """An object that manages rendering calls for an OpenGL context.
 
   This class helps ensure that OpenGL calls are made on the correct thread. The

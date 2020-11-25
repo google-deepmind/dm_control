@@ -21,8 +21,6 @@ import itertools
 from dm_control import composer
 from dm_control.composer.observation import observable as dm_observable
 import numpy as np
-from six.moves import range
-from six.moves import zip
 
 DEFAULT_ALIVE_THRESHOLD = -1.0
 DEFAULT_PHYSICS_TIMESTEP = 0.005

@@ -22,7 +22,6 @@ import time
 import traceback
 
 from absl import logging
-import six
 
 # Lower bound of the time multiplier set through TimeMultiplier class.
 _MIN_TIME_MULTIPLIER = 1./32.
@@ -42,7 +41,7 @@ def is_scalar(value):
 
 def to_iterable(item):
   """Converts an item or iterable into an iterable."""
-  if isinstance(item, six.string_types):
+  if isinstance(item, str):
     return [item]
   elif isinstance(item, collections.Iterable):
     return item

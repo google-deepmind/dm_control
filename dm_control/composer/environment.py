@@ -24,7 +24,6 @@ from dm_control.composer import observation
 from dm_control.rl import control
 import dm_env
 import numpy as np
-from six.moves import range
 
 warnings.simplefilter('always', DeprecationWarning)
 

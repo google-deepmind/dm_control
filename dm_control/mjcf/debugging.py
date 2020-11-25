@@ -302,12 +302,12 @@ class DebugContext(object):
       f.write(section_separator)
     with open(os.path.join(dump_dir, 'model.xml'), 'w') as f:
       f.write(self._xml_string)
-    for elem_id, debug_info in six.iteritems(self._debug_info_for_element_ids):
+    for elem_id, debug_info in self._debug_info_for_element_ids.items():
       with open(os.path.join(dump_dir, str(elem_id) + '.dump'), 'w') as f:
         f.write('{}:{}\n'.format(DEBUG_METADATA_PREFIX, elem_id))
         f.write(str(debug_info.element) + '\n')
         dump_stack('Element creation', debug_info.init_stack, f)
-        for attrib_name, stack in six.iteritems(debug_info.attribute_stacks):
+        for attrib_name, stack in debug_info.attribute_stacks.items():
           attrib_value = (
               debug_info.element.get_attribute_xml_string(attrib_name))
           if stack[-1] == debug_info.init_stack[-1]:
@@ -347,7 +347,7 @@ class DebugContext(object):
                        debug_info.init_stack[-1].filename,
                        debug_info.init_stack[-1].line_number))
 
-    for attrib_name, stack in six.iteritems(debug_info.attribute_stacks):
+    for attrib_name, stack in debug_info.attribute_stacks.items():
       attrib_value = debug_info.element.get_attribute_xml_string(attrib_name)
       if stack[-1] == debug_info.init_stack[-1]:
         if attrib_value is not None:

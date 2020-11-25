@@ -19,13 +19,11 @@ import threading
 import time
 
 from dm_control.viewer import user_input
-import six
 
 _DOUBLE_CLICK_INTERVAL = 0.25  # seconds
 
 
-@six.add_metaclass(abc.ABCMeta)
-class InputEventsProcessor(object):
+class InputEventsProcessor(metaclass=abc.ABCMeta):
   """Thread safe input events processor."""
 
   def __init__(self):

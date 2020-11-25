@@ -25,8 +25,6 @@ from dm_control.mujoco.testing import assets
 import numpy as np
 from PIL import Image
 import six
-from six.moves import range
-from six.moves import zip
 
 
 BACKEND_STRING = 'hardware' if _render.USING_GPU else 'software'

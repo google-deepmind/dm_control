@@ -24,7 +24,7 @@ import os
 
 from dm_control.mjcf import attribute
 from lxml import etree
-import six
+
 from dm_control.utils import io as resources
 
 _SCHEMA_XML_PATH = os.path.join(os.path.dirname(__file__), 'schema.xml')
@@ -100,7 +100,7 @@ def _parse_element(element_xml):
 
   identifier = None
   namespace = None
-  for attribute_spec in six.itervalues(attributes):
+  for attribute_spec in attributes.values():
     if attribute_spec.type == attribute.Identifier:
       identifier = attribute_spec.name
       namespace = element_xml.get('namespace') or name
@@ -182,7 +182,7 @@ def collect_namespaces(root_spec):
   findable_namespaces = set()
   def update_namespaces_from_spec(spec):
     findable_namespaces.add(spec.namespace)
-    for child_spec in six.itervalues(spec.children):
+    for child_spec in spec.children.values():
       if child_spec is not spec:
         update_namespaces_from_spec(child_spec)
   update_namespaces_from_spec(root_spec)

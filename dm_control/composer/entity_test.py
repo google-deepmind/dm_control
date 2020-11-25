@@ -25,8 +25,6 @@ from dm_control.composer import define
 from dm_control.composer import entity
 from dm_control.composer.observation.observable import base as observable
 import numpy as np
-import six
-from six.moves import range
 
 _NO_ROTATION = (1, 0, 0, 0)  # Tests support for non-arrays and non-floats.
 _NINETY_DEGREES_ABOUT_X = np.array(
@@ -156,14 +154,13 @@ class EntityTest(parameterized.TestCase):
 
   def testObservableOptionsInvalidName(self):
     options = {'asdf': None}
-    with six.assertRaisesRegex(
-        self, KeyError, 'No observable with name \'asdf\''):
+    with self.assertRaisesRegex(KeyError, 'No observable with name \'asdf\''):
       self.entity.observables.set_options(options)
 
   def testObservableInvalidOptions(self):
     options = {'observable0': {'asdf': 2}}
-    with six.assertRaisesRegex(self, AttributeError,
-                               'Cannot add attribute asdf in configure.'):
+    with self.assertRaisesRegex(AttributeError,
+                                'Cannot add attribute asdf in configure.'):
       self.entity.observables.set_options(options)
 
   def testObservableOptions(self):
@@ -263,7 +260,7 @@ class EntityTest(parameterized.TestCase):
     entities[0].attach(entities[3])
 
     entities[1].detach()
-    with six.assertRaisesRegex(self, RuntimeError, 'not attached'):
+    with self.assertRaisesRegex(RuntimeError, 'not attached'):
       entities[1].detach()
 
     self.assertIsNone(entities[0].parent)

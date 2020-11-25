@@ -22,9 +22,6 @@ from dm_control.mujoco.wrapper.mjbindings import constants
 from dm_control.rl import control
 import mock
 import numpy as np
-import six
-from six.moves import range
-from six.moves import zip
 
 
 _DOMAINS_AND_TASKS = [
@@ -72,14 +69,12 @@ class SuiteTest(parameterized.TestCase):
   """Tests run on all the tasks registered."""
 
   def test_constants(self):
-    num_tasks = sum(len(tasks) for tasks in
-                    six.itervalues(suite.TASKS_BY_DOMAIN))
-
+    num_tasks = sum(len(tasks) for tasks in suite.TASKS_BY_DOMAIN.values())
     self.assertLen(suite.ALL_TASKS, num_tasks)
 
   def _validate_observation(self, observation_dict, observation_spec):
     obs = observation_dict.copy()
-    for name, spec in six.iteritems(observation_spec):
+    for name, spec in observation_spec.items():
       arr = obs.pop(name)
       self.assertEqual(arr.shape, spec.shape)
       self.assertEqual(arr.dtype, spec.dtype)
@@ -184,7 +179,7 @@ class SuiteTest(parameterized.TestCase):
       self.assertEqual(time_step1.step_type, time_step2.step_type)
       self.assertEqual(time_step1.reward, time_step2.reward)
       self.assertEqual(time_step1.discount, time_step2.discount)
-      for key in six.iterkeys(time_step1.observation):
+      for key in time_step1.observation.keys():
         np.testing.assert_array_equal(
             time_step1.observation[key], time_step2.observation[key],
             err_msg='Observation {!r} is not equal.'.format(key))
@@ -245,7 +240,7 @@ class SuiteTest(parameterized.TestCase):
     first_timestep = env.reset()
     action = np.zeros(env.action_spec().shape)
     second_timestep = env.step(action)
-    for name, first_array in six.iteritems(first_timestep.observation):
+    for name, first_array in first_timestep.observation.items():
       second_array = second_timestep.observation[name]
       self.assertFalse(
           np.may_share_memory(first_array, second_array),
@@ -258,12 +253,12 @@ class SuiteTest(parameterized.TestCase):
                                  num_episodes=2, max_steps_per_episode=1000)
     observations = {name: [] for name in env.observation_spec()}
     for time_step in trajectory:
-      for name, array in six.iteritems(time_step.observation):
+      for name, array in time_step.observation.items():
         observations[name].append(array)
 
     failures = []
 
-    for name, array_list in six.iteritems(observations):
+    for name, array_list in observations.items():
       # Sampling random uniform actions generally isn't sufficient to trigger
       # these touch sensors.
       if (domain in ('manipulator', 'stacker') and name == 'touch' or

@@ -20,7 +20,6 @@ import collections
 from dm_control.mujoco import math as mjmath
 import numpy as np
 from scipy import interpolate
-from six.moves import range
 
 MOCAP_DT = 1.0/120.0
 CONVERSION_LENGTH = 0.056444

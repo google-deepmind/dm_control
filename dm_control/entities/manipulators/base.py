@@ -24,9 +24,6 @@ from dm_control.composer.observation import observable
 from dm_control.mujoco.wrapper import mjbindings
 from dm_control.utils import inverse_kinematics
 import numpy as np
-import six
-from six.moves import range
-from six.moves import zip
 
 
 DOWN_QUATERNION = np.array([0., 0.70710678118, 0.70710678118, 0.])
@@ -36,8 +33,7 @@ _INVALID_JOINTS_ERROR = (
     'non-hinge joints which are unbounded:\n{invalid_str}')
 
 
-@six.add_metaclass(abc.ABCMeta)
-class RobotArm(composer.Robot):
+class RobotArm(composer.Robot, metaclass=abc.ABCMeta):
   """The abstract base class for robotic arms."""
 
   def _build_observables(self):
@@ -177,8 +173,7 @@ class JointsObservables(composer.Observables):
     return observable.MJCFFeature('qvel', self._entity.joints)
 
 
-@six.add_metaclass(abc.ABCMeta)
-class RobotHand(composer.Robot):
+class RobotHand(composer.Robot, metaclass=abc.ABCMeta):
   """The abstract base class for robotic hands."""
 
   @abc.abstractmethod

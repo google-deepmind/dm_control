@@ -17,12 +17,11 @@
 
 from absl import app
 from dm_control.mujoco.testing import image_utils
-import six
 
 
 def main(argv):
   del argv  # Unused.
-  for sequence in six.itervalues(image_utils.SEQUENCES):
+  for sequence in image_utils.SEQUENCES.values():
     sequence.save()
 
 if __name__ == '__main__':

@@ -18,7 +18,6 @@
 
 from dm_control.mujoco.wrapper import mjbindings
 import numpy as np
-from six.moves import range
 
 
 def random_limited_quaternion(random, limit):

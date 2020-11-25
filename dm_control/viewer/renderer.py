@@ -21,8 +21,6 @@ from dm_control.mujoco import wrapper
 from dm_control.mujoco.wrapper import mjbindings
 from dm_control.viewer import util
 import numpy as np
-import six
-from six.moves import range
 
 enums = mjbindings.enums
 mjlib = mjbindings.mjlib
@@ -49,8 +47,7 @@ _DEFAULT_RENDER_FLAGS[enums.mjtRndFlag.mjRND_REFLECTION] = 1
 _DEFAULT_RENDER_FLAGS[enums.mjtRndFlag.mjRND_SKYBOX] = 1
 
 
-@six.add_metaclass(abc.ABCMeta)
-class BaseRenderer(object):
+class BaseRenderer(object, metaclass=abc.ABCMeta):
   """A base class for component-based Mujoco Renderers implementations.
 
   Attributes:
@@ -79,8 +76,7 @@ class BaseRenderer(object):
       component.render(context, viewport)
 
 
-@six.add_metaclass(abc.ABCMeta)
-class Component(object):
+class Component(object, metaclass=abc.ABCMeta):
   """Components are a way to introduce extra rendering content.
 
   They are invoked after the main rendering pass, allowing to draw extra images

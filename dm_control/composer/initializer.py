@@ -16,11 +16,9 @@
 """Module defining the abstract initializer."""
 
 import abc
-import six
 
 
-@six.add_metaclass(abc.ABCMeta)
-class Initializer(object):
+class Initializer(metaclass=abc.ABCMeta):
   """The abstract base class for an initializer."""
 
   @abc.abstractmethod

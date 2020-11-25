@@ -38,7 +38,6 @@ from dm_control.utils import transformations as tr
 from dm_env import specs
 
 import numpy as np
-import six
 import tree
 
 if typing.TYPE_CHECKING:
@@ -60,8 +59,7 @@ def _strip_reference_prefix(dictionary: Mapping[Text, Any], prefix: Text):
   return new_dictionary
 
 
-@six.add_metaclass(abc.ABCMeta)
-class ReferencePosesTask(composer.Task):
+class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
   """Abstract base class for task that uses reference data."""
 
   def __init__(

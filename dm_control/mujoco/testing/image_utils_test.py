@@ -23,7 +23,6 @@ from dm_control.mujoco.testing import image_utils
 import mock
 import numpy as np
 from PIL import Image
-import six
 
 SEED = 0
 
@@ -51,8 +50,8 @@ class ImageUtilsTest(parameterized.TestCase):
     image1 = random_state.randint(0, 255, size=(64, 64, 3), dtype=np.uint8)
     image2 = random_state.randint(0, 255, size=(64, 64, 3), dtype=np.uint8)
     image_utils.assert_images_close(image1, image1, tolerance=0)
-    with six.assertRaisesRegex(self, image_utils.ImagesNotCloseError,
-                               'RMS error exceeds tolerance'):
+    with self.assertRaisesRegex(  # pylint: disable=g-error-prone-assert-raises
+        image_utils.ImagesNotCloseError, 'RMS error exceeds tolerance'):
       image_utils.assert_images_close(image1, image2)
 
   def test_save_images_on_failure(self):
@@ -67,8 +66,8 @@ class ImageUtilsTest(parameterized.TestCase):
     def func():
       raise image_utils.ImagesNotCloseError(message, image1, image2)
 
-    with six.assertRaisesRegex(self, image_utils.ImagesNotCloseError,
-                               '{}.*'.format(message)):
+    with self.assertRaisesRegex(image_utils.ImagesNotCloseError,
+                                '{}.*'.format(message)):
       func()
 
     def validate_saved_file(name, expected_contents):

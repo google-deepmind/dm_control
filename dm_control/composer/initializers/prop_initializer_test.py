@@ -25,8 +25,6 @@ from dm_control.composer.variation import distributions
 from dm_control.entities import props
 from dm_control.rl import control
 import numpy as np
-from six.moves import range
-from six.moves import zip
 
 
 def _make_spheres(num_spheres, radius, nconmax):

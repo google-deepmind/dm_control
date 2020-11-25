@@ -19,7 +19,6 @@ from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control.composer.observation import obs_buffer
 import numpy as np
-from six.moves import range
 
 
 def _generate_constant_schedule(update_timestep, delay,

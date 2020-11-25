@@ -27,8 +27,6 @@ from dm_control.mjcf import debugging
 from dm_control.mujoco import wrapper as mujoco_wrapper
 from dm_control.mujoco.wrapper.mjbindings import sizes
 import numpy as np
-import six
-from six.moves import range
 
 FLAGS = flags.FLAGS
 flags.DEFINE_boolean('pymjcf_log_xml', False,
@@ -68,7 +66,7 @@ def _get_attributes(size_names, strip_prefixes):
   strip_regex = re.compile(r'\A({})_'.format('|'.join(strip_prefixes)))
   strip = lambda string: strip_regex.sub('', string)
   out = {}
-  for name, size in six.iteritems(sizes.array_sizes['mjdata']):
+  for name, size in sizes.array_sizes['mjdata'].items():
     if size[0] in size_names:
       attrib_name = strip(name)
       named_indexer_getter = (
@@ -79,7 +77,7 @@ def _get_attributes(size_names, strip_prefixes):
           get_named_indexer=named_indexer_getter,
           triggers_dirty=triggers_dirty,
           disable_on_write=())
-  for name, size in six.iteritems(sizes.array_sizes['mjmodel']):
+  for name, size in sizes.array_sizes['mjmodel'].items():
     if size[0] in size_names:
       attrib_name = strip(name)
       named_indexer_getter = (
@@ -98,8 +96,8 @@ def _get_attributes(size_names, strip_prefixes):
 # dimension of 'na') require special treatment.
 def _get_actuator_state_fields():
   actuator_state_fields = []
-  for sizes_dict in six.itervalues(sizes.array_sizes):
-    for field_name, dimensions in six.iteritems(sizes_dict):
+  for sizes_dict in sizes.array_sizes.values():
+    for field_name, dimensions in sizes_dict.items():
       if dimensions[0] == 'na':
         actuator_state_fields.append(field_name)
   return frozenset(actuator_state_fields)

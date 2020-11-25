@@ -18,7 +18,6 @@
 from absl.testing import absltest
 from dm_control.mujoco.testing import decorators
 import mock
-from six.moves import range
 
 
 class RunThreadedTest(absltest.TestCase):

@@ -19,13 +19,8 @@ from absl.testing import absltest
 from dm_control.locomotion.arenas import covering
 import labmaze
 import numpy as np
-import six
-from six.moves import range
 
-if six.PY3:
-  _STRING_DTYPE = '|U1'
-else:
-  _STRING_DTYPE = '|S1'
+_STRING_DTYPE = '|U1'
 
 
 class CoveringTest(absltest.TestCase):

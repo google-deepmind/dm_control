@@ -32,7 +32,6 @@ from dm_control.locomotion.soccer.soccer_ball import SoccerBall
 from dm_control.locomotion.soccer.task import Task
 from dm_control.locomotion.soccer.team import Player
 from dm_control.locomotion.soccer.team import Team
-from six.moves import range
 
 
 _RGBA_BLUE = [.1, .1, .8, 1.]

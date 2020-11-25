@@ -20,7 +20,6 @@ from absl.testing import absltest
 from dm_control import mjcf
 from dm_control.locomotion.walkers import scaled_actuators
 import numpy as np
-from six.moves import range
 
 
 class ScaledActuatorsTest(absltest.TestCase):

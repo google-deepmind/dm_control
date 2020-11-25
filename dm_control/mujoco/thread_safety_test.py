@@ -23,7 +23,6 @@ from dm_control.mujoco import engine
 from dm_control.mujoco.testing import assets
 from dm_control.mujoco.testing import decorators
 
-from six.moves import range
 
 MODEL = assets.get_contents('cartpole.xml')
 NUM_STEPS = 10

@@ -23,9 +23,6 @@ from dm_control.locomotion.arenas import assets as locomotion_arenas_assets
 from dm_control.locomotion.arenas import covering
 import labmaze
 import numpy as np
-import six
-from six.moves import range
-from six.moves import zip
 
 
 # Put all "actual" wall geoms in a separate group since they are not rendered.
@@ -100,7 +97,7 @@ class MazeWithTargets(composer.Arena):
           self.attach(texture_provider)
         self._wall_textures = {
             wall_char: texture_provider.textures
-            for wall_char, texture_provider in six.iteritems(wall_textures)
+            for wall_char, texture_provider in wall_textures.items()
         }
       else:
         self.attach(wall_textures)
@@ -231,7 +228,7 @@ class MazeWithTargets(composer.Arena):
 
     self._current_wall_texture = {
         wall_char: np.random.choice(wall_textures)
-        for wall_char, wall_textures in six.iteritems(self._wall_textures)
+        for wall_char, wall_textures in self._wall_textures.items()
     }
 
     for wall_char in self._wall_textures:

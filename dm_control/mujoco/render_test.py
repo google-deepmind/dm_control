@@ -24,8 +24,6 @@ from dm_control import _render
 from dm_control import mujoco
 from dm_control.mujoco.testing import decorators
 from dm_control.mujoco.testing import image_utils
-from six.moves import range
-from six.moves import zip
 
 
 DEBUG_IMAGE_DIR = os.environ.get('TEST_UNDECLARED_OUTPUTS_DIR',

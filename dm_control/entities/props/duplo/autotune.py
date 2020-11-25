@@ -22,7 +22,6 @@ from absl import logging
 from dm_control.entities.props import duplo
 from dm_control.entities.props.duplo import utils
 from scipy import optimize
-from six.moves import zip
 
 # pylint: disable=protected-access,invalid-name
 _StudSize = duplo._StudSize

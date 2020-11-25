@@ -26,7 +26,6 @@ from dm_control.utils import containers
 from dm_control.utils import xml_tools
 from lxml import etree
 import numpy as np
-from six.moves import range
 
 from dm_control.utils import io as resources
 

@@ -12,9 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-# Lint as: python2, python3
 """Props that are constructed from motion-capture data."""
-
 
 from dm_control import composer
 from dm_control import mjcf

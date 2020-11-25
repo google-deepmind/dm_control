@@ -19,13 +19,11 @@ import abc
 
 from dm_control.composer import entity
 import numpy as np
-import six
 
 DOWN_QUATERNION = np.array([0., 0.70710678118, 0.70710678118, 0.])
 
 
-@six.add_metaclass(abc.ABCMeta)
-class Robot(entity.Entity):
+class Robot(entity.Entity, metaclass=abc.ABCMeta):
   """The abstract base class for robots."""
 
   @abc.abstractproperty

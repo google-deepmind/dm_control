@@ -28,7 +28,6 @@ except OSError:
 
 from OpenGL import EGL
 from OpenGL import error
-from six.moves import range
 
 
 # From the EGL_EXT_device_enumeration extension.

@@ -48,7 +48,6 @@ from dm_control.mujoco.wrapper.mjbindings import types
 from dm_control.rl import control as _control
 from dm_env import specs
 import numpy as np
-import six
 
 _FONT_STYLES = {
     'normal': enums.mjtFont.mjFONT_NORMAL,
@@ -620,7 +619,7 @@ class Camera(object):
                        '<visual>\n'
                        '  <global offheight="my_height"/>\n'
                        '</visual>'.format(height, buffer_height))
-    if isinstance(camera_id, six.string_types):
+    if isinstance(camera_id, str):
       camera_id = physics.model.name2id(camera_id, 'camera')
     if camera_id < -1:
       raise ValueError('camera_id cannot be smaller than -1.')

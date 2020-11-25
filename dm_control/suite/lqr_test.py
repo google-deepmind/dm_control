@@ -23,7 +23,6 @@ from absl.testing import parameterized
 from dm_control.suite import lqr
 from dm_control.suite import lqr_solver
 import numpy as np
-from six.moves import range
 
 
 class LqrTest(parameterized.TestCase):

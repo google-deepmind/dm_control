@@ -15,16 +15,14 @@
 
 """Misc helper functions needed by autowrap.py."""
 
+import builtins
 import collections
 import keyword
 import re
-import six
-from six.moves import builtins
 
 _MJXMACRO_SUFFIX = "_POINTERS"
-_PYTHON_RESERVED_KEYWORDS = set(keyword.kwlist + dir(builtins))
-if not six.PY2:
-  _PYTHON_RESERVED_KEYWORDS.add("buffer")
+_PYTHON_RESERVED_KEYWORDS = frozenset(
+    keyword.kwlist + dir(builtins) + ["buffer"])
 
 
 class Indenter(object):
@@ -107,7 +105,7 @@ def mangle_struct_typename(s):
 
 def mangle_comment(s):
   """Strip extraneous whitespace, add full-stops at end of each line."""
-  if not isinstance(s, six.string_types):
+  if not isinstance(s, str):
     return "\n".join(mangle_comment(line) for line in s)
   elif not s:
     return "<no header comment found>."

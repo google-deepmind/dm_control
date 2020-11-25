@@ -20,7 +20,6 @@ import copy
 
 from dm_control.composer.variation.base import Variation
 from dm_control.composer.variation.variation_values import evaluate
-import six
 
 
 class _VariationInfo(object):
@@ -53,7 +52,7 @@ class MJCFVariator(object):
         optionally takes the original value of an attribute and returns a
         new value.
     """
-    for attribute_name, variation in six.iteritems(kwargs):
+    for attribute_name, variation in kwargs.items():
       if variation is None and attribute_name in self._variations[element]:
         del self._variations[element][attribute_name]
       else:
@@ -67,9 +66,9 @@ class MJCFVariator(object):
     Args:
       random_state: A `numpy.random.RandomState` instance.
     """
-    for element, attribute_variations in six.iteritems(self._variations):
+    for element, attribute_variations in self._variations.items():
       new_values = {}
-      for attribute_name, variation_info in six.iteritems(attribute_variations):
+      for attribute_name, variation_info in attribute_variations.items():
         current_value = getattr(element, attribute_name)
         if variation_info.initial_value is None:
           variation_info.initial_value = copy.copy(current_value)
@@ -83,8 +82,8 @@ class MJCFVariator(object):
     self._variations.clear()
 
   def reset_initial_values(self):
-    for variations in six.itervalues(self._variations):
-      for variation_info in six.itervalues(variations):
+    for variations in self._variations.values():
+      for variation_info in variations.values():
         variation_info.initial_value = None
 
 
@@ -109,7 +108,7 @@ class PhysicsVariator(object):
         optionally takes the original value of an attribute and returns a
         new value.
     """
-    for attribute_name, variation in six.iteritems(kwargs):
+    for attribute_name, variation in kwargs.items():
       if variation is None and attribute_name in self._variations[element]:
         del self._variations[element][attribute_name]
       else:
@@ -117,9 +116,9 @@ class PhysicsVariator(object):
             _VariationInfo(None, variation))
 
   def apply_variations(self, physics, random_state):
-    for element, variations in six.iteritems(self._variations):
+    for element, variations in self._variations.items():
       binding = physics.bind(element)
-      for attribute_name, variation_info in six.iteritems(variations):
+      for attribute_name, variation_info in variations.items():
         current_value = getattr(binding, attribute_name)
         if variation_info.initial_value is None:
           variation_info.initial_value = copy.copy(current_value)
@@ -132,6 +131,6 @@ class PhysicsVariator(object):
     self._variations.clear()
 
   def reset_initial_values(self):
-    for variations in six.itervalues(self._variations):
-      for variation_info in six.itervalues(variations):
+    for variations in self._variations.values():
+      for variation_info in variations.values():
         variation_info.initial_value = None

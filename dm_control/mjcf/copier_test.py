@@ -21,7 +21,6 @@ from absl.testing import absltest
 from dm_control import mjcf
 from dm_control.mjcf import parser
 import numpy as np
-import six
 
 _ASSETS_DIR = os.path.join(os.path.dirname(__file__), 'test_assets')
 _TEST_MODEL_XML = os.path.join(_ASSETS_DIR, 'test_model.xml')
@@ -42,7 +41,7 @@ class CopierTest(absltest.TestCase):
     self.assertEqual(mjcf_model.compiler.boundinertia,
                      mixin.compiler.boundinertia)
     mixin.compiler.boundinertia = 1
-    with six.assertRaisesRegex(self, ValueError, 'Conflicting values'):
+    with self.assertRaisesRegex(ValueError, 'Conflicting values'):
       mjcf_model.include_copy(mixin)
     mixin.worldbody.add('body', name='b_0', pos=[0, 1, 2])
     mjcf_model.include_copy(mixin, override_attributes=True)

@@ -27,8 +27,6 @@ from dm_control.locomotion.walkers import rescale
 from dm_control.locomotion.walkers import scaled_actuators
 from dm_control.mujoco import wrapper as mj_wrapper
 import numpy as np
-import six
-from six.moves import zip
 
 _XML_PATH = os.path.join(os.path.dirname(__file__),
                          'assets/humanoid_CMU_V{model_version}.xml')
@@ -182,8 +180,7 @@ _STAND_HEIGHT = 1.5
 _TORQUE_THRESHOLD = 60
 
 
-@six.add_metaclass(abc.ABCMeta)
-class _CMUHumanoidBase(legacy_base.Walker):
+class _CMUHumanoidBase(legacy_base.Walker, metaclass=abc.ABCMeta):
   """The abstract base class for walkers compatible with the CMU humanoid."""
 
   def _build(self,

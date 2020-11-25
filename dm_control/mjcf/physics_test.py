@@ -27,8 +27,6 @@ import mock
 import numpy as np
 import six
 from six.moves import cPickle
-from six.moves import range
-from six.moves import zip
 
 mjlib = mjbindings.mjlib
 
@@ -232,11 +230,11 @@ class PhysicsTest(parameterized.TestCase):
         'Cannot bind to a collection containing multiple element types'):
       self.physics.bind([joint, geom])
 
-    with six.assertRaisesRegex(self, ValueError, 'cannot be bound to physics'):
+    with self.assertRaisesRegex(ValueError, 'cannot be bound to physics'):
       mjcf.physics.Binding(self.physics, 'invalid_namespace', 'whatever')
 
     binding = self.physics.bind(joint)
-    with six.assertRaisesRegex(self, AttributeError, 'does not have attribute'):
+    with self.assertRaisesRegex(AttributeError, 'does not have attribute'):
       getattr(binding, 'invalid_attribute')
 
   def test_dirty(self):

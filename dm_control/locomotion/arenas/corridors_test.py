@@ -21,7 +21,6 @@ from absl.testing import parameterized
 from dm_control import mjcf
 from dm_control.composer.variation import deterministic
 from dm_control.locomotion.arenas import corridors
-from six.moves import zip
 
 
 class CorridorsTest(parameterized.TestCase):

@@ -17,15 +17,13 @@
 
 import abc
 import numpy as np
-import six
 
 
 _INIT_BALL_Z = 0.5
 _SPAWN_RATIO = 0.6
 
 
-@six.add_metaclass(abc.ABCMeta)
-class Initializer(object):
+class Initializer(metaclass=abc.ABCMeta):
 
   @abc.abstractmethod
   def __call__(self, task, physics, random_state):

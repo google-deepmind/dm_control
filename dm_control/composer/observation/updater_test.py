@@ -26,8 +26,6 @@ from dm_control.composer.observation import observable
 from dm_control.composer.observation import updater
 from dm_env import specs
 import numpy as np
-import six
-from six.moves import range
 
 
 class DeterministicSequence(object):
@@ -37,7 +35,7 @@ class DeterministicSequence(object):
 
   def __call__(self, random_state=None):
     del random_state  # unused
-    return six.next(self._iter)
+    return next(self._iter)
 
 
 class BoundedGeneric(observable.Generic):
@@ -136,8 +134,7 @@ class UpdaterTest(parameterized.TestCase):
     for actual_dict, expected_dict in zip(actual_values, expected_values):
       self.assertIs(type(actual_dict), type(expected_dict))
       self.assertLen(actual_dict, len(expected_dict))
-      for actual, expected in zip(six.iteritems(actual_dict),
-                                  six.iteritems(expected_dict)):
+      for actual, expected in zip(actual_dict.items(), expected_dict.items()):
         actual_name, actual_value = actual
         expected_name, expected_value = expected
         self.assertEqual(actual_name, expected_name)
@@ -156,7 +153,7 @@ class UpdaterTest(parameterized.TestCase):
     physics.observables['sqrt'] = observable.Generic(
         fake_physics.FakePhysics.sqrt, buffer_size=3)
 
-    for obs in six.itervalues(physics.observables):
+    for obs in physics.observables.values():
       obs.enabled = True
 
     observation_updater = updater.Updater(physics.observables)
@@ -174,7 +171,7 @@ class UpdaterTest(parameterized.TestCase):
     physics.observables['sqrt'] = observable.Generic(
         fake_physics.FakePhysics.sqrt, update_interval=7,
         buffer_size=3, delay=2)
-    for obs in six.itervalues(physics.observables):
+    for obs in physics.observables.values():
       obs.enabled = True
     with physics.reset_context():
       pass

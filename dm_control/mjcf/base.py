@@ -16,11 +16,9 @@
 """Base class for all MJCF elements in the object model."""
 
 import abc
-import six
 
 
-@six.add_metaclass(abc.ABCMeta)
-class Element(object):
+class Element(metaclass=abc.ABCMeta):
   """Abstract base class for an MJCF element.
 
   This class is provided so that `isinstance(foo, Element)` is `True` for all

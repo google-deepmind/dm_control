@@ -24,7 +24,6 @@ from dm_control.locomotion.props import target_sphere
 from dm_control.locomotion.tasks import random_goal_maze
 from dm_control.locomotion.walkers import cmu_humanoid
 import numpy as np
-from six.moves import range
 
 
 class RandomGoalMazeTest(absltest.TestCase):

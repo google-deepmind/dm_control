@@ -22,7 +22,6 @@ from dm_control.locomotion.soccer import observables as observables_lib
 from dm_control.locomotion.soccer import soccer_ball
 from dm_env import specs
 import numpy as np
-from six.moves import zip
 
 _THROW_IN_BALL_Z = 0.5
 

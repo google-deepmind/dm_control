@@ -19,7 +19,6 @@ import functools
 import sys
 import threading
 import six
-from six.moves import range
 
 
 def run_threaded(num_threads=4, calls_per_thread=10):

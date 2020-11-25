@@ -23,7 +23,6 @@ import platform
 import sys
 from dm_control import _render
 import numpy as np
-import six
 
 from dm_control.utils import io as resources
 
@@ -73,17 +72,15 @@ DEFAULT_ENCODING = sys.getdefaultencoding()
 
 def to_binary_string(s):
   """Convert text string to binary."""
-  if isinstance(s, six.binary_type):
+  if isinstance(s, bytes):
     return s
   return s.encode(DEFAULT_ENCODING)
 
 
 def to_native_string(s):
   """Convert a text or binary string to the native string format."""
-  if six.PY3 and isinstance(s, six.binary_type):
+  if isinstance(s, bytes):
     return s.decode(DEFAULT_ENCODING)
-  elif six.PY2 and isinstance(s, six.text_type):
-    return s.encode(DEFAULT_ENCODING)
   else:
     return s
 

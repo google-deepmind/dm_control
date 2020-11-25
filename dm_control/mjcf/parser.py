@@ -198,7 +198,7 @@ def _parse_children(xml_element, mjcf_element, escape_separators=False):
       child_spec = mjcf_element.spec.children[xml_child.tag]
       if escape_separators:
         attributes = {}
-        for name, value in six.iteritems(xml_child.attrib):
+        for name, value in xml_child.attrib.items():
           new_value = value.replace(
               constants.PREFIX_SEPARATOR_ESCAPE,
               constants.PREFIX_SEPARATOR_ESCAPE * 2)

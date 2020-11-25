@@ -21,11 +21,9 @@ import functools
 from dm_control.composer import variation
 from dm_control.composer.variation import base
 import numpy as np
-import six
 
 
-@six.add_metaclass(abc.ABCMeta)
-class Distribution(base.Variation):
+class Distribution(base.Variation, metaclass=abc.ABCMeta):
   """Base Distribution class for sampling a parametrized distribution.
 
   Subclasses need to implement `_callable`, which needs to return a callable

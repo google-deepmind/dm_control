@@ -23,7 +23,6 @@ import sys
 from dm_control import mujoco
 from dm_env import specs
 import six
-from six.moves import range
 
 
 def _check_timesteps_divisible(control_timestep, physics_timestep):
@@ -36,8 +35,7 @@ def _check_timesteps_divisible(control_timestep, physics_timestep):
   return rounded_num_steps
 
 
-@six.add_metaclass(abc.ABCMeta)
-class Task(object):
+class Task(object, metaclass=abc.ABCMeta):
   """Abstract base class for a Composer task."""
 
   @abc.abstractproperty

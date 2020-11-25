@@ -30,7 +30,6 @@ from dm_control.mujoco.wrapper.mjbindings import mjlib
 from dm_control.mujoco.wrapper.mjbindings import types
 from dm_control.mujoco.wrapper.mjbindings import wrappers
 import numpy as np
-import six
 
 # Internal analytics import.
 # Unused internal import: resources.
@@ -215,7 +214,7 @@ def _temporary_vfs(filenames_and_contents):
   """
   vfs = types.MJVFS()
   mjlib.mj_defaultVFS(vfs)
-  for filename, contents in six.iteritems(filenames_and_contents):
+  for filename, contents in filenames_and_contents.items():
     if len(filename) > _MAX_VFS_FILENAME_CHARACTERS:
       raise ValueError(
           _VFS_FILENAME_TOO_LONG.format(
@@ -587,7 +586,7 @@ class MjModel(wrappers.MjModelWrapper):
     old_bitmask = self.opt.disableflags
     new_bitmask = old_bitmask
     for flag in flags:
-      if isinstance(flag, six.string_types):
+      if isinstance(flag, str):
         try:
           field_name = "mjDSBL_" + flag.upper()
           bitmask = getattr(enums.mjtDisableBit, field_name)
@@ -662,10 +661,10 @@ class MjData(wrappers.MjDataWrapper):
     # Replace this once a `loadData` MJAPI function exists.
     self._model, static_fields, buffer_contents = state_tuple
     self.__init__(self.model)
-    for name, contents in six.iteritems(static_fields["struct_fields"]):
+    for name, contents in static_fields["struct_fields"].items():
       getattr(self, name)[:] = contents
 
-    for name, value in six.iteritems(static_fields["scalar_fields"]):
+    for name, value in static_fields["scalar_fields"].items():
       # Array and scalar values must be handled separately.
       try:
         getattr(self, name)[:] = value

@@ -26,8 +26,6 @@ from dm_control.locomotion.soccer import camera
 from dm_control.locomotion.soccer import initializers
 from dm_control.mujoco.wrapper import mjbindings
 import numpy as np
-from six.moves import range
-from six.moves import zip
 
 RGBA_BLUE = [.1, .1, .8, 1.]
 RGBA_RED = [.8, .1, .1, 1.]

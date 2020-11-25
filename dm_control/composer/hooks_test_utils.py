@@ -21,7 +21,6 @@ import inspect
 
 from dm_control import composer
 from dm_control import mjcf
-from six.moves import range
 
 
 def add_bodies_and_actuators(mjcf_model, num_actuators):

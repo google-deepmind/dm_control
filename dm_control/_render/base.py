@@ -34,14 +34,12 @@ import weakref
 
 from absl import logging
 from dm_control._render import executor
-import six
 
 _CURRENT_CONTEXT_FOR_THREAD = collections.defaultdict(lambda: None)
 _CURRENT_THREAD_FOR_CONTEXT = collections.defaultdict(lambda: None)
 
 
-@six.add_metaclass(abc.ABCMeta)
-class ContextBase(object):
+class ContextBase(metaclass=abc.ABCMeta):
   """Base class for managing OpenGL contexts."""
 
   def __init__(self,

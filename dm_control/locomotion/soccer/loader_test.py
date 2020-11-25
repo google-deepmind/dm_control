@@ -21,7 +21,6 @@ from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control.locomotion import soccer
 import numpy as np
-from six.moves import range
 
 
 class LoadTest(parameterized.TestCase):

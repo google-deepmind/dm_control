@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-# Lint as: python2, python3
 """Represents a motion-captured trajectory."""
 
 import collections
@@ -22,9 +21,6 @@ from dm_control.locomotion.mocap import mocap_pb2
 from dm_control.locomotion.mocap import props as mocap_props
 from dm_control.locomotion.mocap import walkers as mocap_walkers
 import numpy as np
-import six
-from six.moves import range
-from six.moves import zip
 
 STEP_TIME_TOLERANCE = 1e-4
 
@@ -125,7 +121,7 @@ class Trajectory(object):
           self._dict[k].flags.writeable = False  # pytype: disable=attribute-error
 
     return {k: v[self._start_step:self._end_step]
-            for k, v in six.iteritems(self._dict)}
+            for k, v in self._dict.items()}
 
   def _create_single_item(self, get_field_in_timestep):
     if not self._proto.timesteps:
@@ -138,7 +134,7 @@ class Trajectory(object):
     return array
 
   def _create_all_items(self, dictionary):
-    for key, value in six.iteritems(dictionary):
+    for key, value in dictionary.items():
       if callable(value):
         dictionary[key] = self._create_single_item(value)
     return dictionary

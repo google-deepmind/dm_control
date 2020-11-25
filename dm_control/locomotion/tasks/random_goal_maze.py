@@ -23,8 +23,6 @@ from dm_control.composer.observation import observable as observable_lib
 from dm_control.locomotion.props import target_sphere
 from dm_control.mujoco.wrapper import mjbindings
 import numpy as np
-from six.moves import range
-from six.moves import zip
 
 _NUM_RAYS = 10
 

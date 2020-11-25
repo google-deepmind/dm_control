@@ -16,7 +16,6 @@
 
 import collections
 import numpy as np
-from six.moves import range
 
 GridCoordinates = collections.namedtuple('GridCoordinates', ('y', 'x'))
 MazeWall = collections.namedtuple('MazeWall', ('start', 'end'))

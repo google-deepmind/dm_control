@@ -22,8 +22,6 @@ from dm_control import mjcf
 from dm_control.composer.observation.observable import base as observable_base
 from dm_control.locomotion.walkers import cmu_humanoid
 import numpy as np
-from six.moves import range
-from six.moves import zip
 
 
 class CMUHumanoidTest(parameterized.TestCase):

@@ -23,7 +23,6 @@ from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control._render import executor
 import mock
-from six.moves import range
 
 
 def enforce_timeout(timeout):

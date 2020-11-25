@@ -24,7 +24,6 @@ from dm_control.suite import common
 from dm_control.suite.utils import randomizers
 from dm_control.utils import containers
 import numpy as np
-from six.moves import range
 
 _DEFAULT_TIME_LIMIT = 20  # (seconds)
 _CONTROL_TIMESTEP = .02   # (seconds)

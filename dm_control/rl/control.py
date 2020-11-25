@@ -21,8 +21,6 @@ import contextlib
 import dm_env
 from dm_env import specs
 import numpy as np
-import six
-from six.moves import range
 
 FLAT_OBSERVATION_KEY = 'observations'
 
@@ -194,15 +192,14 @@ def compute_n_steps(control_timestep, physics_timestep, tolerance=1e-8):
 
 def _spec_from_observation(observation):
   result = collections.OrderedDict()
-  for key, value in six.iteritems(observation):
+  for key, value in observation.items():
     result[key] = specs.Array(value.shape, value.dtype, name=key)
   return result
 
 # Base class definitions for objects supplied to Environment.
 
 
-@six.add_metaclass(abc.ABCMeta)
-class Physics(object):
+class Physics(metaclass=abc.ABCMeta):
   """Simulates a physical environment."""
 
   @abc.abstractmethod
@@ -268,8 +265,7 @@ class PhysicsError(RuntimeError):
   """Raised if the state of the physics simulation becomes divergent."""
 
 
-@six.add_metaclass(abc.ABCMeta)
-class Task(object):
+class Task(metaclass=abc.ABCMeta):
   """Defines a task in a `control.Environment`."""
 
   @abc.abstractmethod
@@ -388,10 +384,10 @@ def flatten_observation(observation, output_key=FLAT_OBSERVATION_KEY):
     raise ValueError('Can only flatten dict-like observations.')
 
   if isinstance(observation, collections.OrderedDict):
-    keys = six.iterkeys(observation)
+    keys = observation.keys()
   else:
     # Keep a consistent ordering for other mappings.
-    keys = sorted(six.iterkeys(observation))
+    keys = sorted(observation.keys())
 
   observation_arrays = [observation[key].ravel() for key in keys]
   return type(observation)([(output_key, np.concatenate(observation_arrays))])

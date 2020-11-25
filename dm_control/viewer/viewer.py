@@ -19,7 +19,6 @@ from dm_control.mujoco.wrapper import mjbindings
 from dm_control.viewer import renderer
 from dm_control.viewer import user_input
 from dm_control.viewer import util
-from six.moves import range
 
 constants = mjbindings.constants
 enums = mjbindings.enums

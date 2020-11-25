@@ -22,8 +22,6 @@ import dm_env
 from dm_env import specs
 import mock
 import numpy as np
-import six
-from six.moves import zip
 
 
 class RuntimeStateMachineTest(parameterized.TestCase):
@@ -344,7 +342,7 @@ class DefaultActionFromSpecTest(parameterized.TestCase):
     elif isinstance(expected, collections.MutableMapping):
       keys_type = list if isinstance(expected, collections.OrderedDict) else set
       self.assertEqual(keys_type(actual.keys()), keys_type(expected.keys()))
-      for key, expected_value in six.iteritems(expected):
+      for key, expected_value in expected.items():
         self.assertNestedArraysEqual(actual[key], expected_value)
     else:
       np.testing.assert_array_equal(expected, actual)
@@ -374,8 +372,8 @@ class DefaultActionFromSpecTest(parameterized.TestCase):
                                              ('b', self._ACTION_SPEC)])
     expected_action = collections.OrderedDict([('b', self._ACTION),
                                                ('a', self._ACTION)])
-    with six.assertRaisesRegex(self, AssertionError,
-                               r"Lists differ: \['a', 'b'\] != \['b', 'a'\]"):
+    with self.assertRaisesRegex(
+        AssertionError, r"Lists differ: \['a', 'b'\] != \['b', 'a'\]"):
       self.assertNestedArraysEqual(expected_action,
                                    runtime._get_default_action(reversed_spec))
 

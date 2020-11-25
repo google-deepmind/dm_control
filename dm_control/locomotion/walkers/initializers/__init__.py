@@ -17,11 +17,9 @@
 
 import abc
 import numpy as np
-import six
 
 
-@six.add_metaclass(abc.ABCMeta)
-class WalkerInitializer(object):
+class WalkerInitializer(metaclass=abc.ABCMeta):
   """The abstract base class for a walker initializer."""
 
   @abc.abstractmethod

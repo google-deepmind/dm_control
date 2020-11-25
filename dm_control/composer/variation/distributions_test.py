@@ -19,7 +19,6 @@ from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control.composer.variation import distributions
 import numpy as np
-from six.moves import range
 
 RANDOM_SEED = 123
 NUM_ITERATIONS = 100

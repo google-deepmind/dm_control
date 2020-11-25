@@ -24,7 +24,6 @@ from dm_control.locomotion.arenas import corridors as corr_arenas
 from dm_control.locomotion.tasks import corridors as corr_tasks
 from dm_control.locomotion.walkers import jumping_ball
 import numpy as np
-from six.moves import range
 
 _CONTROL_TIMESTEP = .02
 _PHYSICS_TIMESTEP = 0.005

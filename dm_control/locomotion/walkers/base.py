@@ -23,7 +23,6 @@ from dm_control.composer.observation import observable
 
 from dm_env import specs
 import numpy as np
-import six
 
 
 def _make_readonly_float64_copy(value):
@@ -66,8 +65,7 @@ class WalkerPose(collections.namedtuple(
             np.all(self.xquat == other.xquat))
 
 
-@six.add_metaclass(abc.ABCMeta)
-class Walker(composer.Robot):
+class Walker(composer.Robot, metaclass=abc.ABCMeta):
   """Abstract base class for Walker robots."""
 
   def create_root_joints(self, attachment_frame):

@@ -24,7 +24,6 @@ from dm_control.mujoco.wrapper import mjbindings
 from dm_control.utils import transformations
 
 import numpy as np
-from six.moves import range
 
 mjlib = mjbindings.mjlib
 

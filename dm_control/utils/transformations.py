@@ -17,7 +17,6 @@
 
 from absl import logging
 import numpy as np
-from six.moves import range
 
 # Constants used to determine when a rotation is close to a pole.
 _POLE_LIMIT = (1.0 - 1e-6)

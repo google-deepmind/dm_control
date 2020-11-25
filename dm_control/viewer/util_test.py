@@ -20,7 +20,6 @@ from absl.testing import parameterized
 from dm_control.viewer import util
 import mock
 import numpy as np
-from six.moves import range
 
 
 class QuietSetTest(absltest.TestCase):

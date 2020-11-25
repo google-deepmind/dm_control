@@ -19,8 +19,6 @@ from absl.testing import absltest
 from dm_control.viewer import views
 import mock
 import numpy as np
-import six
-from six.moves import range
 
 
 class ColumnTextViewTest(absltest.TestCase):
@@ -136,7 +134,7 @@ class ViewportLayoutTest(absltest.TestCase):
     self.layout._views = {mock.MagicMock(spec=views.BaseViewportView): pos
                           for pos in positions}
     self.layout.render(self.context, self.viewport)
-    for view, location in six.iteritems(self.layout._views):
+    for view, location in self.layout._views.items():
       view.render.assert_called_once()
       self.assertEqual(location, view.render.call_args[0][2])
 

@@ -22,7 +22,6 @@ from absl.testing import parameterized
 from dm_control import mjcf
 from dm_control.mujoco import wrapper
 from dm_control.mujoco.wrapper import util
-import six
 
 FLAGS = flags.FLAGS
 
@@ -91,7 +90,7 @@ class ExportWithAssetsTest(parameterized.TestCase):
   def test_exceptions(self):
     out_dir = self.create_tempdir().full_path
     mjcf_model = mjcf.from_path(_TEST_MODEL_WITH_ASSETS)
-    with six.assertRaisesRegex(self, ValueError, 'must end with \'.xml\''):
+    with self.assertRaisesRegex(ValueError, 'must end with \'.xml\''):
       mjcf.export_with_assets(mjcf_model, out_dir,
                               out_file_name='invalid_extension.png')
 

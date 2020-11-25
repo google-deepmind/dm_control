@@ -18,6 +18,7 @@
 import abc
 import collections
 import hashlib
+import io
 import os
 
 from dm_control.mjcf import base
@@ -26,7 +27,6 @@ from dm_control.mjcf import debugging
 from dm_control.mjcf import skin
 from dm_control.mujoco.wrapper import util
 import numpy as np
-import six
 
 # Copybara placeholder for internal file handling dependency.
 
@@ -45,8 +45,7 @@ _INVALID_MESH_EXTENSION = (
     .format(_MESH_EXTENSIONS))
 
 
-@six.add_metaclass(abc.ABCMeta)
-class _Attribute(object):
+class _Attribute(metaclass=abc.ABCMeta):
   """Abstract base class for MJCF attribute data types."""
 
   def __init__(self, name, required, parent, value,
@@ -203,7 +202,7 @@ class Array(_Attribute):
     if self._value is None:
       return None
     else:
-      out = six.BytesIO()
+      out = io.BytesIO()
       # 17 decimal digits is sufficient to represent a double float without loss
       # of precision.
       # https://en.wikipedia.org/wiki/IEEE_754#Character_representation
@@ -297,7 +296,7 @@ class Reference(_Attribute):
       return self._reference_namespace
 
   def _assign(self, value):
-    if not isinstance(value, (base.Element, six.string_types)):
+    if not isinstance(value, (base.Element, str)):
       raise ValueError(
           'Expect a string or `mjcf.Element` value: got {}'.format(value))
     elif not value:
@@ -476,7 +475,7 @@ class File(_Attribute):
     if not value:
       self.clear()
     else:
-      if isinstance(value, six.string_types):
+      if isinstance(value, str):
         asset = self._get_asset_from_path(value)
       elif isinstance(value, Asset):
         asset = value

@@ -20,7 +20,6 @@ import collections
 from absl import logging
 from dm_control.mujoco.wrapper import mjbindings
 import numpy as np
-from six.moves import range
 
 mjlib = mjbindings.mjlib
 

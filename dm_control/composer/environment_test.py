@@ -23,7 +23,6 @@ from dm_control.composer.observation import observable
 import dm_env
 import mock
 import numpy as np
-from six.moves import range
 
 
 class DummyTask(composer.NullTask):

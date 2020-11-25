@@ -17,8 +17,6 @@
 
 import collections
 import numpy as np
-import six
-from six.moves import range
 
 
 class InFlightObservation(object):
@@ -200,7 +198,7 @@ class Buffer(object):
       while True:
         yield InFlightObservation(-np.inf, 0, None)
     existing_timestamp_iter = get_next_existing_timestamp()
-    existing_timestamp = six.next(existing_timestamp_iter)
+    existing_timestamp = next(existing_timestamp_iter)
 
     # Build the simulated state of the pending deque at the end of the proposed
     # schedule.
@@ -212,7 +210,7 @@ class Buffer(object):
       # proposed new observations.
       while existing_timestamp.arrival > new_timestamp.arrival:
         future_pending_deque.appendleft(existing_timestamp)
-        existing_timestamp = six.next(existing_timestamp_iter)
+        existing_timestamp = next(existing_timestamp_iter)
       future_pending_deque.appendleft(new_timestamp)
 
     # Find the next timestep at which `read` is called.

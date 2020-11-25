@@ -18,7 +18,6 @@
 import collections
 
 from dm_control.mjcf import constants
-import six
 
 
 class NameScope(object):
@@ -59,7 +58,7 @@ class NameScope(object):
 
   def increment_revision(self):
     self._revision += 1
-    for namescope in six.itervalues(self._namespaces['namescope']):
+    for namescope in self._namespaces['namescope'].values():
       namescope.increment_revision()
 
   @property

@@ -35,8 +35,6 @@ from dm_control.manipulation.shared import workspaces
 from dm_control.mujoco.wrapper import mjbindings
 from dm_control.utils import rewards
 import numpy as np
-from six.moves import range
-from six.moves import zip
 
 mjlib = mjbindings.mjlib
 

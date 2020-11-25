@@ -20,7 +20,6 @@ import abc
 from dm_control import composer
 from dm_control.composer import variation
 from dm_control.locomotion.arenas import assets as locomotion_arenas_assets
-import six
 
 _SIDE_WALLS_GEOM_GROUP = 3
 _CORRIDOR_X_PADDING = 2.0
@@ -29,8 +28,7 @@ _SIDE_WALL_HEIGHT = 4.0
 _DEFAULT_ALPHA = 0.5
 
 
-@six.add_metaclass(abc.ABCMeta)
-class Corridor(composer.Arena):
+class Corridor(composer.Arena, metaclass=abc.ABCMeta):
   """Abstract base class for corridor-type arenas."""
 
   @abc.abstractmethod

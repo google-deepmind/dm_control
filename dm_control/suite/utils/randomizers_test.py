@@ -21,7 +21,6 @@ from dm_control import mujoco
 from dm_control.mujoco.wrapper import mjbindings
 from dm_control.suite.utils import randomizers
 import numpy as np
-from six.moves import range
 
 mjlib = mjbindings.mjlib
 

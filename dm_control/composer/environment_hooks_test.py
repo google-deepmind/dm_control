@@ -19,7 +19,6 @@ from absl.testing import absltest
 from dm_control import composer
 from dm_control.composer import hooks_test_utils
 import numpy as np
-from six.moves import range
 
 
 class EnvironmentHooksTest(hooks_test_utils.HooksTestMixin, absltest.TestCase):

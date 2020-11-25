@@ -18,7 +18,6 @@
 from dm_control import composer
 from dm_control import mjcf
 from labmaze import assets as labmaze_assets
-import six
 
 
 class SkyBox(composer.Entity):
@@ -49,7 +48,7 @@ class WallTextures(composer.Entity):
     labmaze_textures = labmaze_assets.get_wall_texture_paths(style)
     self._mjcf_root = mjcf.RootElement(model='labmaze_' + style)
     self._textures = []
-    for texture_name, texture_path in six.iteritems(labmaze_textures):
+    for texture_name, texture_path in labmaze_textures.items():
       self._textures.append(self._mjcf_root.asset.add(
           'texture', type='2d', name=texture_name,
           file=texture_path.format(texture_name)))
@@ -70,7 +69,7 @@ class FloorTextures(composer.Entity):
     labmaze_textures = labmaze_assets.get_floor_texture_paths(style)
     self._mjcf_root = mjcf.RootElement(model='labmaze_' + style)
     self._textures = []
-    for texture_name, texture_path in six.iteritems(labmaze_textures):
+    for texture_name, texture_path in labmaze_textures.items():
       self._textures.append(self._mjcf_root.asset.add(
           'texture', type='2d', name=texture_name,
           file=texture_path.format(texture_name)))
