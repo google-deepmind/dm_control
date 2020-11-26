@@ -339,7 +339,7 @@ class DefaultActionFromSpecTest(parameterized.TestCase):
       self.assertLen(actual, len(expected))
       for expected_item, actual_item in zip(expected, actual):
         self.assertNestedArraysEqual(expected_item, actual_item)
-    elif isinstance(expected, collections.MutableMapping):
+    elif isinstance(expected, collections.abc.MutableMapping):
       keys_type = list if isinstance(expected, collections.OrderedDict) else set
       self.assertEqual(keys_type(actual.keys()), keys_type(expected.keys()))
       for key, expected_value in expected.items():

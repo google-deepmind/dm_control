@@ -45,7 +45,7 @@ class TrajectoryLoader(metaclass=abc.ABCMeta):
         non-callable entry.
     """
     self._trajectory_class = trajectory_class
-    if not isinstance(proto_modifier, collections.Iterable):
+    if not isinstance(proto_modifier, collections.abc.Iterable):
       if proto_modifier is None:  # backwards compatibility
         proto_modifier = ()
       else:

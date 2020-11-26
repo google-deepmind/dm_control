@@ -76,7 +76,7 @@ class ToIterableTest(parameterized.TestCase):
     original_value = 3
 
     result = util.to_iterable(original_value)
-    self.assertIsInstance(result, collections.Iterable)
+    self.assertIsInstance(result, collections.abc.Iterable)
     self.assertLen(result, 1)
     self.assertEqual(original_value, result[0])
 
@@ -84,7 +84,7 @@ class ToIterableTest(parameterized.TestCase):
     original_value = 'test_string'
 
     result = util.to_iterable(original_value)
-    self.assertIsInstance(result, collections.Iterable)
+    self.assertIsInstance(result, collections.abc.Iterable)
     self.assertLen(result, 1)
     self.assertEqual(original_value, result[0])
 

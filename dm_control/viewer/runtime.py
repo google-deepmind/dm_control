@@ -50,7 +50,7 @@ def _get_default_action(action_spec):
   """
   if isinstance(action_spec, (list, tuple)):
     return tuple(_get_default_action(spec) for spec in action_spec)
-  elif isinstance(action_spec, collections.MutableMapping):
+  elif isinstance(action_spec, collections.abc.MutableMapping):
     # Clones the Mapping, preserving type and key order.
     result = copy.copy(action_spec)
 

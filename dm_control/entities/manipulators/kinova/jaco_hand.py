@@ -125,7 +125,7 @@ class JacoHand(base.RobotHand):
         finger, while a value of 1 corresponds to fully closing it. If a single
         number is specified, the same position is applied to all fingers.
     """
-    if not isinstance(close_factors, collections.Iterable):
+    if not isinstance(close_factors, collections.abc.Iterable):
       close_factors = (close_factors,) * len(self.joints)
     for joint, finger_factor in zip(self.joints, close_factors):
       joint_mj = physics.bind(joint)

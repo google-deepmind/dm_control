@@ -43,7 +43,7 @@ def to_iterable(item):
   """Converts an item or iterable into an iterable."""
   if isinstance(item, str):
     return [item]
-  elif isinstance(item, collections.Iterable):
+  elif isinstance(item, collections.abc.Iterable):
     return item
   else:
     return [item]

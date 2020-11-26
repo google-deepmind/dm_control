@@ -42,7 +42,7 @@ class JointStaticIsolator(object):
       joints: An iterable of `mjcf.Element` representing joints that may be
         modified inside the context managed by this isolator.
     """
-    if not isinstance(joints, collections.Iterable):
+    if not isinstance(joints, collections.abc.Iterable):
       joints = [joints]
     root_model = _get_root_model(joints)
     other_joints = [joint for joint in root_model.find_all('joint')

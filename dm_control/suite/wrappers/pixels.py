@@ -55,7 +55,7 @@ class Wrapper(dm_env.Environment):
     if isinstance(wrapped_observation_spec, specs.Array):
       self._observation_is_dict = False
       invalid_keys = set([STATE_KEY])
-    elif isinstance(wrapped_observation_spec, collections.MutableMapping):
+    elif isinstance(wrapped_observation_spec, collections.abc.MutableMapping):
       self._observation_is_dict = True
       invalid_keys = set(wrapped_observation_spec.keys())
     else:

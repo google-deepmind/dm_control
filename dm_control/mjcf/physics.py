@@ -160,7 +160,7 @@ def names_from_elements(mjcf_elements):
   Raises:
       ValueError: If `mjcf_elements` cannot be bound to this Physics.
   """
-  if isinstance(mjcf_elements, collections.Iterable):
+  if isinstance(mjcf_elements, collections.abc.Iterable):
     elements_tuple = tuple(mjcf_elements)
     if elements_tuple:
       namespace = _get_namespace(elements_tuple[0])

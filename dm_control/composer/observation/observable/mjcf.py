@@ -34,7 +34,7 @@ def _check_mjcf_element(obj):
 
 
 def _check_mjcf_element_iterable(obj_iterable):
-  if not isinstance(obj_iterable, collections.Iterable):
+  if not isinstance(obj_iterable, collections.abc.Iterable):
     obj_iterable = (obj_iterable,)
   for obj in obj_iterable:
     _check_mjcf_element(obj)

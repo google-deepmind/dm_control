@@ -22,7 +22,7 @@ _NAME_ALREADY_EXISTS = (
     "`allow_overriding_keys` is False.")
 
 
-class TaggedTasks(collections.Mapping):
+class TaggedTasks(collections.abc.Mapping):
   """Maps task names to their corresponding factory functions with tags.
 
   To store a function in a `TaggedTasks` container, we can use its `.add`

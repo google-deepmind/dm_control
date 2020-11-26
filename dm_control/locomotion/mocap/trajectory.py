@@ -157,7 +157,7 @@ class Trajectory(object):
 
   def get_modified_trajectory(self, proto_modifier, random_state=None):
     modified_proto = copy.deepcopy(self._proto)
-    if isinstance(proto_modifier, collections.Iterable):
+    if isinstance(proto_modifier, collections.abc.Iterable):
       for proto_mod in proto_modifier:
         proto_mod(modified_proto, random_state=random_state)
     else:
