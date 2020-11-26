@@ -30,7 +30,6 @@ from dm_control.mjcf import schema
 from dm_control.mujoco.wrapper import util
 from lxml import etree
 import numpy as np
-import six
 
 
 _raw_property = property  # pylint: disable=invalid-name
@@ -71,12 +70,12 @@ def property(method):  # pylint: disable=redefined-builtin
   def _mjcf_property(self):
     try:
       return method(self)
-    except:  # pylint: disable=bare-except
-      err_type, err, tb = sys.exc_info()
-      tb_next = tb.tb_next
+    except:
+      _, err, tb = sys.exc_info()
+      err_with_next_tb = err.with_traceback(tb.tb_next)
       if isinstance(err, AttributeError):
-        self._last_attribute_error = err_type, err, tb_next  # pylint: disable=protected-access
-      six.reraise(err_type, err, tb_next)
+        self._last_attribute_error = err_with_next_tb  # pylint: disable=protected-access
+      raise err_with_next_tb
   return _raw_property(_mjcf_property)
 
 
@@ -177,16 +176,15 @@ class _ElementImpl(base.Element):
               conflict_allowed=attribute_spec.conflict_allowed,
               conflict_behavior=attribute_spec.conflict_behavior,
               parent=self, value=value, **attribute_spec.other_kwargs)
-        except:  # pylint: disable=bare-except
+        except:
           # On failure, clear attributes already created
           for attribute_obj in self._attributes.values():
             attribute_obj._force_clear()  # pylint: disable=protected-access
           # Then raise a meaningful error
-          err_type, err, traceback = sys.exc_info()
-          message = (
-              'during initialization of attribute {!r} of element <{}>: {}'
-              .format(attribute_spec.name, self._spec.name, err))
-          six.reraise(err_type, err_type(message), traceback)
+          err_type, err, tb = sys.exc_info()
+          raise err_type(
+              f'during initialization of attribute {attribute_spec.name!r} of '
+              f'element <{self._spec.name}>: {err}').with_traceback(tb)
 
   def get_init_stack(self):
     """Gets the stack trace where this element was first initialized."""
@@ -537,16 +535,15 @@ class _ElementImpl(base.Element):
         try:
           self._set_attribute(attribute_name, new_value)
           old_values.append((attribute_name, old_value))
-        except:  # pylint: disable=bare-except
+        except:
           # On failure, restore old attribute values for those already set.
           for name, old_value in old_values:
             self._set_attribute(name, old_value)
           # Then raise a meaningful error.
           err_type, err, tb = sys.exc_info()
-          message = (
-              'during assignment to attribute {!r} of element <{}>: {}'
-              .format(attribute_name, self._spec.name, err))
-          six.reraise(err_type, err_type(message), tb)
+          raise err_type(
+              f'during assignment to attribute {attribute_name!r} of '
+              f'element <{self._spec.name}>: {err}').with_traceback(tb)
 
   def _remove_attribute(self, attribute_name):
     self._check_valid_attribute(attribute_name)
@@ -611,9 +608,9 @@ class _ElementImpl(base.Element):
       # We therefore just re-raise the last AttributeError back to the user.
       # Note that self._last_attribute_error was set by our specially
       # instrumented @property decorator.
-      exc_info = self._last_attribute_error
+      exc = self._last_attribute_error
       self._last_attribute_error = None
-      six.reraise(*exc_info)  # pylint: disable=not-an-iterable
+      raise exc  # pylint: disable=raising-bad-type
     elif name in self._spec.children:
       return self.get_children(name)
     elif name in self._spec.attributes:

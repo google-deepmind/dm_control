@@ -30,7 +30,6 @@ import traceback
 
 from absl import flags
 from lxml import etree
-import six
 
 FLAGS = flags.FLAGS
 flags.DEFINE_boolean(
@@ -228,7 +227,7 @@ class DebugContext(object):
     message instructs the user to enable it by rerunning the executable with an
     appropriate flag.
     """
-    err_type, err, stack = sys.exc_info()
+    err_type, err, tb = sys.exc_info()
     line_number_match = re.search(r'[Ll][Ii][Nn][Ee]\s*[:=]?\s*(\d+)', str(err))
     if line_number_match:
       xml_line_number = int(line_number_match.group(1))
@@ -260,8 +259,7 @@ class DebugContext(object):
       if xml_line:
         message_lines.append(stripped_xml_line)
 
-    message = '\n'.join(message_lines)
-    six.reraise(err_type, err_type(message), stack)
+    raise err_type('\n'.join(message_lines)).with_traceback(tb)
 
   @property
   def default_dump_dir(self):

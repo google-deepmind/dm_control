@@ -17,6 +17,7 @@
 
 import copy
 import os
+import pickle
 
 from absl.testing import absltest
 from absl.testing import parameterized
@@ -25,8 +26,6 @@ from dm_control.mjcf import physics as mjcf_physics
 from dm_control.mujoco.wrapper import mjbindings
 import mock
 import numpy as np
-import six
-from six.moves import cPickle
 
 mjlib = mjbindings.mjlib
 
@@ -190,8 +189,7 @@ class PhysicsTest(parameterized.TestCase):
     with self.assertRaises(AttributeError):
       _ = physics.bind(normal_body).mocap_pos
 
-    with six.assertRaisesRegex(
-        self,
+    with self.assertRaisesRegex(
         ValueError,
         'Cannot bind to a collection containing multiple element types'):
       physics.bind([mocap_body, normal_body])
@@ -224,8 +222,7 @@ class PhysicsTest(parameterized.TestCase):
   def test_exceptions(self):
     joint = self.model.find_all('joint')[0]
     geom = self.model.find_all('geom')[0]
-    with six.assertRaisesRegex(
-        self,
+    with self.assertRaisesRegex(
         ValueError,
         'Cannot bind to a collection containing multiple element types'):
       self.physics.bind([joint, geom])
@@ -561,7 +558,7 @@ class PhysicsTest(parameterized.TestCase):
     with self.assertRaisesWithLiteralMatch(
         NotImplementedError,
         mjcf_physics._PICKLING_NOT_SUPPORTED.format(type=type(xpos_view))):
-      cPickle.dumps(xpos_view)
+      pickle.dumps(xpos_view)
 
 if __name__ == '__main__':
   absltest.main()

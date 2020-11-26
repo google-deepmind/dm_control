@@ -18,11 +18,9 @@
 import abc
 import collections
 import copy
-import sys
 
 from dm_control import mujoco
 from dm_env import specs
-import six
 
 
 def _check_timesteps_divisible(control_timestep, physics_timestep):
@@ -98,12 +96,10 @@ class Task(object, metaclass=abc.ABCMeta):
   def _check_root_entity(self, callee_name):
     try:
       _ = self.root_entity
-    except:  # pylint: disable=bare-except
-      err_type, err, tb = sys.exc_info()
-      message = (
-          'call to `{}` made before `root_entity` is available;\n'
-          'original error message: {}'.format(callee_name, str(err)))
-      six.reraise(err_type, err_type(message), tb)
+    except Exception as effect:
+      cause = RuntimeError(
+          f'call to `{callee_name}` made before `root_entity` is available')
+      raise effect from cause
 
   @property
   def control_timestep(self):

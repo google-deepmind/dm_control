@@ -15,23 +15,19 @@
 
 """An OpenGL renderer backed by GLFW."""
 
-import sys
 from dm_control._render import base
 from dm_control._render import executor
-import six
 
 # Re-raise any exceptions that occur during module import as `ImportError`s.
 # This simplifies the conditional imports in `render/__init__.py`.
 try:
   import glfw  # pylint: disable=g-import-not-at-top
 except (ImportError, IOError, OSError) as exc:
-  _, exc, tb = sys.exc_info()
-  six.reraise(ImportError, ImportError(str(exc)), tb)
+  raise ImportError from exc
 try:
   glfw.init()
 except glfw.GLFWError as exc:
-  _, exc, tb = sys.exc_info()
-  six.reraise(ImportError, ImportError(str(exc)), tb)
+  raise ImportError from exc
 
 
 class GLFWContext(base.ContextBase):

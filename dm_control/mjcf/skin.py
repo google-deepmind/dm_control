@@ -19,9 +19,9 @@ The file format is described at http://mujoco.org/book/XMLreference.html#skin.
 """
 
 import collections
+import io
 import struct
 import numpy as np
-import six
 
 MAX_BODY_NAME_LENGTH = 40
 
@@ -43,7 +43,7 @@ def parse(contents, body_getter):
   Returns:
     A `Skin` named tuple.
   """
-  f = six.BytesIO(contents)
+  f = io.BytesIO(contents)
   nvertex, ntexcoord, nface, nbone = struct.unpack('<iiii', f.read(4*4))
   vertices = np.frombuffer(f.read(4*(3*nvertex)), dtype='<f4').reshape(-1, 3)
   texcoords = np.frombuffer(f.read(4*(2*ntexcoord)), dtype='<f4').reshape(-1, 2)
@@ -74,7 +74,7 @@ def serialize(skin):
   Returns:
     A `bytes` object representing the content of a MuJoCo skin file.
   """
-  out = six.BytesIO()
+  out = io.BytesIO()
   nvertex = len(skin.vertices)
   ntexcoord = len(skin.texcoords)
   nface = len(skin.faces)

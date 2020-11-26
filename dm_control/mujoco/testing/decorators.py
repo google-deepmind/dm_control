@@ -16,9 +16,7 @@
 """Decorators used in MuJoCo tests."""
 
 import functools
-import sys
 import threading
-import six
 
 
 def run_threaded(num_threads=4, calls_per_thread=10):
@@ -44,10 +42,10 @@ def run_threaded(num_threads=4, calls_per_thread=10):
         try:
           for _ in range(calls_per_thread):
             test_method(self, *args, **kwargs)
-        except:  # pylint: disable=bare-except
+        except Exception as exc:  # pylint: disable=broad-except
           # Appending to Python list is thread-safe:
           # http://effbot.org/pyfaq/what-kinds-of-global-value-mutation-are-thread-safe.htm
-          exceptions.append(sys.exc_info())
+          exceptions.append(exc)
       if num_threads is not None:
         threads = [threading.Thread(target=worker, name='thread_{}'.format(i))
                    for i in range(num_threads)]
@@ -57,7 +55,7 @@ def run_threaded(num_threads=4, calls_per_thread=10):
           thread.join()
       else:
         worker()
-      for exc_class, old_exc, tb in exceptions:
-        six.reraise(exc_class, old_exc, tb)
+      for exc in exceptions:
+        raise exc
     return decorated_method
   return decorator

@@ -15,6 +15,7 @@
 
 """Walkers based on an actuated jumping ball."""
 
+import io
 import os
 
 from dm_control import composer
@@ -23,7 +24,6 @@ from dm_control.composer.observation import observable
 from dm_control.locomotion.walkers import legacy_base
 import numpy as np
 from PIL import Image
-import six
 
 from dm_control.utils import io as resources
 
@@ -84,14 +84,14 @@ def _asset_png_with_background_rgba_bytes(asset_fname, background_rgba):
 
   # Retrieve PNG image contents as a bytestring, convert to a numpy array.
   contents = resources.GetResource(os.path.join(_ASSETS_PATH, asset_fname))
-  digit_rgba = np.array(Image.open(six.BytesIO(contents)), dtype=np.double)
+  digit_rgba = np.array(Image.open(io.BytesIO(contents)), dtype=np.double)
 
   # Add solid background with `background_rgba`.
   blended = 255. * _alpha_blend(digit_rgba / 255., np.asarray(background_rgba))
 
   # Encode composite image array to a PNG bytestring.
   img = Image.fromarray(blended.astype(np.uint8), mode='RGBA')
-  buf = six.BytesIO()
+  buf = io.BytesIO()
   img.save(buf, format='PNG')
   png_encoding = buf.getvalue()
   buf.close()

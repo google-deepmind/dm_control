@@ -17,6 +17,7 @@
 
 import collections
 import functools
+import io
 import os
 import sys
 from dm_control import _render
@@ -24,7 +25,6 @@ from dm_control import mujoco
 from dm_control.mujoco.testing import assets
 import numpy as np
 from PIL import Image
-import six
 
 
 BACKEND_STRING = 'hardware' if _render.USING_GPU else 'software'
@@ -191,7 +191,7 @@ def _save_pixels(pixels, path):
 
 def _load_pixels(path):
   image_bytes = assets.get_contents(path)
-  image = Image.open(six.BytesIO(image_bytes))
+  image = Image.open(io.BytesIO(image_bytes))
   return np.array(image)
 
 
@@ -252,7 +252,7 @@ def save_images_on_failure(output_dir):
                '{}-{{expected,actual,difference}}.png.'.format(e, base_name))
         new_e = ImagesNotCloseError(msg, expected=e.expected, actual=e.actual)
         # Reraise the exception with the original traceback.
-        six.reraise(ImagesNotCloseError, new_e, tb)
+        raise new_e.with_traceback(tb)
 
     return decorated_method
   return decorator

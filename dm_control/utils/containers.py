@@ -16,7 +16,6 @@
 """Container classes used in control domains."""
 
 import collections
-import six
 
 _NAME_ALREADY_EXISTS = (
     "A function named {name!r} already exists in the container and "
@@ -92,11 +91,11 @@ class TaggedTasks(collections.Mapping):
     if not tags:
       return {}
     tags = set(tags)
-    if not tags.issubset(six.viewkeys(self._tags)):
+    if not tags.issubset(self._tags.keys()):
       return {}
-    names = six.viewkeys(self._tags[tags.pop()])
+    names = self._tags[tags.pop()].keys()
     while tags:
-      names &= six.viewkeys(self._tags[tags.pop()])
+      names &= self._tags[tags.pop()].keys()
     return {name: self._tasks[name] for name in names}
 
   def tags(self):
