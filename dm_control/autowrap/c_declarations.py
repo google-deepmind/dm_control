@@ -66,13 +66,14 @@ class Struct(CDeclBase):
 
   def __init__(self, name, typename, members, sub_structs, comment="",
                parent=None, is_const=None):
-    super(Struct, self).__init__(name=name,
-                                 typename=typename,
-                                 members=members,
-                                 sub_structs=sub_structs,
-                                 comment=comment,
-                                 parent=parent,
-                                 is_const=is_const)
+    super().__init__(
+        name=name,
+        typename=typename,
+        members=members,
+        sub_structs=sub_structs,
+        comment=comment,
+        parent=parent,
+        is_const=is_const)
 
   @property
   def ctypes_decl(self):
@@ -153,11 +154,12 @@ class AnonymousUnion(CDeclBase):
   """Anonymous union declaration."""
 
   def __init__(self, name, members, sub_structs, comment="", parent=None):
-    super(AnonymousUnion, self).__init__(name=name,
-                                         members=members,
-                                         sub_structs=sub_structs,
-                                         comment=comment,
-                                         parent=parent)
+    super().__init__(
+        name=name,
+        members=members,
+        sub_structs=sub_structs,
+        comment=comment,
+        parent=parent)
 
   @property
   def ctypes_decl(self):
@@ -192,11 +194,12 @@ class ScalarPrimitive(CDeclBase):
   """A scalar value corresponding to a C primitive type."""
 
   def __init__(self, name, typename, comment="", parent=None, is_const=None):
-    super(ScalarPrimitive, self).__init__(name=name,
-                                          typename=typename,
-                                          comment=comment,
-                                          parent=parent,
-                                          is_const=is_const)
+    super().__init__(
+        name=name,
+        typename=typename,
+        comment=comment,
+        parent=parent,
+        is_const=is_const)
 
   @property
   def ctypes_field_decl(self):
@@ -226,11 +229,12 @@ class ScalarPrimitivePtr(CDeclBase):
   """Pointer to a ScalarPrimitive."""
 
   def __init__(self, name, typename, comment="", parent=None, is_const=None):
-    super(ScalarPrimitivePtr, self).__init__(name=name,
-                                             typename=typename,
-                                             comment=comment,
-                                             parent=parent,
-                                             is_const=is_const)
+    super().__init__(
+        name=name,
+        typename=typename,
+        comment=comment,
+        parent=parent,
+        is_const=is_const)
 
   @property
   def ctypes_field_decl(self):
@@ -267,12 +271,13 @@ class StaticPtrArray(CDeclBase):
 
   def __init__(self, name, typename, shape, comment="", parent=None,
                is_const=None):
-    super(StaticPtrArray, self).__init__(name=name,
-                                         typename=typename,
-                                         shape=shape,
-                                         comment=comment,
-                                         parent=parent,
-                                         is_const=is_const)
+    super().__init__(
+        name=name,
+        typename=typename,
+        shape=shape,
+        comment=comment,
+        parent=parent,
+        is_const=is_const)
 
   @property
   def ctypes_field_decl(self):
@@ -304,12 +309,13 @@ class StaticNDArray(CDeclBase):
 
   def __init__(self, name, typename, shape, comment="", parent=None,
                is_const=None):
-    super(StaticNDArray, self).__init__(name=name,
-                                        typename=typename,
-                                        shape=shape,
-                                        comment=comment,
-                                        parent=parent,
-                                        is_const=is_const)
+    super().__init__(
+        name=name,
+        typename=typename,
+        shape=shape,
+        comment=comment,
+        parent=parent,
+        is_const=is_const)
 
   @property
   def ctypes_field_decl(self):
@@ -339,12 +345,13 @@ class DynamicNDArray(CDeclBase):
 
   def __init__(self, name, typename, shape, comment="", parent=None,
                is_const=None):
-    super(DynamicNDArray, self).__init__(name=name,
-                                         typename=typename,
-                                         shape=shape,
-                                         comment=comment,
-                                         parent=parent,
-                                         is_const=is_const)
+    super().__init__(
+        name=name,
+        typename=typename,
+        shape=shape,
+        comment=comment,
+        parent=parent,
+        is_const=is_const)
 
   @property
   def runtime_shape_str(self):
@@ -388,10 +395,11 @@ class Function(CDeclBase):
   """A function declaration including input type(s) and return type."""
 
   def __init__(self, name, arguments, return_value, comment=""):
-    super(Function, self).__init__(name=name,
-                                   arguments=arguments,
-                                   return_value=return_value,
-                                   comment=comment)
+    super().__init__(
+        name=name,
+        arguments=arguments,
+        return_value=return_value,
+        comment=comment)
 
   def ctypes_func_decl(self, cdll_name):
     """Generates a ctypes function declaration."""
@@ -439,9 +447,7 @@ class StaticStringArray(CDeclBase):
   """A string array of fixed dimensions exported by MuJoCo."""
 
   def __init__(self, name, shape, symbol_name):
-    super(StaticStringArray, self).__init__(name=name,
-                                            shape=shape,
-                                            symbol_name=symbol_name)
+    super().__init__(name=name, shape=shape, symbol_name=symbol_name)
 
   def ctypes_var_decl(self, cdll_name=""):
     """Generates a ctypes export statement."""
@@ -458,8 +464,9 @@ class FunctionPtrTypedef(CDeclBase):
   """A type declaration for a C function pointer."""
 
   def __init__(self, typename, return_type, argument_types):
-    super(FunctionPtrTypedef, self).__init__(
-        typename=typename, return_type=return_type,
+    super().__init__(
+        typename=typename,
+        return_type=return_type,
         argument_types=argument_types)
 
   @property
@@ -474,9 +481,11 @@ class FunctionPtr(CDeclBase):
   """A pointer to an externally defined C function."""
 
   def __init__(self, name, symbol_name, type_name, comment=""):
-    super(FunctionPtr, self).__init__(
-        name=name, symbol_name=symbol_name,
-        type_name=type_name, comment=comment)
+    super().__init__(
+        name=name,
+        symbol_name=symbol_name,
+        type_name=type_name,
+        comment=comment)
 
   @property
   def ctypes_field_decl(self):

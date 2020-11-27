@@ -259,7 +259,7 @@ class Stand(base.Task):
         key in the observation dict returned to the agent.
     """
     self._observe_reward_factors = observe_reward_factors
-    super(Stand, self).__init__(random=random)
+    super().__init__(random=random)
 
   def initialize_episode(self, physics):
     """Randomizes initial root velocities and actuator states.
@@ -360,11 +360,11 @@ class Move(Stand):
         component of the observation dict.
     """
     self._move_speed = move_speed
-    super(Move, self).__init__(random, observe_reward_factors)
+    super().__init__(random, observe_reward_factors)
 
   def get_reward_factors(self, physics):
     """Returns the factorized reward."""
-    standing = super(Move, self).get_reward_factors(physics)
+    standing = super().get_reward_factors(physics)
 
     speed_margin = max(1.0, self._move_speed)
     forward = rewards.tolerance(physics.com_forward_velocity(),
@@ -390,10 +390,10 @@ class Fetch(Stand):
       observe_reward_factors: Boolean, whether the factorised reward is a
         component of the observation dict.
     """
-    super(Fetch, self).__init__(random, observe_reward_factors)
+    super().__init__(random, observe_reward_factors)
 
   def initialize_episode(self, physics):
-    super(Fetch, self).initialize_episode(physics)
+    super().initialize_episode(physics)
 
     # Set initial ball state: flying towards the center at an upward angle.
     radius = 0.75 * physics.named.model.geom_size['floor', 0]
@@ -414,14 +414,14 @@ class Fetch(Stand):
 
   def get_observation_components(self, physics):
     """Returns the common observations for the Stand task."""
-    obs = super(Fetch, self).get_observation_components(physics)
+    obs = super().get_observation_components(physics)
     obs['ball_state'] = physics.ball_in_head_frame()
     obs['target_position'] = physics.target_in_head_frame()
     return obs
 
   def get_reward_factors(self, physics):
     """Returns a reward to the agent."""
-    standing = super(Fetch, self).get_reward_factors(physics)
+    standing = super().get_reward_factors(physics)
 
     # Reward for bringing mouth close to ball.
     bite_radius = physics.named.model.site_size['upper_bite', 0]

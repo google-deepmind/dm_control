@@ -66,7 +66,7 @@ class PropPlacer(composer.Initializer):
       max_settle_physics_time: (optional) When `settle_physics` is True, upper
         bound on time (in seconds) the physics simulation is advanced.
     """
-    super(PropPlacer, self).__init__()
+    super().__init__()
     self._props = props
     self._prop_joints = []
     for prop in props:

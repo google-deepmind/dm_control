@@ -81,7 +81,7 @@ class TestEntityObservables(entity.Observables):
 class EntityTest(parameterized.TestCase):
 
   def setUp(self):
-    super(EntityTest, self).setUp()
+    super().setUp()
     self.entity = TestEntity()
 
   def testNumObservables(self):

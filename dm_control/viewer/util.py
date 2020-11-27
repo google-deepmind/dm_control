@@ -224,7 +224,7 @@ class ObservableFlag(QuietSet):
       initial_value: A boolean value with the initial state of the flag.
     """
     self._value = initial_value
-    super(ObservableFlag, self).__init__()
+    super().__init__()
 
   def toggle(self):
     """Toggles the value True/False."""
@@ -235,7 +235,7 @@ class ObservableFlag(QuietSet):
   def __iadd__(self, value):
     """Add new listeners and update them about the state."""
     listeners = to_iterable(value)
-    super(ObservableFlag, self).__iadd__(listeners)
+    super().__iadd__(listeners)
     for listener in listeners:
       listener(self._value)
     return self

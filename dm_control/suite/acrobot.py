@@ -91,7 +91,7 @@ class Balance(base.Task):
         automatically (default).
     """
     self._sparse = sparse
-    super(Balance, self).__init__(random=random)
+    super().__init__(random=random)
 
   def initialize_episode(self, physics):
     """Sets the state of the environment at the start of each episode.
@@ -103,7 +103,7 @@ class Balance(base.Task):
     """
     physics.named.data.qpos[
         ['shoulder', 'elbow']] = self.random.uniform(-np.pi, np.pi, 2)
-    super(Balance, self).initialize_episode(physics)
+    super().initialize_episode(physics)
 
   def get_observation(self, physics):
     """Returns an observation of pole orientation and angular velocities."""

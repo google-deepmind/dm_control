@@ -84,7 +84,7 @@ class Reacher(base.Task):
         automatically (default).
     """
     self._target_size = target_size
-    super(Reacher, self).__init__(random=random)
+    super().__init__(random=random)
 
   def initialize_episode(self, physics):
     """Sets the state of the environment at the start of each episode."""
@@ -97,7 +97,7 @@ class Reacher(base.Task):
     physics.named.model.geom_pos['target', 'x'] = radius * np.sin(angle)
     physics.named.model.geom_pos['target', 'y'] = radius * np.cos(angle)
 
-    super(Reacher, self).initialize_episode(physics)
+    super().initialize_episode(physics)
 
   def get_observation(self, physics):
     """Returns an observation of the state and the target position."""

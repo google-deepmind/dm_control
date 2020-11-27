@@ -29,7 +29,7 @@ class Floor(composer.Arena):
   def _build(self, size=(8, 8), reflectance=.2, aesthetic='default',
              name='floor', top_camera_y_padding_factor=1.1,
              top_camera_distance=100):
-    super(Floor, self)._build(name=name)
+    super()._build(name=name)
     self._size = size
     self._top_camera_y_padding_factor = top_camera_y_padding_factor
     self._top_camera_distance = top_camera_distance

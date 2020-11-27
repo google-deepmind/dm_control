@@ -133,12 +133,12 @@ class Task(composer.Task):
     return entity_positions
 
   def after_compile(self, physics, random_state):
-    super(Task, self).after_compile(physics, random_state)
+    super().after_compile(physics, random_state)
     for camera in self._tracking_cameras:
       camera.after_compile(physics)
 
   def after_step(self, physics, random_state):
-    super(Task, self).after_step(physics, random_state)
+    super().after_step(physics, random_state)
     for camera in self._tracking_cameras:
       camera.after_step(self._tracked_entity_positions(physics))
 

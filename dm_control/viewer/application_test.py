@@ -27,7 +27,7 @@ import numpy as np
 class ApplicationTest(parameterized.TestCase):
 
   def setUp(self):
-    super(ApplicationTest, self).setUp()
+    super().setUp()
     with mock.patch(application.__name__ + '.gui'):
       self.app = application.Application()
 

@@ -43,8 +43,7 @@ class SoccerBall(props.Primitive):
       mass: Mass (in kilograms) of the ball.
       name: The name of this entity.
     """
-    super(SoccerBall, self)._build(
-        geom_type='sphere', size=(radius,), name=name)
+    super()._build(geom_type='sphere', size=(radius,), name=name)
     texture = self._mjcf_root.asset.add(
         'texture',
         name='soccer_ball',
@@ -152,14 +151,14 @@ class SoccerBall(props.Primitive):
         break
 
   def before_step(self, physics, random_state):
-    super(SoccerBall, self).before_step(physics, random_state)
+    super().before_step(physics, random_state)
     # Reset per simulation step indicator.
     self._hit = False
     self._repossessed = False
     self._intercepted = False
 
   def after_step(self, physics, random_state):
-    super(SoccerBall, self).after_step(physics, random_state)
+    super().after_step(physics, random_state)
     pos = physics.bind(self._geom).xpos
     if self._hit:
       # SoccerBall is hit on this step. Update dist_between_last_hits

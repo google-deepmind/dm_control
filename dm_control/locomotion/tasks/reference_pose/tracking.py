@@ -629,7 +629,7 @@ class MultiClipMocapTracking(ReferencePosesTask):
       body_error_multiplier: A multiplier that is applied to the body error term
         when determining failure termination condition.
     """
-    super(MultiClipMocapTracking, self).__init__(
+    super().__init__(
         walker=walker,
         arena=arena,
         ref_path=ref_path,
@@ -649,7 +649,7 @@ class MultiClipMocapTracking(ReferencePosesTask):
 
   def after_step(self, physics: 'mjcf.Physics', random_state):
     """Update the data after step."""
-    super(MultiClipMocapTracking, self).after_step(physics, random_state)
+    super().after_step(physics, random_state)
     self._time_step += 1
 
     # Update the walker's data for this timestep.

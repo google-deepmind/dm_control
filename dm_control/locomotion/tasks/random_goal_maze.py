@@ -200,7 +200,7 @@ class NullGoalMaze(composer.Task):
         rotate_velocity=True)
 
   def initialize_episode(self, physics, random_state):
-    super(NullGoalMaze, self).initialize_episode(physics, random_state)
+    super().initialize_episode(physics, random_state)
     self._respawn(physics, random_state)
     self._discount = 1.0
 
@@ -263,7 +263,7 @@ class RepeatSingleGoalMaze(NullGoalMaze):
                physics_timestep=DEFAULT_PHYSICS_TIMESTEP,
                control_timestep=DEFAULT_CONTROL_TIMESTEP,
                regenerate_maze_on_repeat=False):
-    super(RepeatSingleGoalMaze, self).__init__(
+    super().__init__(
         walker=walker,
         maze_arena=maze_arena,
         randomize_spawn_position=randomize_spawn_position,
@@ -297,19 +297,19 @@ class RepeatSingleGoalMaze(NullGoalMaze):
           origin_callable=xpos_origin_callable)
 
   def initialize_episode_mjcf(self, random_state):
-    super(RepeatSingleGoalMaze, self).initialize_episode_mjcf(random_state)
+    super().initialize_episode_mjcf(random_state)
     self._target_position = self._maze_arena.target_positions[
         random_state.randint(0, len(self._maze_arena.target_positions))]
     mjcf.get_attachment_frame(
         self._target.mjcf_model).pos = self._target_position
 
   def initialize_episode(self, physics, random_state):
-    super(RepeatSingleGoalMaze, self).initialize_episode(physics, random_state)
+    super().initialize_episode(physics, random_state)
     self._rewarded_this_step = False
     self._targets_obtained = 0
 
   def after_step(self, physics, random_state):
-    super(RepeatSingleGoalMaze, self).after_step(physics, random_state)
+    super().after_step(physics, random_state)
     if self._target.activated:
       self._rewarded_this_step = True
       self._targets_obtained += 1
@@ -323,7 +323,7 @@ class RepeatSingleGoalMaze(NullGoalMaze):
       self._rewarded_this_step = False
 
   def should_terminate_episode(self, physics):
-    if super(RepeatSingleGoalMaze, self).should_terminate_episode(physics):
+    if super().should_terminate_episode(physics):
       return True
     if self._targets_obtained > self._max_repeats:
       return True
@@ -355,7 +355,7 @@ class ManyHeterogeneousGoalsMaze(NullGoalMaze):
                contact_termination=True,
                physics_timestep=DEFAULT_PHYSICS_TIMESTEP,
                control_timestep=DEFAULT_CONTROL_TIMESTEP):
-    super(ManyHeterogeneousGoalsMaze, self).__init__(
+    super().__init__(
         walker=walker,
         maze_arena=maze_arena,
         randomize_spawn_position=randomize_spawn_position,
@@ -459,7 +459,7 @@ class ManyGoalsMaze(ManyHeterogeneousGoalsMaze):
                contact_termination=True,
                physics_timestep=DEFAULT_PHYSICS_TIMESTEP,
                control_timestep=DEFAULT_CONTROL_TIMESTEP):
-    super(ManyGoalsMaze, self).__init__(
+    super().__init__(
         walker=walker,
         maze_arena=maze_arena,
         target_builders=[target_builder],
@@ -494,7 +494,7 @@ class RepeatSingleGoalMazeAugmentedWithTargets(RepeatSingleGoalMaze):
                contact_termination=True,
                physics_timestep=DEFAULT_PHYSICS_TIMESTEP,
                control_timestep=DEFAULT_CONTROL_TIMESTEP):
-    super(RepeatSingleGoalMazeAugmentedWithTargets, self).__init__(
+    super().__init__(
         walker=walker,
         target=main_target,
         maze_arena=maze_arena,

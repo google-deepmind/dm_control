@@ -976,7 +976,7 @@ class _AttachmentFrame(_ElementImpl):
       for attribute_name in spec.attributes.keys():
         if hasattr(site, attribute_name):
           attributes[attribute_name] = getattr(site, attribute_name)
-    super(_AttachmentFrame, self).__init__(spec, parent, attributes)
+    super().__init__(spec, parent, attributes)
     self._site = site
     self._attachment = attachment
     self._attachments[attachment.namescope] = attachment.worldbody
@@ -988,8 +988,7 @@ class _AttachmentFrame(_ElementImpl):
     return prefix + self._attachment.namescope.name + constants.PREFIX_SEPARATOR
 
   def to_xml(self, prefix_root=None, debug_context=None):
-    xml_element = (
-        super(_AttachmentFrame, self).to_xml(prefix_root, debug_context))
+    xml_element = (super().to_xml(prefix_root, debug_context))
     xml_element.set('name', self.prefixed_identifier(prefix_root))
     return xml_element
 
@@ -998,7 +997,7 @@ class _AttachmentFrame(_ElementImpl):
     return self.prefixed_identifier(self.namescope.root)
 
   def _detach(self, other_namescope):
-    super(_AttachmentFrame, self)._detach(other_namescope)
+    super()._detach(other_namescope)
     if other_namescope is self._attachment.namescope:
       self.namescope.remove('attachment_frame', self._attachment.namescope.name)
       self.namescope.remove('attached_model', self._attachment.namescope.name)
@@ -1015,8 +1014,7 @@ class _AttachmentFrameChild(_ElementImpl):
   __slots__ = []
 
   def to_xml(self, prefix_root=None, debug_context=None):
-    xml_element = (
-        super(_AttachmentFrameChild, self).to_xml(prefix_root, debug_context))
+    xml_element = (super().to_xml(prefix_root, debug_context))
     if self.spec.namespace is not None:
       if self.name:
         name = (self._parent.prefixed_identifier(prefix_root) +
@@ -1055,8 +1053,7 @@ class _DefaultElement(_ElementImpl):
 
   def to_xml(self, prefix_root=None, debug_context=None):
     prefix_root = prefix_root or self.namescope
-    xml_element = (
-        super(_DefaultElement, self).to_xml(prefix_root, debug_context))
+    xml_element = (super().to_xml(prefix_root, debug_context))
     if isinstance(self._parent, RootElement):
       root_default = etree.Element(self._spec.name)
       root_default.append(xml_element)
@@ -1118,7 +1115,7 @@ class RootElement(_ElementImpl):
     model = model or 'unnamed_model'
     self._namescope = namescope.NameScope(
         model, self, model_dir=model_dir, assets=assets)
-    super(RootElement, self).__init__(
+    super().__init__(
         spec=schema.MUJOCO, parent=None, attributes={'model': model})
 
   def _attach(self, other, exclude_worldbody=False, dry_run=False):

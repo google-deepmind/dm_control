@@ -117,7 +117,7 @@ class PassthroughRenderExecutor(BaseRenderExecutor):
   """A no-op render executor that executes on the calling thread."""
 
   def __init__(self):
-    super(PassthroughRenderExecutor, self).__init__()
+    super().__init__()
     self._mutex = threading.RLock()
 
   @property
@@ -169,7 +169,7 @@ class OffloadingRenderExecutor(BaseRenderExecutor):
   """A render executor that executes calls on a dedicated offload thread."""
 
   def __init__(self):
-    super(OffloadingRenderExecutor, self).__init__()
+    super().__init__()
     self._mutex = threading.RLock()
     self._executor = _THREAD_POOL_EXECUTOR_POOL.acquire()
     self._thread = self._executor.submit(threading.current_thread).result()

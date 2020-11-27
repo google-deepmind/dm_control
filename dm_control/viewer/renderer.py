@@ -120,7 +120,7 @@ class OffScreenRenderer(BaseRenderer):
       model: instance of MjModel.
       surface: instance of dm_control.render.BaseContext.
     """
-    super(OffScreenRenderer, self).__init__()
+    super().__init__()
     self._surface = surface
     self._model = model
     self._mujoco_context = None

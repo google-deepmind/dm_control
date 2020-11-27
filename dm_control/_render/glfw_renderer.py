@@ -37,8 +37,7 @@ class GLFWContext(base.ContextBase):
     # GLFWContext always uses `PassthroughRenderExecutor` rather than offloading
     # rendering calls to a separate thread because GLFW can only be safely used
     # from the main thread.
-    super(GLFWContext, self).__init__(max_width, max_height,
-                                      executor.PassthroughRenderExecutor)
+    super().__init__(max_width, max_height, executor.PassthroughRenderExecutor)
 
   def _platform_init(self, max_width, max_height):
     """Initializes this context.

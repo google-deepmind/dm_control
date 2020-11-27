@@ -202,7 +202,7 @@ class TwoTouch(composer.Task):
         rotate_velocity=True)
 
   def initialize_episode(self, physics, random_state):
-    super(TwoTouch, self).initialize_episode(physics, random_state)
+    super().initialize_episode(physics, random_state)
     self._respawn_walker(physics, random_state)
     self._state_logic = TwoTouchState.PRE_TOUCH
     self._discount = 1.0
@@ -215,7 +215,7 @@ class TwoTouch(composer.Task):
       target._specific_collision_geom_ids = self._hand_geomids  # pylint: disable=protected-access
 
   def before_step(self, physics, action, random_state):
-    super(TwoTouch, self).before_step(physics, action, random_state)
+    super().before_step(physics, action, random_state)
     if self._must_randomize_targets:
       self._randomize_targets(physics)
       self._must_randomize_targets = False

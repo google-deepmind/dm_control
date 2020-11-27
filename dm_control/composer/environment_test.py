@@ -29,7 +29,7 @@ class DummyTask(composer.NullTask):
 
   def __init__(self):
     null_entity = composer.ModelWrapperEntity(mjcf.RootElement())
-    super(DummyTask, self).__init__(null_entity)
+    super().__init__(null_entity)
 
   @property
   def task_observables(self):
@@ -41,7 +41,7 @@ class DummyTask(composer.NullTask):
 class DummyTaskWithResetFailures(DummyTask):
 
   def __init__(self, num_reset_failures):
-    super(DummyTaskWithResetFailures, self).__init__()
+    super().__init__()
     self.num_reset_failures = num_reset_failures
     self.reset_counter = 0
 

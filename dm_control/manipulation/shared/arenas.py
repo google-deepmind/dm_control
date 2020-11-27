@@ -29,7 +29,7 @@ class Standard(composer.Arena):
       name: (optional) A string, the name of this arena. If `None`, use the
         model name defined in the MJCF file.
     """
-    super(Standard, self)._build(name=name)
+    super()._build(name=name)
 
     # Add visual assets.
     self.mjcf_model.asset.add(

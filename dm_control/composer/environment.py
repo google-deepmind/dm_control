@@ -295,7 +295,7 @@ class Environment(_CommonEnvironment, dm_env.Environment):
         exception will be allowed to propagate. Defaults to 1, i.e. no failure
         is allowed.
     """
-    super(Environment, self).__init__(
+    super().__init__(
         task=task,
         time_limit=time_limit,
         random_state=random_state,
@@ -416,7 +416,7 @@ class Environment(_CommonEnvironment, dm_env.Environment):
     if task_reward_spec is not None:
       return task_reward_spec
     else:
-      return super(Environment, self).reward_spec()
+      return super().reward_spec()
 
   def discount_spec(self):
     """Describes the discount returned by this environment.
@@ -433,7 +433,7 @@ class Environment(_CommonEnvironment, dm_env.Environment):
     if task_discount_spec is not None:
       return task_discount_spec
     else:
-      return super(Environment, self).discount_spec()
+      return super().discount_spec()
 
   def observation_spec(self):
     """Returns the observation specification for this environment.

@@ -100,7 +100,7 @@ class Escape(composer.Task):
     self._arena.mjcf_model.visual.map.zfar = 50.
 
   def initialize_episode(self, physics, random_state):
-    super(Escape, self).initialize_episode(physics, random_state)
+    super().initialize_episode(physics, random_state)
 
     # Initial configuration.
     orientation = random_state.randn(4)

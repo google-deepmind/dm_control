@@ -33,7 +33,7 @@ ORIGINAL_DEBUG_MODE = debugging.debug_mode()
 class DebuggingTest(absltest.TestCase):
 
   def tearDown(self):
-    super(DebuggingTest, self).tearDown()
+    super().tearDown()
     if ORIGINAL_DEBUG_MODE:
       debugging.enable_debug_mode()
     else:

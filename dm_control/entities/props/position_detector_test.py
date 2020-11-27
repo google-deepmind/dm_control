@@ -26,7 +26,7 @@ import numpy as np
 class PositionDetectorTest(parameterized.TestCase):
 
   def setUp(self):
-    super(PositionDetectorTest, self).setUp()
+    super().setUp()
     self.arena = composer.Arena()
     self.props = [
         primitive.Primitive(geom_type='sphere', size=(0.1,)),

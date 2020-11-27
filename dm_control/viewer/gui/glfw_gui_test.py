@@ -46,7 +46,7 @@ _EPSILON = 1e-7
 class GlfwKeyboardTest(absltest.TestCase):
 
   def setUp(self):
-    super(GlfwKeyboardTest, self).setUp()
+    super().setUp()
     _GLFW_MOCK.reset_mock()
     self.context = mock.MagicMock()
     self.handler = glfw_gui.GlfwKeyboard(self.context)
@@ -91,7 +91,7 @@ class GlfwMouseTest(absltest.TestCase):
     yield FakePassthroughRenderingContext()
 
   def setUp(self):
-    super(GlfwMouseTest, self).setUp()
+    super().setUp()
     _GLFW_MOCK.reset_mock()
     _GLFW_MOCK.get_framebuffer_size = mock.MagicMock(return_value=(256, 256))
     _GLFW_MOCK.get_window_size = mock.MagicMock(return_value=(256, 256))
@@ -153,7 +153,7 @@ class GlfwWindowTest(absltest.TestCase):
     yield FakePassthroughRenderingContext()
 
   def setUp(self):
-    super(GlfwWindowTest, self).setUp()
+    super().setUp()
     _GLFW_MOCK.reset_mock()
     _GLFW_MOCK.get_video_mode.return_value = (None, None, 60)
     _GLFW_MOCK.get_framebuffer_size.return_value = (4, 5)

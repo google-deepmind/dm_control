@@ -84,8 +84,7 @@ class MJCFFeature(base.Observable):
     self._kind = kind
     self._mjcf_element = mjcf_element
     self._index = index
-    super(MJCFFeature, self).__init__(
-        update_interval, buffer_size, delay, aggregator, corruptor)
+    super().__init__(update_interval, buffer_size, delay, aggregator, corruptor)
 
   def _callable(self, physics):
     binding = physics.bind(self._mjcf_element)
@@ -180,8 +179,7 @@ class MJCFCamera(base.Observable):
     self._depth = depth
     self._segmentation = segmentation
     self._scene_option = scene_option
-    super(MJCFCamera, self).__init__(
-        update_interval, buffer_size, delay, aggregator, corruptor)
+    super().__init__(update_interval, buffer_size, delay, aggregator, corruptor)
 
   @property
   def height(self):

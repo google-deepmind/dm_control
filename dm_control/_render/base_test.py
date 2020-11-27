@@ -43,7 +43,7 @@ class ContextBaseTests(absltest.TestCase):
       self.free_thread = threading.current_thread()
 
   def setUp(self):
-    super(ContextBaseTests, self).setUp()
+    super().setUp()
     self.context = ContextBaseTests.ContextMock(WIDTH, HEIGHT)
 
   def test_init(self):

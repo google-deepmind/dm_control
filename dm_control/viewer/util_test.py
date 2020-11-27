@@ -116,7 +116,7 @@ class InterleaveTest(absltest.TestCase):
 class TimeMultiplierTests(absltest.TestCase):
 
   def setUp(self):
-    super(TimeMultiplierTests, self).setUp()
+    super().setUp()
     self.factor = util.TimeMultiplier(initial_time_multiplier=1.0)
 
   def test_custom_initial_factor(self):
@@ -166,7 +166,7 @@ class TimeMultiplierTests(absltest.TestCase):
 class IntegratorTests(absltest.TestCase):
 
   def setUp(self):
-    super(IntegratorTests, self).setUp()
+    super().setUp()
     self.integration_step = 1
     self.integrator = util.Integrator(self.integration_step)
     self.integrator._sampling_timestamp = 0.0
@@ -194,7 +194,7 @@ class IntegratorTests(absltest.TestCase):
 class AtomicActionTests(absltest.TestCase):
 
   def setUp(self):
-    super(AtomicActionTests, self).setUp()
+    super().setUp()
     self.callback = mock.MagicMock()
     self.action = util.AtomicAction(self.callback)
 
@@ -255,7 +255,7 @@ class ObservableFlagTest(absltest.TestCase):
 class TimerTest(absltest.TestCase):
 
   def setUp(self):
-    super(TimerTest, self).setUp()
+    super().setUp()
     self.timer = util.Timer()
 
   def test_time_elapsed(self):
@@ -276,7 +276,7 @@ class TimerTest(absltest.TestCase):
 class ErrorLoggerTest(absltest.TestCase):
 
   def setUp(self):
-    super(ErrorLoggerTest, self).setUp()
+    super().setUp()
     self.callback = mock.MagicMock()
     self.logger = util.ErrorLogger([self.callback])
 
@@ -303,7 +303,7 @@ class ErrorLoggerTest(absltest.TestCase):
 class NullErrorLoggerTest(absltest.TestCase):
 
   def setUp(self):
-    super(NullErrorLoggerTest, self).setUp()
+    super().setUp()
     self.logger = util.NullErrorLogger()
 
   def test_thrown_errors_are_not_being_intercepted(self):

@@ -47,7 +47,7 @@ class AttributeTest(parameterized.TestCase):
   """
 
   def setUp(self):
-    super(AttributeTest, self).setUp()
+    super().setUp()
     schema.override_schema(os.path.join(ASSETS_DIR, FAKE_SCHEMA_FILENAME))
     self._alpha = namescope.NameScope('alpha', None)
     self._beta = namescope.NameScope('beta', None)
@@ -56,7 +56,7 @@ class AttributeTest(parameterized.TestCase):
     self._mujoco.namescope.parent = self._beta
 
   def tearDown(self):
-    super(AttributeTest, self).tearDown()
+    super().tearDown()
     schema.override_schema(ORIGINAL_SCHEMA_PATH)
 
   def assertXMLStringIsNone(self, mjcf_element, attribute_name):

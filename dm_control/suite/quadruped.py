@@ -146,7 +146,7 @@ class Physics(mujoco.Physics):
   """Physics simulation with additional features for the Quadruped domain."""
 
   def _reload_from_data(self, data):
-    super(Physics, self)._reload_from_data(data)
+    super()._reload_from_data(data)
     # Clear cached sensor names when the physics is reloaded.
     self._sensor_types_to_names = {}
     self._hinge_names = []
@@ -321,7 +321,7 @@ class Move(base.Task):
         automatically (default).
     """
     self._desired_speed = desired_speed
-    super(Move, self).__init__(random=random)
+    super().__init__(random=random)
 
   def initialize_episode(self, physics):
     """Sets the state of the environment at the start of each episode.
@@ -334,7 +334,7 @@ class Move(base.Task):
     orientation = self.random.randn(4)
     orientation /= np.linalg.norm(orientation)
     _find_non_contacting_height(physics, orientation)
-    super(Move, self).initialize_episode(physics)
+    super().initialize_episode(physics)
 
   def get_observation(self, physics):
     """Returns an observation to the agent."""
@@ -380,7 +380,7 @@ class Escape(base.Task):
     terrain = bowl_shape * smooth_bumps
     start_idx = physics.model.hfield_adr[_HEIGHTFIELD_ID]
     physics.model.hfield_data[start_idx:start_idx+res**2] = terrain.ravel()
-    super(Escape, self).initialize_episode(physics)
+    super().initialize_episode(physics)
 
     # If we have a rendering context, we need to re-upload the modified
     # heightfield data.
@@ -440,7 +440,7 @@ class Fetch(base.Task):
         -spawn_radius, spawn_radius, size=(2,))
     physics.named.data.qpos['ball_root'][2] = 2
     physics.named.data.qvel['ball_root'][:2] = 5*self.random.randn(2)
-    super(Fetch, self).initialize_episode(physics)
+    super().initialize_episode(physics)
 
   def get_observation(self, physics):
     """Returns an observation to the agent."""

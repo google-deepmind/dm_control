@@ -82,7 +82,7 @@ class Walker(base.Walker):
     raise NotImplementedError
 
   def after_compile(self, physics, unused_random_state):
-    super(Walker, self).after_compile(physics, unused_random_state)
+    super().after_compile(physics, unused_random_state)
     self._end_effector_geom_ids = set()
     for eff_body in self.end_effectors:
       eff_geom = eff_body.find_all('geom')

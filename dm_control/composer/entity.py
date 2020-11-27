@@ -62,7 +62,7 @@ class _ObservableKeys:
 
   def __dir__(self):
     out = set(self._observables.keys())
-    out.update(dir(super(_ObservableKeys, self)))
+    out.update(dir(super()))
     return list(out)
 
 

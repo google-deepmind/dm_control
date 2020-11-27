@@ -70,7 +70,7 @@ class Rat(legacy_base.Walker):
       self._mjcf_root.model = name
 
     self.body_sites = []
-    super(Rat, self)._build(initializer=initializer)
+    super()._build(initializer=initializer)
 
   @property
   def upright_pose(self):

@@ -41,9 +41,8 @@ class DeterministicSequence:
 class BoundedGeneric(observable.Generic):
 
   def __init__(self, raw_observation_callable, minimum, maximum, **kwargs):
-    super(BoundedGeneric, self).__init__(
-        raw_observation_callable=raw_observation_callable,
-        **kwargs)
+    super().__init__(
+        raw_observation_callable=raw_observation_callable, **kwargs)
     self._bounds = (minimum, maximum)
 
   @property

@@ -63,7 +63,7 @@ class MazeWithTargets(composer.Arena):
       aesthetic: option to adjust the material properties and skybox
       name: (optional) A string, the name of this arena.
     """
-    super(MazeWithTargets, self)._build(name)
+    super()._build(name)
     self._maze = maze
     self._xy_scale = xy_scale
     self._z_height = z_height
@@ -439,7 +439,7 @@ class RandomMazeWithTargets(MazeWithTargets):
       name: (optional) A string, the name of this arena.
     """
     random_seed = np.random.randint(2147483648)  # 2**31
-    super(RandomMazeWithTargets, self)._build(
+    super()._build(
         maze=labmaze.RandomMaze(
             height=y_cells,
             width=x_cells,

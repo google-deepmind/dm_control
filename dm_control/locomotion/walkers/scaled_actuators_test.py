@@ -25,7 +25,7 @@ import numpy as np
 class ScaledActuatorsTest(absltest.TestCase):
 
   def setUp(self):
-    super(ScaledActuatorsTest, self).setUp()
+    super().setUp()
     self._mjcf_model = mjcf.RootElement()
     self._min = -1.4
     self._max = 2.3

@@ -86,7 +86,7 @@ class _BoxWithVertexSites(props.Primitive, _VertexSitesMixin):
   """Subclass of `Box` with sites marking the vertices of the box geom."""
 
   def _build(self, *args, **kwargs):
-    super(_BoxWithVertexSites, self)._build(*args, geom_type='box', **kwargs)
+    super()._build(*args, geom_type='box', **kwargs)
     self._add_vertex_sites(self.geom)
 
 
@@ -94,7 +94,7 @@ class _DuploWithVertexSites(props.Duplo, _VertexSitesMixin):
   """Subclass of `Duplo` with sites marking the vertices of its sensor site."""
 
   def _build(self, *args, **kwargs):
-    super(_DuploWithVertexSites, self)._build(*args, **kwargs)
+    super()._build(*args, **kwargs)
     self._add_vertex_sites(self.mjcf_model.find('site', 'bounding_box'))
 
 

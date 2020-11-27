@@ -236,7 +236,7 @@ class SynchronizingArrayWrapper(np.ndarray):
   def __setitem__(self, index, value):
     if self._physics.is_dirty and not self._triggers_dirty:
       self._physics.forward()
-    super(SynchronizingArrayWrapper, self).__setitem__(index, value)
+    super().__setitem__(index, value)
 
     # Performance optimization: avoid repeatedly checking the type of the index.
     index_type = _get_index_type(index)
@@ -348,7 +348,7 @@ class Binding:
 
   def __getattr__(self, name):
     if name in Binding.__slots__:
-      return super(Binding, self).__getattr__(name)
+      return super().__getattr__(name)
     else:
       try:
         out = self._getattr_cache[name]
@@ -390,7 +390,7 @@ class Binding:
 
   def __setattr__(self, name, value):
     if name in Binding.__slots__:
-      super(Binding, self).__setattr__(name, value)
+      super().__setattr__(name, value)
     else:
       if self._physics.is_dirty and not self._attributes[name].triggers_dirty:
         self._physics.forward()
@@ -448,7 +448,7 @@ class _EmptyBinding:
 
   def __setattr__(self, name, value):
     if name in self.__slots__:
-      super(_EmptyBinding, self).__setattr__(name, value)
+      super().__setattr__(name, value)
     else:
       raise ValueError('Cannot assign a value to an empty binding.')
 
@@ -528,7 +528,7 @@ class Physics(mujoco.Physics):
     Args:
       data: Instance of `core.MjData`.
     """
-    super(Physics, self)._reload_from_data(data)
+    super()._reload_from_data(data)
     self._bindings = {}
     self._bindings[()] = _EMPTY_BINDING
     self._dirty = False
@@ -544,7 +544,7 @@ class Physics(mujoco.Physics):
 
   def forward(self):
     """Recomputes the forward dynamics without advancing the simulation."""
-    super(Physics, self).forward()
+    super().forward()
     self._dirty = False
 
   def bind(self, mjcf_elements):

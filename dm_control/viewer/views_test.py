@@ -24,7 +24,7 @@ import numpy as np
 class ColumnTextViewTest(absltest.TestCase):
 
   def setUp(self):
-    super(ColumnTextViewTest, self).setUp()
+    super().setUp()
     self.model = mock.MagicMock()
     self.view = views.ColumnTextView(self.model)
 
@@ -48,7 +48,7 @@ class ColumnTextViewTest(absltest.TestCase):
 class MujocoDepthBufferTests(absltest.TestCase):
 
   def setUp(self):
-    super(MujocoDepthBufferTests, self).setUp()
+    super().setUp()
     self.component = views.MujocoDepthBuffer()
 
     self.context = mock.MagicMock()
@@ -86,7 +86,7 @@ class MujocoDepthBufferTests(absltest.TestCase):
 class ViewportLayoutTest(absltest.TestCase):
 
   def setUp(self):
-    super(ViewportLayoutTest, self).setUp()
+    super().setUp()
     self.layout = views.ViewportLayout()
 
     self.context = mock.MagicMock()

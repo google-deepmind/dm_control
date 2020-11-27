@@ -76,7 +76,7 @@ class UniqueOrderedDict(collections.OrderedDict):
   def __setitem__(self, k, v):
     if k in self:
       raise ValueError("Key '{}' already exists.".format(k))
-    super(UniqueOrderedDict, self).__setitem__(k, v)
+    super().__setitem__(k, v)
 
 
 def macro_struct_name(name, suffix=None):

@@ -155,7 +155,7 @@ class CachedProperty(property):
   """A property that is evaluated only once per object instance."""
 
   def __init__(self, func, doc=None):
-    super(CachedProperty, self).__init__(fget=func, doc=doc)
+    super().__init__(fget=func, doc=doc)
     self._name = func.__name__
 
   def __get__(self, obj, cls):

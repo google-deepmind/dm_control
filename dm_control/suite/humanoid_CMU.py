@@ -120,7 +120,7 @@ class HumanoidCMU(base.Task):
         automatically (default).
     """
     self._move_speed = move_speed
-    super(HumanoidCMU, self).__init__(random=random)
+    super().__init__(random=random)
 
   def initialize_episode(self, physics):
     """Sets a random collision-free configuration at the start of each episode.
@@ -135,7 +135,7 @@ class HumanoidCMU(base.Task):
       # Check for collisions.
       physics.after_reset()
       penetrating = physics.data.ncon > 0
-    super(HumanoidCMU, self).initialize_episode(physics)
+    super().initialize_episode(physics)
 
   def get_observation(self, physics):
     """Returns a set of egocentric features."""

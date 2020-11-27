@@ -27,7 +27,7 @@ import numpy as np
 class RuntimeStateMachineTest(parameterized.TestCase):
 
   def setUp(self):
-    super(RuntimeStateMachineTest, self).setUp()
+    super().setUp()
     env = mock.MagicMock()
     env.action_spec.return_value = specs.BoundedArray((1,), np.float64, -1, 1)
     self.runtime = runtime.Runtime(env, mock.MagicMock())
@@ -107,7 +107,7 @@ class RuntimeStateMachineTest(parameterized.TestCase):
 class RuntimeSingleStepTest(parameterized.TestCase):
 
   def setUp(self):
-    super(RuntimeSingleStepTest, self).setUp()
+    super().setUp()
     env = mock.MagicMock(spec=dm_env.Environment)
     env.action_spec.return_value = specs.BoundedArray((1,), np.float64, -1, 1)
     self.runtime = runtime.Runtime(env, mock.MagicMock())
@@ -141,7 +141,7 @@ class RuntimeSingleStepTest(parameterized.TestCase):
 class RuntimeTest(absltest.TestCase):
 
   def setUp(self):
-    super(RuntimeTest, self).setUp()
+    super().setUp()
     env = mock.MagicMock(spec=dm_env.Environment)
     env.action_spec.return_value = specs.BoundedArray((1,), np.float64, -1, 1)
     self.runtime = runtime.Runtime(env, mock.MagicMock())
@@ -252,7 +252,7 @@ class RuntimeTest(absltest.TestCase):
 class EnvironmentRuntimeTest(parameterized.TestCase):
 
   def setUp(self):
-    super(EnvironmentRuntimeTest, self).setUp()
+    super().setUp()
     self.observation = mock.MagicMock()
     self.env = mock.MagicMock(spec=dm_env.Environment)
     self.env.physics = mock.MagicMock()

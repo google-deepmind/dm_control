@@ -445,7 +445,7 @@ class MjModel(wrappers.MjModelWrapper):
     Args:
       model_ptr: A `ctypes.POINTER` to an `mjbindings.types.MJMODEL` instance.
     """
-    super(MjModel, self).__init__(ptr=model_ptr)
+    super().__init__(ptr=model_ptr)
 
   def __getstate__(self):
     # All of MjModel's state is assumed to reside within the MuJoCo C struct.
@@ -637,7 +637,7 @@ class MjData(wrappers.MjDataWrapper):
     # Free resources when the ctypes pointer is garbage collected.
     _create_finalizer(data_ptr, mjlib.mj_deleteData)
 
-    super(MjData, self).__init__(data_ptr, model)
+    super().__init__(data_ptr, model)
 
   def __getstate__(self):
     # Note: we can replace this once a `saveData` MJAPI function exists.
@@ -750,7 +750,7 @@ class MjData(wrappers.MjDataWrapper):
   def _contact_buffer(self):
     """Cached structured array containing the full contact buffer."""
     contact_array = util.buf_to_npy(
-        super(MjData, self).contact, shape=(self._model.nconmax,))
+        super().contact, shape=(self._model.nconmax,))
     return contact_array
 
   @property
@@ -767,7 +767,7 @@ class MjvCamera(wrappers.MjvCameraWrapper):
   def __init__(self):
     ptr = ctypes.pointer(types.MJVCAMERA())
     mjlib.mjv_defaultCamera(ptr)
-    super(MjvCamera, self).__init__(ptr)
+    super().__init__(ptr)
 
 
 class MjvOption(wrappers.MjvOptionWrapper):
@@ -777,7 +777,7 @@ class MjvOption(wrappers.MjvOptionWrapper):
     mjlib.mjv_defaultOption(ptr)
     # Do not visualize rangefinder lines by default:
     ptr.contents.flags[enums.mjtVisFlag.mjVIS_RANGEFINDER] = False
-    super(MjvOption, self).__init__(ptr)
+    super().__init__(ptr)
 
 
 class UnmanagedMjrContext(wrappers.MjrContextWrapper):
@@ -791,7 +791,7 @@ class UnmanagedMjrContext(wrappers.MjrContextWrapper):
   def __init__(self):
     ptr = ctypes.pointer(types.MJRCONTEXT())
     mjlib.mjr_defaultContext(ptr)
-    super(UnmanagedMjrContext, self).__init__(ptr)
+    super().__init__(ptr)
 
 
 class MjrContext(wrappers.MjrContextWrapper):  # pylint: disable=missing-docstring
@@ -831,7 +831,7 @@ class MjrContext(wrappers.MjrContextWrapper):  # pylint: disable=missing-docstri
 
     _create_finalizer(ptr, finalize_mjr_context)
 
-    super(MjrContext, self).__init__(ptr)
+    super().__init__(ptr)
 
   def free(self):
     """Frees the native resources held by this MjrContext.
@@ -900,7 +900,7 @@ class MjvScene(wrappers.MjvSceneWrapper):  # pylint: disable=missing-docstring
     # Free resources when the ctypes pointer is garbage collected.
     _create_finalizer(scene_ptr, mjlib.mjv_freeScene)
 
-    super(MjvScene, self).__init__(scene_ptr)
+    super().__init__(scene_ptr)
 
   @contextlib.contextmanager
   def override_flags(self, overrides):
@@ -941,7 +941,7 @@ class MjvScene(wrappers.MjvSceneWrapper):  # pylint: disable=missing-docstring
   @util.CachedProperty
   def _geoms_buffer(self):
     """Cached recarray containing the full geom buffer."""
-    return util.buf_to_npy(super(MjvScene, self).geoms, shape=(self.maxgeom,))
+    return util.buf_to_npy(super().geoms, shape=(self.maxgeom,))
 
   @property
   def geoms(self):
@@ -954,7 +954,7 @@ class MjvPerturb(wrappers.MjvPerturbWrapper):
   def __init__(self):
     ptr = ctypes.pointer(types.MJVPERTURB())
     mjlib.mjv_defaultPerturb(ptr)
-    super(MjvPerturb, self).__init__(ptr)
+    super().__init__(ptr)
 
 
 class MjvFigure(wrappers.MjvFigureWrapper):
@@ -962,4 +962,4 @@ class MjvFigure(wrappers.MjvFigureWrapper):
   def __init__(self):
     ptr = ctypes.pointer(types.MJVFIGURE())
     mjlib.mjv_defaultFigure(ptr)
-    super(MjvFigure, self).__init__(ptr)
+    super().__init__(ptr)

@@ -231,7 +231,7 @@ class Task(metaclass=abc.ABCMeta):
     The default implementation sets the control signal for the actuators in
     `physics` to be equal to `action`. Subclasses that override this method
     should ensure that the overriding method also sets the control signal before
-    returning, either by calling `super(..., self).before_step`, or by setting
+    returning, either by calling `super().before_step`, or by setting
     the control signal explicitly (e.g. in order to create a non-trivial mapping
     between `action` and the control signal).
 

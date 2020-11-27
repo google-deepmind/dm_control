@@ -23,7 +23,7 @@ class cached_property(property):  # pylint: disable=invalid-name
   """A property that is evaluated only once per object instance."""
 
   def __init__(self, func, doc=None):
-    super(cached_property, self).__init__(fget=func, doc=doc)
+    super().__init__(fget=func, doc=doc)
     self.lock = threading.RLock()
 
   def __get__(self, obj, cls):

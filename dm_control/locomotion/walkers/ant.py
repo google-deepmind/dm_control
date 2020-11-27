@@ -39,7 +39,7 @@ class Ant(legacy_base.Walker):
       marker_rgba: (Optional) color the ant's front legs with marker_rgba.
       initializer: (Optional) A `WalkerInitializer` object.
     """
-    super(Ant, self)._build(initializer=initializer)
+    super()._build(initializer=initializer)
     self._mjcf_root = mjcf.from_path(os.path.join(_XML_DIRNAME, _XML_FILENAME))
     if name:
       self._mjcf_root.model = name
@@ -58,7 +58,7 @@ class Ant(legacy_base.Walker):
                                  dtype=self.action_spec.dtype)
 
   def apply_action(self, physics, action, random_state):
-    super(Ant, self).apply_action(physics, action, random_state)
+    super().apply_action(physics, action, random_state)
 
     # Updates previous action.
     self._prev_action[:] = action

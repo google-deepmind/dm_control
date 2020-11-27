@@ -25,7 +25,7 @@ import mock
 class ViewerTest(absltest.TestCase):
 
   def setUp(self):
-    super(ViewerTest, self).setUp()
+    super().setUp()
     self.viewport = mock.MagicMock()
     self.mouse = mock.MagicMock()
     self.keyboard = mock.MagicMock()
@@ -142,7 +142,7 @@ class ViewerTest(absltest.TestCase):
 class CameraSelectorTest(absltest.TestCase):
 
   def setUp(self):
-    super(CameraSelectorTest, self).setUp()
+    super().setUp()
     self.camera = mock.MagicMock()
     self.model = mock.MagicMock()
     self.free_camera = mock.MagicMock()
@@ -212,7 +212,7 @@ class CameraSelectorTest(absltest.TestCase):
 class FreeCameraControllerTest(absltest.TestCase):
 
   def setUp(self):
-    super(FreeCameraControllerTest, self).setUp()
+    super().setUp()
     self.viewport = mock.MagicMock()
     self.camera = mock.MagicMock()
     self.mouse = mock.MagicMock()
@@ -369,7 +369,7 @@ class FreeCameraControllerTest(absltest.TestCase):
 class ManipulationControllerTest(absltest.TestCase):
 
   def setUp(self):
-    super(ManipulationControllerTest, self).setUp()
+    super().setUp()
     self.viewport = mock.MagicMock()
     self.camera = mock.MagicMock()
     self.mouse = mock.MagicMock()

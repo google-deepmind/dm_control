@@ -35,7 +35,7 @@ TEST_FILE_PATH = os.path.join(TEST_FILE_DIR, 'test_trajectories.h5')
 class MultiClipMocapTrackingTest(parameterized.TestCase):
 
   def setUp(self):
-    super(MultiClipMocapTrackingTest, self).setUp()
+    super().setUp()
 
     self.walker = walkers.CMUHumanoidPositionControlled
     def _make_wrong_walker(name):

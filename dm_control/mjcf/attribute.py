@@ -164,8 +164,8 @@ class Keyword(_Attribute):
                conflict_allowed, conflict_behavior, valid_values):
     self._valid_values = collections.OrderedDict(
         (value.lower(), value) for value in valid_values)
-    super(Keyword, self).__init__(
-        name, required, parent, value, conflict_allowed, conflict_behavior)
+    super().__init__(name, required, parent, value, conflict_allowed,
+                     conflict_behavior)
 
   def _assign(self, value):
     if not value:
@@ -189,8 +189,8 @@ class Array(_Attribute):
                conflict_allowed, conflict_behavior, length, dtype):
     self._length = length
     self._dtype = dtype
-    super(Array, self).__init__(name, required, parent, value,
-                                conflict_allowed, conflict_behavior)
+    super().__init__(name, required, parent, value, conflict_allowed,
+                     conflict_behavior)
 
   def _assign(self, value):
     self._value = self._check_shape(np.array(value, dtype=self._dtype))
@@ -271,8 +271,8 @@ class Reference(_Attribute):
   def __init__(self, name, required, parent, value,
                conflict_allowed, conflict_behavior, reference_namespace):
     self._reference_namespace = reference_namespace
-    super(Reference, self).__init__(
-        name, required, parent, value, conflict_allowed, conflict_behavior)
+    super().__init__(name, required, parent, value, conflict_allowed,
+                     conflict_behavior)
 
   def _check_dead_reference(self):
     if isinstance(self._value, base.Element) and self._value.is_removed:
@@ -281,7 +281,7 @@ class Reference(_Attribute):
   @property
   def value(self):
     self._check_dead_reference()
-    return super(Reference, self).value
+    return super().value
 
   @value.setter
   def value(self, new_value):
@@ -370,8 +370,8 @@ class BasePath(_Attribute):
   def __init__(self, name, required, parent, value,
                conflict_allowed, conflict_behavior, path_namespace):
     self._path_namespace = path_namespace
-    super(BasePath, self).__init__(
-        name, required, parent, value, conflict_allowed, conflict_behavior)
+    super().__init__(name, required, parent, value, conflict_allowed,
+                     conflict_behavior)
 
   def _assign(self, value):
     if not isinstance(value, str):
@@ -437,7 +437,7 @@ class Asset(BaseAsset):
       prefix: (optional) A prefix applied to the filename given in MuJoCo's VFS.
     """
     self.contents = contents
-    super(Asset, self).__init__(extension, prefix)
+    super().__init__(extension, prefix)
 
 
 class SkinAsset(BaseAsset):
@@ -451,7 +451,7 @@ class SkinAsset(BaseAsset):
     self.parent = parent
     self._cached_revision = -1
     self._cached_contents = None
-    super(SkinAsset, self).__init__(extension, prefix)
+    super().__init__(extension, prefix)
 
   @property
   def contents(self):
@@ -467,8 +467,8 @@ class File(_Attribute):
   def __init__(self, name, required, parent, value,
                conflict_allowed, conflict_behavior, path_namespace):
     self._path_namespace = path_namespace
-    super(File, self).__init__(name, required, parent, value,
-                               conflict_allowed, conflict_behavior)
+    super().__init__(name, required, parent, value, conflict_allowed,
+                     conflict_behavior)
     parent.namescope.files.add(self)
 
   def _assign(self, value):

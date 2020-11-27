@@ -920,8 +920,7 @@ class MovableCamera(Camera):
       height: Optional image height. Defaults to 240.
       width: Optional image width. Defaults to 320.
     """
-    super(MovableCamera, self).__init__(
-        physics=physics, height=height, width=width, camera_id=-1)
+    super().__init__(physics=physics, height=height, width=width, camera_id=-1)
 
   def get_pose(self):
     """Returns the pose of the camera.

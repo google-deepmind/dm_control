@@ -229,7 +229,7 @@ class LQRLevel(base.Task):
       raise ValueError('control_cost_coef must be positive.')
 
     self._control_cost_coef = control_cost_coef
-    super(LQRLevel, self).__init__(random=random)
+    super().__init__(random=random)
 
   @property
   def control_cost_coef(self):
@@ -240,7 +240,7 @@ class LQRLevel(base.Task):
     ndof = physics.model.nq
     unit = self.random.randn(ndof)
     physics.data.qpos[:] = np.sqrt(2) * unit / np.linalg.norm(unit)
-    super(LQRLevel, self).initialize_episode(physics)
+    super().initialize_episode(physics)
 
   def get_observation(self, physics):
     """Returns an observation of the state."""

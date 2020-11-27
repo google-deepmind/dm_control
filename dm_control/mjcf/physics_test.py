@@ -36,7 +36,7 @@ class PhysicsTest(parameterized.TestCase):
   """Tests for `mjcf.Physics`."""
 
   def setUp(self):
-    super(PhysicsTest, self).setUp()
+    super().setUp()
     self.model = mjcf.from_path(ARM_MODEL)
     self.physics = mjcf.Physics.from_xml_string(
         self.model.to_xml_string(), assets=self.model.get_assets())

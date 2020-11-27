@@ -179,7 +179,7 @@ class Bring(base.Task):
     self._receptacle = 'slot' if self._use_peg else 'cup'
     self._insert = insert
     self._fully_observable = fully_observable
-    super(Bring, self).__init__(random=random)
+    super().__init__(random=random)
 
   def initialize_episode(self, physics):
     """Sets the state of the environment at the start of each episode."""
@@ -245,7 +245,7 @@ class Bring(base.Task):
       physics.after_reset()
       penetrating = physics.data.ncon > 0
 
-    super(Bring, self).initialize_episode(physics)
+    super().initialize_episode(physics)
 
   def get_observation(self, physics):
     """Returns either features or only sensors (to be used with pixels)."""

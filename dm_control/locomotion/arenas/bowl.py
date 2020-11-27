@@ -35,7 +35,7 @@ class Bowl(composer.Arena):
   """A bowl arena with sinusoidal bumps."""
 
   def _build(self, size=(10, 10), aesthetic='default', name='bowl'):
-    super(Bowl, self)._build(name=name)
+    super()._build(name=name)
 
     self._hfield = self._mjcf_root.asset.add(
         'hfield',

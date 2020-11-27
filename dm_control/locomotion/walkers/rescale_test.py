@@ -25,7 +25,7 @@ import numpy as np
 class RescaleTest(absltest.TestCase):
 
   def setUp(self):
-    super(RescaleTest, self).setUp()
+    super().setUp()
 
     # build a simple three-link chain with an endpoint site
     self._mjcf_model = mjcf.RootElement()

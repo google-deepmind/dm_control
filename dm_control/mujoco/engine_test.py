@@ -44,7 +44,7 @@ ASSETS = {
 class MujocoEngineTest(parameterized.TestCase):
 
   def setUp(self):
-    super(MujocoEngineTest, self).setUp()
+    super().setUp()
     self._physics = engine.Physics.from_xml_path(MODEL_PATH)
 
   def _assert_attributes_equal(self, actual_obj, expected_obj, attr_to_compare):

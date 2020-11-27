@@ -51,7 +51,7 @@ class BaseRendererTest(absltest.TestCase):
       return self._call_order
 
   def setUp(self):
-    super(BaseRendererTest, self).setUp()
+    super().setUp()
     self.renderer = BaseRendererTest.MockRenderer()
     self.context = mock.MagicMock()
     self.viewport = mock.MagicMock()
@@ -69,7 +69,7 @@ class BaseRendererTest(absltest.TestCase):
 class OffScreenRendererTest(absltest.TestCase):
 
   def setUp(self):
-    super(OffScreenRendererTest, self).setUp()
+    super().setUp()
     self.model = mock.MagicMock()
     self.model.vis.global_.offwidth = _SCREEN_SIZE.width
     self.model.vis.global_.offheight = _SCREEN_SIZE.height
@@ -108,7 +108,7 @@ class OffScreenRendererTest(absltest.TestCase):
 class PerturbationTest(absltest.TestCase):
 
   def setUp(self):
-    super(PerturbationTest, self).setUp()
+    super().setUp()
     self.model = mock.MagicMock()
     self.data = mock.MagicMock()
     self.scene = mock.MagicMock()
@@ -204,7 +204,7 @@ class PerturbationTest(absltest.TestCase):
 class RenderSettingsTest(absltest.TestCase):
 
   def setUp(self):
-    super(RenderSettingsTest, self).setUp()
+    super().setUp()
     self.settings = renderer.RenderSettings()
     self.scene = wrapper.MjvScene()
 
@@ -297,7 +297,7 @@ class SceneCameraTest(parameterized.TestCase):
                      return_value=1000)
   @mock.patch.object(renderer.wrapper.core.mjlib, 'mjv_makeScene')
   def setUp(self, mock_make_scene, _):
-    super(SceneCameraTest, self).setUp()
+    super().setUp()
     self.model = mock.MagicMock()
     self.data = mock.MagicMock()
     self.options = mock.MagicMock()
@@ -398,7 +398,7 @@ class RaycastsTest(absltest.TestCase):
                      return_value=1000)
   @mock.patch.object(renderer.wrapper.core.mjlib, 'mjv_makeScene')
   def setUp(self, mock_make_scene, _):
-    super(RaycastsTest, self).setUp()
+    super().setUp()
     self.model = mock.MagicMock()
     self.data = mock.MagicMock()
     self.options = mock.MagicMock()
@@ -480,7 +480,7 @@ class RaycastsTest(absltest.TestCase):
 class ViewportTest(parameterized.TestCase):
 
   def setUp(self):
-    super(ViewportTest, self).setUp()
+    super().setUp()
     self.viewport = renderer.Viewport()
     self.viewport.set_size(100, 100)
 

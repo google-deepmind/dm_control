@@ -82,9 +82,8 @@ class HDF5TrajectoryLoader(TrajectoryLoader):
                proto_modifier=()):
     self._h5_file = h5py.File(path, mode='r')
     self._keys = tuple(sorted(self._h5_file.keys()))
-    super(HDF5TrajectoryLoader, self).__init__(
-        trajectory_class=trajectory_class,
-        proto_modifier=proto_modifier)
+    super().__init__(
+        trajectory_class=trajectory_class, proto_modifier=proto_modifier)
 
   def keys(self):
     return self._keys

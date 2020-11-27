@@ -42,8 +42,7 @@ class DoubleBufferedGlfwContext(glfw_renderer.GLFWContext):
 
   def __init__(self, width, height, title):
     self._title = title
-    super(DoubleBufferedGlfwContext, self).__init__(max_width=width,
-                                                    max_height=height)
+    super().__init__(max_width=width, max_height=height)
 
   @_check_valid_backend
   def _platform_init(self, width, height):
@@ -70,7 +69,7 @@ class GlfwKeyboard(base.InputEventsProcessor):
   """
 
   def __init__(self, context):
-    super(GlfwKeyboard, self).__init__()
+    super().__init__()
     with context.make_current() as ctx:
       ctx.call(glfw.set_key_callback, context.window, self._handle_key_event)
     self.on_key = util.QuietSet()
@@ -108,7 +107,7 @@ class GlfwMouse(base.InputEventsProcessor):
   """
 
   def __init__(self, context):
-    super(GlfwMouse, self).__init__()
+    super().__init__()
     self.on_move = util.QuietSet()
     self.on_click = util.QuietSet()
     self.on_double_click = util.QuietSet()
@@ -185,7 +184,7 @@ class GlfwWindow:
     Raises:
       RuntimeError: If GLFW initialization or window initialization fails.
     """
-    super(GlfwWindow, self).__init__()
+    super().__init__()
     self._context = context or DoubleBufferedGlfwContext(width, height, title)
 
     if not self._context.window:

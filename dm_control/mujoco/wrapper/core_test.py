@@ -51,7 +51,7 @@ if not os.path.exists(OUT_DIR):
 class CoreTest(parameterized.TestCase):
 
   def setUp(self):
-    super(CoreTest, self).setUp()
+    super().setUp()
     self.model = core.MjModel.from_xml_path(HUMANOID_XML_PATH)
     self.data = core.MjData(self.model)
 
@@ -656,7 +656,7 @@ class AttributesTest(parameterized.TestCase):
     pass
 
   def setUp(self):
-    super(AttributesTest, self).setUp()
+    super().setUp()
     self.model = core.MjModel.from_xml_path(HUMANOID_XML_PATH)
     self.data = core.MjData(self.model)
 

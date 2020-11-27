@@ -44,7 +44,7 @@ class JumpingBallWithHead(legacy_base.Walker):
       camera_height: A float specifying the height of the camera, or `None` if
         the camera height should be left as specified in the XML model.
     """
-    super(JumpingBallWithHead, self)._build(initializer=initializer)
+    super()._build(initializer=initializer)
     self._mjcf_root = self._mjcf_root = mjcf.from_path(self._xml_path)
 
     if name:
@@ -97,8 +97,7 @@ class JumpingBallWithHead(legacy_base.Walker):
       if self._root_joints is not None:
         physics.bind(self._root_joints).qpos = position
       else:
-        super(JumpingBallWithHead, self).set_pose(
-            physics, position, quaternion=None)
+        super().set_pose(physics, position, quaternion=None)
     physics.bind(self._mjcf_root.find_all('joint')).qpos = 0.
     if quaternion is not None:
       # This walker can only rotate along the z-axis, so we extract only that
@@ -149,7 +148,7 @@ class RollingBallWithHead(JumpingBallWithHead):
   """A rollable ball with a head."""
 
   def _build(self, **kwargs):
-    super(RollingBallWithHead, self)._build(**kwargs)
+    super()._build(**kwargs)
     self._mjcf_root.find('actuator', 'kick').remove()
     self._mjcf_root.find('joint', 'kick').remove()
 

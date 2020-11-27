@@ -77,7 +77,7 @@ class ToolCenterPointInitializer(composer.Initializer):
         sampled pose, up to `max_ik_attempts` may be performed in order to find
         an IK solution satisfying this pose.
     """
-    super(ToolCenterPointInitializer, self).__init__()
+    super().__init__()
     self._arm = arm
     self._hand = hand
     self._position = position

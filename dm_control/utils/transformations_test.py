@@ -33,7 +33,7 @@ _NUM_RANDOM_SAMPLES = 1000
 class TransformationsTest(parameterized.TestCase):
 
   def __init__(self, *args, **kwargs):
-    super(TransformationsTest, self).__init__(*args, **kwargs)
+    super().__init__(*args, **kwargs)
     self._random_state = np.random.RandomState()
 
   @parameterized.parameters(

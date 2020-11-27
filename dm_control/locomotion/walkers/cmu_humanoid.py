@@ -200,7 +200,7 @@ class _CMUHumanoidBase(legacy_base.Walker, metaclass=abc.ABCMeta):
     self._actuator_order = np.argsort(_CMU_MOCAP_JOINTS)
     self._inverse_order = np.argsort(self._actuator_order)
 
-    super(_CMUHumanoidBase, self)._build(initializer=initializer)
+    super()._build(initializer=initializer)
 
     if include_face:
       head = self._mjcf_root.find('body', 'head')
@@ -355,7 +355,7 @@ class CMUHumanoidPositionControlled(CMUHumanoid):
     else:
       scale_default = False
 
-    super(CMUHumanoidPositionControlled, self)._build(**kwargs)
+    super()._build(**kwargs)
 
     if scale_default:
       # NOTE: This rescaling doesn't affect the attached hands
@@ -412,7 +412,7 @@ class CMUHumanoidPositionControlledV2020(CMUHumanoidPositionControlled):
   """A 2020 updated CMU humanoid walker; includes nose for head orientation."""
 
   def _build(self, **kwargs):
-    super(CMUHumanoidPositionControlledV2020, self)._build(
+    super()._build(
         model_version='2020', scale_default=True, include_face=True, **kwargs)
 
 

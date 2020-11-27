@@ -85,7 +85,7 @@ class EmptyCorridor(Corridor):
         perimeter should be rendered.
       name: The name of this arena.
     """
-    super(EmptyCorridor, self)._build(name=name)
+    super()._build(name=name)
 
     self._corridor_width = corridor_width
     self._corridor_length = corridor_length
@@ -202,7 +202,7 @@ class GapsCorridor(EmptyCorridor):
       aesthetic: option to adjust the material properties and skybox
       name: The name of this arena.
     """
-    super(GapsCorridor, self)._build(
+    super()._build(
         corridor_width=corridor_width,
         corridor_length=corridor_length,
         visible_side_planes=visible_side_planes,
@@ -250,7 +250,7 @@ class GapsCorridor(EmptyCorridor):
         `Variation` objects.
     """
     # Resize the entire corridor first.
-    super(GapsCorridor, self).regenerate(random_state)
+    super().regenerate(random_state)
 
     # Move the ground plane down and make it invisible.
     self._ground_plane.pos = [self._current_corridor_length / 2, 0, -10]
@@ -369,7 +369,7 @@ class WallsCorridor(EmptyCorridor):
         obstacle.
       name: The name of this arena.
     """
-    super(WallsCorridor, self)._build(
+    super()._build(
         corridor_width=corridor_width,
         corridor_length=corridor_length,
         visible_side_planes=visible_side_planes,
@@ -395,7 +395,7 @@ class WallsCorridor(EmptyCorridor):
       random_state: A `numpy.random.RandomState` object that is passed to the
         `Variation` objects.
     """
-    super(WallsCorridor, self).regenerate(random_state)
+    super().regenerate(random_state)
 
     wall_x = variation.evaluate(
         self._wall_gap, random_state=random_state) - _CORRIDOR_X_PADDING

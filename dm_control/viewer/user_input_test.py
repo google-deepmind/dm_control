@@ -23,7 +23,7 @@ import mock
 class InputMapTests(absltest.TestCase):
 
   def setUp(self):
-    super(InputMapTests, self).setUp()
+    super().setUp()
     self.mouse = mock.MagicMock()
     self.keyboard = mock.MagicMock()
     self.input_map = user_input.InputMap(self.mouse, self.keyboard)

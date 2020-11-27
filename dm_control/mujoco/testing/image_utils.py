@@ -34,7 +34,7 @@ class ImagesNotCloseError(AssertionError):
   """Exception raised when two images are not sufficiently close."""
 
   def __init__(self, message, expected, actual):
-    super(ImagesNotCloseError, self).__init__(message)
+    super().__init__(message)
     self.expected = expected
     self.actual = actual
 

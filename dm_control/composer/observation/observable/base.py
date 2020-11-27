@@ -186,8 +186,7 @@ class Generic(Observable):
         operates on corrupted observations.
     """
     self._raw_callable = raw_observation_callable
-    super(Generic, self).__init__(
-        update_interval, buffer_size, delay, aggregator, corruptor)
+    super().__init__(update_interval, buffer_size, delay, aggregator, corruptor)
 
   def _callable(self, physics):
     return lambda: self._raw_callable(physics)
@@ -229,8 +228,7 @@ class MujocoFeature(Observable):
     """
     self._kind = kind
     self._feature_name = feature_name
-    super(MujocoFeature, self).__init__(
-        update_interval, buffer_size, delay, aggregator, corruptor)
+    super().__init__(update_interval, buffer_size, delay, aggregator, corruptor)
 
   def _callable(self, physics):
     named_indexer_for_kind = physics.named.data.__getattribute__(self._kind)
@@ -283,8 +281,7 @@ class MujocoCamera(Observable):
     self._n_channels = 1 if depth else 3
     self._dtype = np.float32 if depth else np.uint8
     self._depth = depth
-    super(MujocoCamera, self).__init__(
-        update_interval, buffer_size, delay, aggregator, corruptor)
+    super().__init__(update_interval, buffer_size, delay, aggregator, corruptor)
 
   @property
   def height(self):

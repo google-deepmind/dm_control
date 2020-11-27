@@ -104,7 +104,7 @@ class BoxHeadObservables(legacy_base.WalkerObservables):
 
   def __init__(self, entity, camera_resolution):
     self._camera_resolution = camera_resolution
-    super(BoxHeadObservables, self).__init__(entity)
+    super().__init__(entity)
 
   @composer.observable
   def egocentric_camera(self):
@@ -114,7 +114,7 @@ class BoxHeadObservables(legacy_base.WalkerObservables):
 
   @property
   def proprioception(self):
-    proprioception = super(BoxHeadObservables, self).proprioception
+    proprioception = super().proprioception
     if self._entity.observable_camera_joints:
       return proprioception + [self.camera_joints_pos, self.camera_joints_vel]
     return proprioception
@@ -180,7 +180,7 @@ class BoxHead(legacy_base.Walker):
     Raises:
       ValueError: if received invalid walker_id.
     """
-    super(BoxHead, self)._build(initializer=initializer)
+    super()._build(initializer=initializer)
     xml_path = os.path.join(_ASSETS_PATH, 'boxhead.xml')
     self._mjcf_root = mjcf.from_xml_string(resources.GetResource(xml_path, 'r'))
     if name:
@@ -270,7 +270,7 @@ class BoxHead(legacy_base.Walker):
       if self._root_joints is not None:
         physics.bind(self._root_joints).qpos = position
       else:
-        super(BoxHead, self).set_pose(physics, position, quaternion=None)
+        super().set_pose(physics, position, quaternion=None)
     physics.bind(self._mjcf_root.find_all('joint')).qpos = 0.
     if quaternion is not None:
       # This walker can only rotate along the z-axis, so we extract only that
@@ -303,7 +303,7 @@ class BoxHead(legacy_base.Walker):
                                  dtype=self.action_spec.dtype)
 
   def apply_action(self, physics, action, random_state):
-    super(BoxHead, self).apply_action(physics, action, random_state)
+    super().apply_action(physics, action, random_state)
 
     # Updates previous action.
     self._prev_action[:] = action

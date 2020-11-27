@@ -103,7 +103,7 @@ class Upright(base.Task):
         integer seed for creating a new `RandomState`, or None to select a seed
         automatically.
     """
-    super(Upright, self).__init__(random=random)
+    super().__init__(random=random)
 
   def initialize_episode(self, physics):
     """Randomizes the tail and fin angles and the orientation of the Fish."""
@@ -113,7 +113,7 @@ class Upright(base.Task):
       physics.named.data.qpos[joint] = self.random.uniform(-.2, .2)
     # Hide the target. It's irrelevant for this task.
     physics.named.model.geom_rgba['target', 3] = 0
-    super(Upright, self).initialize_episode(physics)
+    super().initialize_episode(physics)
 
   def get_observation(self, physics):
     """Returns an observation of joint angles, velocities and uprightness."""
@@ -139,7 +139,7 @@ class Swim(base.Task):
         integer seed for creating a new `RandomState`, or None to select a seed
         automatically (default).
     """
-    super(Swim, self).__init__(random=random)
+    super().__init__(random=random)
 
   def initialize_episode(self, physics):
     """Sets the state of the environment at the start of each episode."""
@@ -152,7 +152,7 @@ class Swim(base.Task):
     physics.named.model.geom_pos['target', 'x'] = self.random.uniform(-.4, .4)
     physics.named.model.geom_pos['target', 'y'] = self.random.uniform(-.4, .4)
     physics.named.model.geom_pos['target', 'z'] = self.random.uniform(.1, .3)
-    super(Swim, self).initialize_episode(physics)
+    super().initialize_episode(physics)
 
   def get_observation(self, physics):
     """Returns an observation of joints, target direction and velocities."""

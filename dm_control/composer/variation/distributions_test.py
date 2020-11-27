@@ -31,7 +31,7 @@ def _make_random_state():
 class DistributionsTest(parameterized.TestCase):
 
   def setUp(self):
-    super(DistributionsTest, self).setUp()
+    super().setUp()
     self._variation_random_state = _make_random_state()
     self._np_random_state = _make_random_state()
 

@@ -134,7 +134,7 @@ class Stack(base.Task):
       for dim in 'xyz':
         self._box_joint_names.append('_'.join([name, dim]))
     self._fully_observable = fully_observable
-    super(Stack, self).__init__(random=random)
+    super().__init__(random=random)
 
   def initialize_episode(self, physics):
     """Sets the state of the environment at the start of each episode."""
@@ -175,7 +175,7 @@ class Stack(base.Task):
       physics.after_reset()
       penetrating = physics.data.ncon > 0
 
-    super(Stack, self).initialize_episode(physics)
+    super().initialize_episode(physics)
 
   def get_observation(self, physics):
     """Returns either features or only sensors (to be used with pixels)."""

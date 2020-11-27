@@ -55,7 +55,7 @@ FIELD_REPR = {
 class MujocoIndexTest(parameterized.TestCase):
 
   def setUp(self):
-    super(MujocoIndexTest, self).setUp()
+    super().setUp()
     self._model = wrapper.MjModel.from_xml_string(MODEL)
     self._data = wrapper.MjData(self._model)
 

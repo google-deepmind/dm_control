@@ -134,14 +134,14 @@ class Spin(base.Task):
         integer seed for creating a new `RandomState`, or None to select a seed
         automatically (default).
     """
-    super(Spin, self).__init__(random=random)
+    super().__init__(random=random)
 
   def initialize_episode(self, physics):
     physics.named.model.site_rgba['target', 3] = 0
     physics.named.model.site_rgba['tip', 3] = 0
     physics.named.model.dof_damping['hinge'] = .03
     _set_random_joint_angles(physics, self.random)
-    super(Spin, self).initialize_episode(physics)
+    super().initialize_episode(physics)
 
   def get_observation(self, physics):
     """Returns state and touch sensors, and target info."""
@@ -169,7 +169,7 @@ class Turn(base.Task):
         automatically (default).
     """
     self._target_radius = target_radius
-    super(Turn, self).__init__(random=random)
+    super().__init__(random=random)
 
   def initialize_episode(self, physics):
     target_angle = self.random.uniform(-np.pi, np.pi)
@@ -182,7 +182,7 @@ class Turn(base.Task):
 
     _set_random_joint_angles(physics, self.random)
 
-    super(Turn, self).initialize_episode(physics)
+    super().initialize_episode(physics)
 
   def get_observation(self, physics):
     """Returns state, touch sensors, and target info."""

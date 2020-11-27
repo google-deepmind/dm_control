@@ -96,8 +96,7 @@ class EGLContext(base.ContextBase):
   def __init__(self, max_width, max_height):
     # EGLContext currently only works with `PassthroughRenderExecutor`.
     # TODO(b/110927854) Make this work with the offloading executor.
-    super(EGLContext, self).__init__(max_width, max_height,
-                                     executor.PassthroughRenderExecutor)
+    super().__init__(max_width, max_height, executor.PassthroughRenderExecutor)
 
   def _platform_init(self, unused_max_width, unused_max_height):
     """Initialization this EGL context."""

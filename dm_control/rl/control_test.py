@@ -33,7 +33,7 @@ _OBSERVATION_SPEC = {'observations': specs.Array(shape=(), dtype=np.float)}
 class EnvironmentTest(parameterized.TestCase):
 
   def setUp(self):
-    super(EnvironmentTest, self).setUp()
+    super().setUp()
     self._task = mock.Mock(spec=control.Task)
     self._task.initialize_episode = mock.Mock()
     self._task.get_observation = mock.Mock(return_value=_CONSTANT_OBSERVATION)

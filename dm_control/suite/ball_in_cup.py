@@ -82,7 +82,7 @@ class BallInCup(base.Task):
       # Check for collisions.
       physics.after_reset()
       penetrating = physics.data.ncon > 0
-    super(BallInCup, self).initialize_episode(physics)
+    super().initialize_episode(physics)
 
   def get_observation(self, physics):
     """Returns an observation of the state."""

@@ -72,4 +72,4 @@ class GrayVariation(HsvVariation):
   """
 
   def __init__(self, gray_level, alpha=1.0):
-    super(GrayVariation, self).__init__(h=0.0, s=0.0, v=gray_level, alpha=alpha)
+    super().__init__(h=0.0, s=0.0, v=gray_level, alpha=alpha)
