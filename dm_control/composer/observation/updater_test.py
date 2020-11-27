@@ -28,7 +28,7 @@ from dm_env import specs
 import numpy as np
 
 
-class DeterministicSequence(object):
+class DeterministicSequence:
 
   def __init__(self, sequence):
     self._iter = itertools.cycle(sequence)

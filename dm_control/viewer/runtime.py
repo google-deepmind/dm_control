@@ -81,7 +81,7 @@ class State(enum.Enum):
   RESTARTING = 4
 
 
-class Runtime(object):
+class Runtime:
   """Base Runtime class.
 
   Attributes:

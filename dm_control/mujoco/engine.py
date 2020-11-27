@@ -571,7 +571,7 @@ class Physics(_control.Physics):
     return self.data.time
 
 
-class Camera(object):
+class Camera:
   """Mujoco scene camera.
 
   Holds rendering properties such as the width and height of the viewport. The
@@ -951,7 +951,7 @@ class MovableCamera(Camera):
     self._render_camera.elevation = elevation
 
 
-class TextOverlay(object):
+class TextOverlay:
   """A text overlay that can be drawn on top of a camera view."""
 
   __slots__ = ('title', 'body', 'style', 'position')

@@ -145,7 +145,7 @@ def parse(file_name):
   return values
 
 
-class Amcvals2qpos(object):
+class Amcvals2qpos:
   """Callable that converts .amc values for a frame and to MuJoCo qpos format.
   """
 

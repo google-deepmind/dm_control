@@ -313,7 +313,7 @@ def _validate_key_item(key_item):
     raise IndexError('Empty strings are not allowed.')
 
 
-class Axis(object, metaclass=abc.ABCMeta):
+class Axis(metaclass=abc.ABCMeta):
   """Handles the conversion of named indexing expressions into numpy indices."""
 
   @abc.abstractmethod
@@ -433,7 +433,7 @@ Axes = collections.namedtuple('Axes', ['row', 'col'])
 Axes.__new__.__defaults__ = (None,)  # Default value for optional 'col' field
 
 
-class FieldIndexer(object):
+class FieldIndexer:
   """An array-like object providing named access to a field in a MuJoCo struct.
 
   FieldIndexers expose the same attributes and methods as an `np.ndarray`.
@@ -649,7 +649,7 @@ def struct_indexer(struct, struct_name, size_to_axis_indexer):
 def make_struct_indexer(field_indexers):
   """Returns an immutable container exposing named indexers as attributes."""
 
-  class StructIndexer(object):
+  class StructIndexer:
     __slots__ = ()
 
     def _asdict(self):

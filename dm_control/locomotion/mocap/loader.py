@@ -162,7 +162,7 @@ class HDF5TrajectoryLoader(TrajectoryLoader):
     return proto
 
 
-class PropMassLimiter(object):
+class PropMassLimiter:
   """A trajectory proto modifier that enforces a maximum mass for each prop."""
 
   def __init__(self, max_mass):
@@ -173,7 +173,7 @@ class PropMassLimiter(object):
       prop.mass = min(prop.mass, self._max_mass)
 
 
-class PropResizer(object):
+class PropResizer:
   """A trajectory proto modifier that changes prop sizes and mass."""
 
   def __init__(self, size_factor=None, size_delta=None, mass=None):
@@ -199,7 +199,7 @@ class PropResizer(object):
       prop.mass = variation.evaluate(self._mass, random_state=random_state)
 
 
-class ZOffsetter(object):
+class ZOffsetter:
   """A trajectory proto modifier that shifts the z position of a trajectory."""
 
   def __init__(self, z_offset=0.0):

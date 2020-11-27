@@ -19,7 +19,7 @@
 from dm_control.mjcf import constants
 
 
-class Copier(object):
+class Copier:
   """Helper for keeping track of new elements created when copying MJCF."""
 
   def __init__(self, source):

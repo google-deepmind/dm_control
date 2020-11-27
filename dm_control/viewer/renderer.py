@@ -47,7 +47,7 @@ _DEFAULT_RENDER_FLAGS[enums.mjtRndFlag.mjRND_REFLECTION] = 1
 _DEFAULT_RENDER_FLAGS[enums.mjtRndFlag.mjRND_SKYBOX] = 1
 
 
-class BaseRenderer(object, metaclass=abc.ABCMeta):
+class BaseRenderer(metaclass=abc.ABCMeta):
   """A base class for component-based Mujoco Renderers implementations.
 
   Attributes:
@@ -76,7 +76,7 @@ class BaseRenderer(object, metaclass=abc.ABCMeta):
       component.render(context, viewport)
 
 
-class Component(object, metaclass=abc.ABCMeta):
+class Component(metaclass=abc.ABCMeta):
   """Components are a way to introduce extra rendering content.
 
   They are invoked after the main rendering pass, allowing to draw extra images
@@ -94,7 +94,7 @@ class Component(object, metaclass=abc.ABCMeta):
     pass
 
 
-class NullRenderer(object):
+class NullRenderer:
   """A stub off-screen renderer used when no other renderer is available."""
 
   def __init__(self):
@@ -182,7 +182,7 @@ class OffScreenRenderer(BaseRenderer):
     return self._pixels
 
 
-class Perturbation(object):
+class Perturbation:
   """A proxy that allows to move a scene object."""
 
   def __init__(self, body_id, model, data, scene):
@@ -262,7 +262,7 @@ class Perturbation(object):
     return self._body_id
 
 
-class NullPerturbation(object):
+class NullPerturbation:
   """An empty perturbation.
 
   A null-object pattern, used to avoid cumbersome if clauses.
@@ -280,7 +280,7 @@ class NullPerturbation(object):
     return None
 
 
-class RenderSettings(object):
+class RenderSettings:
   """Renderer settings."""
 
   def __init__(self):
@@ -369,7 +369,7 @@ class RenderSettings(object):
         (self._visualization_options.label - 1) % enums.mjtLabel.mjNLABEL)
 
 
-class SceneCamera(object):
+class SceneCamera:
   """A camera used to navigate around and render the scene."""
 
   def __init__(self, model, data, options, settings=None):
@@ -560,7 +560,7 @@ class SceneCamera(object):
     return frustum_near > 0 and frustum_near < frustum_far
 
 
-class Viewport(object):
+class Viewport:
   """Render viewport."""
 
   def __init__(self, width=1, height=1):

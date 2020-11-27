@@ -29,7 +29,7 @@ DEFAULT_UPDATE_INTERVAL = 1
 DEFAULT_DELAY = 0
 
 
-class _EnabledObservable(object):
+class _EnabledObservable:
   """Encapsulates an enabled observable, its buffer, and its update schedule."""
 
   __slots__ = ('observable', 'observation_callable',
@@ -116,7 +116,7 @@ def _validate_structure(structure):
   return is_nested
 
 
-class Updater(object):
+class Updater:
   """Creates and updates buffers for enabled observables."""
 
   def __init__(self, observables, physics_steps_per_control_step=1,

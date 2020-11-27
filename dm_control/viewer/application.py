@@ -176,7 +176,7 @@ class ReloadParams(collections.namedtuple(
   """Parameters of a reload request."""
 
 
-class Application(object):
+class Application:
   """Viewer application."""
 
   def __init__(self, title='Explorer', width=1024, height=768):

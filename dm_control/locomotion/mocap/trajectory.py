@@ -40,7 +40,7 @@ def _zero_out_velocities(timestep_proto):
   return out_proto
 
 
-class Trajectory(object):
+class Trajectory:
   """Represents a motion-captured trajectory."""
 
   def __init__(self, proto, start_time=None, end_time=None, start_step=None,

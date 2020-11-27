@@ -1224,7 +1224,7 @@ class RootElement(_ElementImpl):
     return self._has_same_children_as(other)
 
 
-class _ElementListView(object):
+class _ElementListView:
   """A hybrid list/dict-like view to a group of repeated MJCF elements."""
 
   def __init__(self, spec, parent):

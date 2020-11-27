@@ -21,7 +21,7 @@ from dm_control.locomotion.walkers import rescale
 import numpy as np
 
 
-class WalkerInfo(object):
+class WalkerInfo:
   """Encapsulates routines that modify a walker to match mocap data."""
 
   def __init__(self, proto):

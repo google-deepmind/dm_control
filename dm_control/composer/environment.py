@@ -56,7 +56,7 @@ class EpisodeInitializationError(RuntimeError):
   """Raised by a `composer.Task` when it fails to initialize an episode."""
 
 
-class _Hook(object):
+class _Hook:
 
   __slots__ = ('entity_hooks', 'extra_hooks')
 
@@ -65,7 +65,7 @@ class _Hook(object):
     self.extra_hooks = []
 
 
-class _EnvironmentHooks(object):
+class _EnvironmentHooks:
   """Helper object that scans and memoizes various hooks in a task.
 
   This object exist to ensure that we do not incur a substantial overhead in
@@ -156,7 +156,7 @@ class _EnvironmentHooks(object):
       extra_hook(physics, random_state)
 
 
-class _CommonEnvironment(object):
+class _CommonEnvironment:
   """Common components for RL environments."""
 
   def __init__(self, task, time_limit=float('inf'), random_state=None,

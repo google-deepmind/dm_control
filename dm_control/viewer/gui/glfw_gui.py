@@ -162,7 +162,7 @@ class GlfwMouse(base.InputEventsProcessor):
     self.add_event(self.on_scroll, y_offset)
 
 
-class GlfwWindow(object):
+class GlfwWindow:
   """A GLFW based application window.
 
   Attributes:

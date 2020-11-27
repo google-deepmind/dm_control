@@ -55,7 +55,7 @@ _VAR_UV = 'uv'
 _VAR_TEXTURE_SAMPLER = 'tex'
 
 
-class FullscreenQuadRenderer(object):
+class FullscreenQuadRenderer:
   """Renders pixmaps on a fullscreen quad using OpenGL."""
 
   def __init__(self):

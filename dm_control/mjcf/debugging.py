@@ -171,7 +171,7 @@ def freeze_current_stack_trace():
     yield
 
 
-class DebugContext(object):
+class DebugContext:
   """A helper object to store debug information for a generated XML string.
 
   This class is intended for internal use within the PyMJCF implementation.

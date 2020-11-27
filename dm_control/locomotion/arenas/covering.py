@@ -21,7 +21,7 @@ GridCoordinates = collections.namedtuple('GridCoordinates', ('y', 'x'))
 MazeWall = collections.namedtuple('MazeWall', ('start', 'end'))
 
 
-class _MazeWallCoveringContext(object):
+class _MazeWallCoveringContext:
   """Calculates a covering of text mazes with overlapping rectangular walls.
 
   This class uses a greedy algorithm to try and minimize the number of geoms

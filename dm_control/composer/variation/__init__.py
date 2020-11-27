@@ -22,7 +22,7 @@ from dm_control.composer.variation.base import Variation
 from dm_control.composer.variation.variation_values import evaluate
 
 
-class _VariationInfo(object):
+class _VariationInfo:
 
   __slots__ = ['initial_value', 'variation']
 
@@ -31,7 +31,7 @@ class _VariationInfo(object):
     self.variation = variation
 
 
-class MJCFVariator(object):
+class MJCFVariator:
   """Helper object for applying variations to MJCF attributes.
 
   An instance of this class remembers the original value of each MJCF attribute
@@ -87,7 +87,7 @@ class MJCFVariator(object):
         variation_info.initial_value = None
 
 
-class PhysicsVariator(object):
+class PhysicsVariator:
   """Helper object for applying variations to MjModel and MjData.
 
   An instance of this class remembers the original value of each attribute

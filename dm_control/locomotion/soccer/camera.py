@@ -19,7 +19,7 @@ from dm_control.mujoco import engine
 import numpy as np
 
 
-class MultiplayerTrackingCamera(object):
+class MultiplayerTrackingCamera:
   """Camera that smoothly tracks multiple entities."""
 
   def __init__(

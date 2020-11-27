@@ -391,7 +391,7 @@ class BasePath(_Attribute):
     return None
 
 
-class BaseAsset(object):
+class BaseAsset:
   """Base class for binary assets."""
 
   __slots__ = ('extension', 'prefix')

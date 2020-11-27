@@ -75,7 +75,7 @@ class GlfwKeyboardTest(absltest.TestCase):
       self.assertEqual(expected_event, call_args[0])
 
 
-class FakePassthroughRenderingContext(object):
+class FakePassthroughRenderingContext:
 
   def __init__(self):
     self.window = 0

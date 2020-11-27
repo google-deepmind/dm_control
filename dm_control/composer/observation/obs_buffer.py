@@ -19,7 +19,7 @@ import collections
 import numpy as np
 
 
-class InFlightObservation(object):
+class InFlightObservation:
   """Represents a delayed observation that may not have arrived yet.
 
   Attributes:
@@ -43,7 +43,7 @@ class InFlightObservation(object):
     return self.arrival < other.arrival
 
 
-class Buffer(object):
+class Buffer:
   """An object that manages the buffering and delaying of observation."""
 
   def __init__(self, buffer_size, shape, dtype, pad_value=0,

@@ -25,7 +25,7 @@ _PYTHON_RESERVED_KEYWORDS = frozenset(
     keyword.kwlist + dir(builtins) + ["buffer"])
 
 
-class Indenter(object):
+class Indenter:
   r"""Callable context manager for tracking string indentation levels.
 
   Example usage:

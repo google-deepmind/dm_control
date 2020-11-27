@@ -26,7 +26,7 @@ def _get_root_model(mjcf_elements):
   return root_model
 
 
-class JointStaticIsolator(object):
+class JointStaticIsolator:
   """Helper class that isolates a collection of MuJoCo joints from others.
 
   An instance of this class is a context manager that caches the positions and

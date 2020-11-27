@@ -85,7 +85,7 @@ _SCROLL_SPEED_FACTOR = 0.05
 _LOOK_AT_DISTANCE = 1.5
 
 
-class Viewer(object):
+class Viewer:
   """Viewport displaying the contents of a physics world."""
 
   def __init__(self, viewport, mouse, keyboard):
@@ -260,7 +260,7 @@ class Viewer(object):
     return self._render_settings
 
 
-class CameraSelector(object):
+class CameraSelector:
   """Binds camera behavior to user input."""
 
   def __init__(self, model, camera, free_camera, **unused):
@@ -314,7 +314,7 @@ class CameraSelector(object):
       self._active_ctrl.activate()
 
 
-class FreeCameraController(object):
+class FreeCameraController:
   """Implements the free camera behavior."""
 
   def __init__(self, viewport, camera, pointer, selection_service, **unused):
@@ -434,7 +434,7 @@ class FreeCameraController(object):
       self._camera.set_freelook_mode()
 
 
-class ManipulationController(object):
+class ManipulationController:
   """Binds control over scene objects to user input."""
 
   def __init__(self, viewport, camera, pointer, **unused):

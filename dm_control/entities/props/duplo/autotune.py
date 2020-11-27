@@ -58,7 +58,7 @@ def get_separation_force_for_radius(radius, **duplo_kwargs):
   return separation_force
 
 
-class _KeepBracketingSolutions(object):
+class _KeepBracketingSolutions:
   """Wraps objective func, keeps closest solutions bracketing the target."""
 
   _solution = collections.namedtuple('_solution', ['x', 'residual'])

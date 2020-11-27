@@ -60,7 +60,7 @@ _BOX_WORKSPACE = _LiftWorkspace(
 _DISTANCE_TO_LIFT = 0.3
 
 
-class _VertexSitesMixin(object):
+class _VertexSitesMixin:
   """Mixin class that adds sites corresponding to the vertices of a box."""
 
   def _add_vertex_sites(self, box_geom_or_site):

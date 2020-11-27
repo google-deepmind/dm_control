@@ -33,7 +33,7 @@ def _check_timesteps_divisible(control_timestep, physics_timestep):
   return rounded_num_steps
 
 
-class Task(object, metaclass=abc.ABCMeta):
+class Task(metaclass=abc.ABCMeta):
   """Abstract base class for a Composer task."""
 
   @abc.abstractproperty

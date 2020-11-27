@@ -20,7 +20,7 @@ from dm_control.autowrap import codegen_util
 from dm_control.autowrap import header_parsing
 
 
-class CDeclBase(object):
+class CDeclBase:
   """Base class for Python representations of C declarations."""
 
   def __init__(self, **attrs):

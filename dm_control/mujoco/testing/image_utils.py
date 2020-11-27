@@ -67,7 +67,7 @@ def _get_subdir(name, seed, backend_string, camera_spec):
   )
 
 
-class _FrameSequence(object):
+class _FrameSequence:
   """A sequence of pre-rendered frames used in integration tests."""
 
   _ASSETS_DIR = 'assets'

@@ -46,7 +46,7 @@ def _rotate_vector(vec, quat):
   return result
 
 
-class _ObservableKeys(object):
+class _ObservableKeys:
   """Helper object that implements the `observables.dict_keys` functionality."""
 
   def __init__(self, entity, observables):
@@ -66,7 +66,7 @@ class _ObservableKeys(object):
     return list(out)
 
 
-class Observables(object):
+class Observables:
   """Base-class for Entity observables.
 
   Subclasses should declare getter methods annotated with @define.observable

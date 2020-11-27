@@ -26,7 +26,7 @@ from dm_env import specs
 import numpy as np
 
 
-class FakePhysics(object):
+class FakePhysics:
 
   def render(self, *args, **kwargs):
     del args

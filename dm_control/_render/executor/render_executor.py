@@ -38,7 +38,7 @@ _NOT_IN_CONTEXT = 'Cannot be called outside of an `execution_context`.'
 _ALREADY_TERMINATED = 'This executor has already been terminated.'
 
 
-class _FakeLock(object):
+class _FakeLock:
   """An object with the same API as `threading.Lock` but that does nothing."""
 
   def acquire(self, blocking=True):
@@ -57,7 +57,7 @@ class _FakeLock(object):
 _FAKE_LOCK = _FakeLock()
 
 
-class BaseRenderExecutor(object, metaclass=abc.ABCMeta):
+class BaseRenderExecutor(metaclass=abc.ABCMeta):
   """An object that manages rendering calls for an OpenGL context.
 
   This class helps ensure that OpenGL calls are made on the correct thread. The
@@ -143,7 +143,7 @@ class PassthroughRenderExecutor(BaseRenderExecutor):
         self._terminated = True
 
 
-class _ThreadPoolExecutorPool(object):
+class _ThreadPoolExecutorPool:
   """A pool of reusable ThreadPoolExecutors."""
 
   def __init__(self):

@@ -126,7 +126,7 @@ def get_mjkey_path():
   return _get_full_path(raw_path)
 
 
-class WrapperBase(object):
+class WrapperBase:
   """Base class for wrappers that provide getters/setters for ctypes structs."""
 
   # This is needed so that the __del__ methods of MjModel and MjData can still

@@ -49,7 +49,7 @@ def to_iterable(item):
     return [item]
 
 
-class QuietSet(object):
+class QuietSet:
   """A set-like container that quietly processes removals of missing keys."""
 
   def __init__(self):
@@ -93,7 +93,7 @@ def interleave(a, b):
   return itertools.chain.from_iterable(zip(a, b))
 
 
-class TimeMultiplier(object):
+class TimeMultiplier:
   """Controls the relative speed of the simulation compared to realtime."""
 
   def __init__(self, initial_time_multiplier):
@@ -135,7 +135,7 @@ class TimeMultiplier(object):
     self.set(self._real_time_multiplier / 2.)
 
 
-class Integrator(object):
+class Integrator:
   """Integrates a value and averages it for the specified period of time."""
 
   def __init__(self, refresh_rate=.5):
@@ -169,7 +169,7 @@ class Integrator(object):
       self._sampling_timestamp = time.time()
 
 
-class AtomicAction(object):
+class AtomicAction:
   """An action that cannot be interrupted."""
 
   def __init__(self, state_change_callback=None):
@@ -253,7 +253,7 @@ class ObservableFlag(QuietSet):
     self._value = val
 
 
-class Timer(object):
+class Timer:
   """Measures time elapsed between two ticks."""
 
   def __init__(self):
@@ -283,7 +283,7 @@ class Timer(object):
     return self._measured_time
 
 
-class ErrorLogger(object):
+class ErrorLogger:
   """A context manager that catches and logs all errors."""
 
   def __init__(self, listeners):
@@ -317,7 +317,7 @@ class ErrorLogger(object):
     return self._error_found
 
 
-class NullErrorLogger(object):
+class NullErrorLogger:
   """A context manager that replaces an ErrorLogger.
 
   This error logger will pass all thrown errors through.

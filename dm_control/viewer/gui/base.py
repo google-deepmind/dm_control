@@ -59,7 +59,7 @@ class InputEventsProcessor(metaclass=abc.ABCMeta):
       event()
 
 
-class DoubleClickDetector(object):
+class DoubleClickDetector:
   """Detects double click events."""
 
   def __init__(self):

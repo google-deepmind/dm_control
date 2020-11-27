@@ -20,7 +20,7 @@ import collections
 from dm_control.mjcf import constants
 
 
-class NameScope(object):
+class NameScope:
   """A name scoping context for an MJCF model.
 
   This object maintains the uniqueness of identifiers within each MJCF

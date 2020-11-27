@@ -139,7 +139,7 @@ MOUSE_BUTTON_LEFT = 0
 MOUSE_BUTTON_RIGHT = 1
 MOUSE_BUTTON_MIDDLE = 2
 
-_NO_EXCLUSIVE_KEY = (None, None)
+_NO_EXCLUSIVE_KEY = (None, lambda _: None)
 _NO_CALLBACK = (None, None)
 
 
@@ -189,7 +189,7 @@ class Range(collections.namedtuple('Range', 'collection')):
   pass
 
 
-class InputMap(object):
+class InputMap:
   """Provides ability to alias key combinations and map them to actions."""
 
   def __init__(self, mouse, keyboard):
@@ -308,5 +308,3 @@ class InputMap(object):
     """Handles mouse wheel scroll."""
     for callback in self._z_axis_callback:
       callback(value)
-
-

@@ -267,7 +267,7 @@ class SynchronizingArrayWrapper(np.ndarray):
     self.__setitem__(slice(start, stop, None), value)
 
 
-class Binding(object):
+class Binding:
   """Binding between a mujoco.Physics and an mjcf.Element or a list of Elements.
 
   This object should normally be created by calling `physics.bind(element)`
@@ -435,7 +435,7 @@ class Binding(object):
       self._physics.mark_as_dirty()
 
 
-class _EmptyBinding(object):
+class _EmptyBinding:
   """The result of binding no `mjcf.Elements` to an `mjcf.Physics` instance."""
 
   __slots__ = ('_arr',)

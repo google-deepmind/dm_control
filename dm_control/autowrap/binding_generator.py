@@ -33,7 +33,7 @@ class Error(Exception):
   pass
 
 
-class BindingGenerator(object):
+class BindingGenerator:
   """Parses declarations from MuJoCo headers and generates Python bindings."""
 
   def __init__(self,
@@ -545,8 +545,9 @@ class BindingGenerator(object):
                 for func_ptr in self.func_ptrs_dict.values()]
       values = [func_ptr.ctypes_var_decl(cdll_name="mjlib")
                 for func_ptr in self.func_ptrs_dict.values()]
-      f.write(textwrap.dedent("""
-        class _Callbacks(object):
+      f.write(
+          textwrap.dedent("""
+        class _Callbacks:
 
           __slots__ = [
               {0}

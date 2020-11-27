@@ -35,7 +35,7 @@ def add_bodies_and_actuators(mjcf_model, num_actuators):
     mjcf_model.actuator.add('position', joint=joint_y)
 
 
-class HooksTracker(object):
+class HooksTracker:
   """Helper class for tracking call order of callbacks."""
 
   def __init__(self, test_case, physics_timestep, control_timestep,
@@ -261,7 +261,7 @@ class TrackedTask(HooksTracker, composer.NullTask):
     add_bodies_and_actuators(self.root_entity.mjcf_model, num_actuators=4)
 
 
-class HooksTestMixin(object):
+class HooksTestMixin:
   """A mixin for an `absltest.TestCase` to track call order of callbacks."""
 
   def setUp(self):

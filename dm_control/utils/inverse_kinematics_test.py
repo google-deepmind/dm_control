@@ -56,7 +56,7 @@ _TARGETS = [
 _INPLACE = [False, True]
 
 
-class _ResetArm(object):
+class _ResetArm:
 
   def __init__(self, seed=None):
     self._rng = np.random.RandomState(seed)

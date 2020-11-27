@@ -30,7 +30,7 @@ def _ensure_3d(pos):
   return pos
 
 
-class _Detection(object):
+class _Detection:
 
   __slots__ = ('entity', 'detected')
 
