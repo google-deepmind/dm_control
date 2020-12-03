@@ -25,8 +25,6 @@ from dm_control import composer
 from dm_control.composer.observation import observable as base_observable
 from dm_control.locomotion.mocap import loader
 
-
-
 from dm_control.locomotion.tasks.reference_pose import datasets
 from dm_control.locomotion.tasks.reference_pose import types
 from dm_control.locomotion.tasks.reference_pose import utils

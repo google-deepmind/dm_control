@@ -102,7 +102,7 @@ def _maybe_load_linux_dynamic_deps(library_dir):
     else:
       libglew_path = ctypes.util.find_library("GLEW")
     ctypes.CDLL(libglew_path, ctypes.RTLD_GLOBAL)  # Also loads GL implicitly.
-
+# Google-internal libstdc++ loading.
 
 def get_mjlib():
   """Loads `libmujoco.so` and returns it as a `ctypes.CDLL` object."""
