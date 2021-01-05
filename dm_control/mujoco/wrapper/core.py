@@ -18,6 +18,7 @@
 import contextlib
 import ctypes
 import os
+import threading
 import weakref
 
 from absl import logging
@@ -66,6 +67,7 @@ if constants.mjVERSION_HEADER != mjlib.mj_version():
               "({1})".format(constants.mjVERSION_HEADER, mjlib.mj_version()))
 
 _REGISTERED = False
+_REGISTRATION_LOCK = threading.Lock()
 _ERROR_BUFSIZE = 1000
 
 # This is used to keep track of the `MJMODEL` pointer that was most recently
@@ -115,18 +117,26 @@ def _maybe_register_license(path=None):
   Raises:
     Error: If the license could not be registered.
   """
-  global _REGISTERED
-  if not _REGISTERED:
-    if path is None:
-      path = util.get_mjkey_path()
-    result = mjlib.mj_activate(util.to_binary_string(path))
-    if result == 1:
-      _REGISTERED = True
-      # Internal analytics of mj_activate.
-    elif result == 0:
-      raise Error("Could not register license.")
-    else:
-      raise Error("Unknown registration error (code: {})".format(result))
+  with _REGISTRATION_LOCK:
+    global _REGISTERED
+    if not _REGISTERED:
+      if path is None:
+        path = util.get_mjkey_path()
+      # TODO(b/176220357): Repeatedly activating a trial license results in
+      #                    errors (for example this could happen if
+      #                    `mj_activate` was already called by another library
+      #                    within the same process). To avoid such errors we
+      #                    unconditionally deactivate any active licenses before
+      #                    calling `mj_activate`.
+      mjlib.mj_deactivate()
+      result = mjlib.mj_activate(util.to_binary_string(path))
+      if result == 1:
+        _REGISTERED = True
+        # Internal analytics of mj_activate.
+      elif result == 0:
+        raise Error("Could not register license.")
+      else:
+        raise Error("Unknown registration error (code: {})".format(result))
 
 
 def _str2type(type_str):
