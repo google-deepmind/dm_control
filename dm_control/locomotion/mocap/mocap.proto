@@ -54,7 +54,8 @@ message Walker {
     RESERVED_MODEL_ID_3 = 3;
     CMU_2020 = 4;
     RESERVED_MODEL_ID_5 = 5;
-    // NEXT_ID: 6
+    RESERVED_MODEL_ID_6 = 6;
+    // NEXT_ID: 7
   }
   Model model = 2;
 
