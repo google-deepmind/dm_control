@@ -88,4 +88,4 @@ papers. Relevant references include:
 [merel2019a]: https://arxiv.org/abs/1811.09656
 [merel2019b]: https://arxiv.org/abs/1811.11711
 [merel2020]: https://openreview.net/pdf?id=SyxrxR4KPS
-[hasenclever2020]: https://proceedings.icml.cc/static/paper_files/icml/2020/5013-Paper.pdf
+[hasenclever2020]: http://proceedings.mlr.press/v119/hasenclever20a.html
