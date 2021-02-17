@@ -47,7 +47,10 @@ from dm_control.mujoco.wrapper.mjbindings import mjlib
 from dm_control.mujoco.wrapper.mjbindings import types
 from dm_control.rl import control as _control
 from dm_env import specs
+
 import numpy as np
+
+from typing import NamedTuple
 
 _FONT_STYLES = {
     'normal': enums.mjtFont.mjFONT_NORMAL,
@@ -571,6 +574,22 @@ class Physics(_control.Physics):
     return self.data.time
 
 
+class CameraMatrices(NamedTuple):
+  """Component matrices used to construct the camera matrix.
+
+  The matrix product over these components yields the camera matrix.
+
+  Attributes:
+    image: (3, 3) image matrix.
+    focal: (3, 4) focal matrix.
+    rotation: (4, 4) rotation matrix.
+    translation: (4, 4) translation matrix.
+  """
+  image: np.ndarray
+  focal: np.ndarray
+  rotation: np.ndarray
+  translation: np.ndarray
+
 class Camera:
   """Mujoco scene camera.
 
@@ -681,13 +700,9 @@ class Camera:
     """Returns the `mujoco.MjvScene` instance used by the camera."""
     return self._scene
 
-  @property
-  def matrix(self):
-    """Returns the 3x4 camera matrix.
-
-       For a description of the camera matrix see, e.g.,
-       https://en.wikipedia.org/wiki/Camera_matrix.
-       For a usage example, see the associated test.
+  def matrices(self) -> CameraMatrices:
+    """Returns a CameraMatrices tuple containing the image, focal, rotation, and
+    transaltion matrices of the camera.
     """
     camera_id = self._render_camera.fixedcamid
     if camera_id == -1:
@@ -719,6 +734,18 @@ class Camera:
     image = np.eye(3)
     image[0, 2] = (self.width - 1) / 2.0
     image[1, 2] = (self.height - 1) / 2.0
+    return CameraMatrices(
+        image=image, focal=focal, rotation=rotation, translation=translation)
+
+  @property
+  def matrix(self):
+    """Returns the 3x4 camera matrix.
+
+       For a description of the camera matrix see, e.g.,
+       https://en.wikipedia.org/wiki/Camera_matrix.
+       For a usage example, see the associated test.
+    """
+    image, focal, rotation, translation = self.matrices()
     return image @ focal @ rotation @ translation
 
   def update(self, scene_option=None):
