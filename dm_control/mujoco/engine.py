@@ -34,6 +34,7 @@ also provides a `render` method that returns a pixel array directly.
 import collections
 import contextlib
 import threading
+from typing import NamedTuple
 
 from absl import logging
 
@@ -571,6 +572,23 @@ class Physics(_control.Physics):
     return self.data.time
 
 
+class CameraMatrices(NamedTuple):
+  """Component matrices used to construct the camera matrix.
+
+  The matrix product over these components yields the camera matrix.
+
+  Attributes:
+    image: (3, 3) image matrix.
+    focal: (3, 4) focal matrix.
+    rotation: (4, 4) rotation matrix.
+    translation: (4, 4) translation matrix.
+  """
+  image: np.ndarray
+  focal: np.ndarray
+  rotation: np.ndarray
+  translation: np.ndarray
+
+
 class Camera:
   """Mujoco scene camera.
 
@@ -681,13 +699,12 @@ class Camera:
     """Returns the `mujoco.MjvScene` instance used by the camera."""
     return self._scene
 
-  @property
-  def matrix(self):
-    """Returns the 3x4 camera matrix.
+  def matrices(self) -> CameraMatrices:
+    """Computes the component matrices used to compute the camera matrix.
 
-       For a description of the camera matrix see, e.g.,
-       https://en.wikipedia.org/wiki/Camera_matrix.
-       For a usage example, see the associated test.
+    Returns:
+      An instance of `CameraMatrices` containing the image, focal, rotation, and
+      translation matrices of the camera.
     """
     camera_id = self._render_camera.fixedcamid
     if camera_id == -1:
@@ -719,6 +736,18 @@ class Camera:
     image = np.eye(3)
     image[0, 2] = (self.width - 1) / 2.0
     image[1, 2] = (self.height - 1) / 2.0
+    return CameraMatrices(
+        image=image, focal=focal, rotation=rotation, translation=translation)
+
+  @property
+  def matrix(self):
+    """Returns the 3x4 camera matrix.
+
+    For a description of the camera matrix see, e.g.,
+    https://en.wikipedia.org/wiki/Camera_matrix.
+    For a usage example, see the associated test.
+    """
+    image, focal, rotation, translation = self.matrices()
     return image @ focal @ rotation @ translation
 
   def update(self, scene_option=None):
