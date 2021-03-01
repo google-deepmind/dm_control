@@ -24,3 +24,4 @@ from dm_control.locomotion.arenas.labmaze_textures import SkyBox
 from dm_control.locomotion.arenas.labmaze_textures import WallTextures
 from dm_control.locomotion.arenas.mazes import MazeWithTargets
 from dm_control.locomotion.arenas.mazes import RandomMazeWithTargets
+from dm_control.locomotion.arenas.padded_room import PaddedRoom
