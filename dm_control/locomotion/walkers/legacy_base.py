@@ -180,6 +180,9 @@ class Walker(base.Walker):
   def mocap_joints(self):
     return tuple(self.mjcf_model.find_all('joint'))
 
+  def actuator_force(self, physics):
+    return physics.bind(self.observable_joints).qfrc_actuator
+
   @composer.cached_property
   def mocap_to_observable_joint_order(self):
     mocap_to_obs = [self.mocap_joints.index(j) for j in self.observable_joints]

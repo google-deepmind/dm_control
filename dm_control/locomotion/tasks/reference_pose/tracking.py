@@ -75,6 +75,7 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
       proto_modifier: Optional[Any] = None,
       ghost_offset: Optional[Sequence[Union[int, float]]] = None,
       body_error_multiplier: Union[int, float] = 1.0,
+      actuator_force_coeff: float = 0.015,
   ):
     """Abstract task that uses reference data.
 
@@ -102,6 +103,7 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
         the reference pose at the specified position offset.
       body_error_multiplier: A multiplier that is applied to the body error term
         when determining failure termination condition.
+      actuator_force_coeff: A coefficient for the actuator force reward channel.
     """
     self._ref_steps = np.sort(ref_steps)
     self._max_ref_step = self._ref_steps[-1]
@@ -112,6 +114,7 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
     self._always_init_at_clip_start = always_init_at_clip_start
     self._ghost_offset = ghost_offset
     self._body_error_multiplier = body_error_multiplier
+    self._actuator_force_coeff = actuator_force_coeff
     logging.info('Reward type %s', reward_type)
 
     if isinstance(dataset, Text):
@@ -530,6 +533,10 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
         walker_features=self._walker_features,
         reference_observations=reference_observations)
 
+    if 'actuator_force' in self._reward_keys:
+      reward_channels['actuator_force'] = -self._actuator_force_coeff*np.mean(
+          np.square(self._walker.actuator_force(physics)))
+
     self._should_truncate = self._termination_error > self._termination_error_threshold
 
     self.last_reward_channels = reward_channels
@@ -599,6 +606,7 @@ class MultiClipMocapTracking(ReferencePosesTask):
       proto_modifier: Optional[Any] = None,
       ghost_offset: Optional[Sequence[Union[int, float]]] = None,
       body_error_multiplier: Union[int, float] = 1.0,
+      actuator_force_coeff: float = 0.015,
   ):
     """Mocap tracking task.
 
@@ -626,6 +634,7 @@ class MultiClipMocapTracking(ReferencePosesTask):
         the reference pose at the specified position offset.
       body_error_multiplier: A multiplier that is applied to the body error term
         when determining failure termination condition.
+      actuator_force_coeff: A coefficient for the actuator force reward channel.
     """
     super().__init__(
         walker=walker,
@@ -640,7 +649,8 @@ class MultiClipMocapTracking(ReferencePosesTask):
         always_init_at_clip_start=always_init_at_clip_start,
         proto_modifier=proto_modifier,
         ghost_offset=ghost_offset,
-        body_error_multiplier=body_error_multiplier)
+        body_error_multiplier=body_error_multiplier,
+        actuator_force_coeff=actuator_force_coeff)
     self._walker.observables.add_observable(
         'time_in_clip',
         base_observable.Generic(self.get_normalized_time_in_clip))
