@@ -83,7 +83,7 @@ def set_walker(physics, walker, qpos, qvel, offset=0, null_xyz_and_yaw=False,
   """Set the freejoint and walker's joints angles and velocities."""
   qpos = np.array(qpos)
   if null_xyz_and_yaw:
-    qpos[:3] = 0.
+    qpos[:2] = 0.
     euler = tr.quat_to_euler(qpos[3:7], ordering='ZYX')
     euler[0] = 0.
     quat = tr.euler_to_quat(euler, ordering='ZYX')
