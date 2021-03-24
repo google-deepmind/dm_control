@@ -65,6 +65,9 @@ class SoccerBallTest(absltest.TestCase):
     camera_names = [cam.name for cam in ball.mjcf_model.find_all('camera')]
     self.assertCountEqual(expected_camera_names, camera_names)
 
+  def test_damp_ratio_is_valid(self):
+    with self.assertRaisesRegex(ValueError, 'Invalid `damp_ratio`.*'):
+      soccer_ball.SoccerBall(damp_ratio=-0.5)
 
 if __name__ == '__main__':
   absltest.main()

@@ -25,6 +25,13 @@ from dm_control.utils import io as resources
 
 _ASSETS_PATH = os.path.join(os.path.dirname(__file__), 'assets', 'soccer_ball')
 
+# FIFA regulation parameters for a size 5 ball.
+_REGULATION_RADIUS = 0.117  # Meters.
+_REGULATION_MASS = 0.45  # Kilograms.
+
+_DEFAULT_FRICTION = (0.7, 0.05, 0.04)  # (slide, spin, roll).
+_DEFAULT_DAMP_RATIO = 0.4
+
 
 def _get_texture(name):
   contents = resources.GetResource(
@@ -32,15 +39,32 @@ def _get_texture(name):
   return mjcf.Asset(contents, '.png')
 
 
+def regulation_soccer_ball():
+  return SoccerBall(
+      radius=_REGULATION_RADIUS,
+      mass=_REGULATION_MASS,
+      friction=_DEFAULT_FRICTION,
+      damp_ratio=_DEFAULT_DAMP_RATIO)
+
+
 class SoccerBall(props.Primitive):
   """A soccer ball that keeps track of entities that come into contact."""
 
-  def _build(self, radius=0.35, mass=0.045, name='soccer_ball'):
+  def _build(self,
+             radius=0.35,
+             mass=0.045,
+             friction=(0.7, 0.075, 0.075),
+             damp_ratio=1.0,
+             name='soccer_ball'):
     """Builds this soccer ball.
 
     Args:
       radius: The radius (in meters) of this target sphere.
       mass: Mass (in kilograms) of the ball.
+      friction: Friction parameters of the ball geom with the three dimensions
+        corresponding to (slide, spin, roll) frictions.
+      damp_ratio: A real positive number. Lower implies less dampening upon
+        contacts.
       name: The name of this entity.
     """
     super()._build(geom_type='sphere', size=(radius,), name=name)
@@ -56,12 +80,19 @@ class SoccerBall(props.Primitive):
         fileright=_get_texture('right'))
     material = self._mjcf_root.asset.add(
         'material', name='soccer_ball', texture=texture)
+
+    if damp_ratio < 0.0:
+      raise ValueError(
+          f'Invalid `damp_ratio` parameter ({damp_ratio} is not positive).')
+
     self._geom.set_attributes(
         pos=[0, 0, radius],
         size=[radius],
         condim=6,
-        friction=[.7, .075, .075],
+        priority=1,
         mass=mass,
+        friction=friction,
+        solref=[0.02, damp_ratio],
         material=material)
 
     # Add some tracking cameras for visualization and logging.
