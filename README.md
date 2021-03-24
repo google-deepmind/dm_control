@@ -55,6 +55,7 @@ versions:
 *   3.6
 *   3.7
 *   3.8
+*   3.9
 
 Various people have been successful in getting `dm_control` to work on other
 Linux distros, OS X, and Windows. We do not provide active support for these,
