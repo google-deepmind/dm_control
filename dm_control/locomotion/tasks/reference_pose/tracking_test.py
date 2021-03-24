@@ -151,6 +151,35 @@ class MultiClipMocapTrackingTest(parameterized.TestCase):
 
       env.reset()
 
+  def test_enabled_reference_observables(self):
+    task = tracking.MultiClipMocapTracking(
+        walker=self.walker,
+        arena=self.arena,
+        ref_path=self.test_data,
+        dataset=types.ClipCollection(ids=('cmuv2019_001', 'cmuv2019_002')),
+        ref_steps=(1, 2, 3, 4, 5),
+        min_steps=1,
+        reward_type='comic',
+        enabled_reference_observables=('walker/reference_rel_joints',)
+    )
+
+    env = composer.Environment(task=task)
+
+    timestep = env.reset()
+
+    self.assertIn('walker/reference_rel_joints', timestep.observation.keys())
+    self.assertNotIn('walker/reference_rel_root_pos_local',
+                     timestep.observation.keys())
+
+    # check that all desired observables are enabled.
+    desired_observables = []
+    desired_observables += task._walker.observables.proprioception
+    desired_observables += task._walker.observables.kinematic_sensors
+    desired_observables += task._walker.observables.dynamic_sensors
+
+    for observable in desired_observables:
+      self.assertTrue(observable.enabled)
+
 
 if __name__ == '__main__':
   absltest.main()

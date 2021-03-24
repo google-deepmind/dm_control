@@ -76,6 +76,7 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
       ghost_offset: Optional[Sequence[Union[int, float]]] = None,
       body_error_multiplier: Union[int, float] = 1.0,
       actuator_force_coeff: float = 0.015,
+      enabled_reference_observables: Optional[Sequence[Text]] = None,
   ):
     """Abstract task that uses reference data.
 
@@ -104,6 +105,8 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
       body_error_multiplier: A multiplier that is applied to the body error term
         when determining failure termination condition.
       actuator_force_coeff: A coefficient for the actuator force reward channel.
+      enabled_reference_observables: Optional iterable of enabled observables.
+        If not specified, a reasonable default set will be enabled.
     """
     self._ref_steps = np.sort(ref_steps)
     self._max_ref_step = self._ref_steps[-1]
@@ -151,14 +154,16 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
     walker_bodies_names = [bdy.name for bdy in walker_bodies]
     self._body_idxs = np.array(
         [walker_bodies_names.index(bdy) for bdy in walker_bodies_names])
+
     # Create the observables.
-    self._add_observables()
+    self._add_observables(enabled_reference_observables)
 
     # initialize counters etc.
     self._time_step = 0
     self._current_start_time = 0.0
     self._last_step = 0
     self._current_clip_index = 0
+    self._reference_observations = dict()
     self._end_mocap = False
     self._should_truncate = False
 
@@ -174,7 +179,7 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
         lambda x: x[0], self._clip_reference_features)
 
     self._current_reference_features = dict()
-
+    self._reference_ego_bodies_quats = collections.defaultdict(dict)
     # if requested add ghost body to visualize motion capture reference.
     if self._ghost_offset is not None:
       self._ghost = utils.add_walker(walker, self._arena, 'ghost', ghost=True)
@@ -204,40 +209,47 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
     else:
       self._all_clips = [None] * self._num_clips
 
-  def _add_observables(self):
-    observables = []
-    observables += self._walker.observables.proprioception
-    observables += self._walker.observables.kinematic_sensors
-    observables += self._walker.observables.dynamic_sensors
+  def _add_observables(self, enabled_reference_observables):
 
-    for observable in observables:
-      observable.enabled = True
-    self._walker.observables.add_observable(
-        'clip_id', base_observable.Generic(self.get_clip_id))
+    # pylint: disable=g-long-lambda
     self._walker.observables.add_observable(
         'reference_rel_joints',
-        base_observable.Generic(self.get_reference_rel_joints))
+        base_observable.Generic(lambda _: self._reference_observations[
+            'walker/reference_rel_joints']))
     self._walker.observables.add_observable(
         'reference_rel_bodies_pos_global',
-        base_observable.Generic(self.get_reference_rel_bodies_pos_global))
+        base_observable.Generic(lambda _: self._reference_observations[
+            'walker/reference_rel_bodies_pos_global']))
     self._walker.observables.add_observable(
         'reference_rel_bodies_quats',
-        base_observable.Generic(self.get_reference_rel_bodies_quats))
+        base_observable.Generic(lambda _: self._reference_observations[
+            'walker/reference_rel_bodies_quats']))
     self._walker.observables.add_observable(
         'reference_rel_bodies_pos_local',
-        base_observable.Generic(self.get_reference_rel_bodies_pos_local))
+        base_observable.Generic(lambda _: self._reference_observations[
+            'walker/reference_rel_bodies_pos_local']))
     self._walker.observables.add_observable(
         'reference_ego_bodies_quats',
-        base_observable.Generic(self.get_reference_ego_bodies_quats))
+        base_observable.Generic(lambda _: self._reference_observations[
+            'walker/reference_ego_bodies_quats']))
     self._walker.observables.add_observable(
         'reference_rel_root_quat',
-        base_observable.Generic(self.get_reference_rel_root_quat))
+        base_observable.Generic(lambda _: self._reference_observations[
+            'walker/reference_rel_root_quat']))
     self._walker.observables.add_observable(
         'reference_rel_root_pos_local',
-        base_observable.Generic(self.get_reference_rel_root_pos_local))
+        base_observable.Generic(lambda _: self._reference_observations[
+            'walker/reference_rel_root_pos_local']))
+    # pylint: enable=g-long-lambda
     self._walker.observables.add_observable(
         'reference_appendages_pos',
         base_observable.Generic(self.get_reference_appendages_pos))
+
+    if enabled_reference_observables:
+      for name, observable in self.observables.items():
+        observable.enabled = name in enabled_reference_observables
+    self._walker.observables.add_observable(
+        'clip_id', base_observable.Generic(self.get_clip_id))
     self._walker.observables.add_observable(
         'velocimeter_control', base_observable.Generic(self.get_veloc_control))
     self._walker.observables.add_observable(
@@ -245,6 +257,14 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
     self._walker.observables.add_observable(
         'joints_vel_control',
         base_observable.Generic(self.get_joints_vel_control))
+
+    observables = []
+    observables += self._walker.observables.proprioception
+    observables += self._walker.observables.kinematic_sensors
+    observables += self._walker.observables.dynamic_sensors
+
+    for observable in observables:
+      observable.enabled = True
 
   def _get_possible_starts(self):
     # List all possible (clip, step) starting points.
@@ -318,7 +338,7 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
     # Set the walker at the beginning of the clip.
     self._set_walker(physics)
     self._walker_features = utils.get_features(physics, self._walker)
-    self._walker_features_prev = utils.get_features(physics, self._walker)
+    self._walker_features_prev = self._walker_features.copy()
 
     self._walker_joints = np.array(physics.bind(self._walker.mocap_joints).qpos)  # pytype: disable=attribute-error
 
@@ -331,6 +351,8 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
                         'This is likely due to a proto/walker mismatch.'))
 
     self._update_ghost(physics)
+    self._reference_observations.update(
+        self.get_all_reference_observations(physics))
 
     # reset reward channels
     self._reset_reward_channels()
@@ -364,6 +386,13 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
     del random_state  # unused by after_step.
 
     self._walker_features_prev = self._walker_features.copy()
+
+  def after_compile(self, physics: 'mjcf.Physics',
+                    random_state: np.random.RandomState):
+    # populate reference observations field to initialize observations.
+    if not self._reference_observations:
+      self._reference_observations.update(
+          self.get_all_reference_observations(physics))
 
   def should_terminate_episode(self, physics: 'mjcf.Physics'):
     del physics  # physics unused by should_terminate_episode.
@@ -424,18 +453,21 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
                   self._walker_features['body_positions'])[:, self._body_idxs])
     return np.concatenate([o.flatten() for o in obs])
 
-  def get_reference_ego_bodies_quats(self, physics: 'mjcf.Physics'):
+  def get_reference_ego_bodies_quats(self, unused_physics: 'mjcf.Physics'):
     """Body quat of the reference relative to the reference root quat."""
-    del physics  # physics unused by reference observations.
-
     time_steps = self._time_step + self._ref_steps
     obs = []
+    quats_for_clip = self._reference_ego_bodies_quats[self._current_clip_index]
     for t in time_steps:
-      for b in self._body_idxs:
-        obs.append(
-            tr.quat_diff(
-                self._clip_reference_features['quaternion'][t, :],
-                self._clip_reference_features['body_quaternions'][t, b, :]))
+      if t not in quats_for_clip:
+        root_quat = self._clip_reference_features['quaternion'][t, :]
+        quats_for_clip[t] = [
+            tr.quat_diff(  # pylint: disable=g-complex-comprehension
+                root_quat,
+                self._clip_reference_features['body_quaternions'][t, b, :])
+            for b in self._body_idxs
+        ]
+      obs.extend(quats_for_clip[t])
     return np.concatenate([o.flatten() for o in obs])
 
   def get_reference_rel_root_quat(self, physics: 'mjcf.Physics'):
@@ -525,13 +557,12 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
     return reference_observations
 
   def get_reward(self, physics: 'mjcf.Physics') -> float:
-    reference_observations = self.get_all_reference_observations(physics)
     reward, unused_debug_outputs, reward_channels = self._reward_fn(
         termination_error=self._termination_error,
         termination_error_threshold=self._termination_error_threshold,
         reference_features=self._current_reference_features,
         walker_features=self._walker_features,
-        reference_observations=reference_observations)
+        reference_observations=self._reference_observations)
 
     if 'actuator_force' in self._reward_keys:
       reward_channels['actuator_force'] = -self._actuator_force_coeff*np.mean(
@@ -607,6 +638,7 @@ class MultiClipMocapTracking(ReferencePosesTask):
       ghost_offset: Optional[Sequence[Union[int, float]]] = None,
       body_error_multiplier: Union[int, float] = 1.0,
       actuator_force_coeff: float = 0.015,
+      enabled_reference_observables: Optional[Sequence[Text]] = None,
   ):
     """Mocap tracking task.
 
@@ -635,6 +667,8 @@ class MultiClipMocapTracking(ReferencePosesTask):
       body_error_multiplier: A multiplier that is applied to the body error term
         when determining failure termination condition.
       actuator_force_coeff: A coefficient for the actuator force reward channel.
+      enabled_reference_observables: Optional iterable of enabled observables.
+        If not specified, a reasonable default set will be enabled.
     """
     super().__init__(
         walker=walker,
@@ -650,7 +684,8 @@ class MultiClipMocapTracking(ReferencePosesTask):
         proto_modifier=proto_modifier,
         ghost_offset=ghost_offset,
         body_error_multiplier=body_error_multiplier,
-        actuator_force_coeff=actuator_force_coeff)
+        actuator_force_coeff=actuator_force_coeff,
+        enabled_reference_observables=enabled_reference_observables)
     self._walker.observables.add_observable(
         'time_in_clip',
         base_observable.Generic(self.get_normalized_time_in_clip))
@@ -675,6 +710,9 @@ class MultiClipMocapTracking(ReferencePosesTask):
 
     # Terminate based on the error.
     self._end_mocap = self._time_step == self._last_step
+
+    self._reference_observations.update(
+        self.get_all_reference_observations(physics))
 
     self._update_ghost(physics)
 
