@@ -713,3 +713,12 @@ class RandomizedPitch(Pitch):
 
     # Resize, reposition and recolor hoarding geoms.
     self._update_hoarding()
+
+
+# Mini-football (5v5) dimensions.
+_GOAL_LENGTH = 3.66
+_GOAL_SIDE = 1.22
+
+MINI_FOOTBALL_MIN_AREA_PER_HUMANOID = 100.0
+MINI_FOOTBALL_MAX_AREA_PER_HUMANOID = 350.0
+MINI_FOOTBALL_GOAL_SIZE = (_GOAL_SIDE / 2, _GOAL_LENGTH / 2, _GOAL_SIDE / 2)
