@@ -39,7 +39,7 @@ def cmu_humanoid_tracking(random_state=None):
   task = tracking.MultiClipMocapTracking(
       walker=walker_type,
       arena=arena,
-      ref_path=cmu_mocap_data.get_path_for_cmu_2020(),
+      ref_path=cmu_mocap_data.get_path_for_cmu(version='2020'),
       dataset='walk_tiny',
       ref_steps=(1, 2, 3, 4, 5),
       min_steps=10,

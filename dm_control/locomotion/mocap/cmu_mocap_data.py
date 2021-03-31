@@ -31,23 +31,29 @@ import os
 import requests
 import tqdm
 
-H5_FILENAME = 'cmu_2020_dfe3e9e0.h5'
-H5_PATHS = (
-    os.path.join(os.path.dirname(__file__), H5_FILENAME),
-    os.path.join('~/.dm_control', H5_FILENAME),
-)
-H5_URL = 'https://storage.googleapis.com/dm_control/cmu_2020_dfe3e9e0.h5'
+H5_FILENAME = {'2019': 'cmu_2019_08756c01.h5',
+               '2020': 'cmu_2020_dfe3e9e0.h5'}
 
-H5_BYTES = 476559420
-H5_SHA256 = 'dfe3e9e0b08d32960bdafbf89e541339ca8908a9a5e7f4a2c986362890d72863'
+H5_PATHS = {k: (os.path.join(os.path.dirname(__file__), v),
+                os.path.join('~/.dm_control', v))
+            for k, v in H5_FILENAME.items()}
+H5_URL_BASE = 'https://storage.googleapis.com/dm_control/'
+H5_URL = {'2019': H5_URL_BASE+'cmu_2019_08756c01.h5',
+          '2020': H5_URL_BASE+'cmu_2020_dfe3e9e0.h5'}
+
+H5_BYTES = {'2019': 488143314,
+            '2020': 476559420}
+H5_SHA256 = {
+    '2019': '08756c01cb4ac20da9918e70e85c32d4880c6c8c16189b02a18b79a5e79afa2b',
+    '2020': 'dfe3e9e0b08d32960bdafbf89e541339ca8908a9a5e7f4a2c986362890d72863'}
 
 
-def _get_cached_file_path():
+def _get_cached_file_path(version):
   """Returns the path to the cached data file if one exists."""
-  for path in H5_PATHS:
+  for path in H5_PATHS[version]:
     expanded_path = os.path.expanduser(path)
     try:
-      if os.path.getsize(expanded_path) != H5_BYTES:
+      if os.path.getsize(expanded_path) != H5_BYTES[version]:
         continue
       with open(expanded_path, 'rb'):
         return expanded_path
@@ -56,9 +62,9 @@ def _get_cached_file_path():
   return None
 
 
-def _download_and_cache():
+def _download_and_cache(version):
   """Downloads CMU data into one of the candidate paths in H5_PATHS."""
-  for path in H5_PATHS:
+  for path in H5_PATHS[version]:
     expanded_path = os.path.expanduser(path)
     try:
       os.makedirs(os.path.dirname(expanded_path), exist_ok=True)
@@ -67,18 +73,18 @@ def _download_and_cache():
       continue
     with f:
       try:
-        _download_into_file(f)
+        _download_into_file(f, version)
       except:
         os.unlink(expanded_path)
         raise
     return expanded_path
   raise IOError('cannot open file to write download data into, '
-                f'paths attempted: {H5_PATHS}')
+                f'paths attempted: {H5_PATHS[version]}')
 
 
-def _download_into_file(f, validate_hash=True):
+def _download_into_file(f, version, validate_hash=True):
   """Download the CMU data into a file object that has been opened for write."""
-  with requests.get(H5_URL, stream=True) as req:
+  with requests.get(H5_URL[version], stream=True) as req:
     req.raise_for_status()
     total_bytes = int(req.headers['Content-Length'])
     progress_bar = tqdm.tqdm(
@@ -94,13 +100,15 @@ def _download_into_file(f, validate_hash=True):
 
   if validate_hash:
     f.seek(0)
-    if hashlib.sha256(f.read()).hexdigest() != H5_SHA256:
+    if hashlib.sha256(f.read()).hexdigest() != H5_SHA256[version]:
       raise RuntimeError('downloaded file is corrupted')
 
 
-def get_path_for_cmu_2020():
-  """Path to mocap data fitted to the 2020 version of the CMU Humanoid model."""
-  path = _get_cached_file_path()
+def get_path_for_cmu(version='2020'):
+  """Path to mocap data fitted to a version of the CMU Humanoid model."""
+  assert version in H5_FILENAME.keys()
+  path = _get_cached_file_path(version)
   if path is None:
-    path = _download_and_cache()
+    path = _download_and_cache(version)
   return path
+
