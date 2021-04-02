@@ -15,7 +15,7 @@
 
 r"""Automatically generates ctypes Python bindings for MuJoCo.
 
-Parses mjdata.h, mjmodel.h, mjrender.h, mjvisualize.h, mjxmacro.h and mujoco.h;
+Parses mjdata.h, mjmodel.h, mjrender.h, mjvisualize.h, mjxmacro.h, mjui.h and mujoco.h;
 generates the following Python source files:
 
   constants.py:  constants
