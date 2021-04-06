@@ -104,7 +104,7 @@ class Trajectory:
 
             self._dict[key_prefix + field_name] = walker_field
 
-        num_props = len(initial_timestep.walkers)
+        num_props = len(initial_timestep.props)
         for i in range(len(initial_timestep.props)):
           key_prefix = 'prop_{:d}/'.format(i) if num_props > 1 else 'prop/'
           for field in mocap_pb2.PropPose.DESCRIPTOR.fields:
@@ -241,13 +241,17 @@ class Trajectory:
       walker_info.rescale_walker(walker)
       walker_info.add_marker_sites(walker)
 
-  def create_props(self, proto_modifier=None, priority_friction=False):
+  def create_props(self,
+                   proto_modifier=None,
+                   priority_friction=False,
+                   prop_factory=None):
     proto = self._proto
+    prop_factory = prop_factory or mocap_props.Prop
     if proto_modifier is not None:
       proto = copy.copy(proto)
       proto_modifier(proto)
     return tuple(
-        mocap_props.Prop(prop_proto, priority_friction=priority_friction)
+        prop_factory(prop_proto, priority_friction=priority_friction)
         for prop_proto in proto.props)
 
   def get_timestep_data(self, time):

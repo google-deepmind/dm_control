@@ -18,7 +18,7 @@ import abc
 import collections
 
 import typing
-from typing import Any, Callable, Mapping, Optional, Sequence, Text, Union
+from typing import Any, Callable, Mapping, Optional, Sequence, Set, Text, Union
 
 from absl import logging
 from dm_control import composer
@@ -47,13 +47,52 @@ DEFAULT_PHYSICS_TIMESTEP = 0.005
 _MAX_END_STEP = 10000
 
 
-def _strip_reference_prefix(dictionary: Mapping[Text, Any], prefix: Text):
+def _strip_reference_prefix(dictionary: Mapping[Text, Any],
+                            prefix: Text,
+                            keep_prefixes: Optional[Set[Text]] = None):
+  """Strips a prefix from dictionary keys and remove keys without the prefix.
+
+  Strips a prefix from the keys of a dictionary and removes any key from the
+  result dictionary that doesn't match the determined prefix, unless explicitly
+  excluded in keep_prefixes.
+
+  E.g.
+  dictionary={
+    'example_key': 1,
+    'example_another_key': 2,
+    'doesnt_match': 3,
+    'keep_this': 4,
+  }, prefix='example_', keep_prefixes=['keep_']
+
+  would return
+  {
+    'key': 1,
+    'another_key': 2,
+    'keep_this': 4,
+  }
+
+  Args:
+    dictionary: The dictionary whose keys will be stripped.
+    prefix: The prefix to strip.
+    keep_prefixes: Optionally specify prefixes for keys that will be unchanged
+      and retained in the result dictionary.
+
+  Returns:
+    The dictionary with the modified keys and original values (and unchanged
+    keys specified by keep_prefixes).
+  """
+  keep_prefixes = keep_prefixes or []
   new_dictionary = dict()
-  for key in list(dictionary.keys()):
+  for key in dictionary:
     if key.startswith(prefix):
       key_without_prefix = key.split(prefix)[1]
       # note that this will not copy the underlying array.
       new_dictionary[key_without_prefix] = dictionary[key]
+    else:
+      for keep_prefix in keep_prefixes:
+        if key.startswith(keep_prefix):
+          new_dictionary[key] = dictionary[key]
+
   return new_dictionary
 
 
@@ -73,6 +112,8 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
       physics_timestep: float = DEFAULT_PHYSICS_TIMESTEP,
       always_init_at_clip_start: bool = False,
       proto_modifier: Optional[Any] = None,
+      prop_factory: Optional[Any] = None,
+      disable_props: bool = False,
       ghost_offset: Optional[Sequence[Union[int, float]]] = None,
       body_error_multiplier: Union[int, float] = 1.0,
       actuator_force_coeff: float = 0.015,
@@ -100,6 +141,10 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
         reference trajectory.
       proto_modifier: Optional proto modifier to modify reference trajectories,
         e.g. adding a vertical offset.
+      prop_factory: Optional function that takes the mocap proto and returns
+        the corresponding props for the trajectory.
+      disable_props: If prop_factory is specified but disable_props is True,
+        no props will be created.
       ghost_offset: if not None, include a ghost rendering of the walker with
         the reference pose at the specified position offset.
       body_error_multiplier: A multiplier that is applied to the body error term
@@ -155,6 +200,14 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
     self._body_idxs = np.array(
         [walker_bodies_names.index(bdy) for bdy in walker_bodies_names])
 
+    self._prop_factory = prop_factory
+    if disable_props:
+      self._props = []
+    else:
+      self._props = self._current_clip.create_props(prop_factory=prop_factory)
+    for prop in self._props:
+      self._arena.add_free_entity(prop)
+
     # Create the observables.
     self._add_observables(enabled_reference_observables)
 
@@ -168,9 +221,16 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
     self._should_truncate = False
 
     # Set up required dummy quantities for observations
+    self._prop_prefixes = []
+
+    self._disable_props = disable_props
+    if not disable_props:
+      if len(self._props) == 1:
+        self._prop_prefixes += ['prop/']
+      else:
+        self._prop_prefixes += [f'prop_{i}/' for i in range(len(self._props))]
     self._clip_reference_features = self._current_clip.as_dict()
-    self._clip_reference_features = _strip_reference_prefix(
-        self._clip_reference_features, 'walker/')
+    self._strip_reference_prefix()
 
     self._walker_joints = self._clip_reference_features['joints'][0]
     self._walker_features = tree.map_structure(lambda x: x[0],
@@ -182,10 +242,58 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
     self._reference_ego_bodies_quats = collections.defaultdict(dict)
     # if requested add ghost body to visualize motion capture reference.
     if self._ghost_offset is not None:
-      self._ghost = utils.add_walker(walker, self._arena, 'ghost', ghost=True)
+      self._ghost = utils.add_walker(
+          walker, self._arena, name='ghost', ghost=True)
+      self._ghost.observables.disable_all()
+
+      if disable_props:
+        self._ghost_props = []
+      else:
+        self._ghost_props = self._current_clip.create_props(
+            prop_factory=self._ghost_prop_factory)
+        for prop in self._ghost_props:
+          self._arena.add_free_entity(prop)
+          prop.observables.disable_all()
+    else:
+      self._ghost_props = []
 
     # initialize reward channels
     self._reset_reward_channels()
+
+  def _strip_reference_prefix(self):
+    self._clip_reference_features = _strip_reference_prefix(
+        self._clip_reference_features,
+        'walker/',
+        keep_prefixes=self._prop_prefixes)
+
+    positions = []
+    quaternions = []
+    for prefix in self._prop_prefixes:
+      position_key, quaternion_key = f'{prefix}position', f'{prefix}quaternion'
+      positions.append(self._clip_reference_features[position_key])
+      quaternions.append(self._clip_reference_features[quaternion_key])
+      del self._clip_reference_features[position_key]
+      del self._clip_reference_features[quaternion_key]
+    # positions has dimension (#props, #timesteps, 3). However, the convention
+    # for reference observations is (#timesteps, #props, 3). Therefore we
+    # transpose the dimensions by specifying the desired positions in the list
+    # for each dimension as an argument to np.transpose.
+    axes = [1, 0, 2]
+    if self._prop_prefixes:
+      self._clip_reference_features['prop_positions'] = np.transpose(
+          positions, axes=axes)
+      self._clip_reference_features['prop_quaternions'] = np.transpose(
+          quaternions, axes=axes)
+
+  def _ghost_prop_factory(self, prop_proto, priority_friction=False):
+    if self._prop_factory is None:
+      return None
+
+    prop = self._prop_factory(prop_proto, priority_friction=priority_friction)
+    for geom in prop.mjcf_model.find_all('geom'):
+      geom.set_attributes(contype=0, conaffinity=0, rgba=(0.5, 0.5, 0.5, .999))
+    prop.observables.disable_all()
+    return prop
 
   def _load_reference_data(self, ref_path, proto_modifier,
                            dataset: types.ClipCollection):
@@ -258,6 +366,12 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
         'joints_vel_control',
         base_observable.Generic(self.get_joints_vel_control))
 
+    self._arena.observables.add_observable(
+        'reference_props_pos_global',
+        base_observable.Generic(self.get_reference_props_pos_global))
+    self._arena.observables.add_observable(
+        'reference_props_quat_global',
+        base_observable.Generic(self.get_reference_props_quat_global))
     observables = []
     observables += self._walker.observables.proprioception
     observables += self._walker.observables.kinematic_sensors
@@ -265,6 +379,10 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
 
     for observable in observables:
       observable.enabled = True
+
+    for prop in self._props:
+      prop.observables.position.enabled = True
+      prop.observables.orientation.enabled = True
 
   def _get_possible_starts(self):
     # List all possible (clip, step) starting points.
@@ -295,6 +413,32 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
     if hasattr(self._arena, 'regenerate'):
       self._arena.regenerate(random_state)
 
+    # Get a new clip here to instantiate the right prop for this episode.
+    self._get_clip_to_track(random_state)
+    # Set up props.
+    # We call the prop factory here to ensure that props can change per episode.
+    for prop in self._props:
+      prop.detach()
+      del prop
+
+    if not self._disable_props:
+      self._props = self._current_clip.create_props(
+          prop_factory=self._prop_factory)
+      for prop in self._props:
+        self._arena.add_free_entity(prop)
+        prop.observables.position.enabled = True
+        prop.observables.orientation.enabled = True
+
+      if self._ghost_offset is not None:
+        for prop in self._ghost_props:
+          prop.detach()
+          del prop
+        self._ghost_props = self._current_clip.create_props(
+            prop_factory=self._ghost_prop_factory)
+        for prop in self._ghost_props:
+          self._arena.add_free_entity(prop)
+          prop.observables.disable_all()
+
   def _get_clip_to_track(self, random_state: np.random.RandomState):
     # Randomly select a starting point.
     index = random_state.choice(
@@ -314,8 +458,8 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
           zero_out_velocities=False)
     self._current_clip = self._all_clips[self._current_clip_index]
     self._clip_reference_features = self._current_clip.as_dict()
-    self._clip_reference_features = _strip_reference_prefix(
-        self._clip_reference_features, 'walker/')
+    self._strip_reference_prefix()
+
     # The reference features are already restricted to
     # clip_start_step:clip_end_step. However start_step is in
     # [clip_start_step:clip_end_step]. Hence we subtract clip_start_step to
@@ -333,11 +477,10 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
                          random_state: np.random.RandomState):
     """Randomly selects a starting point and set the walker."""
 
-    self._get_clip_to_track(random_state)
-
     # Set the walker at the beginning of the clip.
     self._set_walker(physics)
-    self._walker_features = utils.get_features(physics, self._walker)
+    self._walker_features = utils.get_features(
+        physics, self._walker, props=self._props)
     self._walker_features_prev = self._walker_features.copy()
 
     self._walker_joints = np.array(physics.bind(self._walker.mocap_joints).qpos)  # pytype: disable=attribute-error
@@ -375,6 +518,13 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
                 self._walker_features['body_positions'])[self._body_idxs]))
     self._termination_error = (
         0.5 * self._body_error_multiplier * error_bodies + 0.5 * error_joints)
+
+    if self._props:
+      target_props = self._clip_reference_features['prop_positions'][
+          self._time_step]
+      cur_props = self._walker_features['prop_positions']
+      error_props = np.mean(np.abs(target_props - cur_props))
+      self._termination_error = self._termination_error * 2. / 3. + error_props / 3.
 
   def before_step(self, physics: 'mjcf.Physics', action,
                   random_state: np.random.RandomState):
@@ -497,6 +647,24 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
                   self._walker_features['position']))
     return np.concatenate([o.flatten() for o in obs])
 
+  def get_reference_props_pos_global(self, physics: 'mjcf.Physics'):
+    time_steps = self._time_step + self._ref_steps
+    # size N x 3 where N = # of props
+    if self._props:
+      return self._clip_reference_features['prop_positions'][
+          time_steps].flatten()
+    else:
+      return []
+
+  def get_reference_props_quat_global(self, physics: 'mjcf.Physics'):
+    time_steps = self._time_step + self._ref_steps
+    # size N x 4 where N = # of props
+    if self._props:
+      return self._clip_reference_features['prop_quaternions'][
+          time_steps].flatten()
+    else:
+      return []
+
   def get_veloc_control(self, physics: 'mjcf.Physics'):
     """Velocity measurements in the prev root frame at the control timestep."""
     del physics  # physics unused by get_veloc_control.
@@ -554,6 +722,13 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
     reference_observations[
         'walker/reference_rel_root_pos_local'] = self.get_reference_rel_root_pos_local(
             physics)
+    if self._props:
+      reference_observations[
+          'props/reference_pos_global'] = self.get_reference_props_pos_global(
+              physics)
+      reference_observations[
+          'props/reference_quat_global'] = self.get_reference_props_quat_global(
+              physics)
     return reference_observations
 
   def get_reward(self, physics: 'mjcf.Physics') -> float:
@@ -577,6 +752,8 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
     timestep_features = tree.map_structure(lambda x: x[self._time_step],
                                            self._clip_reference_features)
     utils.set_walker_from_features(physics, self._walker, timestep_features)
+    if self._props:
+      utils.set_props_from_features(physics, self._props, timestep_features)
     mjlib.mj_kinematics(physics.model.ptr, physics.data.ptr)
 
   def _update_ghost(self, physics: 'mjcf.Physics'):
@@ -585,6 +762,9 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
                                   self._clip_reference_features)
       utils.set_walker_from_features(physics, self._ghost, target,
                                      self._ghost_offset)
+      if self._ghost_props:
+        utils.set_props_from_features(
+            physics, self._ghost_props, target, z_offset=self._ghost_offset)
       mjlib.mj_kinematics(physics.model.ptr, physics.data.ptr)
 
   def action_spec(self, physics: 'mjcf.Physics'):
@@ -635,6 +815,8 @@ class MultiClipMocapTracking(ReferencePosesTask):
       physics_timestep: float = DEFAULT_PHYSICS_TIMESTEP,
       always_init_at_clip_start: bool = False,
       proto_modifier: Optional[Any] = None,
+      prop_factory: Optional[Any] = None,
+      disable_props: bool = True,
       ghost_offset: Optional[Sequence[Union[int, float]]] = None,
       body_error_multiplier: Union[int, float] = 1.0,
       actuator_force_coeff: float = 0.015,
@@ -662,6 +844,10 @@ class MultiClipMocapTracking(ReferencePosesTask):
         reference trajectory.
       proto_modifier: Optional proto modifier to modify reference trajectories,
         e.g. adding a vertical offset.
+      prop_factory: Optional function that takes the mocap proto and returns
+        the corresponding props for the trajectory.
+      disable_props: If prop_factory is specified but disable_props is True,
+        no props will be created.
       ghost_offset: if not None, include a ghost rendering of the walker with
         the reference pose at the specified position offset.
       body_error_multiplier: A multiplier that is applied to the body error term
@@ -682,6 +868,8 @@ class MultiClipMocapTracking(ReferencePosesTask):
         physics_timestep=physics_timestep,
         always_init_at_clip_start=always_init_at_clip_start,
         proto_modifier=proto_modifier,
+        prop_factory=prop_factory,
+        disable_props=disable_props,
         ghost_offset=ghost_offset,
         body_error_multiplier=body_error_multiplier,
         actuator_force_coeff=actuator_force_coeff,
@@ -696,7 +884,8 @@ class MultiClipMocapTracking(ReferencePosesTask):
     self._time_step += 1
 
     # Update the walker's data for this timestep.
-    self._walker_features = utils.get_features(physics, self._walker)
+    self._walker_features = utils.get_features(
+        physics, self._walker, props=self._props)
     # features for default error
     self._walker_joints = np.array(physics.bind(self._walker.mocap_joints).qpos)  # pytype: disable=attribute-error
 

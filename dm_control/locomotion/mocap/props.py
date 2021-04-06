@@ -16,6 +16,8 @@
 
 from dm_control import composer
 from dm_control import mjcf
+from dm_control.composer import define
+from dm_control.composer.observation import observable
 from dm_control.locomotion.mocap import mocap_pb2
 import numpy as np
 
@@ -56,6 +58,14 @@ class Prop(composer.Entity):
       self._geom.friction = [.7, prop_proto.size[0]/4, prop_proto.size[0]/2]
 
     self._body_geom_ids = ()
+    self._position = self._mjcf_root.sensor.add(
+        'framepos', name='position', objtype='geom', objname=self.geom)
+
+    self._orientation = self._mjcf_root.sensor.add(
+        'framequat', name='orientation', objtype='geom', objname=self.geom)
+
+  def _build_observables(self):
+    return Observables(self)
 
   @property
   def mjcf_model(self):
@@ -77,3 +87,24 @@ class Prop(composer.Entity):
   @property
   def body_geom_ids(self):
     return self._body_geom_ids
+
+  @property
+  def position(self):
+    """Ground truth pos sensor."""
+    return self._position
+
+  @property
+  def orientation(self):
+    """Ground truth orientation sensor."""
+    return self._orientation
+
+
+class Observables(composer.Observables):
+
+  @define.observable
+  def position(self):
+    return observable.MJCFFeature('sensordata', self._entity.position)
+
+  @define.observable
+  def orientation(self):
+    return observable.MJCFFeature('sensordata', self._entity.orientation)

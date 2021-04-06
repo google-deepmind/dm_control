@@ -102,7 +102,16 @@ def set_walker(physics, walker, qpos, qvel, offset=0, null_xyz_and_yaw=False,
                       quaternion=rotation_shift, rotate_velocity=True)
 
 
-def get_features(physics, walker):
+def set_props_from_features(physics, props, features, z_offset=0):
+  positions = features['prop_positions']
+  quaternions = features['prop_quaternions']
+  if np.isscalar(z_offset):
+    z_offset = np.array([0., 0., z_offset])
+  for prop, pos, quat in zip(props, positions, quaternions):
+    prop.set_pose(physics, pos + z_offset, quat)
+
+
+def get_features(physics, walker, props=None):
   """Get walker features for reward functions."""
   walker_bodies = walker.mocap_tracking_bodies
 
@@ -113,6 +122,7 @@ def get_features(physics, walker):
   joints = np.array(physics.bind(walker.mocap_joints).qpos)
   walker_features['joints'] = joints
   freejoint_frame = mjcf.get_attachment_frame(walker.mjcf_model)
+
   com = np.array(physics.bind(freejoint_frame).subtree_com)
   walker_features['center_of_mass'] = com
   end_effectors = np.array(
@@ -133,4 +143,14 @@ def get_features(physics, walker):
   walker_features['angular_velocity'] = np.array(root_angvel)
   joints_vel = np.array(physics.bind(walker.mocap_joints).qvel)
   walker_features['joints_velocity'] = joints_vel
+
+  if props:
+    positions = []
+    quaternions = []
+    for prop in props:
+      pos, quat = prop.get_pose(physics)
+      positions.append(pos)
+      quaternions.append(quat)
+    walker_features['prop_positions'] = np.array(positions)
+    walker_features['prop_quaternions'] = np.array(quaternions)
   return walker_features
