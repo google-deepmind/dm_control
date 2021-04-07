@@ -35,10 +35,24 @@ def add_walker(walker_fn, arena, name='walker', ghost=False, visible=True,
       # alpha=0.999 ensures grey ghost reference.
       # for alpha=1.0 there is no visible difference between real walker and
       # ghost reference.
+      alpha = 0.999
+      if geom.rgba is not None and geom.rgba[3] < alpha:
+        alpha = geom.rgba[3]
+
       geom.set_attributes(
           contype=0,
           conaffinity=0,
-          rgba=(0.5, 0.5, 0.5, .999 if visible else 0.0))
+          rgba=(0.5, 0.5, 0.5, alpha if visible else 0.0))
+
+    # We don't want ghost actuators to be controllable, so remove them.
+    model = walker.mjcf_model
+
+    elems = model.find_all('actuator')
+    sensors = [x for x in model.find_all('sensor') if 'actuator' in x.tag]
+    elems += sensors
+
+    for elem in elems:
+      elem.remove()
 
     skin = walker.mjcf_model.find('skin', 'skin')
     if skin:

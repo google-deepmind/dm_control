@@ -273,6 +273,30 @@ class MultiClipMocapTrackingTest(parameterized.TestCase):
     self.assertEmpty(task._props)
     self.assertEmpty(task._ghost_props)
 
+  def test_ghost_walker(self):
+    task = tracking.MultiClipMocapTracking(
+        walker=self.walker,
+        arena=self.arena,
+        ref_path=self.test_data,
+        dataset=types.ClipCollection(ids=('cmuv2019_001', 'cmuv2019_002')),
+        ref_steps=(0,),
+        min_steps=1,
+        ghost_offset=None,
+    )
+    env = composer.Environment(task=task)
+    task_with_ghost = tracking.MultiClipMocapTracking(
+        walker=self.walker,
+        arena=self.arena,
+        ref_path=self.test_data,
+        dataset=types.ClipCollection(ids=('cmuv2019_001', 'cmuv2019_002')),
+        ref_steps=(0,),
+        min_steps=1,
+        ghost_offset=GHOST_OFFSET,
+    )
+    env_with_ghost = composer.Environment(task=task_with_ghost)
+    # Test that the ghost does not introduce additional actions.
+    self.assertEqual(env_with_ghost.action_spec(), env.action_spec())
+
 
 if __name__ == '__main__':
   absltest.main()

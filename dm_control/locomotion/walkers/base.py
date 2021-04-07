@@ -132,10 +132,13 @@ class Walker(composer.Robot, metaclass=abc.ABCMeta):
 
   @property
   def action_spec(self):
-    minimum, maximum = zip(*[
-        a.ctrlrange if a.ctrlrange is not None else (-1., 1.)
-        for a in self.actuators
-    ])
+    if not self.actuators:
+      minimum, maximum = (), ()
+    else:
+      minimum, maximum = zip(*[
+          a.ctrlrange if a.ctrlrange is not None else (-1., 1.)
+          for a in self.actuators
+      ])
     return specs.BoundedArray(
         shape=(len(self.actuators),),
         dtype=np.float,
