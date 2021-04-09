@@ -37,6 +37,8 @@ _ARM_JOINTS = ['arm_root', 'arm_shoulder', 'arm_elbow', 'arm_wrist',
                'finger', 'fingertip', 'thumb', 'thumbtip']
 _ALL_PROPS = frozenset(['ball', 'target_ball', 'cup',
                         'peg', 'target_peg', 'slot'])
+_TOUCH_SENSORS = ['palm_touch', 'finger_touch', 'thumb_touch',
+                  'fingertip_touch', 'thumbtip_touch']
 
 SUITE = containers.TaggedTasks()
 
@@ -149,7 +151,7 @@ class Physics(mujoco.Physics):
       return pos
 
   def touch(self):
-    return np.log1p(self.data.sensordata)
+    return np.log1p(self.named.data.sensordata[_TOUCH_SENSORS])
 
   def site_distance(self, site1, site2):
     site1_to_site2 = np.diff(self.named.data.site_xpos[[site2, site1]], axis=0)
