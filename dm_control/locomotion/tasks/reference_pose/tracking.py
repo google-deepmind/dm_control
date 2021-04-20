@@ -107,6 +107,7 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
       ref_steps: Sequence[int],
       dataset: Union[Text, types.ClipCollection],
       termination_error_threshold: float = 0.3,
+      prop_termination_error_threshold: float = 0.1,
       min_steps: int = 10,
       reward_type: Text = 'termination_reward',
       physics_timestep: float = DEFAULT_PHYSICS_TIMESTEP,
@@ -130,7 +131,10 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
         contain information from t+1, t+2, t+3.
       dataset: A ClipCollection instance or a name of a dataset that appears as
         a key in DATASETS in datasets.py
-      termination_error_threshold: Error threshold for episode terminations.
+      termination_error_threshold: Error threshold for episode terminations for
+        hand body position and joint error only.
+      prop_termination_error_threshold: Error threshold for episode terminations
+        for prop position.
       min_steps: minimum number of steps within an episode. This argument
         determines the latest allowable starting point within a given reference
         trajectory.
@@ -156,6 +160,7 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
     self._ref_steps = np.sort(ref_steps)
     self._max_ref_step = self._ref_steps[-1]
     self._termination_error_threshold = termination_error_threshold
+    self._prop_termination_error_threshold = prop_termination_error_threshold
     self._reward_fn = rewards.get_reward(reward_type)
     self._reward_keys = rewards.get_reward_channels(reward_type)
     self._min_steps = min_steps
@@ -523,8 +528,9 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
       target_props = self._clip_reference_features['prop_positions'][
           self._time_step]
       cur_props = self._walker_features['prop_positions']
-      error_props = np.mean(np.abs(target_props - cur_props))
-      self._termination_error = self._termination_error * 2. / 3. + error_props / 3.
+      # Separately compute prop termination error as euclidean distance.
+      self._prop_termination_error = np.mean(
+          np.linalg.norm(target_props - cur_props, axis=-1))
 
   def before_step(self, physics: 'mjcf.Physics', action,
                   random_state: np.random.RandomState):
@@ -745,6 +751,10 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
 
     self._should_truncate = self._termination_error > self._termination_error_threshold
 
+    if self._props:
+      prop_termination = self._prop_termination_error > self._prop_termination_error_threshold
+      self._should_truncate = self._should_truncate or prop_termination
+
     self.last_reward_channels = reward_channels
     return reward
 
@@ -810,6 +820,7 @@ class MultiClipMocapTracking(ReferencePosesTask):
       ref_steps: Sequence[int],
       dataset: Union[Text, Sequence[Any]],
       termination_error_threshold: float = 0.3,
+      prop_termination_error_threshold: float = 0.1,
       min_steps: int = 10,
       reward_type: Text = 'termination_reward',
       physics_timestep: float = DEFAULT_PHYSICS_TIMESTEP,
@@ -833,7 +844,10 @@ class MultiClipMocapTracking(ReferencePosesTask):
         contain information from t+1, t+2, t+3.
       dataset: dataset: A ClipCollection instance or a named dataset that
         appears as a key in DATASETS in datasets.py
-      termination_error_threshold: Error threshold for episode terminations.
+      termination_error_threshold: Error threshold for episode terminations for
+        hand body position and joint error only.
+      prop_termination_error_threshold: Error threshold for episode terminations
+        for prop position.
       min_steps: minimum number of steps within an episode. This argument
         determines the latest allowable starting point within a given reference
         trajectory.
@@ -862,6 +876,7 @@ class MultiClipMocapTracking(ReferencePosesTask):
         ref_path=ref_path,
         ref_steps=ref_steps,
         termination_error_threshold=termination_error_threshold,
+        prop_termination_error_threshold=prop_termination_error_threshold,
         min_steps=min_steps,
         dataset=dataset,
         reward_type=reward_type,

@@ -217,13 +217,6 @@ class MultiClipMocapTrackingTest(parameterized.TestCase):
     for ref_key, obs_key in zip(REFERENCE_PROP_KEYS, PROP_OBSERVATION_KEYS):
       np.testing.assert_array_equal(observation[ref_key], observation[obs_key])
 
-    # Test that prop position contributes to termination error. (?)
-    task._set_walker(env.physics)
-    wrong_position = observation[REFERENCE_PROP_KEYS[0]] + np.ones(3)
-    task._props[0].set_pose(env.physics, wrong_position)
-    task.after_step(env.physics, 0)
-    self.assertGreater(task._termination_error, 0.)
-
   def test_ghost_prop(self):
     task = tracking.MultiClipMocapTracking(
         walker=self.walker,
@@ -272,6 +265,30 @@ class MultiClipMocapTrackingTest(parameterized.TestCase):
     # Test that the props and ghost props are not constructed.
     self.assertEmpty(task._props)
     self.assertEmpty(task._ghost_props)
+
+  def test_prop_termination(self):
+    task = tracking.MultiClipMocapTracking(
+        walker=self.walker,
+        arena=self.arena,
+        ref_path=self.test_data,
+        dataset=types.ClipCollection(ids=('cmuv2019_001', 'cmuv2019_002')),
+        ref_steps=(0,),
+        min_steps=1,
+        disable_props=False,
+        prop_factory=props.Prop,
+    )
+    env = composer.Environment(task=task)
+    observation = env.reset().observation
+
+    # Test that prop position contributes to prop termination error.
+    task._set_walker(env.physics)
+    wrong_position = observation[REFERENCE_PROP_KEYS[0]] + np.ones(3)
+    task._props[0].set_pose(env.physics, wrong_position)
+    task.after_step(env.physics, 0)
+    task._compute_termination_error()
+    self.assertGreater(task._prop_termination_error, 0.)
+    task.get_reward(env.physics)
+    self.assertEqual(task._should_truncate, True)
 
   def test_ghost_walker(self):
     task = tracking.MultiClipMocapTracking(
