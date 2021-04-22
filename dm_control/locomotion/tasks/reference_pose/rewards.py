@@ -36,6 +36,8 @@ def bounded_quat_dist(source, target):
   Returns:
     quaternion distance.
   """
+  source /= np.linalg.norm(source)
+  target /= np.linalg.norm(target)
   default_dist = tr.quat_dist(source, target)
   anti_dist = tr.quat_dist(source, -np.asarray(target))
   min_dist = np.minimum(default_dist, anti_dist)
@@ -55,14 +57,16 @@ def compute_squared_differences(walker_features, reference_features,
       if 'quaternion' not in k:
         squared_differences[k] = np.sum(
             (walker_features[k] - reference_features[k])**2)
-  quat_dists = np.array([
-      bounded_quat_dist(w, r)
-      for w, r in zip(walker_features['body_quaternions'],
-                      reference_features['body_quaternions'])
-  ])
-  squared_differences['body_quaternions'] = np.sum(quat_dists**2)
-  squared_differences['quaternion'] = bounded_quat_dist(
-      walker_features['quaternion'], reference_features['quaternion'])**2
+      elif 'quaternions' in k:
+        quat_dists = np.array([
+            bounded_quat_dist(w, r)
+            for w, r in zip(walker_features[k], reference_features[k])
+        ])
+        squared_differences[k] = np.sum(quat_dists**2)
+      else:
+        squared_differences[k] = bounded_quat_dist(walker_features[k],
+                                                   reference_features[k])**2
+
   return squared_differences
 
 
