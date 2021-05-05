@@ -929,3 +929,78 @@ class MultiClipMocapTracking(ReferencePosesTask):
   @property
   def name(self):
     return 'MultiClipMocapTracking'
+
+
+class PlaybackTask(ReferencePosesTask):
+  """Simple task to visualize mocap data."""
+
+  def __init__(self,
+               walker,
+               arena,
+               ref_path: Text,
+               dataset: Union[Text, types.ClipCollection],
+               proto_modifier: Optional[Any] = None,
+               physics_timestep=DEFAULT_PHYSICS_TIMESTEP):
+    super().__init__(walker=walker,
+                     arena=arena,
+                     ref_path=ref_path,
+                     ref_steps=(1,),
+                     dataset=dataset,
+                     termination_error_threshold=np.inf,
+                     physics_timestep=physics_timestep,
+                     always_init_at_clip_start=True,
+                     proto_modifier=proto_modifier)
+    self._current_clip_index = -1
+
+  def _get_clip_to_track(self, random_state: np.random.RandomState):
+    self._current_clip_index = (self._current_clip_index + 1) % self._num_clips
+
+    start_step = self._dataset.start_steps[self._current_clip_index]
+    clip_id = self._dataset.ids[self._current_clip_index]
+    logging.info('Showing clip %d of %d, clip id %s',
+                 self._current_clip_index+1, self._num_clips, clip_id)
+
+    if self._all_clips[self._current_clip_index] is None:
+      # fetch selected trajectory
+      logging.info('Loading clip %s', clip_id)
+      self._all_clips[self._current_clip_index] = self._loader.get_trajectory(
+          clip_id,
+          start_step=self._dataset.start_steps[self._current_clip_index],
+          end_step=self._dataset.end_steps[self._current_clip_index],
+          zero_out_velocities=False)
+    self._current_clip = self._all_clips[self._current_clip_index]
+    self._clip_reference_features = self._current_clip.as_dict()
+    self._clip_reference_features = _strip_reference_prefix(
+        self._clip_reference_features, 'walker/')
+    # The reference features are already restricted to
+    # clip_start_step:clip_end_step. However start_step is in
+    # [clip_start_step:clip_end_step]. Hence we subtract clip_start_step to
+    # obtain a valid index for the reference features.
+    self._time_step = start_step - self._dataset.start_steps[
+        self._current_clip_index]
+    self._current_start_time = (start_step - self._dataset.start_steps[
+        self._current_clip_index]) * self._current_clip.dt
+    self._last_step = len(
+        self._clip_reference_features['joints']) - self._max_ref_step - 1
+    logging.info('Mocap %s at step %d with remaining length %d.', clip_id,
+                 start_step, self._last_step - start_step)
+
+  def _set_walker(self, physics: 'mjcf.Physics'):
+    timestep_features = tree.map_structure(lambda x: x[self._time_step],
+                                           self._clip_reference_features)
+    utils.set_walker_from_features(physics, self._walker, timestep_features)
+    mjlib.mj_kinematics(physics.model.ptr, physics.data.ptr)
+
+  def after_step(self, physics, random_state: np.random.RandomState):
+    super().after_step(physics, random_state)
+    self._time_step += 1
+
+    self._set_walker(physics)
+    self._end_mocap = self._time_step == self._last_step
+
+  def get_reward(self, physics):
+    return 0.0
+
+  @property
+  def name(self):
+    return 'PlaybackTask'
