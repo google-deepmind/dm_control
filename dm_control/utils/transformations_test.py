@@ -122,6 +122,19 @@ class TransformationsTest(parameterized.TestCase):
       rmat_prod = rmat1.dot(rmat2)
       np.testing.assert_allclose(rmat_prod, rmat_prod_q)
 
+  def test_quat_mul_vs_mat_mul_random_batched(self):
+    quat1 = np.stack(
+        [self._random_quaternion() for _ in range(_NUM_RANDOM_SAMPLES)], axis=0)
+    quat2 = np.stack(
+        [self._random_quaternion() for _ in range(_NUM_RANDOM_SAMPLES)], axis=0)
+    quat_prod = transformations.quat_mul(quat1, quat2)
+    for k in range(_NUM_RANDOM_SAMPLES):
+      rmat1 = transformations.quat_to_mat(quat1[k])[0:3, 0:3]
+      rmat2 = transformations.quat_to_mat(quat2[k])[0:3, 0:3]
+      rmat_prod_q = transformations.quat_to_mat(quat_prod[k])[0:3, 0:3]
+      rmat_prod = rmat1.dot(rmat2)
+      np.testing.assert_allclose(rmat_prod, rmat_prod_q)
+
   def test_quat_mul_mujoco_special(self):
     # Test for special values that often cause numerical issues.
     rng = [-np.pi, np.pi / 2, 0, np.pi / 2, np.pi]
@@ -135,6 +148,26 @@ class TransformationsTest(parameterized.TestCase):
       np.testing.assert_allclose(quat_prod_tr, quat_prod_mj, atol=1e-14)
       quat1 = quat2
 
+  def test_quat_mul_mujoco_special_batched(self):
+    # Test for special values that often cause numerical issues.
+    rng = [-np.pi, np.pi / 2, 0, np.pi / 2, np.pi]
+    q1, q2, qmj = [], [], []
+    quat1 = np.array([1, 0, 0, 0], dtype=np.float64)
+    for euler_tup in itertools.product(rng, rng, rng):
+      euler_vec = np.array(euler_tup, dtype=np.float64)
+      quat2 = transformations.euler_to_quat(euler_vec, ordering='XYZ')
+      quat_prod_mj = np.zeros(4)
+      mjlib.mju_mulQuat(quat_prod_mj, quat1, quat2)
+      q1.append(quat1)
+      q2.append(quat2)
+      qmj.append(quat_prod_mj)
+      quat1 = quat2
+    q1 = np.stack(q1, axis=0)
+    q2 = np.stack(q2, axis=0)
+    qmj = np.stack(qmj, axis=0)
+    qtr = transformations.quat_mul(q1, q2)
+    np.testing.assert_allclose(qtr, qmj, atol=1e-14)
+
   def test_quat_mul_mujoco_random(self):
     for _ in range(_NUM_RANDOM_SAMPLES):
       quat1 = self._random_quaternion()
@@ -143,6 +176,17 @@ class TransformationsTest(parameterized.TestCase):
       quat_prod_mj = np.zeros(4)
       mjlib.mju_mulQuat(quat_prod_mj, quat1, quat2)
       np.testing.assert_allclose(quat_prod_tr, quat_prod_mj)
+
+  def test_quat_mul_mujoco_random_batched(self):
+    quat1 = np.stack(
+        [self._random_quaternion() for _ in range(_NUM_RANDOM_SAMPLES)], axis=0)
+    quat2 = np.stack(
+        [self._random_quaternion() for _ in range(_NUM_RANDOM_SAMPLES)], axis=0)
+    quat_prod_tr = transformations.quat_mul(quat1, quat2)
+    for k in range(quat1.shape[0]):
+      quat_prod_mj = np.zeros(4)
+      mjlib.mju_mulQuat(quat_prod_mj, quat1[k], quat2[k])
+      np.testing.assert_allclose(quat_prod_tr[k], quat_prod_mj)
 
   def test_quat_rotate_mujoco_special(self):
     # Test for special values that often cause numerical issues.
@@ -173,6 +217,15 @@ class TransformationsTest(parameterized.TestCase):
           transformations.quat_diff(source, target),
           transformations.quat_mul(transformations.quat_conj(source), target))
 
+  def test_quat_diff_random_batched(self):
+    source = np.stack(
+        [self._random_quaternion() for _ in range(_NUM_RANDOM_SAMPLES)], axis=0)
+    target = np.stack(
+        [self._random_quaternion() for _ in range(_NUM_RANDOM_SAMPLES)], axis=0)
+    np.testing.assert_allclose(
+        transformations.quat_diff(source, target),
+        transformations.quat_mul(transformations.quat_conj(source), target))
+
   def test_quat_dist_random(self):
     for _ in range(_NUM_RANDOM_SAMPLES):
       # test with normalized quaternions for stability of test
@@ -183,6 +236,19 @@ class TransformationsTest(parameterized.TestCase):
       self.assertGreater(transformations.quat_dist(source, target), 0)
       np.testing.assert_allclose(
           transformations.quat_dist(source, source), 0, atol=1e-9)
+
+  def test_quat_dist_random_batched(self):
+    # Test batched quat dist
+    source_quats = np.stack(
+        [self._random_quaternion() for _ in range(_NUM_RANDOM_SAMPLES)], axis=0)
+    target_quats = np.stack(
+        [self._random_quaternion() for _ in range(_NUM_RANDOM_SAMPLES)], axis=0)
+    source_quats /= np.linalg.norm(source_quats, axis=-1, keepdims=True)
+    target_quats /= np.linalg.norm(target_quats, axis=-1, keepdims=True)
+    np.testing.assert_allclose(
+        transformations.quat_dist(source_quats, source_quats), 0, atol=1e-9)
+    np.testing.assert_equal(
+        transformations.quat_dist(source_quats, target_quats) > 0, 1)
 
   def _random_quaternion(self):
     rand = self._random_state.rand(3)

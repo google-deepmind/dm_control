@@ -38,7 +38,7 @@ def _clip_within_precision(number, low, high, precision=_TOL):
   Raises:
     ValueError: If number is outside given range by more than given precision.
   """
-  if number < low - precision or number > high + precision:
+  if (number < low - precision).any() or (number > high + precision).any():
     raise ValueError(
         'Input {:.12f} not inside range [{:.12f}, {:.12f}] with precision {}'.
         format(number, low, high, precision))
@@ -310,6 +310,8 @@ def euler_to_rmat(euler_vec, ordering='ZXZ', full=False):
 def quat_conj(quat):
   """Return conjugate of quaternion.
 
+  This function supports inputs with or without leading batch dimensions.
+
   Args:
     quat: A quaternion [w, i, j, k].
 
@@ -317,11 +319,17 @@ def quat_conj(quat):
     A quaternion [w, -i, -j, -k] representing the inverse of the rotation
     defined by `quat` (not assuming normalization).
   """
-  return np.array((quat[0], -quat[1], -quat[2], -quat[3]), dtype=np.float64)
+  # Ensure quat is an np.array in case a tuple or a list is passed
+  quat = np.asarray(quat)
+  return np.stack(
+      [quat[..., 0], -quat[..., 1],
+       -quat[..., 2], -quat[..., 3]], axis=-1).astype(np.float64)
 
 
 def quat_inv(quat):
   """Return inverse of quaternion.
+
+  This function supports inputs with or without leading batch dimensions.
 
   Args:
     quat: A quaternion [w, i, j, k].
@@ -329,11 +337,15 @@ def quat_inv(quat):
   Returns:
     A quaternion representing the inverse of the original rotation.
   """
-  return quat_conj(quat) / np.dot(quat, quat)
+  # Ensure quat is an np.array in case a tuple or a list is passed
+  quat = np.asarray(quat)
+  return quat_conj(quat) / np.sum(quat * quat, axis=-1, keepdims=True)
 
 
 def quat_mul(quat1, quat2):
   """Multiply quaternions.
+
+  This function supports inputs with or without leading batch dimensions.
 
   Args:
     quat1: A quaternion [w, i, j, k].
@@ -342,17 +354,27 @@ def quat_mul(quat1, quat2):
   Returns:
     The quaternion product, aka hamiltonian product.
   """
-  qmat = np.array([
-      [quat1[0], -quat1[1], -quat1[2], -quat1[3]],
-      [quat1[1], quat1[0], -quat1[3], quat1[2]],
-      [quat1[2], quat1[3], quat1[0], -quat1[1]],
-      [quat1[3], -quat1[2], quat1[1], quat1[0]]])
+  # Ensure quats are np.arrays in case a tuple or a list is passed
+  quat1, quat2 = np.asarray(quat1), np.asarray(quat2)
 
-  return qmat.dot(quat2)
+  # Construct a 4x4 matrix representation of quat1 for use with matmul
+  w1, x1, y1, z1 = [quat1[..., i] for i in range(4)]
+  qmat = np.stack(
+      [np.stack([w1, -x1, -y1, -z1], axis=-1),
+       np.stack([x1, w1, -z1, y1], axis=-1),
+       np.stack([y1, z1, w1, -x1], axis=-1),
+       np.stack([z1, -y1, x1, w1], axis=-1)],
+      axis=-2)
+
+  # Compute (batched) hamiltonian product
+  qdot = qmat @ np.expand_dims(quat2, axis=-1)
+  return np.squeeze(qdot, axis=-1)
 
 
 def quat_diff(source, target):
   """Computes quaternion difference between source and target quaternions.
+
+  This function supports inputs with or without leading batch dimensions.
 
   Args:
     source: A quaternion [w, i, j, k].
@@ -367,6 +389,8 @@ def quat_diff(source, target):
 def quat_log(quat, tol=_TOL):
   """Log of a quaternion.
 
+  This function supports inputs with or without leading batch dimensions.
+
   Args:
     quat: A quaternion [w, i, j, k].
     tol: numerical tolerance to prevent nan.
@@ -375,19 +399,25 @@ def quat_log(quat, tol=_TOL):
     4D array representing the log of `quat`. This is analogous to
     `rmat_to_axisangle`.
   """
-  q_norm = np.linalg.norm(quat + tol)
-  a = quat[0]
-  v = np.array([quat[1], quat[2], quat[3]])
+  # Ensure quat is an np.array in case a tuple or a list is passed
+  quat = np.asarray(quat)
+  q_norm = np.linalg.norm(quat + tol, axis=-1, keepdims=True)
+  a = quat[..., 0:1]
+  v = np.stack([quat[..., 1], quat[..., 2], quat[..., 3]], axis=-1)
   # Clip to 2*tol because we subtract it here
-  v_new = v / np.linalg.norm(v + tol) * np.arccos(
+  v_new = v / np.linalg.norm(v + tol, axis=-1, keepdims=True) * np.arccos(
       _clip_within_precision(a - tol, -1., 1., precision=2.*tol)) / q_norm
-  return np.array([np.log(q_norm), v_new[0], v_new[1], v_new[2]])
+  return np.stack(
+      [np.log(q_norm[..., 0]), v_new[..., 0], v_new[..., 1], v_new[..., 2]],
+      axis=-1)
 
 
 def quat_dist(source, target):
   """Computes distance between source and target quaternions.
 
   This function assumes that both input arguments are unit quaternions.
+
+  This function supports inputs with or without leading batch dimensions.
 
   Args:
     source: A quaternion [w, i, j, k].
@@ -397,8 +427,8 @@ def quat_dist(source, target):
     Scalar representing the rotational distance from source to target.
   """
   quat_product = quat_mul(source, quat_inv(target))
-  quat_product /= np.dot(quat_product, quat_product)
-  return np.linalg.norm(quat_log(quat_product))
+  quat_product /= np.linalg.norm(quat_product, axis=-1, keepdims=True)
+  return np.linalg.norm(quat_log(quat_product), axis=-1, keepdims=True)
 
 
 def quat_rotate(quat, vec):
