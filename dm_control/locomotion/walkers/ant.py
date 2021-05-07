@@ -21,7 +21,7 @@ from dm_control import mjcf
 from dm_control.composer.observation import observable
 from dm_control.locomotion.walkers import base
 from dm_control.locomotion.walkers import legacy_base
-from dm_control.mujoco import math as mjmath
+from dm_control.utils import transformations
 import numpy as np
 
 _XML_DIRNAME = os.path.join(os.path.dirname(__file__), '../../third_party/ant')
@@ -160,11 +160,10 @@ class AntObservables(legacy_base.WalkerObservables):
       bodies_xquat = physics.bind(bodies).xquat
       root_xquat = physics.bind(self._entity.root_body).xquat
       # Compute the relative quaternion of the bodies in the root frame
-      bodies_quat_diff = []
-      for k in range(len(bodies)):
-        bodies_quat_diff.append(
-            mjmath.mj_quatdiff(root_xquat, bodies_xquat[k]))  # q1^-1 * q2
-      return np.reshape(np.stack(bodies_quat_diff, 0), -1)
+      bodies_quat_diff = transformations.quat_diff(
+          np.tile(root_xquat, len(bodies)).reshape(-1, 4),
+          bodies_xquat)  # q1^-1 * q2
+      return np.reshape(bodies_quat_diff, -1)
     return observable.Generic(bodies_orientations_in_egocentric_frame)
 
   @composer.observable
