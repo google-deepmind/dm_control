@@ -204,6 +204,17 @@ class _CMUHumanoidBase(legacy_base.Walker, metaclass=abc.ABCMeta):
 
     if include_face:
       head = self._mjcf_root.find('body', 'head')
+      head.add(
+          'geom',
+          type='capsule',
+          name='face',
+          size=(0.065, 0.014),
+          pos=(0.000341465, 0.048184, 0.01),
+          quat=(0.717887, 0.696142, -0.00493334, 0),
+          mass=0.,
+          contype=0,
+          conaffinity=0)
+
       face_forwardness = head.pos[1]-.02
       head_geom = self._mjcf_root.find('geom', 'head')
       nose_size = head_geom.size[0] / 4.75

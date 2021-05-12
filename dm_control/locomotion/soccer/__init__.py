@@ -20,6 +20,7 @@ import enum
 from dm_control import composer
 from dm_control.locomotion import walkers
 from dm_control.locomotion.soccer.boxhead import BoxHead
+from dm_control.locomotion.soccer.humanoid import Humanoid
 from dm_control.locomotion.soccer.initializers import Initializer
 from dm_control.locomotion.soccer.initializers import UniformInitializer
 from dm_control.locomotion.soccer.observables import CoreObservablesAdder
@@ -33,11 +34,9 @@ from dm_control.locomotion.soccer.soccer_ball import SoccerBall
 from dm_control.locomotion.soccer.task import MultiturnTask
 from dm_control.locomotion.soccer.task import Task
 from dm_control.locomotion.soccer.team import Player
+from dm_control.locomotion.soccer.team import RGBA_BLUE
+from dm_control.locomotion.soccer.team import RGBA_RED
 from dm_control.locomotion.soccer.team import Team
-
-
-_RGBA_BLUE = [.1, .1, .8, 1.]
-_RGBA_RED = [.8, .1, .1, 1.]
 
 
 class WalkerType(enum.Enum):
@@ -63,10 +62,10 @@ def _make_players(team_size, walker_type):
   home_players = []
   away_players = []
   for i in range(team_size):
-    home_walker = _make_walker("home%d" % i, i, _RGBA_BLUE, walker_type)
+    home_walker = _make_walker("home%d" % i, i, RGBA_BLUE, walker_type)
     home_players.append(Player(Team.HOME, home_walker))
 
-    away_walker = _make_walker("away%d" % i, i, _RGBA_RED, walker_type)
+    away_walker = _make_walker("away%d" % i, i, RGBA_RED, walker_type)
     away_players.append(Player(Team.AWAY, away_walker))
   return home_players + away_players
 

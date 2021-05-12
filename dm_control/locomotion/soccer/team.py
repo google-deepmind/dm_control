@@ -24,4 +24,8 @@ class Team(enum.Enum):
   AWAY = 1
 
 
+RGBA_BLUE = [.1, .1, .8, 1.]
+RGBA_RED = [.8, .1, .1, 1.]
+
+
 Player = collections.namedtuple('Player', ['team', 'walker'])
