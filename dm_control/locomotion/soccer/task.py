@@ -216,3 +216,52 @@ class Task(composer.Task):
   def action_spec(self, physics):
     """Return multi-agent action_spec."""
     return [player.walker.action_spec for player in self.players]
+
+
+class MultiturnTask(Task):
+  """Continuous game play through scoring events until timeout."""
+
+  def __init__(self,
+               players,
+               arena,
+               ball=None,
+               initializer=None,
+               observables=None,
+               disable_walker_contacts=False,
+               nconmax_per_player=200,
+               njmax_per_player=200,
+               control_timestep=0.025,
+               tracking_cameras=()):
+    """See base class."""
+    super().__init__(
+        players,
+        arena,
+        ball=ball,
+        initializer=initializer,
+        observables=observables,
+        disable_walker_contacts=disable_walker_contacts,
+        nconmax_per_player=nconmax_per_player,
+        njmax_per_player=njmax_per_player,
+        control_timestep=control_timestep,
+        tracking_cameras=tracking_cameras)
+
+    # If `True`, reset ball entity trackers before the next step.
+    self._should_reset = False
+
+  def should_terminate_episode(self, physics):
+    return False
+
+  def get_discount(self, physics):
+    return np.ones((), np.float32)
+
+  def before_step(self, physics, actions, random_state):
+    super(MultiturnTask, self).before_step(physics, actions, random_state)
+    if self._should_reset:
+      self.ball.initialize_entity_trackers()
+      self._should_reset = False
+
+  def after_step(self, physics, random_state):
+    super(MultiturnTask, self).after_step(physics, random_state)
+    if self.arena.detected_goal():
+      self._initializer(self, physics, random_state)
+      self._should_reset = True

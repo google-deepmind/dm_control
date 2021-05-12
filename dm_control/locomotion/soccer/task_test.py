@@ -558,5 +558,62 @@ class UniformInitializerTest(parameterized.TestCase):
     ball_velocity = env.physics.bind(ball_root_joint).qvel
     np.testing.assert_array_equal(ball_velocity, 0.)
 
+
+class _ScoringInitializer(soccer.Initializer):
+  """Initialize the ball for home team to repeatedly score goals."""
+
+  def __init__(self):
+    self._num_calls = 0
+
+  @property
+  def num_calls(self):
+    return self._num_calls
+
+  def __call__(self, task, physics, random_state):
+    # Initialize `ball` along the y-axis with a positive y-velocity.
+    task.ball.set_pose(physics, [2.0, 0.0, 1.5])
+    task.ball.set_velocity(
+        physics, velocity=[100.0, 0.0, 0.0], angular_velocity=0.)
+    for i, player in enumerate(task.players):
+      player.walker.reinitialize_pose(physics, random_state)
+      (_, _, z), quat = player.walker.get_pose(physics)
+      player.walker.set_pose(physics, [-i * 5, 0.0, z], quat)
+      player.walker.set_velocity(physics, velocity=0., angular_velocity=0.)
+
+    self._num_calls += 1
+
+
+class MultiturnTaskTest(parameterized.TestCase):
+
+  def test_multiple_goals(self):
+    initializer = _ScoringInitializer()
+    time_limit = 1.0
+    control_timestep = 0.025
+    env = composer.Environment(
+        task=soccer.MultiturnTask(
+            players=_home_team(1) + _away_team(1),
+            arena=soccer.Pitch((20, 15), field_box=True),  # disable throw-in.
+            initializer=initializer,
+            control_timestep=control_timestep),
+        time_limit=time_limit)
+
+    timestep = env.reset()
+    num_steps = 0
+    rewards = [np.zeros(s.shape, s.dtype) for s in env.reward_spec()]
+    while not timestep.last():
+      timestep = env.step([spec.generate_value() for spec in env.action_spec()])
+      for reward, r_t in zip(rewards, timestep.reward):
+        reward += r_t
+      num_steps += 1
+    self.assertEqual(num_steps, time_limit / control_timestep)
+
+    num_scores = initializer.num_calls - 1  # discard initialization.
+    self.assertEqual(num_scores, 6)
+    self.assertEqual(rewards, [
+        np.full((), num_scores, np.float32),
+        np.full((), -num_scores, np.float32)
+    ])
+
+
 if __name__ == "__main__":
   absltest.main()

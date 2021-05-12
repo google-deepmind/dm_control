@@ -30,6 +30,7 @@ from dm_control.locomotion.soccer.pitch import Pitch
 from dm_control.locomotion.soccer.pitch import RandomizedPitch
 from dm_control.locomotion.soccer.soccer_ball import regulation_soccer_ball
 from dm_control.locomotion.soccer.soccer_ball import SoccerBall
+from dm_control.locomotion.soccer.task import MultiturnTask
 from dm_control.locomotion.soccer.task import Task
 from dm_control.locomotion.soccer.team import Player
 from dm_control.locomotion.soccer.team import Team
