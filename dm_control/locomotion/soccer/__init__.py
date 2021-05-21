@@ -40,6 +40,7 @@ from dm_control.locomotion.soccer.team import Player
 from dm_control.locomotion.soccer.team import RGBA_BLUE
 from dm_control.locomotion.soccer.team import RGBA_RED
 from dm_control.locomotion.soccer.team import Team
+from dm_control.locomotion.walkers.initializers import mocap
 import numpy as np
 
 
@@ -60,11 +61,13 @@ def _make_walker(name, walker_id, marker_rgba, walker_type=WalkerType.BOXHEAD):
   if walker_type == WalkerType.ANT:
     return walkers.Ant(name=name, marker_rgba=marker_rgba)
   if walker_type == WalkerType.HUMANOID:
+    initializer = mocap.CMUMocapInitializer()
     return Humanoid(
         name=name,
         marker_rgba=marker_rgba,
         walker_id=walker_id,
-        visual=Humanoid.Visual.JERSEY)
+        visual=Humanoid.Visual.JERSEY,
+        initializer=initializer)
   raise ValueError("Unrecognized walker type: %s" % walker_type)
 
 
