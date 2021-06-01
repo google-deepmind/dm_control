@@ -49,6 +49,9 @@ class FakePhysics(control.Physics):
   def sqrt(self):
     return np.sqrt(self._step_counter)
 
+  def sqrt_plus_one(self):
+    return np.sqrt(self._step_counter) + 1
+
   def matrix(self):
     return [[self._step_counter] * 3] * 2
 

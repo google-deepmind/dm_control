@@ -15,6 +15,7 @@
 
 """RL environment classes for Composer tasks."""
 
+import enum
 import warnings
 import weakref
 
@@ -50,6 +51,11 @@ _EMPTY_WITH_DOCSTRING_CODE = _empty_function_with_docstring.__code__.co_code
 def _callable_is_trivial(f):
   return (f.__code__.co_code == _EMPTY_CODE or
           f.__code__.co_code == _EMPTY_WITH_DOCSTRING_CODE)
+
+
+class ObservationPadding(enum.Enum):
+  INITIAL_VALUE = -1
+  ZERO = 0
 
 
 class EpisodeInitializationError(RuntimeError):
@@ -162,7 +168,8 @@ class _CommonEnvironment:
   def __init__(self, task, time_limit=float('inf'), random_state=None,
                n_sub_steps=None,
                raise_exception_on_physics_error=True,
-               strip_singleton_obs_buffer_dim=False):
+               strip_singleton_obs_buffer_dim=False,
+               delayed_observation_padding=ObservationPadding.ZERO):
     """Initializes an instance of `_CommonEnvironment`.
 
     Args:
@@ -182,7 +189,17 @@ class _CommonEnvironment:
       strip_singleton_obs_buffer_dim: (optional) A boolean, if `True`,
         the array shape of observations with `buffer_size == 1` will not have a
         leading buffer dimension.
+      delayed_observation_padding: (optional) An `ObservationPadding` enum value
+        specifying the padding behavior of the initial buffers for delayed
+        observables. If `ZERO` then the buffer is initially filled with zeroes.
+        If `INITIAL_VALUE` then the buffer is initially filled with the first
+        observation values.
     """
+    if not isinstance(delayed_observation_padding, ObservationPadding):
+      raise ValueError(
+          f'`delayed_observation_padding` should be an `ObservationPadding` '
+          f'enum value: got {delayed_observation_padding}')
+
     self._task = task
     if not isinstance(random_state, np.random.RandomState):
       self._random_state = np.random.RandomState(random_state)
@@ -192,6 +209,7 @@ class _CommonEnvironment:
     self._time_limit = time_limit
     self._raise_exception_on_physics_error = raise_exception_on_physics_error
     self._strip_singleton_obs_buffer_dim = strip_singleton_obs_buffer_dim
+    self._delayed_observation_padding = delayed_observation_padding
 
     if n_sub_steps is not None:
       warnings.simplefilter('once', DeprecationWarning)
@@ -232,9 +250,11 @@ class _CommonEnvironment:
         self._task.root_entity.mjcf_model)
 
   def _make_observation_updater(self):
+    pad_with_initial_value = (
+        self._delayed_observation_padding == ObservationPadding.INITIAL_VALUE)
     return observation.Updater(
         self._task.observables, self._task.physics_steps_per_control_step,
-        self._strip_singleton_obs_buffer_dim)
+        self._strip_singleton_obs_buffer_dim, pad_with_initial_value)
 
   @property
   def physics(self):
@@ -270,7 +290,8 @@ class Environment(_CommonEnvironment, dm_env.Environment):
                n_sub_steps=None,
                raise_exception_on_physics_error=True,
                strip_singleton_obs_buffer_dim=False,
-               max_reset_attempts=1):
+               max_reset_attempts=1,
+               delayed_observation_padding=ObservationPadding.ZERO):
     """Initializes an instance of `Environment`.
 
     Args:
@@ -294,6 +315,11 @@ class Environment(_CommonEnvironment, dm_env.Environment):
         number of times. If this count is exceeded then the most recent
         exception will be allowed to propagate. Defaults to 1, i.e. no failure
         is allowed.
+      delayed_observation_padding: (optional) An `ObservationPadding` enum value
+        specifying the padding behavior of the initial buffers for delayed
+        observables. If `ZERO` then the buffer is initially filled with zeroes.
+        If `INITIAL_VALUE` then the buffer is initially filled with the first
+        observation values.
     """
     super().__init__(
         task=task,
@@ -301,7 +327,8 @@ class Environment(_CommonEnvironment, dm_env.Environment):
         random_state=random_state,
         n_sub_steps=n_sub_steps,
         raise_exception_on_physics_error=raise_exception_on_physics_error,
-        strip_singleton_obs_buffer_dim=strip_singleton_obs_buffer_dim)
+        strip_singleton_obs_buffer_dim=strip_singleton_obs_buffer_dim,
+        delayed_observation_padding=delayed_observation_padding)
     self._max_reset_attempts = max_reset_attempts
     self._reset_next_step = True
 

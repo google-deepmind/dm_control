@@ -37,7 +37,7 @@ class _EnabledObservable:
                'buffer', 'update_schedule')
 
   def __init__(self, observable, physics, random_state,
-               strip_singleton_buffer_dim):
+               strip_singleton_buffer_dim, pad_with_initial_value):
     self.observable = observable
     self.observation_callable = (
         observable.observation_callable(physics, random_state))
@@ -67,6 +67,7 @@ class _EnabledObservable:
     self.buffer = obs_buffer.Buffer(
         buffer_size=self.buffer_size,
         shape=obs_spec.shape, dtype=obs_spec.dtype,
+        pad_with_initial_value=pad_with_initial_value,
         strip_singleton_buffer_dim=strip_singleton_buffer_dim)
     self.update_schedule = collections.deque()
 
@@ -120,9 +121,11 @@ class Updater:
   """Creates and updates buffers for enabled observables."""
 
   def __init__(self, observables, physics_steps_per_control_step=1,
-               strip_singleton_buffer_dim=False):
+               strip_singleton_buffer_dim=False,
+               pad_with_initial_value=False):
     self._physics_steps_per_control_step = physics_steps_per_control_step
     self._strip_singleton_buffer_dim = strip_singleton_buffer_dim
+    self._pad_with_initial_value = pad_with_initial_value
     self._step_counter = 0
     self._observables = observables
     self._is_nested = _validate_structure(observables)
@@ -140,7 +143,8 @@ class Updater:
       for key, value in observables.items():
         if value.enabled:
           out_dict[key] = _EnabledObservable(value, physics, random_state,
-                                             self._strip_singleton_buffer_dim)
+                                             self._strip_singleton_buffer_dim,
+                                             self._pad_with_initial_value)
       return out_dict
 
     if self._is_nested:

@@ -163,12 +163,13 @@ class UpdaterTest(parameterized.TestCase):
     self.assertCorrectSpec(spec['matrix'], (4, 2, 3), np.int, 'matrix')
     self.assertCorrectSpec(spec['sqrt'], (3,), np.float, 'sqrt')
 
-  def testObservation(self):
+  @parameterized.parameters(True, False)
+  def testObservation(self, pad_with_initial_value):
     physics = fake_physics.FakePhysics()
     physics.observables['repeated'].buffer_size = 5
     physics.observables['matrix'].delay = 1
-    physics.observables['sqrt'] = observable.Generic(
-        fake_physics.FakePhysics.sqrt, update_interval=7,
+    physics.observables['sqrt_plus_one'] = observable.Generic(
+        fake_physics.FakePhysics.sqrt_plus_one, update_interval=7,
         buffer_size=3, delay=2)
     for obs in physics.observables.values():
       obs.enabled = True
@@ -177,7 +178,8 @@ class UpdaterTest(parameterized.TestCase):
 
     physics_steps_per_control_step = 5
     observation_updater = updater.Updater(
-        physics.observables, physics_steps_per_control_step)
+        physics.observables, physics_steps_per_control_step,
+        pad_with_initial_value=pad_with_initial_value)
     observation_updater.reset(physics=physics, random_state=None)
 
     for control_step in range(0, 200):
@@ -213,8 +215,13 @@ class UpdaterTest(parameterized.TestCase):
 
         # Arrays with expected shapes, filled with expected default values.
         expected_value_spec = observation_updater.observation_spec()[obs_name]
-        expected_values = np.zeros(shape=expected_value_spec.shape,
-                                   dtype=expected_value_spec.dtype)
+        if pad_with_initial_value:
+          expected_values = np.full(shape=expected_value_spec.shape,
+                                    fill_value=expected_callable(0),
+                                    dtype=expected_value_spec.dtype)
+        else:
+          expected_values = np.zeros(shape=expected_value_spec.shape,
+                                     dtype=expected_value_spec.dtype)
 
         # The arrays are filled from right to left, such that the most recent
         # entry is the rightmost one, and any padding is on the left.
@@ -226,7 +233,7 @@ class UpdaterTest(parameterized.TestCase):
       assert_correct_buffer('twice', lambda x: 2*x)
       assert_correct_buffer('matrix', lambda x: [[x]*3]*2)
       assert_correct_buffer('repeated', lambda x: [x, x])
-      assert_correct_buffer('sqrt', np.sqrt)
+      assert_correct_buffer('sqrt_plus_one', lambda x: np.sqrt(x) + 1)
 
   def testVariableRatesAndDelays(self):
     physics = fake_physics.FakePhysics()

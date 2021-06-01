@@ -26,6 +26,7 @@ from dm_control.composer.entity import Observables
 from dm_control.composer.environment import Environment
 from dm_control.composer.environment import EpisodeInitializationError
 from dm_control.composer.environment import HOOK_NAMES
+from dm_control.composer.environment import ObservationPadding
 from dm_control.composer.initializer import Initializer
 from dm_control.composer.robot import Robot
 from dm_control.composer.task import NullTask
