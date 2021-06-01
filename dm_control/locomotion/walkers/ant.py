@@ -54,8 +54,7 @@ class Ant(legacy_base.Walker):
                                  dtype=self.action_spec.dtype)
 
   def initialize_episode(self, physics, random_state):
-    self._prev_action = np.zeros(shape=self.action_spec.shape,
-                                 dtype=self.action_spec.dtype)
+    self._prev_action = np.zeros_like(self._prev_action)
 
   def apply_action(self, physics, action, random_state):
     super().apply_action(physics, action, random_state)
