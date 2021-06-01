@@ -34,9 +34,9 @@ class UprightInitializer(WalkerInitializer):
     all_joints_binding = physics.bind(walker.mjcf_model.find_all('joint'))
     qpos, xpos, xquat = walker.upright_pose
     if qpos is None:
-      all_joints_binding.qpos = all_joints_binding.qpos0
+      walker.configure_joints(physics, all_joints_binding.qpos0)
     else:
-      all_joints_binding.qpos = qpos
+      walker.configure_joints(physics, qpos)
     walker.set_pose(physics, position=xpos, quaternion=xquat)
     walker.set_velocity(
         physics, velocity=np.zeros(3), angular_velocity=np.zeros(3))
