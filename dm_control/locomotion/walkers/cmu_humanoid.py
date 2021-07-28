@@ -172,6 +172,7 @@ _POSITION_ACTUATORS_V2020 = [
 # pylint: enable=bad-whitespace
 
 _UPRIGHT_POS = (0.0, 0.0, 0.94)
+_UPRIGHT_POS_V2020 = (0.0, 0.0, 1.143)
 _UPRIGHT_QUAT = (0.859, 1.0, 1.0, 0.859)
 
 # Height of head above which the humanoid is considered standing.
@@ -425,6 +426,10 @@ class CMUHumanoidPositionControlledV2020(CMUHumanoidPositionControlled):
   def _build(self, **kwargs):
     super()._build(
         model_version='2020', scale_default=True, include_face=True, **kwargs)
+
+  @property
+  def upright_pose(self):
+    return base.WalkerPose(xpos=_UPRIGHT_POS_V2020, xquat=_UPRIGHT_QUAT)
 
 
 class CMUHumanoidObservables(legacy_base.WalkerObservables):
