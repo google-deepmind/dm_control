@@ -52,7 +52,6 @@ If you use this package, please cite our accompanying [tech report]:
 `dm_control` is regularly tested on Ubuntu 16.04 against the following Python
 versions:
 
-*   3.6
 *   3.7
 *   3.8
 *   3.9
