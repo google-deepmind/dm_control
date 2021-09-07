@@ -134,9 +134,11 @@ def _maybe_register_license(path=None):
         _REGISTERED = True
         # Internal analytics of mj_activate.
       elif result == 0:
-        raise Error("Could not register license.")
+        raise Error("Could not register MuJoCo license. Acquire a license "
+                    "here: https://www.roboti.us/license.html")
       else:
-        raise Error("Unknown registration error (code: {})".format(result))
+        raise Error("Unknown error while registering MuJoCo license "
+                    "(code: {})".format(result))
 
 
 def _str2type(type_str):
