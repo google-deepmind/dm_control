@@ -167,7 +167,7 @@ def qpos_from_site_pose(physics,
       mjlib.mju_mat2Quat(site_xquat, site_xmat)
       mjlib.mju_negQuat(neg_site_xquat, site_xquat)
       mjlib.mju_mulQuat(err_rot_quat, target_quat, neg_site_xquat)
-      mjlib.mju_quat2Vel(err_rot, err_rot_quat, 1)
+      err_rot[:] = err_rot_quat[1:]
       err_norm += np.linalg.norm(err_rot) * rot_weight
 
     if err_norm < tol:
@@ -178,8 +178,10 @@ def qpos_from_site_pose(physics,
       # TODO(b/112141670): Generalize this to other entities besides sites.
       mjlib.mj_jacSite(
           physics.model.ptr, physics.data.ptr, jac_pos, jac_rot, site_id)
-      jac_joints = jac[:, dof_indices]
+      if target_quat is not None:
+        jac_rot[:] = -0.5 * (jac_rot*err_rot_quat[0] + np.cross(jac_rot, err_rot_quat[1:], axisa=0))
 
+      jac_joints = jac[:, dof_indices]
       # TODO(b/112141592): This does not take joint limits into consideration.
       reg_strength = (
           regularization_strength if err_norm > regularization_threshold
