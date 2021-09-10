@@ -269,7 +269,11 @@ class JacoHandTest(parameterized.TestCase):
     expected_rmat = np.empty((3, 3), np.double)
     mjlib.mju_quat2Mat(expected_rmat.ravel(), quat)
     difference_rmat = observed_rmat.dot(expected_rmat.T)
-    angular_difference = np.arccos((np.trace(difference_rmat) - 1) / 2)
+    # `difference_rmat` might not be perfectly orthonormal, which could lead to
+    # an invalid value being passed to arccos.
+    u, _, vt = np.linalg.svd(difference_rmat, full_matrices=False)
+    ortho_difference_rmat = u.dot(vt)
+    angular_difference = np.arccos((np.trace(ortho_difference_rmat) - 1) / 2)
     self.assertLess(angular_difference, 1e-3)
 
 
