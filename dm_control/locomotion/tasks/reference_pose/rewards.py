@@ -23,27 +23,27 @@ RewardFnOutput = collections.namedtuple('RewardFnOutput',
                                         ['reward', 'debug', 'reward_terms'])
 
 
-def bounded_quat_dist(source, target):
-  """Computes a quaternion distance limiting the difference to a max of pi.
+def bounded_quat_dist(source: np.ndarray,
+                      target: np.ndarray) -> np.ndarray:
+  """Computes a quaternion distance limiting the difference to a max of pi/2.
 
-  This is achieved by taking the minimum of d(source, target) and
-  d(source, -target).
-
-  This function supports batched inputs.
+  This function supports an arbitrary number of batch dimensions, B.
 
   Args:
-    source: a quaternion
-    target: another quaternion
+    source: a quaternion, shape (B, 4).
+    target: another quaternion, shape (B, 4).
 
   Returns:
-    quaternion distance.
+    Quaternion distance, shape (B, 1).
   """
   source /= np.linalg.norm(source, axis=-1, keepdims=True)
   target /= np.linalg.norm(target, axis=-1, keepdims=True)
-  default_dist = tr.quat_dist(source, target)
-  anti_dist = tr.quat_dist(source, -np.asarray(target))
-  min_dist = np.minimum(default_dist, anti_dist)
-  return min_dist
+  dist = 2*np.sum(source * target, axis=-1)**2 - 1
+  # Clip at 1 to avoid occasional machine epsilon leak beyond 1.
+  dist = np.minimum(1., dist)
+  # Divide by 2 and add an axis to ensure consistency with expected return
+  # shape and magnitude.
+  return np.arccos(dist)[..., np.newaxis] / 2
 
 
 def sort_dict(d):
