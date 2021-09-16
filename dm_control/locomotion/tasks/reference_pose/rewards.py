@@ -16,7 +16,6 @@
 
 import collections
 
-from dm_control.utils import transformations as tr
 import numpy as np
 
 RewardFnOutput = collections.namedtuple('RewardFnOutput',
@@ -38,7 +37,8 @@ def bounded_quat_dist(source: np.ndarray,
   """
   source /= np.linalg.norm(source, axis=-1, keepdims=True)
   target /= np.linalg.norm(target, axis=-1, keepdims=True)
-  dist = 2*np.sum(source * target, axis=-1)**2 - 1
+  # "Distance" in interval [-1, 1].
+  dist = 2 * np.einsum('...i,...i', source, target) ** 2 - 1
   # Clip at 1 to avoid occasional machine epsilon leak beyond 1.
   dist = np.minimum(1., dist)
   # Divide by 2 and add an axis to ensure consistency with expected return
