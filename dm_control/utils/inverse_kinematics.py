@@ -179,7 +179,7 @@ def qpos_from_site_pose(physics,
       mjlib.mj_jacSite(
           physics.model.ptr, physics.data.ptr, jac_pos, jac_rot, site_id)
       if target_quat is not None:
-        jac_rot[:] = -0.5 * (jac_rot*err_rot_quat[0] + np.cross(jac_rot, err_rot_quat[1:], axisa=0).T)
+        jac_rot[:] = 0.5 * (jac_rot*err_rot_quat[0] - np.cross(jac_rot, err_rot_quat[1:], axisa=0).T)
 
       jac_joints = jac[:, dof_indices]
       # TODO(b/112141592): This does not take joint limits into consideration.

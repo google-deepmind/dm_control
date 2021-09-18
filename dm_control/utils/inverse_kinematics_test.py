@@ -211,5 +211,53 @@ class InverseKinematicsTest(parameterized.TestCase):
           max_steps=_MAX_STEPS,
           inplace=True)
 
+  def testSO3jac(self):
+    physics = mujoco.Physics.from_xml_string(_ARM_XML)
+    site_name = 'gripsite'
+    target_quat = (lambda x: x/np.linalg.norm(x))(np.array([1., 1., 0., 1.]))
+
+    def so3_err(site_xquat, kind='new'):
+      # Rotational error.
+      neg_site_xquat = np.empty(4)
+      mjlib.mju_negQuat(neg_site_xquat, site_xquat)
+      err_rot_quat = np.empty(4)
+      mjlib.mju_mulQuat(err_rot_quat, target_quat, neg_site_xquat)
+      if kind == 'new':
+        err_rot = err_rot_quat[1:]
+      else:
+        err_rot = np.empty(3)
+        mjlib.mju_quat2Vel(err_rot, err_rot_quat, 1)
+      return err_rot, err_rot_quat
+
+    # test will fail for err_kind = 'old'
+    err_kind = 'new'
+    site_id = physics.model.name2id(site_name, 'site')
+    # fwd
+    mjlib.mj_fwdPosition(physics.model.ptr, physics.data.ptr)
+    # q0, err0
+    site_xquat0 = np.empty(4)
+    mjlib.mju_mat2Quat(site_xquat0, physics.named.data.site_xmat[site_name])
+    err0, err_rot_quat = so3_err(site_xquat0, err_kind)
+    # jac
+    jacr = np.empty([3, physics.model.nv])
+    mjlib.mj_jacSite(
+      physics.model.ptr, physics.data.ptr, None, jacr, site_id)
+    jac_new = -0.5 * (jacr*err_rot_quat[0] - np.cross(jacr, err_rot_quat[1:], axisa=0).T)
+    jac = {'new': jac_new, 'old': -jacr}
+    # fd
+    eps = 1e-6
+    np.random.seed(0)
+    dv = np.random.randn(physics.model.nv)
+    mjlib.mj_integratePos(physics.model.ptr, physics.data.qpos, dv, eps)
+    # next
+    mjlib.mj_fwdPosition(physics.model.ptr, physics.data.ptr)
+    site_xquat1 = np.empty(4)
+    mjlib.mju_mat2Quat(site_xquat1, physics.named.data.site_xmat[site_name])
+    err1, _ = so3_err(site_xquat1, err_kind)
+    # assert
+    # print(((err1 - err0)/eps, jac[err_kind] @ dv))
+    assert np.allclose((err1 - err0)/eps, jac[err_kind] @ dv),\
+      ValueError('not close,\n%s,\n%s' % (((err1 - err0)/eps, jac[err_kind] @ dv)))
+
 if __name__ == '__main__':
   absltest.main()
