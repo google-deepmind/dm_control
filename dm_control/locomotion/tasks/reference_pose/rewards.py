@@ -43,7 +43,7 @@ def bounded_quat_dist(source: np.ndarray,
   dist = np.minimum(1., dist)
   # Divide by 2 and add an axis to ensure consistency with expected return
   # shape and magnitude.
-  return np.arccos(dist)[..., np.newaxis] / 2
+  return 0.5 * np.arccos(dist)[..., np.newaxis]
 
 
 def sort_dict(d):
