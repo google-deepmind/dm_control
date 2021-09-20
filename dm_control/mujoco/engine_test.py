@@ -483,6 +483,18 @@ class MujocoEngineTest(parameterized.TestCase):
     self._assert_attributes_equal(
         physics2.data, self._physics.data, data_attr_to_compare)
 
+  @parameterized.named_parameters(
+      ('_copy', lambda x: x.copy()),
+      ('_pickle_and_unpickle', lambda x: pickle.loads(pickle.dumps(x))),
+  )
+  def testSuppressErrorsAfterCopyOrPicklePhysics(self, func):
+    # Regression test for a problem that used to exist where
+    # suppress_physics_errors couldn't be used on Physics objects that were
+    # unpickled.
+    physics2 = func(self._physics)
+    with physics2.suppress_physics_errors():
+      pass
+
   def testCopyDataOnly(self):
     physics2 = self._physics.copy(share_model=True)
     self.assertEqual(physics2.model.ptr, self._physics.model.ptr)

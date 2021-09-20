@@ -262,7 +262,10 @@ class Physics(_control.Physics):
     mjlib.mj_copyData(new_data.ptr, new_data.model.ptr, self.data.ptr)
     cls = self.__class__
     new_obj = cls.__new__(cls)
-    new_obj._reload_from_data(new_data)  # pylint: disable=protected-access
+    # pylint: disable=protected-access
+    new_obj._warnings_cause_exception = True
+    new_obj._reload_from_data(new_data)
+    # pylint: enable=protected-access
     return new_obj
 
   def reset(self, keyframe_id=None):
@@ -336,6 +339,7 @@ class Physics(_control.Physics):
     # Note: `_contexts_lock` is normally created in `__new__`, but `__new__` is
     #       not invoked during unpickling.
     self._contexts_lock = threading.Lock()
+    self._warnings_cause_exception = True
     self._reload_from_data(data)
 
   def _reload_from_model(self, model):
