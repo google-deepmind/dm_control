@@ -343,7 +343,7 @@ def quat_inv(quat):
 
 
 def quat_mul(quat1, quat2):
-  """Multiply quaternions.
+  """Computes the Hamilton product of two quaternions.
 
   This function supports inputs with or without leading batch dimensions.
 
@@ -352,24 +352,20 @@ def quat_mul(quat1, quat2):
     quat2: A quaternion [w, i, j, k].
 
   Returns:
-    The quaternion product, aka hamiltonian product.
+    The quaternion product quat1 * quat2.
   """
   # Ensure quats are np.arrays in case a tuple or a list is passed
   quat1, quat2 = np.asarray(quat1), np.asarray(quat2)
-
-  # Construct a 4x4 matrix representation of quat1 for use with matmul
-  w1, x1, y1, z1 = [quat1[..., i] for i in range(4)]
-  qmat = np.stack(
-      [np.stack([w1, -x1, -y1, -z1], axis=-1),
-       np.stack([x1, w1, -z1, y1], axis=-1),
-       np.stack([y1, z1, w1, -x1], axis=-1),
-       np.stack([z1, -y1, x1, w1], axis=-1)],
-      axis=-2)
-
-  # Compute (batched) hamiltonian product
-  qdot = qmat @ np.expand_dims(quat2, axis=-1)
-  return np.squeeze(qdot, axis=-1)
-
+  # Compute the Hamilton product directly.
+  w1, i1, j1, k1 = quat1[..., 0], quat1[..., 1], quat1[..., 2], quat1[..., 3]
+  w2, i2, j2, k2 = quat2[..., 0], quat2[..., 1], quat2[..., 2], quat2[..., 3]
+  prod = np.empty_like(quat1)
+  prod[..., 0] = w1 * w2 - i1 * i2 - j1 * j2 - k1 * k2
+  prod[..., 1] = w1 * i2 + i1 * w2 + j1 * k2 - k1 * j2
+  prod[..., 2] = w1 * j2 - i1 * k2 + j1 * w2 + k1 * i2
+  prod[..., 3] = w1 * k2 + i1 * j2 - j1 * i2 + k1 * w2
+  return prod
+  
 
 def quat_diff(source, target):
   """Computes quaternion difference between source and target quaternions.
@@ -624,4 +620,3 @@ def rotation_matrix_2d(theta):
       [ct, -st],
       [st, ct]
   ])
-
