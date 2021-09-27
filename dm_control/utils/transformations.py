@@ -258,6 +258,27 @@ _eulermap = {
 }
 
 
+def _get_qmat_indices_and_signs():
+  """Helper function for the quaternion multiplication function `quat_mul`.
+  Pre-generates index and sign matrices for speed.
+  """
+  w, x, y, z = range(4)
+  qmat_idx_and_sign = np.array([
+      [w, -x, -y, -z],
+      [x, w, -z, y],
+      [y, z, w, -x],
+      [z, -y, x, w],
+  ])
+  indices = np.abs(qmat_idx_and_sign)
+  signs = 2 * (qmat_idx_and_sign >= 0) - 1
+  # Prevent array constants from being modified in place.
+  indices.flags.writeable = False
+  signs.flags.writeable = False
+  return indices, signs
+
+_qmat_idx, _qmat_sign = _get_qmat_indices_and_signs()
+
+
 def euler_to_quat(euler_vec, ordering='XYZ'):
   """Returns the quaternion corresponding to the provided euler angles.
 
@@ -345,7 +366,11 @@ def quat_inv(quat):
 def quat_mul(quat1, quat2):
   """Computes the Hamilton product of two quaternions.
 
-  This function supports inputs with or without leading batch dimensions.
+  For speed, this function uses index and sign matrices `_qmat_idx` and
+  `_qmat_sign` pre-generated in the helper function
+  `_get_qmat_indices_and_signs`.
+
+  Any number of leading batch dimensions is supported.
 
   Args:
     quat1: A quaternion [w, i, j, k].
@@ -354,18 +379,9 @@ def quat_mul(quat1, quat2):
   Returns:
     The quaternion product quat1 * quat2.
   """
-  # Ensure quats are np.arrays in case a tuple or a list is passed
-  quat1, quat2 = np.asarray(quat1), np.asarray(quat2)
-  # Compute the Hamilton product directly.
-  w1, i1, j1, k1 = quat1[..., 0], quat1[..., 1], quat1[..., 2], quat1[..., 3]
-  w2, i2, j2, k2 = quat2[..., 0], quat2[..., 1], quat2[..., 2], quat2[..., 3]
-  prod = np.empty_like(quat1)
-  prod[..., 0] = w1 * w2 - i1 * i2 - j1 * j2 - k1 * k2
-  prod[..., 1] = w1 * i2 + i1 * w2 + j1 * k2 - k1 * j2
-  prod[..., 2] = w1 * j2 - i1 * k2 + j1 * w2 + k1 * i2
-  prod[..., 3] = w1 * k2 + i1 * j2 - j1 * i2 + k1 * w2
-  return prod
-  
+  qmat = quat1[..., _qmat_idx] * _qmat_sign
+  return (qmat @ quat2[..., None])[..., 0]
+
 
 def quat_diff(source, target):
   """Computes quaternion difference between source and target quaternions.
