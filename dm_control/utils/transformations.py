@@ -258,27 +258,6 @@ _eulermap = {
 }
 
 
-def _get_qmat_indices_and_signs():
-  """Helper function for the quaternion multiplication function `quat_mul`.
-  Pre-generates index and sign matrices for speed.
-  """
-  w, x, y, z = range(4)
-  qmat_idx_and_sign = np.array([
-      [w, -x, -y, -z],
-      [x, w, -z, y],
-      [y, z, w, -x],
-      [z, -y, x, w],
-  ])
-  indices = np.abs(qmat_idx_and_sign)
-  signs = 2 * (qmat_idx_and_sign >= 0) - 1
-  # Prevent array constants from being modified in place.
-  indices.flags.writeable = False
-  signs.flags.writeable = False
-  return indices, signs
-
-_qmat_idx, _qmat_sign = _get_qmat_indices_and_signs()
-
-
 def euler_to_quat(euler_vec, ordering='XYZ'):
   """Returns the quaternion corresponding to the provided euler angles.
 
@@ -363,12 +342,26 @@ def quat_inv(quat):
   return quat_conj(quat) / np.sum(quat * quat, axis=-1, keepdims=True)
 
 
+def _get_qmat_indices_and_signs():
+  """Precomputes index and sign arrays for constructing `qmat` in `quat_mul`."""
+  w, x, y, z = range(4)
+  qmat_idx_and_sign = np.array([
+      [w, -x, -y, -z],
+      [x, w, -z, y],
+      [y, z, w, -x],
+      [z, -y, x, w],
+  ])
+  indices = np.abs(qmat_idx_and_sign)
+  signs = 2 * (qmat_idx_and_sign >= 0) - 1
+  # Prevent array constants from being modified in place.
+  indices.flags.writeable = False
+  signs.flags.writeable = False
+  return indices, signs
+
+_qmat_idx, _qmat_sign = _get_qmat_indices_and_signs()
+
 def quat_mul(quat1, quat2):
   """Computes the Hamilton product of two quaternions.
-
-  For speed, this function uses index and sign matrices `_qmat_idx` and
-  `_qmat_sign` pre-generated in the helper function
-  `_get_qmat_indices_and_signs`.
 
   Any number of leading batch dimensions is supported.
 
@@ -379,7 +372,17 @@ def quat_mul(quat1, quat2):
   Returns:
     The quaternion product quat1 * quat2.
   """
+  # For speed, this function uses index and sign matrices _qmat_idx and
+  # _qmat_sign precomputed in the helper function _get_qmat_indices_and_signs.
+
+  # Construct a (..., 4, 4) matrix to multiply with quat2 as shown below.
   qmat = quat1[..., _qmat_idx] * _qmat_sign
+  # Compute the batched Hamilton product:
+  #
+  # |w1 -i1 -j1 -k1|   |w2|   |w1w2 - i1i2 - j1j2 - k1k2|
+  # |i1  w1 -k1  j1| . |i2| = |w1i2 + i1w2 + j1k2 - k1j2|
+  # |j1  k1  w1 -i1|   |j2|   |w1j2 - i1k2 + j1w2 + k1i2|
+  # |k1 -j1  i1  w1|   |k2|   |w1k2 + i1j2 - j1i2 + k1w2|
   return (qmat @ quat2[..., None])[..., 0]
 
 
