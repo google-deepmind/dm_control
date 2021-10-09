@@ -360,6 +360,7 @@ def _get_qmat_indices_and_signs():
 
 _qmat_idx, _qmat_sign = _get_qmat_indices_and_signs()
 
+
 def quat_mul(quat1, quat2):
   """Computes the Hamilton product of two quaternions.
 
@@ -372,13 +373,10 @@ def quat_mul(quat1, quat2):
   Returns:
     The quaternion product quat1 * quat2.
   """
-  # For speed, this function uses index and sign matrices _qmat_idx and
-  # _qmat_sign precomputed in the helper function _get_qmat_indices_and_signs.
-
   # Construct a (..., 4, 4) matrix to multiply with quat2 as shown below.
   qmat = quat1[..., _qmat_idx] * _qmat_sign
+
   # Compute the batched Hamilton product:
-  #
   # |w1 -i1 -j1 -k1|   |w2|   |w1w2 - i1i2 - j1j2 - k1k2|
   # |i1  w1 -k1  j1| . |i2| = |w1i2 + i1w2 + j1k2 - k1j2|
   # |j1  k1  w1 -i1|   |j2|   |w1j2 - i1k2 + j1w2 + k1i2|
