@@ -248,16 +248,13 @@ class CoreTest(parameterized.TestCase):
   def testWarningCallback(self):
     self.data.qpos[0] = np.inf
     with mock.patch.object(core, "logging") as mock_logging:
-      mjlib.mj_step(self.model.ptr, self.data.ptr)
-    mock_logging.warning.assert_called_once_with(
-        "Nan, Inf or huge value in QPOS at DOF 0. The simulation is unstable. "
-        "Time = 0.0000.")
+      mjlib.mju_warning(b"some warning message")
+    mock_logging.warning.assert_called_once_with("some warning message")
 
   def testErrorCallback(self):
     with mock.patch.object(core, "logging") as mock_logging:
-      mjlib.mj_activate(b"nonexistent_activation_key")
-    mock_logging.fatal.assert_called_once_with(
-        "Could not open activation key file nonexistent_activation_key")
+      mjlib.mju_error(b"some error message")
+    mock_logging.fatal.assert_called_once_with("some error message")
 
   def testSingleCallbackContext(self):
 

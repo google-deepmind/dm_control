@@ -36,13 +36,12 @@ try:
 except KeyError:
   raise OSError("Unsupported platform: {}".format(_PLATFORM))
 
-# Environment variables that can be used to override the default paths to the
-# MuJoCo shared library and key file.
+# Environment variable that can be used to override the default path to the
+# MuJoCo shared library.
 ENV_MJLIB_PATH = "MJLIB_PATH"
-ENV_MJKEY_PATH = "MJKEY_PATH"
 
 
-MJLIB_NAME = "mujoco200"
+MJLIB_NAME = "mujoco210"
 
 
 def _get_shared_library_filename():
@@ -61,10 +60,9 @@ def _get_shared_library_filename():
   return "{}{}.{}".format(prefix, MJLIB_NAME, extension)
 
 
-DEFAULT_MJLIB_DIR = "~/.mujoco/mujoco200_{}/bin".format(_PLATFORM_SUFFIX)
+DEFAULT_MJLIB_DIR = "~/.mujoco/mujoco210/bin"
 DEFAULT_MJLIB_PATH = os.path.join(
     DEFAULT_MJLIB_DIR, _get_shared_library_filename())
-DEFAULT_MJKEY_PATH = "~/.mujoco/mjkey.txt"
 
 
 DEFAULT_ENCODING = sys.getdefaultencoding()
@@ -118,12 +116,6 @@ def get_mjlib():
   if platform.system() == "Linux":
     _maybe_load_linux_dynamic_deps(os.path.dirname(library_path))
   return ctypes.cdll.LoadLibrary(library_path)
-
-
-def get_mjkey_path():
-  """Returns a path to the MuJoCo key file."""
-  raw_path = os.environ.get(ENV_MJKEY_PATH, DEFAULT_MJKEY_PATH)
-  return _get_full_path(raw_path)
 
 
 class WrapperBase:
@@ -261,3 +253,16 @@ def cast_func_to_c_void_p(func, cfunctype):
     wrapped_pyfunc = cfunctype(func)
     new_func_ptr = ctypes.cast(wrapped_pyfunc, ctypes.c_void_p)
   return new_func_ptr, wrapped_pyfunc
+
+
+def get_mjkey_path():
+  """Returns a path to the MuJoCo key file.
+
+  MuJoCo no longer requires an activation key. This function is left here for
+  the time being for backward-compatibility purposes it case it is being called
+  from external code. It will be removed with no further notice.
+
+  Returns:
+    Path to MuJoCo activation key file.
+  """
+  return _get_full_path(os.environ.get("MJKEY_PATH", "~/.mujoco/mjkey.txt"))

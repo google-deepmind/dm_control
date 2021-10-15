@@ -360,10 +360,14 @@ class DynamicNDArray(CDeclBase):
     for d in self.shape:
       # dynamically-sized dimension
       if isinstance(d, str):
+        n = ""
+        if d.startswith("nmocap") and len(d) > len("nmocap"):
+          n = "*{}".format(d[6:])
+          d = "nmocap"
         if self.parent and d in self.parent.members:
-          rs.append("self.{}".format(d))
+          rs.append("self.{}{}".format(d, n))
         else:
-          rs.append("self._model.{}".format(d))
+          rs.append("self._model.{}{}".format(d, n))
       # static dimension
       else:
         rs.append(str(d))

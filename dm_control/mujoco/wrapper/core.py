@@ -32,7 +32,6 @@ from dm_control.mujoco.wrapper.mjbindings import types
 from dm_control.mujoco.wrapper.mjbindings import wrappers
 import numpy as np
 
-# Internal analytics import.
 # Unused internal import: resources.
 
 _NULL = b"\00"
@@ -106,39 +105,6 @@ def enable_timer(enabled=True):
     set_callback("mjcb_time", time.time)
   else:
     set_callback("mjcb_time", None)
-
-
-def _maybe_register_license(path=None):
-  """Registers the MuJoCo license if not already registered.
-
-  Args:
-    path: Optional custom path to license key file.
-
-  Raises:
-    Error: If the license could not be registered.
-  """
-  with _REGISTRATION_LOCK:
-    global _REGISTERED
-    if not _REGISTERED:
-      if path is None:
-        path = util.get_mjkey_path()
-      # TODO(b/176220357): Repeatedly activating a trial license results in
-      #                    errors (for example this could happen if
-      #                    `mj_activate` was already called by another library
-      #                    within the same process). To avoid such errors we
-      #                    unconditionally deactivate any active licenses before
-      #                    calling `mj_activate`.
-      mjlib.mj_deactivate()
-      result = mjlib.mj_activate(util.to_binary_string(path))
-      if result == 1:
-        _REGISTERED = True
-        # Internal analytics of mj_activate.
-      elif result == 0:
-        raise Error("Could not register MuJoCo license. Acquire a license "
-                    "here: https://www.roboti.us/license.html")
-      else:
-        raise Error("Unknown error while registering MuJoCo license "
-                    "(code: {})".format(result))
 
 
 def _str2type(type_str):
@@ -358,8 +324,6 @@ def _get_model_ptr_from_xml(xml_path=None, xml_string=None, assets=None):
     raise TypeError(
         "Only one of `xml_path` or `xml_string` may be specified.")
 
-  _maybe_register_license()
-
   if xml_string is not None:
     assets = {} if assets is None else assets.copy()
     # Ensure that the fake XML filename doesn't overwrite an existing asset.
@@ -424,8 +388,6 @@ def _get_model_ptr_from_binary(binary_path=None, byte_string=None):
   elif binary_path is not None and byte_string is not None:
     raise TypeError(
         "Only one of `byte_string` or `binary_path` may be specified.")
-
-  _maybe_register_license()
 
   if byte_string is not None:
     with _temporary_vfs({_FAKE_BINARY_FILENAME: byte_string}) as vfs:
