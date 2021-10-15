@@ -84,17 +84,23 @@ _SCROLL_SPEED_FACTOR = 0.05
 # Distance, in meters, at which to focus on the clicked object.
 _LOOK_AT_DISTANCE = 1.5
 
+# Zoom factor used when zooming in on the entire scene.
+_FULL_SCENE_ZOOM_FACTOR = 1.5
+
 
 class Viewer:
   """Viewport displaying the contents of a physics world."""
 
-  def __init__(self, viewport, mouse, keyboard):
+  def __init__(self, viewport, mouse, keyboard, camera_settings=None,
+               zoom_factor=_FULL_SCENE_ZOOM_FACTOR):
     """Instance initializer.
 
     Args:
       viewport: Render viewport, instance of renderer.Viewport.
       mouse: A mouse device.
       keyboard: A keyboard device.
+      camera_settings: Properties of the scene MjvCamera.
+      zoom_factor: Initial scale factor for zooming into the scene.
     """
     self._viewport = viewport
     self._mouse = mouse
@@ -104,11 +110,12 @@ class Viewer:
     self._input_map = user_input.InputMap(mouse, keyboard)
 
     self._camera = None
-    self._camera_settings = None
+    self._camera_settings = camera_settings
     self._renderer = None
     self._manipulator = None
     self._free_camera = None
     self._camera_select = None
+    self._zoom_factor = zoom_factor
 
   def __del__(self):
     del self._camera
@@ -127,7 +134,7 @@ class Viewer:
     """
     self._camera = renderer.SceneCamera(
         physics.model, physics.data, self._render_settings,
-        self._camera_settings)
+        settings=self._camera_settings, zoom_factor=self._zoom_factor)
 
     self._manipulator = ManipulationController(
         self._viewport, self._camera, self._mouse)

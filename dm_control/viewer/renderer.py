@@ -372,7 +372,12 @@ class RenderSettings:
 class SceneCamera:
   """A camera used to navigate around and render the scene."""
 
-  def __init__(self, model, data, options, settings=None):
+  def __init__(self,
+               model,
+               data,
+               options,
+               settings=None,
+               zoom_factor=_FULL_SCENE_ZOOM_FACTOR):
     """Instance initializer.
 
     Args:
@@ -381,6 +386,7 @@ class SceneCamera:
       options: RenderSettings instance.
       settings: Optional, internal camera settings obtained from another
         SceneCamera instance using 'settings' property.
+      zoom_factor: The initial zoom factor for zooming into the scene.
     """
     # Design notes:
     # We need to recreate the camera for each new model, because each model
@@ -395,9 +401,13 @@ class SceneCamera:
     self._camera.trackbodyid = _NO_BODY_TRACKED_INDEX
     self._camera.fixedcamid = _FREE_CAMERA_INDEX
     self._camera.type_ = enums.mjtCamera.mjCAMERA_FREE
+    self._zoom_factor = zoom_factor
 
     if settings is not None:
+      self._settings = settings
       self.settings = settings
+    else:
+      self._settings = self._camera
 
   def set_freelook_mode(self):
     """Enables 6 degrees of freedom of movement for the camera."""
@@ -493,7 +503,9 @@ class SceneCamera:
   def zoom_to_scene(self):
     """Zooms in on the entire scene."""
     self.look_at(self._model.stat.center[:],
-                 _FULL_SCENE_ZOOM_FACTOR * self._model.stat.extent)
+                 self._zoom_factor * self._model.stat.extent)
+
+    self.settings = self._settings
 
   @property
   def transform(self):
