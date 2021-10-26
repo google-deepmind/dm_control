@@ -175,7 +175,7 @@ def find_data_files(package_dir, patterns, excludes=()):
 
 setup(
     name='dm_control',
-    version='0.0.403778684',
+    version='0.0.405526958',
     description='Continuous control environments and MuJoCo Python bindings.',
     author='DeepMind',
     license='Apache License, Version 2.0',
@@ -193,7 +193,7 @@ setup(
         'numpy >= 1.9.0',
         'protobuf >= 3.15.6',
         'pyopengl >= 3.1.4',
-        'pyparsing',
+        'pyparsing < 3.0.0',
         'requests',
         'setuptools!=50.0.0',  # https://github.com/pypa/setuptools/issues/2350
         'scipy',
