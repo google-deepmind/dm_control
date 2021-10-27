@@ -104,6 +104,7 @@ def _maybe_load_linux_dynamic_deps(library_dir):
 
 def get_mjlib():
   """Loads `libmujoco.so` and returns it as a `ctypes.CDLL` object."""
+  # Google-internal MuJoCo loading.
   try:
     # Use the MJLIB_PATH environment variable if it has been set.
     library_path = _get_full_path(os.environ[ENV_MJLIB_PATH])
