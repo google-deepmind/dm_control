@@ -95,7 +95,7 @@ class Wrapper(dm_env.Environment):
       observation[STATE_KEY] = time_step.observation
 
     # timer[0] is the step timer. There are lots of different timers (see
-    # mujoco/hdrs/mjdata.h)
+    # mujoco/include/mjdata.h)
     # but we only care about the step timer.
     timing = self._env.physics.data.timer[0]
 
