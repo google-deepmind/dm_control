@@ -15,6 +15,8 @@
 
 """An initializer that places props at various poses."""
 
+from absl import logging
+
 from dm_control import composer
 from dm_control import mjcf
 from dm_control.composer import variation
@@ -30,7 +32,7 @@ _SETTLE_QVEL_TOL = 1e-3
 _SETTLE_QACC_TOL = 1e-2
 
 _REJECTION_SAMPLING_FAILED = '\n'.join([
-    'Failed to find a non-colliding pose for prop {model_name!r} within '
+    'Failed to find a non-colliding pose for prop {model_name!r} within '  # pylint: disable=implicit-str-concat
     '{max_attempts} attempts.',
     'You may be able to avoid this error by:',
     '1. Sampling from a broader distribution over positions and/or quaternions',
@@ -38,12 +40,29 @@ _REJECTION_SAMPLING_FAILED = '\n'.join([
     '3. Disabling collision detection by setting `ignore_collisions=False`'])
 
 
+_SETTLING_PHYSICS_FAILED = '\n'.join([
+    'Failed to settle physics after {max_attempts} attempts of '  # pylint: disable=implicit-str-concat
+    '{max_time} seconds.',
+    'Last residual velocity={max_qvel} and acceleration={max_qacc}.',
+    'This suggests your dynamics are unstable. Consider:',
+    '\t1. Increasing `max_settle_physics_attempts`',
+    '\t2. Increasing `max_settle_physics_time`',
+    '\t3. Tuning your contact parameters or initial pose distributions.'])
+
+
 class PropPlacer(composer.Initializer):
   """An initializer that places props at various positions and orientations."""
 
-  def __init__(self, props, position, quaternion=rotations.IDENTITY_QUATERNION,
-               ignore_collisions=False, max_attempts_per_prop=20,
-               settle_physics=False, max_settle_physics_time=2.):
+  def __init__(self,
+               props,
+               position,
+               quaternion=rotations.IDENTITY_QUATERNION,
+               ignore_collisions=False,
+               max_attempts_per_prop=20,
+               settle_physics=False,
+               max_settle_physics_time=2.,
+               max_settle_physics_attempts=1,
+               raise_exception_on_settle_failure=False):
     """Initializes this PropPlacer.
 
     Args:
@@ -65,6 +84,10 @@ class PropPlacer(composer.Initializer):
         advanced for a few steps to allow the prop positions to settle.
       max_settle_physics_time: (optional) When `settle_physics` is True, upper
         bound on time (in seconds) the physics simulation is advanced.
+      max_settle_physics_attempts: (optional) When `settle_physics` is True, the
+        number of attempts at sampling overall scene pose and settling.
+      raise_exception_on_settle_failure: If True, raises an exception if
+        settling physics is unsuccessful.
     """
     super().__init__()
     self._props = props
@@ -80,6 +103,13 @@ class PropPlacer(composer.Initializer):
     self._max_attempts_per_prop = max_attempts_per_prop
     self._settle_physics = settle_physics
     self._max_settle_physics_time = max_settle_physics_time
+    self._max_settle_physics_attempts = max_settle_physics_attempts
+    self._raise_exception_on_settle_failure = raise_exception_on_settle_failure
+
+    if max_settle_physics_attempts < 1:
+      raise ValueError('max_settle_physics_attempts should be greater than '
+                       'zero to have any effect, but is '
+                       f'{max_settle_physics_attempts}')
 
   def _has_collisions_with_prop(self, physics, prop):
     prop_geom_ids = physics.bind(prop.mjcf_model.find_all('geom')).element_id
@@ -144,55 +174,87 @@ class PropPlacer(composer.Initializer):
           '`physics.forward()` resulted in a `PhysicsError`')
       raise effect from cause
 
-    for prop in self._props:
+    def place_props():
+      for prop in self._props:
+        # Restore the original contact parameters for all geoms in the prop
+        # we're about to place, so that we can detect if the new pose results in
+        # collisions.
+        self._restore_contact_parameters(physics, prop, cached_contact_params)
 
-      # Restore the original contact parameters for all geoms in the prop we're
-      # about to place, so that we can detect if the new pose results in
-      # collisions.
-      self._restore_contact_parameters(physics, prop, cached_contact_params)
-
-      success = False
-      initial_position, initial_quaternion = prop.get_pose(physics)
-      next_position, next_quaternion = initial_position, initial_quaternion
-      for _ in range(self._max_attempts_per_prop):
-        next_position = variation.evaluate(self._position,
-                                           initial_value=initial_position,
-                                           current_value=next_position,
-                                           random_state=random_state)
-        next_quaternion = variation.evaluate(self._quaternion,
-                                             initial_value=initial_quaternion,
-                                             current_value=next_quaternion,
+        success = False
+        initial_position, initial_quaternion = prop.get_pose(physics)
+        next_position, next_quaternion = initial_position, initial_quaternion
+        for _ in range(self._max_attempts_per_prop):
+          next_position = variation.evaluate(self._position,
+                                             initial_value=initial_position,
+                                             current_value=next_position,
                                              random_state=random_state)
-        prop.set_pose(physics, next_position, next_quaternion)
-        try:
-          # If this pose results in collisions then there's a chance we'll
-          # encounter a PhysicsError error here due to a full contact buffer,
-          # in which case reject this pose and sample another.
-          physics.forward()
-        except control.PhysicsError:
-          continue
-        if (self._ignore_collisions
-            or not self._has_collisions_with_prop(physics, prop)):
-          success = True
-          break
+          next_quaternion = variation.evaluate(self._quaternion,
+                                               initial_value=initial_quaternion,
+                                               current_value=next_quaternion,
+                                               random_state=random_state)
+          prop.set_pose(physics, next_position, next_quaternion)
+          try:
+            # If this pose results in collisions then there's a chance we'll
+            # encounter a PhysicsError error here due to a full contact buffer,
+            # in which case reject this pose and sample another.
+            physics.forward()
+          except control.PhysicsError:
+            continue
 
-      if not success:
-        raise RuntimeError(_REJECTION_SAMPLING_FAILED.format(
-            model_name=prop.mjcf_model.model,
-            max_attempts=self._max_attempts_per_prop))
+          if (self._ignore_collisions
+              or not self._has_collisions_with_prop(physics, prop)):
+            success = True
+            break
 
-    for prop in ignore_contacts_with_entities:
-      self._restore_contact_parameters(physics, prop, cached_contact_params)
+        if not success:
+          raise RuntimeError(_REJECTION_SAMPLING_FAILED.format(
+              model_name=prop.mjcf_model.model,
+              max_attempts=self._max_attempts_per_prop))
+
+      for prop in ignore_contacts_with_entities:
+        self._restore_contact_parameters(physics, prop, cached_contact_params)
+
+    # Place the props and settle the physics. If settling was requested and it
+    # it fails, re-place the props.
+    def place_and_settle():
+      for _ in range(self._max_settle_physics_attempts):
+        place_props()
+
+        # Step physics and check prop states.
+        original_time = physics.data.time
+        props_isolator = utils.JointStaticIsolator(physics, self._prop_joints)
+        prop_joints_mj = physics.bind(self._prop_joints)
+        while physics.data.time - original_time < self._max_settle_physics_time:
+          with props_isolator:
+            physics.step()
+          max_qvel = np.max(np.abs(prop_joints_mj.qvel))
+          max_qacc = np.max(np.abs(prop_joints_mj.qacc))
+          if (max_qvel < _SETTLE_QVEL_TOL and max_qacc < _SETTLE_QACC_TOL):
+            return True
+        physics.data.time = original_time
+
+      if self._raise_exception_on_settle_failure:
+        raise RuntimeError(
+            _SETTLING_PHYSICS_FAILED.format(
+                max_attempts=self._max_settle_physics_attempts,
+                max_time=self._max_settle_physics_time,
+                max_qvel=max_qvel,
+                max_qacc=max_qacc,
+            ))
+      else:
+        log_str = _SETTLING_PHYSICS_FAILED.format(
+            max_attempts='%s',
+            max_time='%s',
+            max_qvel='%s',
+            max_qacc='%s',
+        )
+        logging.warning(log_str, self._max_settle_physics_attempts,
+                        self._max_settle_physics_time, max_qvel, max_qacc)
+
+      return False
 
     if self._settle_physics:
-      original_time = physics.data.time
-      props_isolator = utils.JointStaticIsolator(physics, self._prop_joints)
-      prop_joints_mj = physics.bind(self._prop_joints)
-      while physics.data.time - original_time < self._max_settle_physics_time:
-        with props_isolator:
-          physics.step()
-        if (np.max(np.abs(prop_joints_mj.qvel)) < _SETTLE_QVEL_TOL and
-            np.max(np.abs(prop_joints_mj.qacc)) < _SETTLE_QACC_TOL):
-          break
-      physics.data.time = original_time
-      # TODO(b/120221805): We ought to raise an exception if settling fails.
+      place_and_settle()
+    else:
+      place_props()

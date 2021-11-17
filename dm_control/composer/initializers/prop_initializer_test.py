@@ -27,6 +27,24 @@ from dm_control.rl import control
 import numpy as np
 
 
+class _SequentialChoice(distributions.Distribution):
+  """Helper class to return samples in order for deterministic testing."""
+  __slots__ = ()
+
+  def __init__(self, choices, single_sample=False):
+    super().__init__(choices, single_sample=single_sample)
+    self._idx = 0
+
+  def _callable(self, random_state):
+    def next_item(*args, **kwargs):
+      del args, kwargs  # Unused.
+      result = self._args[0][self._idx]
+      self._idx = (self._idx + 1) % len(self._args[0])
+      return result
+
+    return next_item
+
+
 def _make_spheres(num_spheres, radius, nconmax):
   spheres = []
   arena = composer.Arena()
@@ -221,6 +239,50 @@ class PropPlacerTest(parameterized.TestCase):
 
     # The sphere that we were not placing should not have moved.
     self.assertEqual(second_position[2], 0.)
+
+  @parameterized.parameters([0, 1, 2, 3])
+  def test_settle_physics_multiple_attempts(self, max_settle_physics_attempts):
+    # Tests the multiple-reset mechanism for `settle_physics`.
+    # Rather than testing the mechanic itself, which is tested above, we instead
+    # test that the mechanism correctly makes several attempts when it fails
+    # to settle.  We force it to fail by making the settling time short, and
+    # test that the position is repeatedly called using a deterministic
+    # sequential pose distribution.
+
+    radius = 0.1
+    physics, spheres = _make_spheres(num_spheres=1, radius=radius, nconmax=1)
+
+    # Generate sequence of positions that will be sampled in order.
+    positions = [
+        np.array([2.01 * radius, 1., 0.]),
+        np.array([2.01 * radius, 2., 0.]),
+        np.array([2.01 * radius, 3., 0.]),
+    ]
+    positions_dist = _SequentialChoice(positions)
+
+    def build_placer():
+      return prop_initializer.PropPlacer(
+          props=spheres[:1],
+          position=positions_dist,
+          settle_physics=True,
+          max_settle_physics_time=1e-6,  # To ensure that settling FAILS.
+          max_settle_physics_attempts=max_settle_physics_attempts)
+
+    if max_settle_physics_attempts == 0:
+      with self.assertRaises(ValueError):
+        build_placer()
+    else:
+      prop_placer = build_placer()
+
+      prop_placer(physics, random_state=np.random.RandomState(0))
+
+      first_position, first_quaternion = spheres[0].get_pose(physics)
+      del first_quaternion  # Unused.
+
+      # If we allowed the physics to settle then the first sphere should be
+      # resting on the ground, otherwise it should be at the target height.
+      expected_first_y_pos = max_settle_physics_attempts
+      self.assertAlmostEqual(first_position[1], expected_first_y_pos, places=3)
 
 
 if __name__ == '__main__':
