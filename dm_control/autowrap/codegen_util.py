@@ -99,8 +99,8 @@ def mangle_varname(s):
 
 
 def mangle_struct_typename(s):
-  """Strip leading underscores and make uppercase."""
-  return s.lstrip("_").upper()
+  """Strip leading and trailing underscores and make uppercase."""
+  return s.strip("_").upper()
 
 
 def mangle_comment(s):
