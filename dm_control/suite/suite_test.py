@@ -261,7 +261,7 @@ class SuiteTest(parameterized.TestCase):
     for name, array_list in observations.items():
       # Sampling random uniform actions generally isn't sufficient to trigger
       # these touch sensors.
-      if (domain in ('manipulator', 'stacker') and name == 'touch' or
+      if (domain in ('manipulator', 'stacker', 'finger') and name == 'touch' or
           domain == 'quadruped' and name == 'force_torque'):
         continue
       stacked_arrays = np.array(array_list)

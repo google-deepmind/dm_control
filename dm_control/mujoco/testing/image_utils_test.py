@@ -31,8 +31,8 @@ class ImageUtilsTest(parameterized.TestCase):
 
   @parameterized.parameters(
       dict(frame_index1=0, frame_index2=0, expected_rms=0.0),
-      dict(frame_index1=0, frame_index2=1, expected_rms=23.241),
-      dict(frame_index1=0, frame_index2=9, expected_rms=55.666))
+      dict(frame_index1=0, frame_index2=1, expected_rms=23.214),
+      dict(frame_index1=0, frame_index2=9, expected_rms=55.738))
   def test_compute_rms(self, frame_index1, frame_index2, expected_rms):
     # Force loading of the software rendering reference images regardless of the
     # actual GL backend, since these should match the expected RMS values.

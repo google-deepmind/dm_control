@@ -32,7 +32,7 @@ PLATFORM_SUFFIXES = {
     'Windows': 'win64',
     'Darwin': 'macos',
 }
-DEFAULT_HEADERS_DIR = '~/.mujoco/mujoco210/include'
+DEFAULT_HEADERS_DIR = '~/.mujoco/include'
 
 # Relative paths to the binding generator script and the output directory.
 AUTOWRAP_PATH = 'dm_control/autowrap/autowrap.py'
@@ -175,7 +175,7 @@ def find_data_files(package_dir, patterns, excludes=()):
 
 setup(
     name='dm_control',
-    version='0.0.412862961',
+    version='0.0.416463896',
     description='Continuous control environments and MuJoCo Python bindings.',
     author='DeepMind',
     license='Apache License, Version 2.0',

@@ -41,28 +41,36 @@ except KeyError:
 ENV_MJLIB_PATH = "MJLIB_PATH"
 
 
-MJLIB_NAME = "mujoco210"
-
-
 def _get_shared_library_filename():
   """Get platform-dependent prefix and extension of MuJoCo shared library."""
+  name = "mujoco"
+  version = "2.1.1"
   if _PLATFORM == "Linux":
-    prefix = "lib"
-    extension = "so"
+    return "lib{}.so.{}".format(name, version)
   elif _PLATFORM == "Darwin":
-    prefix = "lib"
-    extension = "dylib"
+    return "lib{}.{}.dylib".format(name, version)
   elif _PLATFORM == "Windows":
-    prefix = ""
-    extension = "dll"
+    return "{}.dll".format(name)
   else:
     raise OSError("Unsupported platform: {}".format(_PLATFORM))
-  return "{}{}.{}".format(prefix, MJLIB_NAME, extension)
 
 
-DEFAULT_MJLIB_DIR = "~/.mujoco/mujoco210/bin"
-DEFAULT_MJLIB_PATH = os.path.join(
-    DEFAULT_MJLIB_DIR, _get_shared_library_filename())
+def _get_default_library_paths():  # pylint: disable=missing-function-docstring
+  candidate_paths = []
+  if _PLATFORM == "Linux":
+    candidate_paths.append(os.path.expanduser("~/.mujoco/lib"))
+  elif _PLATFORM == "Darwin":
+    framework_path = "MuJoCo.Framework/Versions/A"
+    candidate_paths.append(
+        os.path.join(os.path.expanduser("~/.mujoco"), framework_path))
+    candidate_paths.append(
+        os.path.join("/Applications/MuJoCo.App/Frameworks", framework_path))
+  elif _PLATFORM == "Windows":
+    candidate_paths.append(os.path.expanduser("~/.mujoco/bin"))
+  else:
+    raise OSError("Unsupported platform: {}".format(_PLATFORM))
+  return [os.path.join(path, _get_shared_library_filename())
+          for path in candidate_paths]
 
 
 DEFAULT_ENCODING = sys.getdefaultencoding()
@@ -109,9 +117,9 @@ def get_mjlib():
     # Use the MJLIB_PATH environment variable if it has been set.
     library_path = _get_full_path(os.environ[ENV_MJLIB_PATH])
   except KeyError:
-    library_path = ctypes.util.find_library(MJLIB_NAME)
-    if not library_path:
-      library_path = _get_full_path(DEFAULT_MJLIB_PATH)
+    for library_path in _get_default_library_paths():
+      if os.path.isfile(library_path):
+        break
   if not os.path.isfile(library_path):
     raise OSError("Cannot find MuJoCo library at {}.".format(library_path))
   if platform.system() == "Linux":
@@ -254,16 +262,3 @@ def cast_func_to_c_void_p(func, cfunctype):
     wrapped_pyfunc = cfunctype(func)
     new_func_ptr = ctypes.cast(wrapped_pyfunc, ctypes.c_void_p)
   return new_func_ptr, wrapped_pyfunc
-
-
-def get_mjkey_path():
-  """Returns a path to the MuJoCo key file.
-
-  MuJoCo no longer requires an activation key. This function is left here for
-  the time being for backward-compatibility purposes it case it is being called
-  from external code. It will be removed with no further notice.
-
-  Returns:
-    Path to MuJoCo activation key file.
-  """
-  return _get_full_path(os.environ.get("MJKEY_PATH", "~/.mujoco/mjkey.txt"))
