@@ -19,6 +19,7 @@ from distutils import cmd
 from distutils import log
 import fnmatch
 import os
+import platform
 import subprocess
 import sys
 
@@ -27,12 +28,7 @@ from setuptools import setup
 from setuptools.command import install
 from setuptools.command import test
 
-PLATFORM_SUFFIXES = {
-    'Linux': 'linux',
-    'Windows': 'win64',
-    'Darwin': 'macos',
-}
-DEFAULT_HEADERS_DIR = '~/.mujoco/include'
+PLATFORM = platform.system()
 
 # Relative paths to the binding generator script and the output directory.
 AUTOWRAP_PATH = 'dm_control/autowrap/autowrap.py'
@@ -56,7 +52,28 @@ def _initialize_mjbindings_options(cmd_instance):
   """Set default values for options relating to `build_mjbindings`."""
   # A default value must be assigned to each user option here.
   cmd_instance.inplace = 0
-  cmd_instance.headers_dir = DEFAULT_HEADERS_DIR
+
+  candidate_paths = []
+  if PLATFORM == 'Linux':
+    candidate_paths.append(os.path.expanduser('~/.mujoco/mujoco-2.1.1/include'))
+    candidate_paths.append(os.path.expanduser('~/.mujoco/include'))
+  elif PLATFORM == 'Darwin':
+    framework_path = 'MuJoCo.Framework/Headers'
+    candidate_paths.append(
+        os.path.join(os.path.expanduser('~/.mujoco'), framework_path))
+    candidate_paths.append(os.path.join(
+        '/Applications/MuJoCo.App/Contents/Frameworks', framework_path))
+  elif PLATFORM == 'Windows':
+    candidate_paths.append(os.path.join(
+        os.environ['HOMEDRIVE'], os.environ['HOMEPATH'], 'MuJoCo\\include'))
+    candidate_paths.append(os.path.join(
+        os.environ['PUBLIC'], 'MuJoCo\\include'))
+
+  cmd_instance.headers_dir = ''
+  for path in candidate_paths:
+    if os.path.isdir(path):
+      cmd_instance.headers_dir = path
+      break
 
 
 def _finalize_mjbindings_options(cmd_instance):
@@ -175,7 +192,7 @@ def find_data_files(package_dir, patterns, excludes=()):
 
 setup(
     name='dm_control',
-    version='0.0.416463896',
+    version='0.0.416848645',
     description='Continuous control environments and MuJoCo Python bindings.',
     author='DeepMind',
     license='Apache License, Version 2.0',

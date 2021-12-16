@@ -27,14 +27,6 @@ import numpy as np
 from dm_control.utils import io as resources
 
 _PLATFORM = platform.system()
-try:
-  _PLATFORM_SUFFIX = {
-      "Linux": "linux",
-      "Darwin": "macos",
-      "Windows": "win64"
-  }[_PLATFORM]
-except KeyError:
-  raise OSError("Unsupported platform: {}".format(_PLATFORM))
 
 # Environment variable that can be used to override the default path to the
 # MuJoCo shared library.
@@ -58,15 +50,19 @@ def _get_shared_library_filename():
 def _get_default_library_paths():  # pylint: disable=missing-function-docstring
   candidate_paths = []
   if _PLATFORM == "Linux":
+    candidate_paths.append(os.path.expanduser("~/.mujoco/mujoco-2.1.1/lib"))
     candidate_paths.append(os.path.expanduser("~/.mujoco/lib"))
   elif _PLATFORM == "Darwin":
     framework_path = "MuJoCo.Framework/Versions/A"
     candidate_paths.append(
         os.path.join(os.path.expanduser("~/.mujoco"), framework_path))
     candidate_paths.append(
-        os.path.join("/Applications/MuJoCo.App/Frameworks", framework_path))
+        os.path.join(
+            "/Applications/MuJoCo.App/Contents/Frameworks", framework_path))
   elif _PLATFORM == "Windows":
-    candidate_paths.append(os.path.expanduser("~/.mujoco/bin"))
+    candidate_paths.append(os.path.join(
+        os.environ["HOMEDRIVE"], os.environ["HOMEPATH"], "MuJoCo\\bin"))
+    candidate_paths.append(os.path.join(os.environ["PUBLIC"], "MuJoCo\\bin"))
   else:
     raise OSError("Unsupported platform: {}".format(_PLATFORM))
   return [os.path.join(path, _get_shared_library_filename())

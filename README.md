@@ -57,29 +57,35 @@ versions:
 *   3.9
 
 Various people have been successful in getting `dm_control` to work on other
-Linux distros, OS X, and Windows. We do not provide active support for these,
+Linux distros, macOS, and Windows. We do not provide active support for these,
 but will endeavour to answer questions on a best-effort basis.
 
 Follow these steps to install `dm_control`:
 
-1.  Download MuJoCo 2.1.0 from the Download page on the [MuJoCo website]. MuJoCo
-    must be installed before `dm_control`, since `dm_control`'s install script
-    generates Python [`ctypes`] bindings based on MuJoCo's header files. By
-    default, `dm_control` assumes that the MuJoCo archive is extracted into
-    `~/.mujoco`.
+1.  Download MuJoCo 2.1.1 from the
+    [Releases page on the MuJoCo GitHub repository]. MuJoCo must be installed
+    before `dm_control`, since `dm_control`'s install script generates Python
+    [`ctypes`] bindings based on MuJoCo's header files. By default, `dm_control`
+    assumes that MuJoCo is installed via the following instructions:
+
+    -   On Linux, extract the tarball into `~/.mujoco`.
+    -   On Windows, extract the zip archive into either `%HOMEPATH%\MuJoCo` or
+        `%PUBLIC%\MuJoCo`.
+    -   On macOS, either place `MuJoCo.app` into `/Applications`, or place
+        `MuJoCo.Framework` into `~/.mujoco`.
 
 2.  Install the `dm_control` Python package by running `pip install dm_control`.
     We recommend `pip install`ing into a `virtualenv`, or with the `--user` flag
     to avoid interfering with system packages. At installation time,
-    `dm_control` looks for the MuJoCo headers from Step 1 in
-    `~/.mujoco/mujoco210/include`, however this path can be configured with the
-    `headers-dir` command line argument.
+    `dm_control` looks for the MuJoCo headers at the paths described in Step 1
+    by default, however this path can be configured with the `headers-dir`
+    command line argument.
 
-3.  If the shared library provided by MuJoCo (e.g. `libmujoco210.so` or
-    `libmujoco210.dylib`) is installed at a non-default path, specify its
-    location using the `MJLIB_PATH` environment variable. This environment
-    variable should be set to the full path to the library file itself, e.g.
-    `export MJLIB_PATH=/path/to/libmujoco210.so`.
+3.  If the shared library provided by MuJoCo (i.e. `libmujoco.so.2.1.1` or
+    `libmujoco.2.1.1.dylib` or `mujoco.dll`) is installed at a non-default path,
+    specify its location using the `MJLIB_PATH` environment variable. This
+    environment variable should be set to the full path to the library file
+    itself, e.g. `export MJLIB_PATH=/path/to/libmujoco.so.2.1.1`.
 
 ## Versioning
 
@@ -133,6 +139,7 @@ setting the environment variable `EGL_DEVICE_ID=` to the target GPU ID.
     `export DYLD_LIBRARY_PATH=$(brew --prefix)/lib:$DYLD_LIBRARY_PATH`.
 
 [EXT_platform_device]: https://www.khronos.org/registry/EGL/extensions/EXT/EGL_EXT_platform_device.txt
+[Releases page on the MuJoCo GitHub repository]: https://github.com/deepmind/mujoco/releases
 [MuJoCo website]: https://mujoco.org/
 [tech report]: https://arxiv.org/abs/2006.12983
 [`ctypes`]: https://docs.python.org/3/library/ctypes.html
