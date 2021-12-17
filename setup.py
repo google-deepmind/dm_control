@@ -191,7 +191,6 @@ def find_data_files(package_dir, patterns, excludes=()):
   return list(paths)
 
 setup(
-    name='dm_control',
     version='0.0.416999250',
     description='Continuous control environments and MuJoCo Python bindings.',
     author='DeepMind',
