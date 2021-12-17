@@ -191,7 +191,7 @@ def find_data_files(package_dir, patterns, excludes=()):
   return list(paths)
 
 setup(
-    version='0.0.416999250',
+    version='0.0.417036346',
     description='Continuous control environments and MuJoCo Python bindings.',
     author='DeepMind',
     license='Apache License, Version 2.0',
