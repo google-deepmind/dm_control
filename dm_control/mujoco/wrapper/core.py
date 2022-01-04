@@ -61,7 +61,7 @@ class Error(Exception):
   pass
 
 
-if constants.mjVERSION_HEADER >= mjlib.mj_version():
+if constants.mjVERSION_HEADER != mjlib.mj_version():
   raise Error("MuJoCo library version ({0}) does not match header version "
               "({1})".format(constants.mjVERSION_HEADER, mjlib.mj_version()))
 
