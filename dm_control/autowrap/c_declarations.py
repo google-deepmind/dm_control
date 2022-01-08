@@ -357,20 +357,28 @@ class DynamicNDArray(CDeclBase):
   def runtime_shape_str(self):
     """String representation of shape tuple at runtime."""
     rs = []
-    for d in self.shape:
-      # dynamically-sized dimension
+
+    def format_dim(d):
       if isinstance(d, str):
+        # dynamically-sized dimension
         n = ""
         if d.startswith("nmocap") and len(d) > len("nmocap"):
           n = "*{}".format(d[6:])
           d = "nmocap"
         if self.parent and d in self.parent.members:
-          rs.append("self.{}{}".format(d, n))
+          return "self.{}{}".format(d, n)
         else:
-          rs.append("self._model.{}{}".format(d, n))
-      # static dimension
+          return "self._model.{}{}".format(d, n)
       else:
-        rs.append(str(d))
+        # static dimension
+        return str(d)
+
+    for d in self.shape:
+      if isinstance(d, tuple):
+        # dimension is a product of multiple terms
+        rs.append("*".join(format_dim(dd) for dd in d))
+      else:
+        rs.append(format_dim(d))
     return str(tuple(rs)).replace("'", "")  # strip quotes from string rep
 
   @property

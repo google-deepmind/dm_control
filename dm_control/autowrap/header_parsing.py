@@ -142,6 +142,12 @@ DEF_CONST = pp.Group(
     (COMMENT("comment") | EOL))
 
 # e.g. "X( mjtNum*, name_textadr, ntext, 1 )"
+XDIM = pp.delimitedList(
+    (
+        pp.Suppress(pp.Keyword("MJ_M") + LPAREN) +
+        NAME +
+        pp.Suppress(RPAREN)
+    ) | NAME | INT, delim="*", combine=True)
 XMEMBER = pp.Group(
     X +
     LPAREN +
@@ -150,7 +156,7 @@ XMEMBER = pp.Group(
     COMMA +
     NAME("name") +
     COMMA +
-    pp.delimitedList((INT | NAME), delim=COMMA)("dims") +
+    pp.delimitedList(XDIM, delim=COMMA)("dims") +
     RPAREN)
 
 XMACRO = pp.Group(

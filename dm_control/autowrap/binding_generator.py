@@ -116,11 +116,19 @@ class BindingGenerator:
       # If it's a string specifying a product (such as "2*mjMAXLINEPNT"),
       # recursively resolve the components to ints and calculate the result.
       size = 1
+      sizes = []
+      is_int = True
       for part in old_size.split("*"):
         dim = self.resolve_size(part)
-        assert isinstance(dim, int)
-        size *= dim
-      return size
+        sizes.append(dim)
+        if not isinstance(dim, int):
+          is_int = False
+        else:
+          size *= dim
+      if is_int:
+        return size
+      else:
+        return tuple(sizes)
     else:
       # Recursively dereference any sizes declared in header macros
       size = codegen_util.recursive_dict_lookup(old_size,
