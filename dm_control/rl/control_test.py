@@ -26,8 +26,8 @@ _CONSTANT_REWARD_VALUE = 1.0
 _CONSTANT_OBSERVATION = {'observations': np.asarray(_CONSTANT_REWARD_VALUE)}
 
 _ACTION_SPEC = specs.BoundedArray(
-    shape=(1,), dtype=np.float, minimum=0.0, maximum=1.0)
-_OBSERVATION_SPEC = {'observations': specs.Array(shape=(), dtype=np.float)}
+    shape=(1,), dtype=float, minimum=0.0, maximum=1.0)
+_OBSERVATION_SPEC = {'observations': specs.Array(shape=(), dtype=float)}
 
 
 class EnvironmentTest(parameterized.TestCase):
@@ -107,7 +107,7 @@ class EnvironmentTest(parameterized.TestCase):
 
   def test_flatten_observations(self):
     multimodal_obs = dict(_CONSTANT_OBSERVATION)
-    multimodal_obs['sensor'] = np.zeros(7, dtype=np.bool)
+    multimodal_obs['sensor'] = np.zeros(7, dtype=bool)
     self._task.get_observation = mock.Mock(return_value=multimodal_obs)
     env = control.Environment(
         physics=self._physics, task=self._task, flat_observation=True)

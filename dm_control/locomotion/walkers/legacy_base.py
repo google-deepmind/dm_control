@@ -241,7 +241,7 @@ class WalkerObservables(base.WalkerObservables):
         'sensordata',
         self._entity.mjcf_model.sensor.touch,
         corruptor=
-        lambda v, random_state: np.array(v > _TOUCH_THRESHOLD, dtype=np.float))
+        lambda v, random_state: np.array(v > _TOUCH_THRESHOLD, dtype=float))
 
   @composer.observable
   def sensors_rangefinder(self):

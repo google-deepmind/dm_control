@@ -149,7 +149,7 @@ class Stack(base.Task):
     while penetrating:
 
       # Randomise angles of arm joints.
-      is_limited = model.jnt_limited[_ARM_JOINTS].astype(np.bool)
+      is_limited = model.jnt_limited[_ARM_JOINTS].astype(bool)
       joint_range = model.jnt_range[_ARM_JOINTS]
       lower_limits = np.where(is_limited, joint_range[:, 0], -np.pi)
       upper_limits = np.where(is_limited, joint_range[:, 1], np.pi)

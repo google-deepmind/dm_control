@@ -31,7 +31,7 @@ def _generate_constant_schedule(update_timestep, delay,
 class BufferTest(parameterized.TestCase):
 
   def testOutOfOrderArrival(self):
-    buf = obs_buffer.Buffer(buffer_size=3, shape=(), dtype=np.float)
+    buf = obs_buffer.Buffer(buffer_size=3, shape=(), dtype=float)
     buf.insert(timestamp=0, delay=4, value=1)
     buf.insert(timestamp=1, delay=2, value=2)
     buf.insert(timestamp=2, delay=3, value=3)
@@ -43,15 +43,15 @@ class BufferTest(parameterized.TestCase):
 
   @parameterized.parameters(((3, 3),), ((),))
   def testStripSingletonDimension(self, shape):
-    buf = obs_buffer.Buffer(buffer_size=1, shape=shape, dtype=np.float,
+    buf = obs_buffer.Buffer(buffer_size=1, shape=shape, dtype=float,
                             strip_singleton_buffer_dim=True)
-    expected_value = np.full(shape, 42, dtype=np.float)
+    expected_value = np.full(shape, 42, dtype=float)
     buf.insert(timestamp=0, delay=0, value=expected_value)
     np.testing.assert_array_equal(buf.read(current_time=1), expected_value)
 
   def testPlanToSingleUndelayedObservation(self):
     buf = obs_buffer.Buffer(
-        buffer_size=1, shape=(), dtype=np.float)
+        buffer_size=1, shape=(), dtype=float)
     control_timestep = 20
     observation_schedule = _generate_constant_schedule(
         update_timestep=1, delay=0,
@@ -62,7 +62,7 @@ class BufferTest(parameterized.TestCase):
 
   def testPlanTwoStepsAhead(self):
     buf = obs_buffer.Buffer(
-        buffer_size=1, shape=(), dtype=np.float)
+        buffer_size=1, shape=(), dtype=float)
     control_timestep = 5
     observation_schedule = _generate_constant_schedule(
         update_timestep=2, delay=3,

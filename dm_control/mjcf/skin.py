@@ -53,9 +53,9 @@ def parse(contents, body_getter):
     body_name = f.read(MAX_BODY_NAME_LENGTH).decode().split('\0')[0]
     body = lambda body_name=body_name: body_getter(body_name)
     bindpos = np.asarray(
-        struct.unpack('<fff', f.read(4*3)), dtype=np.float)
+        struct.unpack('<fff', f.read(4*3)), dtype=float)
     bindquat = np.asarray(
-        struct.unpack('<ffff', f.read(4*4)), dtype=np.float)
+        struct.unpack('<ffff', f.read(4*4)), dtype=float)
     vertex_count = struct.unpack('<i', f.read(4))[0]
     vertex_ids = np.frombuffer(f.read(4*vertex_count), dtype='<i4')
     vertex_weights = np.frombuffer(f.read(4*vertex_count), dtype='<f4')

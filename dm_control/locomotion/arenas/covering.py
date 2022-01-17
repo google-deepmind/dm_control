@@ -43,7 +43,7 @@ class _MazeWallCoveringContext:
     self._text_maze = text_maze
     self._wall_char = wall_char
     self._make_odd_sized_walls = make_odd_sized_walls
-    self._covered = np.full(text_maze.shape, False, dtype=np.bool)
+    self._covered = np.full(text_maze.shape, False, dtype=bool)
     self._maze_size = GridCoordinates(*text_maze.shape)
     self._next_start = GridCoordinates(0, 0)
     self._calculated = False
