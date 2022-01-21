@@ -32,7 +32,7 @@ _MODEL_WITH_BALL_JOINTS_XML = assets.get_contents('model_with_ball_joints.xml')
 
 _SITE_NAME = 'gripsite'
 _JOINTS = ['joint_1', 'joint_2', 'joint_3', 'joint_4', 'joint_5', 'joint_6']
-_TOL = 1e-14
+_TOL = 1.2e-14
 _MAX_STEPS = 100
 _MAX_RESETS = 10
 
