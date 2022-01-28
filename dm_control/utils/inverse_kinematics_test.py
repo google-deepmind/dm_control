@@ -65,7 +65,7 @@ class _ResetArm:
 
   def _cache_bounds(self, physics):
     self._lower, self._upper = physics.named.model.jnt_range[_JOINTS].T
-    limited = physics.named.model.jnt_limited[_JOINTS].astype(np.bool)
+    limited = physics.named.model.jnt_limited[_JOINTS].astype(bool)
     # Positions for hinge joints without limits are sampled between 0 and 2pi
     self._lower[~limited] = 0
     self._upper[~limited] = 2 * np.pi

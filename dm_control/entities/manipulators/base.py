@@ -59,7 +59,7 @@ class RobotArm(composer.Robot, metaclass=abc.ABCMeta):
     bound_joints = physics.bind(self.joints)
     limits = np.array(bound_joints.range, copy=True)
     is_hinge = bound_joints.type == mjbindings.enums.mjtJoint.mjJNT_HINGE
-    is_limited = bound_joints.limited.astype(np.bool)
+    is_limited = bound_joints.limited.astype(bool)
     invalid = ~is_hinge & ~is_limited  # All non-hinge joints must have limits.
     if any(invalid):
       invalid_str = '\n'.join(str(self.joints[i]) for i in np.where(invalid)[0])

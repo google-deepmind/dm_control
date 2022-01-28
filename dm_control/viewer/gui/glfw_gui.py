@@ -118,7 +118,7 @@ class GlfwMouse(base.InputEventsProcessor):
           self._glfw_setup, context.window)
 
     self._scale = framebuffer_width * 1.0 / window_width
-    self._last_mouse_pos = np.zeros(2, np.int)
+    self._last_mouse_pos = np.zeros(2, int)
 
     self._double_clicks = {}
 
@@ -143,7 +143,7 @@ class GlfwMouse(base.InputEventsProcessor):
       y: Vertical position of mouse, in pixels.
     """
     del window
-    position = np.array([x, y], np.int) * self._scale
+    position = np.array([x, y], int) * self._scale
     delta = position - self._last_mouse_pos
     self._last_mouse_pos = position
     self.add_event(self.on_move, position, delta)

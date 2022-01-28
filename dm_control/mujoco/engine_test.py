@@ -57,8 +57,8 @@ class MujocoEngineTest(parameterized.TestCase):
         else:
           self.assertEqual(actual_value, expected_value)
       except AssertionError as e:
-        raise AssertionError("Attribute '{}' differs from expected value. {}"
-                             "".format(name, e.message))
+        raise AssertionError(
+            f"Attribute '{name}' differs from expected value.") from e
 
   @parameterized.parameters(0, 'cart', u'cart')
   def testCameraIndexing(self, camera_id):
@@ -532,7 +532,7 @@ class MujocoEngineTest(parameterized.TestCase):
     """
     physics = engine.Physics.from_xml_string(xml)
     spec = engine.action_spec(physics)
-    self.assertEqual(np.float, spec.dtype)
+    self.assertEqual(float, spec.dtype)
     np.testing.assert_array_equal(spec.minimum, [-constants.mjMAXVAL, -1.0])
     np.testing.assert_array_equal(spec.maximum, [constants.mjMAXVAL, 2.0])
 

@@ -141,7 +141,7 @@ class Walker(composer.Robot, metaclass=abc.ABCMeta):
       ])
     return specs.BoundedArray(
         shape=(len(self.actuators),),
-        dtype=np.float,
+        dtype=float,
         minimum=minimum,
         maximum=maximum,
         name='\t'.join([actuator.name for actuator in self.actuators]))

@@ -68,7 +68,7 @@ class TransformationsTest(parameterized.TestCase):
     # Test for special values that often cause numerical issues.
     rng = [-np.pi, np.pi / 2, 0, np.pi / 2, np.pi]
     for euler_tup in itertools.product(rng, rng, rng):
-      euler_vec = np.array(euler_tup, dtype=np.float)
+      euler_vec = np.array(euler_tup, dtype=float)
       mat = transformations.euler_to_rmat(euler_vec, ordering='XYZ')
       quat = transformations.mat_to_quat(mat)
       tr_mat = transformations.quat_to_mat(quat)
@@ -91,7 +91,7 @@ class TransformationsTest(parameterized.TestCase):
     subsamps = 10
     rng = np.linspace(-np.pi, np.pi, subsamps)
     for euler_tup in itertools.product(rng, rng, rng):
-      euler_vec = np.array(euler_tup, dtype=np.float)
+      euler_vec = np.array(euler_tup, dtype=float)
       mat = transformations.euler_to_rmat(euler_vec, ordering='XYZ')
       mj_quat = np.empty(4, dtype=euler_vec.dtype)
       mjlib.mju_mat2Quat(mj_quat, mat.flatten())

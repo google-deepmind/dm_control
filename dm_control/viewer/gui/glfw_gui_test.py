@@ -105,7 +105,7 @@ class GlfwMouseTest(absltest.TestCase):
       self.position = position
       self.translation = translation
     self.new_position = [100, 100]
-    self.handler._last_mouse_pos = np.array([99, 101], np.int)
+    self.handler._last_mouse_pos = np.array([99, 101], int)
     self.handler.on_move += move_handler
 
     self.handler._handle_move(self.window, self.new_position[0],

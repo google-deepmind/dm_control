@@ -144,7 +144,7 @@ order to avoid a clash with the Python `class` keyword:
 my_geom = mjcf_model.worldbody.body['foo'].body['bar'].geom['my_geom']
 print(isinstance(mjcf_model, mjcf.Element)) # True
 print(my_geom.name)    # 'my_geom'
-print(my_geom.pos)     # np.array([0., 1., 2.], dtype=np.float)
+print(my_geom.pos)     # np.array([0., 1., 2.], dtype=float)
 print(my_geom.class)   # SyntaxError
 print(my_geom.dclass)  # 'brick'
 ```
@@ -185,9 +185,9 @@ Attributes can be modified, added, or removed:
 
 ```python
 my_geom.pos = [1, 2, 3]
-print(my_geom.pos)   # np.array([1., 2., 3.], dtype=np.float)
+print(my_geom.pos)   # np.array([1., 2., 3.], dtype=float)
 my_geom.quat = [0, 1, 0, 0]
-print(my_geom.quat)  # np.array([0., 1., 0., 0.], dtype=np.float)
+print(my_geom.quat)  # np.array([0., 1., 0., 0.], dtype=float)
 del my_geom.quat
 print(my_geom.quat)   # None
 ```
