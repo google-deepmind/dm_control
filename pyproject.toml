@@ -1,3 +1,6 @@
 [build-system]
 requires = ["setuptools >= 40.6.0", "wheel", "pyparsing < 3.0", "absl-py >= 0.7.0"]
 build-backend = "setuptools.build_meta"
+
+[options]
+package_dir = ~/content/
