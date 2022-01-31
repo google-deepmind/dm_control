@@ -87,6 +87,17 @@ Follow these steps to install `dm_control`:
     environment variable should be set to the full path to the library file
     itself, e.g. `export MJLIB_PATH=/path/to/libmujoco.so.2.1.1`.
 
+**Note**: `dm_control` cannot be installed in "editable" mode (i.e. `pip install
+-e`) due to the way in which we automatically generate the `ctypes` bindings for
+MuJoCo. Installing it in this way will result in import errors like:
+
+```
+ImportError: cannot import name 'constants' from partially initialized module 'dm_control.mujoco.wrapper.mjbindings' ...
+```
+
+The solution is to `pip uninstall dm_control` and then reinstall it without the
+`-e` flag.
+
 ## Versioning
 
 `dm_control` is released on a rolling basis: the latest commit on the `master`
