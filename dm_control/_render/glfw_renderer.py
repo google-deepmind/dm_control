@@ -15,8 +15,6 @@
 
 """An OpenGL renderer backed by GLFW."""
 
-import platform
-
 from dm_control._render import base
 from dm_control._render import executor
 
@@ -27,13 +25,7 @@ try:
 except (ImportError, IOError, OSError) as exc:
   raise ImportError from exc
 try:
-  if platform.system() == 'Darwin':
-    # By default, GLFW creates a Cocoa menubar on macOS, which results in a
-    # Python rocket icon appearing in the dock. We don't want this since
-    # dm_control._render only uses GLFW for offscreen rendering.
-    glfw.init_hint(glfw.COCOA_MENUBAR, glfw.FALSE)
-  else:
-    glfw.init()
+  glfw.init()
 except glfw.GLFWError as exc:
   raise ImportError from exc
 
