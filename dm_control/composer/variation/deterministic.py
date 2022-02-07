@@ -46,3 +46,9 @@ class Sequence(base.Variation):
     except StopIteration:
       self._iterator = iter(self._values)
       return next(self._iterator)
+
+
+class Identity(base.Variation):
+
+  def __call__(self, initial_value=None, current_value=None, random_state=None):
+    return current_value
