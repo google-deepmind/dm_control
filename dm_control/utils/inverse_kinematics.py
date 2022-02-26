@@ -248,7 +248,7 @@ def nullspace_method(jac_joints, delta, regularization_strength=0.0):
   Reference:
     Buss, S. R. S. (2004). Introduction to inverse kinematics with jacobian
     transpose, pseudoinverse and damped least squares methods.
-    https://www.math.ucsd.edu/~sbuss/ResearchWeb/ikmethods/iksurvey.pdf
+    https://www.cs.cmu.edu/~15464-s13/lectures/lecture6/iksurvey.pdf
   """
   hess_approx = jac_joints.T.dot(jac_joints)
   joint_delta = jac_joints.T.dot(delta)
@@ -257,4 +257,4 @@ def nullspace_method(jac_joints, delta, regularization_strength=0.0):
     hess_approx += np.eye(hess_approx.shape[0]) * regularization_strength
     return np.linalg.solve(hess_approx, joint_delta)
   else:
-    return np.linalg.lstsq(hess_approx, joint_delta, rcond=-1)[0]
+    return np.linalg.lstsq(jac_joints, delta, rcond=-1)[0]
