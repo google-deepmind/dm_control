@@ -36,7 +36,7 @@ ENV_MJLIB_PATH = "MJLIB_PATH"
 def _get_shared_library_filename():
   """Get platform-dependent prefix and extension of MuJoCo shared library."""
   name = "mujoco"
-  version = "2.1.1"
+  version = "2.1.2"
   if _PLATFORM == "Linux":
     return "lib{}.so.{}".format(name, version)
   elif _PLATFORM == "Darwin":
@@ -50,7 +50,7 @@ def _get_shared_library_filename():
 def _get_default_library_paths():  # pylint: disable=missing-function-docstring
   candidate_paths = []
   if _PLATFORM == "Linux":
-    candidate_paths.append(os.path.expanduser("~/.mujoco/mujoco-2.1.1/lib"))
+    candidate_paths.append(os.path.expanduser("~/.mujoco/mujoco-2.1.2/lib"))
     candidate_paths.append(os.path.expanduser("~/.mujoco/lib"))
   elif _PLATFORM == "Darwin":
     framework_path = "MuJoCo.Framework/Versions/A"

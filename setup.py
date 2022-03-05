@@ -41,6 +41,7 @@ HEADER_FILENAMES = [
     'mjdata.h',
     'mjmodel.h',
     'mjrender.h',
+    'mjtnum.h',
     'mjui.h',
     'mjvisualize.h',
     'mjxmacro.h',
@@ -55,7 +56,7 @@ def _initialize_mjbindings_options(cmd_instance):
 
   candidate_paths = []
   if PLATFORM == 'Linux':
-    candidate_paths.append(os.path.expanduser('~/.mujoco/mujoco-2.1.1/include'))
+    candidate_paths.append(os.path.expanduser('~/.mujoco/mujoco-2.1.2/include'))
     candidate_paths.append(os.path.expanduser('~/.mujoco/include'))
   elif PLATFORM == 'Darwin':
     framework_path = 'MuJoCo.Framework/Headers'
@@ -192,7 +193,7 @@ def find_data_files(package_dir, patterns, excludes=()):
 
 setup(
     name='dm_control',
-    version='0.0.430443811',
+    version='0.0.432561313',
     description='Continuous control environments and MuJoCo Python bindings.',
     author='DeepMind',
     license='Apache License, Version 2.0',
