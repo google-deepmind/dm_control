@@ -184,10 +184,10 @@ def _get_size_name_to_element_names(model):
     names.
   """
 
-  names = model.names[:model.nnames]
+  names = model.names
   size_name_to_element_names = {}
 
-  for field_name in dir(model):
+  for field_name in dir(model.ptr):
     if not _is_name_pointer(field_name):
       continue
 
@@ -201,8 +201,9 @@ def _get_size_name_to_element_names(model):
     # Get the element names.
     element_names = []
     for start_index in name_addresses:
-      name = names[start_index:names.find(b'\0', start_index)]
-      element_names.append(util.to_native_string(name))
+      end_index = names.find(b'\0', start_index)
+      name = names[start_index:end_index]
+      element_names.append(str(name, 'utf-8'))
 
     # String identifier for the size of the first dimension, e.g. 'nbody'.
     size_name = _get_size_name(field_name)

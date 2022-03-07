@@ -175,7 +175,7 @@ class MujocoIndexTest(parameterized.TestCase):
     # all second-order actuators. This test ensures that the rule still holds
     # (e.g. in future versions of MuJoCo).
     with self.assertRaisesRegex(
-        wrapper.Error, '2nd-order actuators must come before 3rd-order'):
+        ValueError, '2nd-order actuators must come before 3rd-order'):
       wrapper.MjModel.from_xml_string(MODEL_INCORRECT_ACTUATOR_ORDER)
 
   @parameterized.parameters(
@@ -293,11 +293,13 @@ class MujocoIndexTest(parameterized.TestCase):
     index.struct_indexer(model, 'mjmodel', size_to_axis_indexer)
     index.struct_indexer(data, 'mjdata', size_to_axis_indexer)
 
-  @parameterized.parameters(
+  # pylint: disable=undefined-variable
+  @parameterized.parameters([
       name for name in dir(np.ndarray)
       if not name.startswith('_')  # Exclude 'private' attributes
       and name not in ('ctypes', 'flat')  # Can't compare via identity/equality
-  )
+  ])
+  # pylint: enable=undefined-variable
   def testFieldIndexerDelegatesNDArrayAttributes(self, name):
     field = self._data.xpos
     field_indexer = self._data_indexers.xpos

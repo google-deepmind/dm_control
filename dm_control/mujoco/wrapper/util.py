@@ -19,55 +19,16 @@ import ctypes
 import ctypes.util
 import functools
 import os
-import platform
 import sys
 from dm_control import _render
+import mujoco
 import numpy as np
 
 from dm_control.utils import io as resources
 
-_PLATFORM = platform.system()
-
 # Environment variable that can be used to override the default path to the
 # MuJoCo shared library.
 ENV_MJLIB_PATH = "MJLIB_PATH"
-
-
-def _get_shared_library_filename():
-  """Get platform-dependent prefix and extension of MuJoCo shared library."""
-  name = "mujoco"
-  version = "2.1.2"
-  if _PLATFORM == "Linux":
-    return "lib{}.so.{}".format(name, version)
-  elif _PLATFORM == "Darwin":
-    return "lib{}.{}.dylib".format(name, version)
-  elif _PLATFORM == "Windows":
-    return "{}.dll".format(name)
-  else:
-    raise OSError("Unsupported platform: {}".format(_PLATFORM))
-
-
-def _get_default_library_paths():  # pylint: disable=missing-function-docstring
-  candidate_paths = []
-  if _PLATFORM == "Linux":
-    candidate_paths.append(os.path.expanduser("~/.mujoco/mujoco-2.1.2/lib"))
-    candidate_paths.append(os.path.expanduser("~/.mujoco/lib"))
-  elif _PLATFORM == "Darwin":
-    framework_path = "MuJoCo.Framework/Versions/A"
-    candidate_paths.append(
-        os.path.join(os.path.expanduser("~/.mujoco"), framework_path))
-    candidate_paths.append(
-        os.path.join(
-            "/Applications/MuJoCo.App/Contents/Frameworks", framework_path))
-  elif _PLATFORM == "Windows":
-    candidate_paths.append(os.path.join(
-        os.environ["HOMEDRIVE"], os.environ["HOMEPATH"], "MuJoCo\\bin"))
-    candidate_paths.append(os.path.join(os.environ["PUBLIC"], "MuJoCo\\bin"))
-  else:
-    raise OSError("Unsupported platform: {}".format(_PLATFORM))
-  return [os.path.join(path, _get_shared_library_filename())
-          for path in candidate_paths]
-
 
 DEFAULT_ENCODING = sys.getdefaultencoding()
 
@@ -107,20 +68,7 @@ def _maybe_load_linux_dynamic_deps(library_dir):
 # Google-internal libstdc++ loading.
 
 def get_mjlib():
-  """Loads `libmujoco.so` and returns it as a `ctypes.CDLL` object."""
-  # Google-internal MuJoCo loading.
-  try:
-    # Use the MJLIB_PATH environment variable if it has been set.
-    library_path = _get_full_path(os.environ[ENV_MJLIB_PATH])
-  except KeyError:
-    for library_path in _get_default_library_paths():
-      if os.path.isfile(library_path):
-        break
-  if not os.path.isfile(library_path):
-    raise OSError("Cannot find MuJoCo library at {}.".format(library_path))
-  if platform.system() == "Linux":
-    _maybe_load_linux_dynamic_deps(os.path.dirname(library_path))
-  return ctypes.cdll.LoadLibrary(library_path)
+  return mujoco
 
 
 class WrapperBase:

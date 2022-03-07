@@ -24,7 +24,6 @@ from absl import logging
 from dm_control import mujoco
 from dm_control.mjcf import constants
 from dm_control.mjcf import debugging
-from dm_control.mujoco import wrapper as mujoco_wrapper
 from dm_control.mujoco.wrapper.mjbindings import sizes
 import numpy as np
 
@@ -289,7 +288,7 @@ class Binding:
       self._attributes = _ATTRIBUTES[namespace]
     except KeyError:
       raise ValueError('elements of type {!r} cannot be bound to physics'
-                       .format(namespace))
+                       .format(namespace)) from None
     self._physics = physics
     self._namespace = namespace
     self._named_index = named_index
@@ -306,9 +305,9 @@ class Binding:
       try:
         named_indexer = self._attributes[name].get_named_indexer(self._physics)
         self._named_indexers[name] = named_indexer
-      except KeyError:
+      except KeyError as e:
         raise AttributeError('bound element <{}> does not have attribute {!r}'
-                             .format(self._namespace, name))
+                             .format(self._namespace, name)) from e
     return named_indexer
 
   def _get_cached_array_and_index(self, name):
@@ -494,7 +493,7 @@ class Physics(mujoco.Physics):
     assets = mjcf_model.get_assets()
     try:
       return cls.from_xml_string(xml_string=xml_string, assets=assets)
-    except mujoco_wrapper.Error:
+    except ValueError:
       debug_context.process_and_raise_last_exception()
 
   def reload_from_mjcf_model(self, mjcf_model):
@@ -514,7 +513,7 @@ class Physics(mujoco.Physics):
     assets = mjcf_model.get_assets()
     try:
       self.reload_from_xml_string(xml_string=xml_string, assets=assets)
-    except mujoco_wrapper.Error:
+    except ValueError:
       debug_context.process_and_raise_last_exception()
 
   def _reload_from_data(self, data):

@@ -264,7 +264,7 @@ class EnvironmentRuntimeTest(parameterized.TestCase):
     self.runtime = runtime.Runtime(self.env, self.policy)
 
   def test_start(self):
-    with mock.patch(runtime.__name__ + '.mjlib'):
+    with mock.patch(runtime.__name__ + '.mujoco'):
       result = self.runtime._start()
       self.assertTrue(result)
       self.env.reset.assert_called_once()
@@ -285,9 +285,9 @@ class EnvironmentRuntimeTest(parameterized.TestCase):
     self.env.step.assert_called_once_with(mock_get_default_action.return_value)
 
   def test_stepping_paused(self):
-    with mock.patch(runtime.__name__ + '.mjlib') as mjlib:
+    with mock.patch(runtime.__name__ + '.mujoco') as mujoco:
       self.runtime._step_paused()
-      mjlib.mj_forward.assert_called_once()
+      mujoco.mj_forward.assert_called_once()
 
   def test_get_time(self):
     expected_time = 20

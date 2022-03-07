@@ -219,7 +219,7 @@ class DebugContext:
     return formatted
 
   def process_and_raise_last_exception(self):
-    """Processes and re-raises the last mujoco.wrapper.Error caught.
+    """Processes and re-raises the last ValueError caught.
 
     This function will insert the relevant line from the source XML to the error
     message. If debug mode is enabled, additional debugging information is
@@ -253,9 +253,10 @@ class DebugContext:
             self._generate_debug_message_from_xml_line(xml_line)])
     else:
       message_lines.extend([
-          'Compile error raised by Mujoco; '
+          'Compile error raised by Mujoco; ' +
           'run again with --pymjcf_debug for additional debug information.',
-          str(err)])
+          str(err)
+      ])
       if xml_line:
         message_lines.append(stripped_xml_line)
 

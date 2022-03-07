@@ -42,24 +42,21 @@ from dm_control import _render
 from dm_control.mujoco import index
 from dm_control.mujoco import wrapper
 from dm_control.mujoco.wrapper import util
-from dm_control.mujoco.wrapper.mjbindings import constants
-from dm_control.mujoco.wrapper.mjbindings import enums
-from dm_control.mujoco.wrapper.mjbindings import mjlib
-from dm_control.mujoco.wrapper.mjbindings import types
 from dm_control.rl import control as _control
 from dm_env import specs
+import mujoco
 import numpy as np
 
 _FONT_STYLES = {
-    'normal': enums.mjtFont.mjFONT_NORMAL,
-    'shadow': enums.mjtFont.mjFONT_SHADOW,
-    'big': enums.mjtFont.mjFONT_BIG,
+    'normal': mujoco.mjtFont.mjFONT_NORMAL,
+    'shadow': mujoco.mjtFont.mjFONT_SHADOW,
+    'big': mujoco.mjtFont.mjFONT_BIG,
 }
 _GRID_POSITIONS = {
-    'top left': enums.mjtGridPos.mjGRID_TOPLEFT,
-    'top right': enums.mjtGridPos.mjGRID_TOPRIGHT,
-    'bottom left': enums.mjtGridPos.mjGRID_BOTTOMLEFT,
-    'bottom right': enums.mjtGridPos.mjGRID_BOTTOMRIGHT,
+    'top left': mujoco.mjtGridPos.mjGRID_TOPLEFT,
+    'top right': mujoco.mjtGridPos.mjGRID_TOPRIGHT,
+    'bottom left': mujoco.mjtGridPos.mjGRID_BOTTOMLEFT,
+    'bottom right': mujoco.mjtGridPos.mjGRID_BOTTOMRIGHT,
 }
 
 Contexts = collections.namedtuple('Contexts', ['gl', 'mujoco'])
@@ -158,12 +155,12 @@ class Physics(_control.Physics):
     # integrators (e.g. RK4) an additional mj_step1 must be called after the
     # last mj_step to ensure mjData syncing.
     with self.check_invalid_state():
-      if self.model.opt.integrator == enums.mjtIntegrator.mjINT_EULER:
-        mjlib.mj_step2(self.model.ptr, self.data.ptr)
+      if self.model.opt.integrator == mujoco.mjtIntegrator.mjINT_EULER.value:
+        mujoco.mj_step2(self.model.ptr, self.data.ptr)
       else:
-        mjlib.mj_step(self.model.ptr, self.data.ptr)
+        mujoco.mj_step(self.model.ptr, self.data.ptr)
 
-      mjlib.mj_step1(self.model.ptr, self.data.ptr)
+      mujoco.mj_step1(self.model.ptr, self.data.ptr)
 
   def render(
       self,
@@ -199,9 +196,9 @@ class Physics(_control.Physics):
       render_flag_overrides: Optional mapping specifying rendering flags to
         override. The keys can be either lowercase strings or `mjtRndFlag` enum
         values, and the values are the overridden flag values, e.g.
-        `{'wireframe': True}` or `{enums.mjtRndFlag.mjRND_WIREFRAME: True}`. See
-        `enums.mjtRndFlag` for the set of valid flags. Must be None if either
-        `depth` or `segmentation` is True.
+        `{'wireframe': True}` or `{mujoco.mjtRndFlag.mjRND_WIREFRAME: True}`.
+        See `mujoco.mjtRndFlag` for the set of valid flags. Must be None if
+        either `depth` or `segmentation` is True.
 
     Returns:
       The rendered RGB, depth or segmentation image.
@@ -254,12 +251,7 @@ class Physics(_control.Physics):
     Returns:
       A `Physics` instance.
     """
-    if not share_model:
-      new_model = self.model.copy()
-    else:
-      new_model = self.model
-    new_data = wrapper.MjData(new_model)
-    mjlib.mj_copyData(new_data.ptr, new_data.model.ptr, self.data.ptr)
+    new_data = self.data._make_copy(share_model=share_model)  # pylint: disable=protected-access
     cls = self.__class__
     new_obj = cls.__new__(cls)
     # pylint: disable=protected-access
@@ -280,12 +272,12 @@ class Physics(_control.Physics):
       ValueError: If `keyframe_id` is out of range.
     """
     if keyframe_id is None:
-      mjlib.mj_resetData(self.model.ptr, self.data.ptr)
+      mujoco.mj_resetData(self.model.ptr, self.data.ptr)
     else:
       if not 0 <= keyframe_id < self.model.nkey:
         raise ValueError(_KEYFRAME_ID_OUT_OF_RANGE.format(
             max_valid=self.model.nkey-1, actual=keyframe_id))
-      mjlib.mj_resetDataKeyframe(self.model.ptr, self.data.ptr, keyframe_id)
+      mujoco.mj_resetDataKeyframe(self.model.ptr, self.data.ptr, keyframe_id)
 
     # Disable actuation since we don't yet have meaningful control inputs.
     with self.model.disable('actuation'):
@@ -305,7 +297,7 @@ class Physics(_control.Physics):
     # readings, whereas `mj_step1` does not.
     # http://www.mujoco.org/book/programming.html#siForward
     with self.check_invalid_state():
-      mjlib.mj_forward(self.model.ptr, self.data.ptr)
+      mujoco.mj_forward(self.model.ptr, self.data.ptr)
 
   @contextlib.contextmanager
   def check_invalid_state(self):
@@ -319,12 +311,14 @@ class Physics(_control.Physics):
         context is nested inside a `suppress_physics_errors` context, in which
         case a warning will be logged instead.
     """
-    # `np.copyto(dst, src)` is marginally faster than `dst[:] = src`.
-    np.copyto(self._warnings_before, self._warnings)
+    self._warnings_before[:] = [w.number for w in self._warnings]
     yield
-    np.greater(self._warnings, self._warnings_before, out=self._new_warnings)
+    np.greater([w.number for w in self._warnings],
+               self._warnings_before,
+               out=self._new_warnings)
     if any(self._new_warnings):
-      warning_names = np.compress(self._new_warnings, enums.mjtWarning._fields)
+      warning_names = np.compress(self._new_warnings,
+                                  list(mujoco.mjtWarning.__members__))
       message = _INVALID_PHYSICS_STATE.format(
           warning_names=', '.join(warning_names))
       if self._warnings_cause_exception:
@@ -366,13 +360,15 @@ class Physics(_control.Physics):
     Args:
       data: Instance of `wrapper.MjData`.
     """
+    if not isinstance(data, wrapper.MjData):
+      raise TypeError(f'Expected wrapper.MjData. Got: {type(data)}.')
     self._data = data
 
     # Performance optimization: pre-allocate numpy arrays used when checking for
     # MuJoCo warnings on each step.
-    self._warnings = self.data.warning.number
+    self._warnings = self.data.warning
     self._warnings_before = np.empty_like(self._warnings)
-    self._new_warnings = np.empty(dtype=bool, shape=self._warnings.shape)
+    self._new_warnings = np.empty(dtype=bool, shape=(len(self._warnings),))
 
     # Forcibly free any previous GL context in order to avoid problems with GL
     # implementations that do not support multiple contexts on a given device.
@@ -402,8 +398,7 @@ class Physics(_control.Physics):
     with self._contexts_lock:
       if self._contexts:
         self._free_rendering_contexts()
-    self.data.free()
-    self.model.free()
+    del self._data
 
   @classmethod
   def from_model(cls, model):
@@ -661,17 +656,17 @@ class Camera:
     self._perturb.active = 0
     self._perturb.select = 0
 
-    self._rect = types.MJRRECT(0, 0, self._width, self._height)
+    self._rect = mujoco.MjrRect(0, 0, self._width, self._height)
 
     self._render_camera = wrapper.MjvCamera()
     self._render_camera.fixedcamid = camera_id
 
     if camera_id == -1:
-      self._render_camera.type_ = enums.mjtCamera.mjCAMERA_FREE
+      self._render_camera.type = mujoco.mjtCamera.mjCAMERA_FREE
     else:
       # As defined in the Mujoco documentation, mjCAMERA_FIXED refers to a
       # camera explicitly defined in the model.
-      self._render_camera.type_ = enums.mjtCamera.mjCAMERA_FIXED
+      self._render_camera.type = mujoco.mjtCamera.mjCAMERA_FIXED
 
     # Internal buffers.
     self._rgb_buffer = np.empty((self._height, self._width, 3), dtype=np.uint8)
@@ -679,8 +674,7 @@ class Camera:
 
     if self._physics.contexts.mujoco is not None:
       with self._physics.contexts.gl.make_current() as ctx:
-        ctx.call(mjlib.mjr_setBuffer,
-                 enums.mjtFramebuffer.mjFB_OFFSCREEN,
+        ctx.call(mujoco.mjr_setBuffer, mujoco.mjtFramebuffer.mjFB_OFFSCREEN,
                  self._physics.contexts.mujoco.ptr)
 
   @property
@@ -717,9 +711,9 @@ class Camera:
       # the left and right channels. Note: we call `self.update()` in order to
       # ensure that the contents of `scene.camera` are correct.
       self.update()
-      pos = np.mean(self.scene.camera.pos, axis=0)
-      z = -np.mean(self.scene.camera.forward, axis=0)
-      y = np.mean(self.scene.camera.up, axis=0)
+      pos = np.mean([camera.pos for camera in self.scene.camera], axis=0)
+      z = -np.mean([camera.forward for camera in self.scene.camera], axis=0)
+      y = np.mean([camera.up for camera in self.scene.camera], axis=0)
       rot = np.vstack((np.cross(y, z), y, z))
       fov = self._physics.model.vis.global_.fovy
     else:
@@ -762,17 +756,17 @@ class Camera:
         the scene instead of the default.  If None, will use the default.
     """
     scene_option = scene_option or self._scene_option
-    mjlib.mjv_updateScene(self._physics.model.ptr, self._physics.data.ptr,
-                          scene_option.ptr, self._perturb.ptr,
-                          self._render_camera.ptr, enums.mjtCatBit.mjCAT_ALL,
-                          self._scene.ptr)
+    mujoco.mjv_updateScene(self._physics.model.ptr, self._physics.data.ptr,
+                           scene_option.ptr, self._perturb.ptr,
+                           self._render_camera.ptr, mujoco.mjtCatBit.mjCAT_ALL,
+                           self._scene.ptr)
 
   def _render_on_gl_thread(self, depth, overlays):
     """Performs only those rendering calls that require an OpenGL context."""
 
     # Render the scene.
-    mjlib.mjr_render(self._rect, self._scene.ptr,
-                     self._physics.contexts.mujoco.ptr)
+    mujoco.mjr_render(self._rect, self._scene.ptr,
+                      self._physics.contexts.mujoco.ptr)
 
     if not depth:
       # If rendering RGB, draw any text overlays on top of the image.
@@ -780,11 +774,9 @@ class Camera:
         overlay.draw(self._physics.contexts.mujoco.ptr, self._rect)
 
     # Read the contents of either the RGB or depth buffer.
-    mjlib.mjr_readPixels(
-        self._rgb_buffer if not depth else None,
-        self._depth_buffer if depth else None,
-        self._rect,
-        self._physics.contexts.mujoco.ptr)
+    mujoco.mjr_readPixels(self._rgb_buffer if not depth else None,
+                          self._depth_buffer if depth else None, self._rect,
+                          self._physics.contexts.mujoco.ptr)
 
   def render(
       self,
@@ -809,9 +801,9 @@ class Camera:
       render_flag_overrides: Optional mapping containing rendering flags to
         override. The keys can be either lowercase strings or `mjtRndFlag` enum
         values, and the values are the overridden flag values, e.g.
-        `{'wireframe': True}` or `{enums.mjtRndFlag.mjRND_WIREFRAME: True}`. See
-        `enums.mjtRndFlag` for the set of valid flags. Must be empty if either
-        `depth` or `segmentation` is True.
+        `{'wireframe': True}` or `{mujoco.mjtRndFlag.mjRND_WIREFRAME: True}`.
+        See `mujoco.mjtRndFlag` for the set of valid flags. Must be empty if
+        either `depth` or `segmentation` is True.
 
     Returns:
       The rendered scene.
@@ -850,8 +842,8 @@ class Camera:
     # Enable flags to compute segmentation labels
     if segmentation:
       render_flag_overrides.update({
-          enums.mjtRndFlag.mjRND_SEGMENT: True,
-          enums.mjtRndFlag.mjRND_IDCOLOR: True,
+          mujoco.mjtRndFlag.mjRND_SEGMENT: True,
+          mujoco.mjtRndFlag.mjRND_IDCOLOR: True,
       })
 
     # Render scene and text overlays, read contents of RGB or depth buffer.
@@ -862,8 +854,8 @@ class Camera:
     if depth:
       # Get the distances to the near and far clipping planes.
       extent = self._physics.model.stat.extent
-      near = self._physics.model.vis.map_.znear * extent
-      far = self._physics.model.vis.map_.zfar * extent
+      near = self._physics.model.vis.map.znear * extent
+      far = self._physics.model.vis.map.zfar * extent
       # Convert from [0 1] to depth in meters, see links below:
       # http://stackoverflow.com/a/6657284/1461210
       # https://www.khronos.org/opengl/wiki/Depth_Buffer_Precision
@@ -878,9 +870,12 @@ class Camera:
       # Seg ID 0 is background -- will be remapped to (-1, -1).
       segid2output = np.full((self._scene.ngeom + 1, 2), fill_value=-1,
                              dtype=np.int32)  # Seg id cannot be > ngeom + 1.
-      visible_geoms = self._scene.geoms[self._scene.geoms.segid != -1]
-      segid2output[visible_geoms.segid + 1, 0] = visible_geoms.objid
-      segid2output[visible_geoms.segid + 1, 1] = visible_geoms.objtype
+      visible_geoms = [g for g in self._scene.geoms if g.segid != -1]
+      visible_segids = np.array([g.segid + 1 for g in visible_geoms], np.int32)
+      visible_objid = np.array([g.objid for g in visible_geoms], np.int32)
+      visible_objtype = np.array([g.objtype for g in visible_geoms], np.int32)
+      segid2output[visible_segids, 0] = visible_objid
+      segid2output[visible_segids, 1] = visible_objtype
       image = segid2output[segimage]
     else:
       image = self._rgb_buffer
@@ -904,17 +899,10 @@ class Camera:
     pos = np.empty(3, np.double)
     geom_id_arr = np.intc([-1])
     skin_id_arr = np.intc([-1])
-    body_id = mjlib.mjv_select(
-        self._physics.model.ptr,
-        self._physics.data.ptr,
-        self._scene_option.ptr,
-        aspect_ratio,
-        cursor_x,
-        cursor_y,
-        self._scene.ptr,
-        pos,
-        geom_id_arr,
-        skin_id_arr)
+    body_id = mujoco.mjv_select(self._physics.model.ptr, self._physics.data.ptr,
+                                self._scene_option.ptr, aspect_ratio, cursor_x,
+                                cursor_y, self._scene.ptr, pos, geom_id_arr,
+                                skin_id_arr)
     [geom_id] = geom_id_arr
     [skin_id] = skin_id_arr
 
@@ -1007,15 +995,12 @@ class TextOverlay:
     """Draws the overlay.
 
     Args:
-      context: A `types.MJRCONTEXT` pointer.
-      rect: A `types.MJRRECT`.
+      context: A `mujoco.MjrContext` pointer.
+      rect: A `mujoco.MjrRect`.
     """
-    mjlib.mjr_overlay(self.style,
-                      self.position,
-                      rect,
-                      util.to_binary_string(self.title),
-                      util.to_binary_string(self.body),
-                      context)
+    mujoco.mjr_overlay(self.style, self.position, rect,
+                       util.to_binary_string(self.title),
+                       util.to_binary_string(self.body), context)
 
 
 def action_spec(physics):
@@ -1023,8 +1008,8 @@ def action_spec(physics):
   num_actions = physics.model.nu
   is_limited = physics.model.actuator_ctrllimited.ravel().astype(bool)
   control_range = physics.model.actuator_ctrlrange
-  minima = np.full(num_actions, fill_value=-constants.mjMAXVAL, dtype=float)
-  maxima = np.full(num_actions, fill_value=constants.mjMAXVAL, dtype=float)
+  minima = np.full(num_actions, fill_value=-mujoco.mjMAXVAL, dtype=float)
+  maxima = np.full(num_actions, fill_value=mujoco.mjMAXVAL, dtype=float)
   minima[is_limited], maxima[is_limited] = control_range[is_limited].T
 
   return specs.BoundedArray(

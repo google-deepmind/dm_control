@@ -16,36 +16,23 @@
 """Main user-facing classes and utility functions for loading MuJoCo models."""
 
 import contextlib
+import copy
 import ctypes
-import os
 import threading
 import weakref
 
 from absl import logging
 
 from dm_control.mujoco.wrapper import util
-from dm_control.mujoco.wrapper.mjbindings import constants
-from dm_control.mujoco.wrapper.mjbindings import enums
-from dm_control.mujoco.wrapper.mjbindings import functions
-from dm_control.mujoco.wrapper.mjbindings import mjlib
-from dm_control.mujoco.wrapper.mjbindings import types
-from dm_control.mujoco.wrapper.mjbindings import wrappers
+# Some clients explicitly import core.mjlib.
+from dm_control.mujoco.wrapper.mjbindings import mjlib  # pylint: disable=unused-import
+import mujoco
 import numpy as np
 
 # Unused internal import: resources.
 
 _NULL = b"\00"
-_FAKE_XML_FILENAME = b"model.xml"
-_FAKE_BINARY_FILENAME = b"model.mjb"
-
-# Although `mjMAXVFSNAME` from `mjmodel.h` specifies a limit of 100 bytes
-# (including the terminal null byte), the actual limit seems to be 99 bytes
-# (98 characters).
-_MAX_VFS_FILENAME_CHARACTERS = 98
-_VFS_FILENAME_TOO_LONG = (
-    "Filename length {length} exceeds {limit} character limit: {filename}")
-_INVALID_FONT_SCALE = ("`font_scale` must be one of {}, got {{}}."
-                       .format(enums.mjtFontScale))
+_FAKE_BINARY_FILENAME = "model.mjb"
 
 _CONTACT_ID_OUT_OF_RANGE = (
     "`contact_id` must be between 0 and {max_valid} (inclusive), got: {actual}."
@@ -61,13 +48,12 @@ class Error(Exception):
   pass
 
 
-if constants.mjVERSION_HEADER != mjlib.mj_version():
+if mujoco.mjVERSION_HEADER != mujoco.mj_version():
   raise Error("MuJoCo library version ({0}) does not match header version "
-              "({1})".format(constants.mjVERSION_HEADER, mjlib.mj_version()))
+              "({1})".format(mujoco.mjVERSION_HEADER, mujoco.mj_version()))
 
 _REGISTERED = False
 _REGISTRATION_LOCK = threading.Lock()
-_ERROR_BUFSIZE = 1000
 
 # This is used to keep track of the `MJMODEL` pointer that was most recently
 # loaded by `_get_model_ptr_from_xml`. Only this model can be saved to XML.
@@ -91,13 +77,8 @@ def _error_callback(message):
   logging.fatal(util.to_native_string(message))
 
 
-# Override MuJoCo's callbacks for handling warnings and errors.
-mjlib.mju_user_warning = ctypes.c_void_p.in_dll(mjlib, "mju_user_warning")
-mjlib.mju_user_error = ctypes.c_void_p.in_dll(mjlib, "mju_user_error")
-mjlib.mju_user_warning.value = ctypes.cast(
-    _warning_callback, ctypes.c_void_p).value
-mjlib.mju_user_error.value = ctypes.cast(
-    _error_callback, ctypes.c_void_p).value
+# Override MuJoCo's callbacks for handling warnings
+mujoco.set_mju_user_warning(_warning_callback)
 
 
 def enable_timer(enabled=True):
@@ -108,17 +89,17 @@ def enable_timer(enabled=True):
 
 
 def _str2type(type_str):
-  type_id = mjlib.mju_str2Type(util.to_binary_string(type_str))
+  type_id = mujoco.mju_str2Type(util.to_binary_string(type_str))
   if not type_id:
     raise Error("{!r} is not a valid object type name.".format(type_str))
   return type_id
 
 
 def _type2str(type_id):
-  type_str_ptr = mjlib.mju_type2Str(type_id)
+  type_str_ptr = mujoco.mju_type2Str(type_id)
   if not type_str_ptr:
     raise Error("{!r} is not a valid object type ID.".format(type_id))
-  return ctypes.string_at(type_str_ptr)
+  return type_str_ptr
 
 
 def set_callback(name, new_callback=None):
@@ -136,7 +117,7 @@ def set_callback(name, new_callback=None):
       * An integer specifying the address of a callback function
       * None, in which case any existing callback of that name is removed
   """
-  setattr(functions.callbacks, name, new_callback)
+  getattr(mujoco, "set_" + name)(new_callback)
 
 
 @contextlib.contextmanager
@@ -158,7 +139,7 @@ def callback_context(name, new_callback=None):
   Yields:
     None
   """
-  old_callback = getattr(functions.callbacks, name)
+  old_callback = getattr(mujoco, "get_" + name)()
   set_callback(name, new_callback)
   try:
     yield
@@ -170,130 +151,8 @@ def callback_context(name, new_callback=None):
 def get_schema():
   """Returns a string containing the schema used by the MuJoCo XML parser."""
   buf = ctypes.create_string_buffer(100000)
-  mjlib.mj_printSchema(None, buf, len(buf), 0, 0)
+  mujoco.mj_printSchema(None, buf, len(buf), 0, 0)
   return buf.value
-
-
-@contextlib.contextmanager
-def _temporary_vfs(filenames_and_contents):
-  """Creates a temporary VFS containing one or more files.
-
-  Args:
-    filenames_and_contents: A dict containing `{filename: contents}` pairs.
-      The length of each filename must not exceed 98 characters.
-
-  Yields:
-    A `types.MJVFS` instance.
-
-  Raises:
-    Error: If a file cannot be added to the VFS, or if an error occurs when
-      looking up the filename.
-    ValueError: If the length of a filename exceeds 98 characters.
-  """
-  vfs = types.MJVFS()
-  mjlib.mj_defaultVFS(vfs)
-  for filename, contents in filenames_and_contents.items():
-    if len(filename) > _MAX_VFS_FILENAME_CHARACTERS:
-      raise ValueError(
-          _VFS_FILENAME_TOO_LONG.format(
-              length=len(filename),
-              limit=_MAX_VFS_FILENAME_CHARACTERS,
-              filename=filename))
-    filename = util.to_binary_string(filename)
-    contents = util.to_binary_string(contents)
-    _, extension = os.path.splitext(filename)
-    # For XML files we need to append a NULL byte, otherwise MuJoCo's parser
-    # can sometimes read past the end of the string. However, we should *not*
-    # do this for other file types (in particular for STL meshes, where this
-    # causes MuJoCo's compiler to complain that the file size is incorrect).
-    append_null = extension.lower() == b".xml"
-    num_bytes = len(contents) + append_null
-    retcode = mjlib.mj_makeEmptyFileVFS(vfs, filename, num_bytes)
-    if retcode == 1:
-      raise Error("Failed to create {!r}: VFS is full.".format(filename))
-    elif retcode == 2:
-      raise Error("Failed to create {!r}: duplicate filename.".format(filename))
-    file_index = mjlib.mj_findFileVFS(vfs, filename)
-    if file_index == -1:
-      raise Error("Could not find {!r} in the VFS".format(filename))
-    vf = vfs.filedata[file_index]
-    vf_as_char_arr = ctypes.cast(vf, ctypes.POINTER(ctypes.c_char * num_bytes))
-    vf_as_char_arr.contents[:len(contents)] = contents
-    if append_null:
-      vf_as_char_arr.contents[-1] = _NULL
-  try:
-    yield vfs
-  finally:
-    mjlib.mj_deleteVFS(vfs)  # Ensure that we free the VFS afterwards.
-
-
-def _create_finalizer(ptr, free_func):
-  """Creates a finalizer for a ctypes pointer.
-
-  Args:
-    ptr: A `ctypes.POINTER` to be freed.
-    free_func: A callable that frees the pointer. It will be called with `ptr`
-      as its only argument when `ptr` is garbage collected.
-  """
-  ptr_type = type(ptr)
-  address = ctypes.addressof(ptr.contents)
-
-  if address not in _FINALIZERS:  # Only one finalizer needed per address.
-
-    logging.debug("Allocated %s at %x", ptr_type.__name__, address)
-
-    def callback(dead_ptr_ref):
-      """A weakref callback that frees the resource held by a pointer."""
-      del dead_ptr_ref  # Unused weakref to the dead ctypes pointer object.
-      if address not in _FINALIZERS:
-        # Someone had already explicitly called `call_finalizer_for_pointer`.
-        return
-      else:
-        # Turn the address back into a pointer to be freed.
-        if ctypes.cast is None:
-          return
-          # `ctypes.cast` might be None if the interpreter is in the process of
-          # exiting. In this case it doesn't really matter whether or not we
-          # explicitly free the pointer, since any remaining pointers will be
-          # freed anyway when the process terminates. We bail out silently in
-          # order to avoid logging an unsightly (but harmless) error.
-        temp_ptr = ctypes.cast(address, ptr_type)
-        free_func(temp_ptr)
-        logging.debug("Freed %s at %x", ptr_type.__name__, address)
-        del _FINALIZERS[address]  # Remove the weakref from the global cache.
-
-    # Store weakrefs in a global cache so that they don't get garbage collected
-    # before their referents.
-    _FINALIZERS[address] = (weakref.ref(ptr, callback), callback)
-
-
-def _finalize(ptr):
-  """Calls the finalizer for the specified pointer to free allocated memory."""
-  address = ctypes.addressof(ptr.contents)
-  try:
-    ptr_ref, callback = _FINALIZERS[address]
-    callback(ptr_ref)
-  except KeyError:
-    pass
-
-
-def _load_xml(filename, vfs_or_none):
-  """Invokes `mj_loadXML` with logging/error handling."""
-  error_buf = ctypes.create_string_buffer(_ERROR_BUFSIZE)
-  model_ptr = mjlib.mj_loadXML(
-      util.to_binary_string(filename),
-      vfs_or_none,
-      error_buf,
-      _ERROR_BUFSIZE)
-  if not model_ptr:
-    raise Error(util.to_native_string(error_buf.value))
-  elif error_buf.value:
-    logging.warning(util.to_native_string(error_buf.value))
-
-  # Free resources when the ctypes pointer is garbage collected.
-  _create_finalizer(model_ptr, mjlib.mj_deleteModel)
-
-  return model_ptr
 
 
 def _get_model_ptr_from_xml(xml_path=None, xml_string=None, assets=None):
@@ -325,16 +184,9 @@ def _get_model_ptr_from_xml(xml_path=None, xml_string=None, assets=None):
         "Only one of `xml_path` or `xml_string` may be specified.")
 
   if xml_string is not None:
-    assets = {} if assets is None else assets.copy()
-    # Ensure that the fake XML filename doesn't overwrite an existing asset.
-    xml_path = _FAKE_XML_FILENAME
-    while xml_path in assets:
-      xml_path = "_" + xml_path
-    assets[xml_path] = xml_string
-    with _temporary_vfs(assets) as vfs:
-      ptr = _load_xml(xml_path, vfs)
+    ptr = mujoco.MjModel.from_xml_string(xml_string, assets or {})
   else:
-    ptr = _load_xml(xml_path, None)
+    ptr = mujoco.MjModel.from_xml_path(xml_path, assets or {})
 
   global _LAST_PARSED_MODEL_PTR
   _LAST_PARSED_MODEL_PTR = ptr
@@ -357,13 +209,7 @@ def save_last_parsed_model_to_xml(xml_path, check_model=None):
   """
   if check_model and check_model.ptr is not _LAST_PARSED_MODEL_PTR:
     raise ValueError(_NOT_LAST_PARSED_ERROR)
-  error_buf = ctypes.create_string_buffer(_ERROR_BUFSIZE)
-  mjlib.mj_saveLastXML(util.to_binary_string(xml_path),
-                       _LAST_PARSED_MODEL_PTR,
-                       error_buf,
-                       _ERROR_BUFSIZE)
-  if error_buf.value:
-    raise Error(error_buf.value)
+  mujoco.mj_saveLastXML(xml_path, _LAST_PARSED_MODEL_PTR)
 
 
 def _get_model_ptr_from_binary(binary_path=None, byte_string=None):
@@ -390,49 +236,53 @@ def _get_model_ptr_from_binary(binary_path=None, byte_string=None):
         "Only one of `byte_string` or `binary_path` may be specified.")
 
   if byte_string is not None:
-    with _temporary_vfs({_FAKE_BINARY_FILENAME: byte_string}) as vfs:
-      ptr = mjlib.mj_loadModel(_FAKE_BINARY_FILENAME, vfs)
-  else:
-    ptr = mjlib.mj_loadModel(util.to_binary_string(binary_path), None)
-
-  # Free resources when the ctypes pointer is garbage collected.
-  _create_finalizer(ptr, mjlib.mj_deleteModel)
-
-  return ptr
+    assets = {_FAKE_BINARY_FILENAME: byte_string}
+    return mujoco.MjModel.from_binary_path(_FAKE_BINARY_FILENAME, assets)
+  return mujoco.MjModel.from_binary_path(binary_path, {})
 
 
-# Subclasses implementing constructors/destructors for low-level wrappers.
-# ------------------------------------------------------------------------------
+class _MjModelMeta(type):
+  """Metaclass which allows MjModel below to delegate to mujoco.MjModel."""
+
+  def __new__(cls, name, bases, dct):
+    for attr in dir(mujoco.MjModel):
+      if not attr.startswith("_"):
+        if attr not in dct:
+          # pylint: disable=protected-access
+          fget = lambda self, attr=attr: getattr(self._model, attr)
+          fset = (
+              lambda self, value, attr=attr: setattr(self._model, attr, value))
+          # pylint: enable=protected-access
+          dct[attr] = property(fget, fset)
+    return super().__new__(cls, name, bases, dct)
 
 
-class MjModel(wrappers.MjModelWrapper):
+class MjModel(metaclass=_MjModelMeta):
   """Wrapper class for a MuJoCo 'mjModel' instance.
 
   MjModel encapsulates features of the model that are expected to remain
   constant. It also contains simulation and visualization options which may be
   changed occasionally, although this is done explicitly by the user.
   """
+  _HAS_DYNAMIC_ATTRIBUTES = True
 
   def __init__(self, model_ptr):
-    """Creates a new MjModel instance from a ctypes pointer.
+    """Creates a new MjModel instance from a mujoco.MjModel."""
+    self._model = model_ptr
 
-    Args:
-      model_ptr: A `ctypes.POINTER` to an `mjbindings.types.MJMODEL` instance.
-    """
-    super().__init__(ptr=model_ptr)
+  @property
+  def ptr(self):
+    """The lower level MjModel instance."""
+    return self._model
 
   def __getstate__(self):
-    # All of MjModel's state is assumed to reside within the MuJoCo C struct.
-    # However there is no mechanism to prevent users from adding arbitrary
-    # Python attributes to an MjModel instance - these would not be serialized.
-    return self.to_bytes()
+    return self._model
 
-  def __setstate__(self, byte_string):
-    model_ptr = _get_model_ptr_from_binary(byte_string=byte_string)
-    self.__init__(model_ptr)
+  def __setstate__(self, state):
+    self._model = state
 
   def __copy__(self):
-    new_model_ptr = mjlib.mj_copyModel(None, self.ptr)
+    new_model_ptr = copy.copy(self._model)
     return self.__class__(new_model_ptr)
 
   @classmethod
@@ -472,14 +322,14 @@ class MjModel(wrappers.MjModelWrapper):
 
   def save_binary(self, binary_path):
     """Saves the MjModel instance to a binary file."""
-    mjlib.mj_saveModel(self.ptr, util.to_binary_string(binary_path), None, 0)
+    mujoco.mj_saveModel(self.ptr, binary_path, None)
 
   def to_bytes(self):
     """Serialize the model to a string of bytes."""
-    bufsize = mjlib.mj_sizeModel(self.ptr)
-    buf = ctypes.create_string_buffer(bufsize)
-    mjlib.mj_saveModel(self.ptr, None, buf, bufsize)
-    return buf.raw
+    bufsize = mujoco.mj_sizeModel(self.ptr)
+    buf = np.zeros(shape=(bufsize,), dtype=np.uint8)
+    mujoco.mj_saveModel(self.ptr, None, buf)
+    return buf.tobytes()
 
   def copy(self):
     """Returns a copy of this MjModel instance."""
@@ -492,7 +342,6 @@ class MjModel(wrappers.MjModelWrapper):
     necessary. This MjModel object MUST NOT be used after this function has
     been called.
     """
-    _finalize(self._ptr)
     del self._ptr
 
   def name2id(self, name, object_type):
@@ -510,10 +359,9 @@ class MjModel(wrappers.MjModelWrapper):
       Error: If `object_type` is not a valid MuJoCo object type, or if no object
         with the corresponding name and type was found.
     """
-    if not isinstance(object_type, int):
+    if isinstance(object_type, str):
       object_type = _str2type(object_type)
-    obj_id = mjlib.mj_name2id(
-        self.ptr, object_type, util.to_binary_string(name))
+    obj_id = mujoco.mj_name2id(self.ptr, object_type, name)
     if obj_id == -1:
       raise Error("Object of type {!r} with name {!r} does not exist.".format(
           _type2str(object_type), name))
@@ -534,12 +382,9 @@ class MjModel(wrappers.MjModelWrapper):
     Raises:
       Error: If `object_type` is not a valid MuJoCo object type.
     """
-    if not isinstance(object_type, int):
+    if isinstance(object_type, str):
       object_type = _str2type(object_type)
-    name_ptr = mjlib.mj_id2name(self.ptr, object_type, object_id)
-    if not name_ptr:
-      return ""
-    return util.to_native_string(ctypes.string_at(name_ptr))
+    return mujoco.mj_id2name(self.ptr, object_type, object_id) or ""
 
   @contextlib.contextmanager
   def disable(self, *flags):
@@ -555,7 +400,7 @@ class MjModel(wrappers.MjModelWrapper):
 
     Raises:
       ValueError: If any item in `flags` is neither a valid name nor a value
-        from `enums.mjtDisableBit`.
+        from `mujoco.mjtDisableBit`.
     """
     old_bitmask = self.opt.disableflags
     new_bitmask = old_bitmask
@@ -563,19 +408,17 @@ class MjModel(wrappers.MjModelWrapper):
       if isinstance(flag, str):
         try:
           field_name = "mjDSBL_" + flag.upper()
-          bitmask = getattr(enums.mjtDisableBit, field_name)
+          flag = getattr(mujoco.mjtDisableBit, field_name)
         except AttributeError:
-          valid_names = [field_name.split("_")[1].lower()
-                         for field_name in enums.mjtDisableBit._fields[:-1]]
+          valid_names = [
+              field_name.split("_")[1].lower()
+              for field_name in list(mujoco.mjtDisableBit.__members__)[:-1]
+          ]
           raise ValueError("'{}' is not a valid flag name. Valid names: {}"
-                           .format(flag, ", ".join(valid_names)))
-      else:
-        if flag not in enums.mjtDisableBit[:-1]:
-          raise ValueError("'{}' is not a value in `enums.mjtDisableBit`. "
-                           "Valid values: {}"
-                           .format(flag, tuple(enums.mjtDisableBit[:-1])))
-        bitmask = flag
-      new_bitmask |= bitmask
+                           .format(flag, ", ".join(valid_names))) from None
+      elif isinstance(flag, int):
+        flag = mujoco.mjtDisableBit(flag)
+      new_bitmask |= flag.value
     self.opt.disableflags = new_bitmask
     try:
       yield
@@ -585,17 +428,33 @@ class MjModel(wrappers.MjModelWrapper):
   @property
   def name(self):
     """Returns the name of the model."""
-    # The model name is the first null-terminated string in the `names` buffer.
-    return util.to_native_string(
-        ctypes.string_at(ctypes.addressof(self.names.contents)))
+    # The model's name is the first null terminated string in _model.names
+    return str(self._model.names[:self._model.names.find(b"\0")], "ascii")
 
 
-class MjData(wrappers.MjDataWrapper):
+class _MjDataMeta(type):
+  """Metaclass which allows MjData below to delegate to mujoco.MjData."""
+
+  def __new__(cls, name, bases, dct):
+    for attr in dir(mujoco.MjData):
+      if not attr.startswith("_"):
+        if attr not in dct:
+          # pylint: disable=protected-access
+          fget = lambda self, attr=attr: getattr(self._data, attr)
+          fset = lambda self, value, attr=attr: setattr(self._data, attr, value)
+          # pylint: enable=protected-access
+          dct[attr] = property(fget, fset)
+    return super().__new__(cls, name, bases, dct)
+
+
+class MjData(metaclass=_MjDataMeta):
   """Wrapper class for a MuJoCo 'mjData' instance.
 
   MjData contains all of the dynamic variables and intermediate results produced
   by the simulation. These are expected to change on each simulation timestep.
   """
+
+  _HAS_DYNAMIC_ATTRIBUTES = True
 
   def __init__(self, model):
     """Construct a new MjData instance.
@@ -604,68 +463,28 @@ class MjData(wrappers.MjDataWrapper):
       model: An MjModel instance.
     """
     self._model = model
-
-    # Allocate resources for mjData.
-    data_ptr = mjlib.mj_makeData(model.ptr)
-
-    # Free resources when the ctypes pointer is garbage collected.
-    _create_finalizer(data_ptr, mjlib.mj_deleteData)
-
-    super().__init__(data_ptr, model)
+    self._data = mujoco.MjData(model._model)
 
   def __getstate__(self):
-    # Note: we can replace this once a `saveData` MJAPI function exists.
-    # To reconstruct an MjData instance we need three things:
-    #   1. Its parent MjModel instance
-    #   2. A subset of its fixed-size fields whose values aren't determined by
-    #      the model
-    #   3. The contents of its internal buffer (all of its pointer fields point
-    #      into this)
-    struct_fields = {}
-    for name in ["solver", "timer", "warning"]:
-      struct_fields[name] = getattr(self, name).copy()
-    scalar_field_names = ["ncon", "time", "energy"]
-    scalar_fields = {name: getattr(self, name) for name in scalar_field_names}
-    static_fields = {"struct_fields": struct_fields,
-                     "scalar_fields": scalar_fields}
-    buffer_contents = ctypes.string_at(self.buffer_, self.nbuffer)
-    return (self._model, static_fields, buffer_contents)
+    return (self._model, self._data)
 
-  def __setstate__(self, state_tuple):
-    # Replace this once a `loadData` MJAPI function exists.
-    self._model, static_fields, buffer_contents = state_tuple
-    self.__init__(self.model)
-    for name, contents in static_fields["struct_fields"].items():
-      getattr(self, name)[:] = contents
-
-    for name, value in static_fields["scalar_fields"].items():
-      # Array and scalar values must be handled separately.
-      try:
-        getattr(self, name)[:] = value
-      except TypeError:
-        setattr(self, name, value)
-    buf_ptr = (ctypes.c_char * self.nbuffer).from_address(self.buffer_)
-    buf_ptr[:] = buffer_contents
+  def __setstate__(self, state):
+    self._model, self._data = state
 
   def __copy__(self):
     # This makes a shallow copy that shares the same parent MjModel instance.
-    new_obj = self.__class__(self.model)
-    mjlib.mj_copyData(new_obj.ptr, self.model.ptr, self.ptr)
+    return self._make_copy(share_model=True)
+
+  def _make_copy(self, share_model):
+    # TODO(nimrod): Avoid allocating a new MjData just to replace it.
+    new_obj = self.__class__(
+        self._model if share_model else copy.copy(self._model))
+    super(self.__class__, new_obj).__setattr__("_data", copy.copy(self._data))
     return new_obj
 
   def copy(self):
     """Returns a copy of this MjData instance with the same parent MjModel."""
     return self.__copy__()
-
-  def free(self):
-    """Frees the native resources held by this MjData.
-
-    This is an advanced feature for use when manual memory management is
-    necessary. This MjData object MUST NOT be used after this function has
-    been called.
-    """
-    _finalize(self._ptr)
-    del self._ptr
 
   def object_velocity(self, object_id, object_type, local_frame=False):
     """Returns the 6D velocity (linear, angular) of a MuJoCo object.
@@ -689,8 +508,8 @@ class MjData(wrappers.MjDataWrapper):
     velocity = np.empty(6, dtype=np.float64)
     if not isinstance(object_id, int):
       object_id = self.model.name2id(object_id, object_type)
-    mjlib.mj_objectVelocity(self.model.ptr, self.ptr,
-                            object_type, object_id, velocity, local_frame)
+    mujoco.mj_objectVelocity(self._model.ptr, self._data, object_type,
+                             object_id, velocity, local_frame)
     #  MuJoCo returns velocities in (angular, linear) order, which we flip here.
     return velocity.reshape(2, 3)[::-1]
 
@@ -712,100 +531,87 @@ class MjData(wrappers.MjDataWrapper):
       raise ValueError(_CONTACT_ID_OUT_OF_RANGE
                        .format(max_valid=self.ncon-1, actual=contact_id))
     wrench = np.empty(6, dtype=np.float64)
-    mjlib.mj_contactForce(self.model.ptr, self.ptr, contact_id, wrench)
+    mujoco.mj_contactForce(self._model.ptr, self._data, contact_id, wrench)
     return wrench.reshape(2, 3)
+
+  @property
+  def ptr(self):
+    """The lower level MjData instance."""
+    return self._data
 
   @property
   def model(self):
     """The parent MjModel for this MjData instance."""
     return self._model
 
-  @util.CachedProperty
-  def _contact_buffer(self):
-    """Cached structured array containing the full contact buffer."""
-    contact_array = util.buf_to_npy(
-        super().contact, shape=(self._model.nconmax,))
-    return contact_array
-
   @property
   def contact(self):
     """Variable-length recarray containing all current contacts."""
-    return self._contact_buffer[:self.ncon]
+    return self._data.contact[:self.ncon]
 
 
-# Docstrings for these subclasses are inherited from their Wrapper parent class.
+# Docstrings for these subclasses are inherited from their parent class.
 
 
-class MjvCamera(wrappers.MjvCameraWrapper):
+class MjvCamera(mujoco.MjvCamera):  # pylint: disable=missing-docstring
 
-  def __init__(self):
-    ptr = ctypes.pointer(types.MJVCAMERA())
-    mjlib.mjv_defaultCamera(ptr)
-    super().__init__(ptr)
+  # Provide this alias for the "type" property for backwards compatibility.
+  @property
+  def type_(self):
+    return self.type
 
+  @type_.setter
+  def type_(self, t):
+    self.type = t
 
-class MjvOption(wrappers.MjvOptionWrapper):
-
-  def __init__(self):
-    ptr = ctypes.pointer(types.MJVOPTION())
-    mjlib.mjv_defaultOption(ptr)
-    # Do not visualize rangefinder lines by default:
-    ptr.contents.flags[enums.mjtVisFlag.mjVIS_RANGEFINDER] = False
-    super().__init__(ptr)
+  @property
+  def ptr(self):
+    return self
 
 
-class UnmanagedMjrContext(wrappers.MjrContextWrapper):
-  """A wrapper for MjrContext that does not manage the native object's lifetime.
-
-  This wrapper is provided for API backward-compatibility reasons, since the
-  creating and destruction of an MjrContext requires an OpenGL context to be
-  provided.
-  """
+class MjvOption(mujoco.MjvOption):  # pylint: disable=missing-docstring
 
   def __init__(self):
-    ptr = ctypes.pointer(types.MJRCONTEXT())
-    mjlib.mjr_defaultContext(ptr)
-    super().__init__(ptr)
+    super().__init__()
+    self.flags[mujoco.mjtVisFlag.mjVIS_RANGEFINDER] = False
+
+  # Provided for backwards compatibility
+  @property
+  def ptr(self):
+    return self
 
 
-class MjrContext(wrappers.MjrContextWrapper):  # pylint: disable=missing-docstring
+class MjrContext:
+  """Wrapper for mujoco.MjrContext."""
 
   def __init__(self,
                model,
                gl_context,
-               font_scale=enums.mjtFontScale.mjFONTSCALE_150):
+               font_scale=mujoco.mjtFontScale.mjFONTSCALE_150):
     """Initializes this MjrContext instance.
 
     Args:
       model: An `MjModel` instance.
       gl_context: A `render.ContextBase` instance.
       font_scale: Integer controlling the font size for text. Must be a value
-        in `mjbindings.enums.mjtFontScale`.
+        in `mujoco.mjtFontScale`.
 
     Raises:
       ValueError: If `font_scale` is invalid.
     """
-    if font_scale not in enums.mjtFontScale:
-      raise ValueError(_INVALID_FONT_SCALE.format(font_scale))
-
-    ptr = ctypes.pointer(types.MJRCONTEXT())
-    mjlib.mjr_defaultContext(ptr)
-
+    if not isinstance(font_scale, mujoco.mjtFontScale):
+      font_scale = mujoco.mjtFontScale(font_scale)
+    self._gl_context = gl_context
     with gl_context.make_current() as ctx:
-      ctx.call(mjlib.mjr_makeContext, model.ptr, ptr, font_scale)
-      ctx.call(mjlib.mjr_setBuffer, enums.mjtFramebuffer.mjFB_OFFSCREEN, ptr)
-      gl_context.increment_refcount()
+      ptr = ctx.call(mujoco.MjrContext, model.ptr, font_scale)
+      ctx.call(mujoco.mjr_setBuffer, mujoco.mjtFramebuffer.mjFB_OFFSCREEN, ptr)
+    gl_context.keep_alive(ptr)
+    gl_context.increment_refcount()
+    self._ptr = weakref.ref(ptr)
 
-    # Free resources when the ctypes pointer is garbage collected.
-    def finalize_mjr_context(ptr):
-      if not gl_context.terminated:
-        with gl_context.make_current() as ctx:
-          ctx.call(mjlib.mjr_freeContext, ptr)
-          gl_context.decrement_refcount()
-
-    _create_finalizer(ptr, finalize_mjr_context)
-
-    super().__init__(ptr)
+  @property
+  def ptr(self):
+    return self._ptr()
 
   def free(self):
     """Frees the native resources held by this MjrContext.
@@ -814,15 +620,18 @@ class MjrContext(wrappers.MjrContextWrapper):  # pylint: disable=missing-docstri
     necessary. This MjrContext object MUST NOT be used after this function has
     been called.
     """
-    _finalize(self._ptr)
-    del self._ptr
+    self._gl_context.decrement_refcount()
+    self._gl_context.free()
 
+  def __del__(self):
+    self.free()
 
 # A mapping from human-readable short names to mjtRndFlag enum values, i.e.
 # {'shadow': mjtRndFlag.mjRND_SHADOW, 'fog': mjtRndFlag.mjRND_FOG, ...}
 _NAME_TO_RENDER_FLAG_ENUM_VALUE = {
-    name[len("mjRND_"):].lower(): getattr(enums.mjtRndFlag, name)
-    for name in enums.mjtRndFlag._fields[:-1]  # Exclude mjRND_NUMRNDFLAG entry.
+    name[len("mjRND_"):].lower(): getattr(mujoco.mjtRndFlag, name).value
+    for name in mujoco.mjtRndFlag.__members__
+    if name != "mjRND_NUMRNDFLAG"
 }
 
 
@@ -847,7 +656,7 @@ def _estimate_max_renderable_geoms(model):
       model.nlight)
 
 
-class MjvScene(wrappers.MjvSceneWrapper):  # pylint: disable=missing-docstring
+class MjvScene(mujoco.MjvScene):  # pylint: disable=missing-docstring
 
   def __init__(self, model=None, max_geom=None):
     """Initializes a new `MjvScene` instance.
@@ -858,23 +667,21 @@ class MjvScene(wrappers.MjvSceneWrapper):  # pylint: disable=missing-docstring
         that can be represented in the scene. If None, this will be chosen
         automatically based on `model`.
     """
-    model_ptr = model.ptr if model is not None else None
-    scene_ptr = ctypes.pointer(types.MJVSCENE())
+    if model is None:
+      super().__init__()
+    else:
+      if max_geom is None:
+        if model is None:
+          max_renderable_geoms = 0
+        else:
+          max_renderable_geoms = _estimate_max_renderable_geoms(model)
+        max_geom = max(1000, max_renderable_geoms)
 
-    if max_geom is None:
-      if model is None:
-        max_renderable_geoms = 0
-      else:
-        max_renderable_geoms = _estimate_max_renderable_geoms(model)
-      max_geom = max(1000, max_renderable_geoms)
+      super().__init__(model.ptr, max_geom)
 
-    # Allocate and initialize resources for the abstract scene.
-    mjlib.mjv_makeScene(model_ptr, scene_ptr, max_geom)
-
-    # Free resources when the ctypes pointer is garbage collected.
-    _create_finalizer(scene_ptr, mjlib.mjv_freeScene)
-
-    super().__init__(scene_ptr)
+  @property
+  def ptr(self):
+    return self
 
   @contextlib.contextmanager
   def override_flags(self, overrides):
@@ -884,7 +691,7 @@ class MjvScene(wrappers.MjvSceneWrapper):  # pylint: disable=missing-docstring
       overrides: A mapping specifying rendering flags to override. The keys can
         be either lowercase strings or `mjtRndFlag` enum values, and the values
         are the overridden flag values, e.g. `{'wireframe': True}` or
-        `{enums.mjtRndFlag.mjRND_WIREFRAME: True}`. See `enums.mjtRndFlag` for
+        `{mujoco.mjtRndFlag.mjRND_WIREFRAME: True}`. See `mujoco.mjtRndFlag` for
         the set of valid flags.
 
     Yields:
@@ -909,31 +716,31 @@ class MjvScene(wrappers.MjvSceneWrapper):  # pylint: disable=missing-docstring
     necessary. This MjvScene object MUST NOT be used after this function has
     been called.
     """
-    _finalize(self._ptr)
-    del self._ptr
-
-  @util.CachedProperty
-  def _geoms_buffer(self):
-    """Cached recarray containing the full geom buffer."""
-    return util.buf_to_npy(super().geoms, shape=(self.maxgeom,))
+    pass
 
   @property
   def geoms(self):
     """Variable-length recarray containing all geoms currently in the buffer."""
-    return self._geoms_buffer[:self.ngeom]
+    return super().geoms[:super().ngeom]
 
 
-class MjvPerturb(wrappers.MjvPerturbWrapper):
+class MjvPerturb(mujoco.MjvPerturb):  # pylint: disable=missing-docstring
 
-  def __init__(self):
-    ptr = ctypes.pointer(types.MJVPERTURB())
-    mjlib.mjv_defaultPerturb(ptr)
-    super().__init__(ptr)
+  @property
+  def ptr(self):
+    return self
 
 
-class MjvFigure(wrappers.MjvFigureWrapper):
+class MjvFigure(mujoco.MjvFigure):  # pylint: disable=missing-docstring
 
-  def __init__(self):
-    ptr = ctypes.pointer(types.MJVFIGURE())
-    mjlib.mjv_defaultFigure(ptr)
-    super().__init__(ptr)
+  @property
+  def ptr(self):
+    return self
+
+  @property
+  def range_(self):
+    return self.range
+
+  @range_.setter
+  def range_(self, value):
+    self.range = value

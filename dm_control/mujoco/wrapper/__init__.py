@@ -35,5 +35,3 @@ from dm_control.mujoco.wrapper.core import MjvScene
 
 from dm_control.mujoco.wrapper.core import save_last_parsed_model_to_xml
 from dm_control.mujoco.wrapper.core import set_callback
-
-from dm_control.mujoco.wrapper.core import UnmanagedMjrContext

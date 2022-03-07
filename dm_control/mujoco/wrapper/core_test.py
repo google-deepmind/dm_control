@@ -15,7 +15,6 @@
 
 """Tests for core.py."""
 
-import ctypes
 import gc
 import os
 import pickle
@@ -25,12 +24,9 @@ from absl.testing import parameterized
 from dm_control import _render
 from dm_control.mujoco.testing import assets
 from dm_control.mujoco.wrapper import core
-from dm_control.mujoco.wrapper import mjbindings
-from dm_control.mujoco.wrapper.mjbindings import enums
 import mock
+import mujoco
 import numpy as np
-
-mjlib = mjbindings.mjlib
 
 HUMANOID_XML_PATH = assets.get_path("humanoid.xml")
 MODEL_WITH_ASSETS = assets.get_contents("model_with_assets.xml")
@@ -75,7 +71,7 @@ class CoreTest(parameterized.TestCase):
     core.MjData(model)
     with self.assertRaises(TypeError):
       core.MjModel()
-    with self.assertRaises(core.Error):
+    with self.assertRaises(ValueError):
       core.MjModel.from_xml_path("/path/to/nonexistent/model/file.xml")
 
     xml_with_warning = """
@@ -97,29 +93,16 @@ class CoreTest(parameterized.TestCase):
     model = core.MjModel.from_xml_string(xml_with_warning)
     data = core.MjData(model)
     with mock.patch.object(core, "logging") as mock_logging:
-      mjlib.mj_step(model.ptr, data.ptr)
+      mujoco.mj_step(model.ptr, data.ptr)
     mock_logging.warning.assert_called_once_with(
         "Pre-allocated constraint buffer is full. Increase njmax above 2. "
         "Time = 0.0000.")
 
   def testLoadXMLWithAssetsFromString(self):
     core.MjModel.from_xml_string(MODEL_WITH_ASSETS, assets=ASSETS)
-    with self.assertRaises(core.Error):
+    with self.assertRaises(ValueError):
       # Should fail to load without the assets
       core.MjModel.from_xml_string(MODEL_WITH_ASSETS)
-
-  def testVFSFilenameTooLong(self):
-    limit = core._MAX_VFS_FILENAME_CHARACTERS
-    contents = "fake contents"
-    valid_filename = "a" * limit
-    with core._temporary_vfs({valid_filename: contents}):
-      pass
-    invalid_filename = "a" * (limit + 1)
-    expected_message = core._VFS_FILENAME_TOO_LONG.format(
-        length=(limit + 1), limit=limit, filename=invalid_filename)
-    with self.assertRaisesWithLiteralMatch(ValueError, expected_message):
-      with core._temporary_vfs({invalid_filename: contents}):
-        pass
 
   def testSaveLastParsedModelToXML(self):
     save_xml_path = os.path.join(OUT_DIR, "tmp_humanoid.xml")
@@ -158,7 +141,7 @@ class CoreTest(parameterized.TestCase):
 
   def testStep(self):
     t0 = self.data.time
-    mjlib.mj_step(self.model.ptr, self.data.ptr)
+    mujoco.mj_step(self.model.ptr, self.data.ptr)
     self.assertEqual(self.data.time, t0 + self.model.opt.timestep)
     self.assertTrue(np.all(np.isfinite(self.data.qpos[:])))
     self.assertTrue(np.all(np.isfinite(self.data.qvel[:])))
@@ -167,7 +150,7 @@ class CoreTest(parameterized.TestCase):
     data2 = core.MjData(self.model)
     self.assertNotEqual(self.data.ptr, data2.ptr)
     t0 = self.data.time
-    mjlib.mj_step(self.model.ptr, self.data.ptr)
+    mujoco.mj_step(self.model.ptr, self.data.ptr)
     self.assertEqual(self.data.time, t0 + self.model.opt.timestep)
     self.assertEqual(data2.time, 0)
 
@@ -198,14 +181,14 @@ class CoreTest(parameterized.TestCase):
       ("_pickle_unpickle", lambda x: pickle.loads(pickle.dumps(x))),)
   def testCopyOrPickleData(self, func):
     for _ in range(10):
-      mjlib.mj_step(self.model.ptr, self.data.ptr)
+      mujoco.mj_step(self.model.ptr, self.data.ptr)
     data2 = func(self.data)
     attr_to_compare = ("time", "energy", "qpos", "xpos")
     self.assertNotEqual(data2.ptr, self.data.ptr)
     self._assert_attributes_equal(data2, self.data, attr_to_compare)
     for _ in range(10):
-      mjlib.mj_step(self.model.ptr, self.data.ptr)
-      mjlib.mj_step(data2.model.ptr, data2.ptr)
+      mujoco.mj_step(self.model.ptr, self.data.ptr)
+      mujoco.mj_step(data2.model.ptr, data2.ptr)
     self._assert_attributes_equal(data2, self.data, attr_to_compare)
 
   @parameterized.named_parameters(
@@ -213,21 +196,22 @@ class CoreTest(parameterized.TestCase):
       ("_pickle_unpickle", lambda x: pickle.loads(pickle.dumps(x))),)
   def testCopyOrPickleStructs(self, func):
     for _ in range(10):
-      mjlib.mj_step(self.model.ptr, self.data.ptr)
+      mujoco.mj_step(self.model.ptr, self.data.ptr)
     data2 = func(self.data)
     self.assertNotEqual(data2.ptr, self.data.ptr)
     attr_to_compare = ("warning", "timer", "solver")
     self._assert_attributes_equal(self.data, data2, attr_to_compare)
     for _ in range(10):
-      mjlib.mj_step(self.model.ptr, self.data.ptr)
-      mjlib.mj_step(data2.model.ptr, data2.ptr)
+      mujoco.mj_step(self.model.ptr, self.data.ptr)
+      mujoco.mj_step(data2.model.ptr, data2.ptr)
     self._assert_attributes_equal(self.data, data2, attr_to_compare)
 
   @parameterized.parameters(
       ("right_foot", "body", 6),
-      ("right_foot", enums.mjtObj.mjOBJ_BODY, 6),
+      ("right_foot", mujoco.mjtObj.mjOBJ_BODY, 6),
       ("left_knee", "joint", 11),
-      ("left_knee", enums.mjtObj.mjOBJ_JOINT, 11))
+      ("left_knee", mujoco.mjtObj.mjOBJ_JOINT, 11),
+  )
   def testNamesIds(self, name, object_type, object_id):
     output_id = self.model.name2id(name, object_type)
     self.assertEqual(object_id, output_id)
@@ -245,17 +229,6 @@ class CoreTest(parameterized.TestCase):
     name = self.model.id2name(0, "camera")
     self.assertEqual("", name)
 
-  def testWarningCallback(self):
-    self.data.qpos[0] = np.inf
-    with mock.patch.object(core, "logging") as mock_logging:
-      mjlib.mju_warning(b"some warning message")
-    mock_logging.warning.assert_called_once_with("some warning message")
-
-  def testErrorCallback(self):
-    with mock.patch.object(core, "logging") as mock_logging:
-      mjlib.mju_error(b"some error message")
-    mock_logging.fatal.assert_called_once_with("some error message")
-
   def testSingleCallbackContext(self):
 
     callback_was_called = [False]
@@ -263,7 +236,7 @@ class CoreTest(parameterized.TestCase):
     def callback(unused_model, unused_data):
       callback_was_called[0] = True
 
-    mjlib.mj_step(self.model.ptr, self.data.ptr)
+    mujoco.mj_step(self.model.ptr, self.data.ptr)
     self.assertFalse(callback_was_called[0])
 
     class DummyError(RuntimeError):
@@ -273,7 +246,7 @@ class CoreTest(parameterized.TestCase):
       with core.callback_context("mjcb_passive", callback):
 
         # Stepping invokes the `mjcb_passive` callback.
-        mjlib.mj_step(self.model.ptr, self.data.ptr)
+        mujoco.mj_step(self.model.ptr, self.data.ptr)
         self.assertTrue(callback_was_called[0])
 
         # Exceptions should not prevent `mjcb_passive` from being reset.
@@ -284,7 +257,7 @@ class CoreTest(parameterized.TestCase):
 
     # `mjcb_passive` should have been reset to None.
     callback_was_called[0] = False
-    mjlib.mj_step(self.model.ptr, self.data.ptr)
+    mujoco.mj_step(self.model.ptr, self.data.ptr)
     self.assertFalse(callback_was_called[0])
 
   def testNestedCallbackContexts(self):
@@ -302,24 +275,24 @@ class CoreTest(parameterized.TestCase):
     with core.callback_context("mjcb_passive", outer):
 
       # This should execute `outer` a few times.
-      mjlib.mj_step(self.model.ptr, self.data.ptr)
+      mujoco.mj_step(self.model.ptr, self.data.ptr)
       self.assertEqual(last_called[0], outer_called)
 
       with core.callback_context("mjcb_passive", inner):
 
         # This should execute `inner` a few times.
-        mjlib.mj_step(self.model.ptr, self.data.ptr)
+        mujoco.mj_step(self.model.ptr, self.data.ptr)
         self.assertEqual(last_called[0], inner_called)
 
       # When we exit the inner context, the `mjcb_passive` callback should be
       # reset to `outer`.
-      mjlib.mj_step(self.model.ptr, self.data.ptr)
+      mujoco.mj_step(self.model.ptr, self.data.ptr)
       self.assertEqual(last_called[0], outer_called)
 
     # When we exit the outer context, the `mjcb_passive` callback should be
     # reset to None, and stepping should not affect `last_called`.
     last_called[0] = None
-    mjlib.mj_step(self.model.ptr, self.data.ptr)
+    mujoco.mj_step(self.model.ptr, self.data.ptr)
     self.assertIsNone(last_called[0])
 
   def testDisableFlags(self):
@@ -342,7 +315,7 @@ class CoreTest(parameterized.TestCase):
     model = core.MjModel.from_xml_string(xml_string)
     data = core.MjData(model)
     for _ in range(100):  # Let the simulation settle for a while.
-      mjlib.mj_step(model.ptr, data.ptr)
+      mujoco.mj_step(model.ptr, data.ptr)
 
     # With gravity and contact enabled, the cube should be stationary and the
     # touch sensor should give a reading of ~9.81 N.
@@ -352,55 +325,24 @@ class CoreTest(parameterized.TestCase):
     # If we disable both contacts and gravity then the cube should remain
     # stationary and the touch sensor should read zero.
     with model.disable("contact", "gravity"):
-      mjlib.mj_step(model.ptr, data.ptr)
+      mujoco.mj_step(model.ptr, data.ptr)
     self.assertAlmostEqual(data.qvel[0], 0, places=4)
     self.assertEqual(data.sensordata[0], 0)
 
     # If we disable contacts but not gravity then the cube should fall through
     # the floor.
-    with model.disable(enums.mjtDisableBit.mjDSBL_CONTACT):
+    with model.disable(mujoco.mjtDisableBit.mjDSBL_CONTACT):
       for _ in range(10):
-        mjlib.mj_step(model.ptr, data.ptr)
+        mujoco.mj_step(model.ptr, data.ptr)
     self.assertLess(data.qvel[0], -0.1)
 
   def testDisableFlagsExceptions(self):
-    with self.assertRaisesRegex(ValueError, "not a valid flag name"):
+    with self.assertRaises(ValueError):
       with self.model.disable("invalid_flag_name"):
         pass
-    with self.assertRaisesRegex(
-        ValueError, "not a value in `enums.mjtDisableBit`"):
+    with self.assertRaises(ValueError):
       with self.model.disable(-99):
         pass
-
-  @parameterized.named_parameters(
-      ("MjModel",
-       lambda _: core.MjModel.from_xml_path(HUMANOID_XML_PATH),
-       "mj_deleteModel"),
-      ("MjData",
-       lambda self: core.MjData(self.model),
-       "mj_deleteData"),
-      ("MjvScene",
-       lambda _: core.MjvScene(),
-       "mjv_freeScene"))
-  def testFree(self, constructor, destructor_name):
-    for _ in range(5):
-      destructor = getattr(mjlib, destructor_name)
-      with mock.patch.object(
-          core.mjlib, destructor_name, wraps=destructor) as mock_destructor:
-        wrapper = constructor(self)
-
-      expected_address = ctypes.addressof(wrapper.ptr.contents)
-      wrapper.free()
-      self.assertIsNone(wrapper.ptr)
-
-      mock_destructor.assert_called_once()
-      pointer = mock_destructor.call_args[0][0]
-      actual_address = ctypes.addressof(pointer.contents)
-      self.assertEqual(expected_address, actual_address)
-
-      # Explicit freeing should not break any automatic GC triggered later.
-      del wrapper
-      gc.collect()
 
   @parameterized.parameters(
       # The tip is .5 meters from the cart so we expect its horizontal velocity
@@ -450,7 +392,7 @@ class CoreTest(parameterized.TestCase):
     data = core.MjData(model)
     data.qpos[:] = qpos
     data.qvel[:] = qvel
-    mjlib.mj_step1(model.ptr, data.ptr)
+    mujoco.mj_step1(model.ptr, data.ptr)
     linvel, angvel = data.object_velocity("mass", "geom", local_frame=local)
     np.testing.assert_array_almost_equal(linvel, expected_linvel)
     np.testing.assert_array_almost_equal(angvel, expected_angvel)
@@ -471,7 +413,7 @@ class CoreTest(parameterized.TestCase):
     data = core.MjData(model)
     # Settle for 500 timesteps (1 second):
     for _ in range(500):
-      mjlib.mj_step(model.ptr, data.ptr)
+      mujoco.mj_step(model.ptr, data.ptr)
     normal_force = 0.
     for contact_id in range(data.ncon):
       force = data.contact_force(contact_id)
@@ -520,7 +462,7 @@ class CoreTest(parameterized.TestCase):
     data.qvel[3:] = np.array((1., 1., 1.))
     # Settle for 10 timesteps (20 milliseconds):
     for _ in range(10):
-      mjlib.mj_step(model.ptr, data.ptr)
+      mujoco.mj_step(model.ptr, data.ptr)
     contact_id = 0  # This model has only one contact.
     _, torque = data.contact_force(contact_id)
     nonzero_torques = torque != 0
@@ -529,18 +471,7 @@ class CoreTest(parameterized.TestCase):
   def testFreeMjrContext(self):
     for _ in range(5):
       renderer = _render.Renderer(640, 480)
-      with mock.patch.object(core.mjlib, "mjr_freeContext",
-                             wraps=mjlib.mjr_freeContext) as mock_destructor:
-        mjr_context = core.MjrContext(self.model, renderer)
-        expected_address = ctypes.addressof(mjr_context.ptr.contents)
-        mjr_context.free()
-
-      self.assertIsNone(mjr_context.ptr)
-      mock_destructor.assert_called_once()
-      pointer = mock_destructor.call_args[0][0]
-      actual_address = ctypes.addressof(pointer.contents)
-      self.assertEqual(expected_address, actual_address)
-
+      mjr_context = core.MjrContext(self.model, renderer)
       # Explicit freeing should not break any automatic GC triggered later.
       del mjr_context
       renderer.free()
@@ -551,19 +482,20 @@ class CoreTest(parameterized.TestCase):
     scene = core.MjvScene(model=self.model)
     self.assertEqual(scene.ngeom, 0)
     self.assertEmpty(scene.geoms)
-    geom_types = (enums.mjtObj.mjOBJ_BODY,
-                  enums.mjtObj.mjOBJ_GEOM,
-                  enums.mjtObj.mjOBJ_SITE)
+    geom_types = (
+        mujoco.mjtObj.mjOBJ_BODY,
+        mujoco.mjtObj.mjOBJ_GEOM,
+        mujoco.mjtObj.mjOBJ_SITE,
+    )
     for geom_type in geom_types:
       scene.ngeom += 1
-      scene.ptr.contents.geoms[scene.ngeom - 1].objtype = geom_type
+      scene.geoms[scene.ngeom - 1].objtype = geom_type
     self.assertLen(scene.geoms, len(geom_types))
-    np.testing.assert_array_equal(scene.geoms.objtype, geom_types)
+    self.assertEqual(tuple(g.objtype for g in scene.geoms), geom_types)
 
   def testInvalidFontScale(self):
     invalid_font_scale = 99
-    with self.assertRaisesWithLiteralMatch(
-        ValueError, core._INVALID_FONT_SCALE.format(invalid_font_scale)):
+    with self.assertRaises(ValueError):
       core.MjrContext(model=self.model,
                       gl_context=None,  # Don't need a context for this test.
                       font_scale=invalid_font_scale)
@@ -578,7 +510,8 @@ def _get_attributes_test_params():
   array_args = []
   scalar_args = []
   skipped_args = []
-  for parent_name, parent_obj in zip(("model", "data"), (model, data)):
+  for parent_name, parent_obj in zip(("model", "data"),
+                                     (model._model, data._data)):
     for attr_name in dir(parent_obj):
       if not attr_name.startswith("_"):  # Skip 'private' attributes
         args = (parent_name, attr_name)
@@ -659,7 +592,7 @@ class AttributesTest(parameterized.TestCase):
 
   def _take_steps(self, n=5):
     for _ in range(n):
-      mjlib.mj_step(self.model.ptr, self.data.ptr)
+      mujoco.mj_step(self.model.ptr, self.data.ptr)
 
 
 if __name__ == "__main__":

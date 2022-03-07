@@ -113,12 +113,12 @@ class PropPlacer(composer.Initializer):
 
   def _has_collisions_with_prop(self, physics, prop):
     prop_geom_ids = physics.bind(prop.mjcf_model.find_all('geom')).element_id
-    contact = physics.data.contact
-    involves_prop = (np.in1d(contact.geom1, prop_geom_ids) |
-                     np.in1d(contact.geom2, prop_geom_ids))
-    # Ignore contacts with positive distances (i.e. not actually touching).
-    touching = contact.dist <= 0
-    return np.any(involves_prop & touching)
+    contacts = physics.data.contact
+    for contact in contacts:
+      # Ignore contacts with positive distances (i.e. not actually touching).
+      if contact.dist <= 0 and (contact.geom1 in prop_geom_ids or
+                                contact.geom2 in prop_geom_ids):
+        return True
 
   def _disable_and_cache_contact_parameters(self, physics, props):
     cached_contact_params = {}

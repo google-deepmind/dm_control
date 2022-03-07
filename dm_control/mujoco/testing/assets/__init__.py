@@ -24,7 +24,7 @@ _ASSETS_DIR = os.path.dirname(__file__)
 
 def get_contents(filename):
   """Returns the contents of an asset as a string."""
-  return resources.GetResource(os.path.join(_ASSETS_DIR, filename))
+  return resources.GetResource(os.path.join(_ASSETS_DIR, filename), mode='rb')
 
 
 def get_path(filename):

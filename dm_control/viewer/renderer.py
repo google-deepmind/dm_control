@@ -18,13 +18,10 @@ import abc
 import contextlib
 
 from dm_control.mujoco import wrapper
-from dm_control.mujoco.wrapper import mjbindings
 from dm_control.viewer import util
+import mujoco
 import numpy as np
 
-enums = mjbindings.enums
-mjlib = mjbindings.mjlib
-types = mjbindings.types
 
 # Fixed camera -1 is the free (unfixed) camera, and each fixed camera has
 # a positive index in range (0, self._model.ncam).
@@ -41,10 +38,10 @@ _FULL_SCENE_ZOOM_FACTOR = 1.5
 
 # Default values for `MjvScene.flags`. These are the same as the defaults set by
 # `mjv_defaultScene`, except that we disable `mjRND_HAZE`.
-_DEFAULT_RENDER_FLAGS = np.zeros(enums.mjtRndFlag.mjNRNDFLAG, dtype=np.ubyte)
-_DEFAULT_RENDER_FLAGS[enums.mjtRndFlag.mjRND_SHADOW] = 1
-_DEFAULT_RENDER_FLAGS[enums.mjtRndFlag.mjRND_REFLECTION] = 1
-_DEFAULT_RENDER_FLAGS[enums.mjtRndFlag.mjRND_SKYBOX] = 1
+_DEFAULT_RENDER_FLAGS = np.zeros(mujoco.mjtRndFlag.mjNRNDFLAG, dtype=np.ubyte)
+_DEFAULT_RENDER_FLAGS[mujoco.mjtRndFlag.mjRND_SHADOW.value] = 1
+_DEFAULT_RENDER_FLAGS[mujoco.mjtRndFlag.mjRND_REFLECTION.value] = 1
+_DEFAULT_RENDER_FLAGS[mujoco.mjtRndFlag.mjRND_SKYBOX.value] = 1
 
 
 class BaseRenderer(metaclass=abc.ABCMeta):
@@ -154,7 +151,7 @@ class OffScreenRenderer(BaseRenderer):
       self._mujoco_context = wrapper.MjrContext(
           model=self._model,
           gl_context=self._surface,
-          font_scale=enums.mjtFontScale.mjFONTSCALE_100)
+          font_scale=mujoco.mjtFontScale.mjFONTSCALE_100)
       self._rgb_buffer = np.empty(
           (viewport.height, viewport.width, 3), dtype=np.uint8)
 
@@ -163,12 +160,12 @@ class OffScreenRenderer(BaseRenderer):
     self._pixels = np.flipud(self._rgb_buffer)
 
   def _render_on_gl_thread(self, viewport, scene):
-    mjlib.mjr_setBuffer(enums.mjtFramebuffer.mjFB_OFFSCREEN,
-                        self._mujoco_context.ptr)
-    mjlib.mjr_render(viewport.mujoco_rect, scene.ptr, self._mujoco_context.ptr)
-    self._render_components(self._mujoco_context, viewport)
-    mjlib.mjr_readPixels(self._rgb_buffer, None, viewport.mujoco_rect,
+    mujoco.mjr_setBuffer(mujoco.mjtFramebuffer.mjFB_OFFSCREEN,
                          self._mujoco_context.ptr)
+    mujoco.mjr_render(viewport.mujoco_rect, scene.ptr, self._mujoco_context.ptr)
+    self._render_components(self._mujoco_context, viewport)
+    mujoco.mjr_readPixels(self._rgb_buffer, None, viewport.mujoco_rect,
+                          self._mujoco_context.ptr)
 
   def release(self):
     """Releases the render context and related resources."""
@@ -198,29 +195,29 @@ class Perturbation:
     self._model = model
     self._data = data
     self._scene = scene
-    self._action = enums.mjtMouse.mjMOUSE_NONE
+    self._action = mujoco.mjtMouse.mjMOUSE_NONE
 
     self._perturb = wrapper.MjvPerturb()
     self._perturb.select = self._body_id
     self._perturb.active = 0
 
-    mjlib.mjv_initPerturb(self._model.ptr, self._data.ptr, self._scene.ptr,
-                          self._perturb.ptr)
+    mujoco.mjv_initPerturb(self._model.ptr, self._data.ptr, self._scene.ptr,
+                           self._perturb.ptr)
 
   def start_move(self, action, grab_pos):
     """Starts a movement action."""
     if action is None or grab_pos is None:
       return
 
-    mjlib.mjv_initPerturb(self._model.ptr, self._data.ptr, self._scene.ptr,
-                          self._perturb.ptr)
+    mujoco.mjv_initPerturb(self._model.ptr, self._data.ptr, self._scene.ptr,
+                           self._perturb.ptr)
     self._action = action
-    move_actions = np.array([enums.mjtMouse.mjMOUSE_MOVE_V,
-                             enums.mjtMouse.mjMOUSE_MOVE_H])
+    move_actions = np.array(
+        [mujoco.mjtMouse.mjMOUSE_MOVE_V, mujoco.mjtMouse.mjMOUSE_MOVE_H])
     if any(move_actions == action):
-      self._perturb.active = enums.mjtPertBit.mjPERT_TRANSLATE
+      self._perturb.active = mujoco.mjtPertBit.mjPERT_TRANSLATE
     else:
-      self._perturb.active = enums.mjtPertBit.mjPERT_ROTATE
+      self._perturb.active = mujoco.mjtPertBit.mjPERT_ROTATE
 
     body_pos = self._data.xpos[self._body_id]
     body_mat = self._data.xmat[self._body_id].reshape(3, 3)
@@ -230,24 +227,23 @@ class Perturbation:
   def tick_move(self, viewport_offset):
     """Transforms object's location/rotation by the specified amount."""
     if self._action:
-      mjlib.mjv_movePerturb(self._model.ptr, self._data.ptr,
-                            self._action, viewport_offset[0],
-                            viewport_offset[1], self._scene.ptr,
-                            self._perturb.ptr)
+      mujoco.mjv_movePerturb(self._model.ptr, self._data.ptr, self._action,
+                             viewport_offset[0], viewport_offset[1],
+                             self._scene.ptr, self._perturb.ptr)
 
   def end_move(self):
     """Ends a movement operation."""
-    self._action = enums.mjtMouse.mjMOUSE_NONE
+    self._action = mujoco.mjtMouse.mjMOUSE_NONE
     self._perturb.active = 0
 
   @contextlib.contextmanager
   def apply(self, paused):
     """Applies the modifications introduced by performing the move operation."""
-    mjlib.mjv_applyPerturbPose(self._model.ptr, self._data.ptr,
-                               self._perturb.ptr, int(paused))
+    mujoco.mjv_applyPerturbPose(self._model.ptr, self._data.ptr,
+                                self._perturb.ptr, int(paused))
     if not paused:
-      mjlib.mjv_applyPerturbForce(self._model.ptr, self._data.ptr,
-                                  self._perturb.ptr)
+      mujoco.mjv_applyPerturbForce(self._model.ptr, self._data.ptr,
+                                   self._perturb.ptr)
     yield
     self._data.xfrc_applied[self._perturb.select] = 0
 
@@ -285,7 +281,7 @@ class RenderSettings:
 
   def __init__(self):
     self._visualization_options = wrapper.MjvOption()
-    self._stereo_mode = enums.mjtStereo.mjSTEREO_NONE
+    self._stereo_mode = mujoco.mjtStereo.mjSTEREO_NONE
     self._render_flags = _DEFAULT_RENDER_FLAGS
 
   @property
@@ -343,30 +339,30 @@ class RenderSettings:
 
   def toggle_stereo_buffering(self):
     """Toggles the double buffering mode on/off."""
-    if self._stereo_mode == enums.mjtStereo.mjSTEREO_NONE:
-      self._stereo_mode = enums.mjtStereo.mjSTEREO_QUADBUFFERED
+    if self._stereo_mode == mujoco.mjtStereo.mjSTEREO_NONE:
+      self._stereo_mode = mujoco.mjtStereo.mjSTEREO_QUADBUFFERED
     else:
-      self._stereo_mode = enums.mjtStereo.mjSTEREO_NONE
+      self._stereo_mode = mujoco.mjtStereo.mjSTEREO_NONE
 
   def select_next_rendering_mode(self):
     """Cycles to the next rendering mode."""
     self._visualization_options.frame = (
-        (self._visualization_options.frame + 1) % enums.mjtFrame.mjNFRAME)
+        (self._visualization_options.frame + 1) % mujoco.mjtFrame.mjNFRAME)
 
   def select_prev_rendering_mode(self):
     """Cycles to the previous rendering mode."""
     self._visualization_options.frame = (
-        (self._visualization_options.frame - 1) % enums.mjtFrame.mjNFRAME)
+        (self._visualization_options.frame - 1) % mujoco.mjtFrame.mjNFRAME)
 
   def select_next_labeling_mode(self):
     """Cycles to the next scene object labeling mode."""
     self._visualization_options.label = (
-        (self._visualization_options.label + 1) % enums.mjtLabel.mjNLABEL)
+        (self._visualization_options.label + 1) % mujoco.mjtLabel.mjNLABEL)
 
   def select_prev_labeling_mode(self):
     """Cycles to the previous scene object labeling mode."""
     self._visualization_options.label = (
-        (self._visualization_options.label - 1) % enums.mjtLabel.mjNLABEL)
+        (self._visualization_options.label - 1) % mujoco.mjtLabel.mjNLABEL)
 
 
 class SceneCamera:
@@ -400,7 +396,7 @@ class SceneCamera:
     self._camera = wrapper.MjvCamera()
     self._camera.trackbodyid = _NO_BODY_TRACKED_INDEX
     self._camera.fixedcamid = _FREE_CAMERA_INDEX
-    self._camera.type_ = enums.mjtCamera.mjCAMERA_FREE
+    self._camera.type_ = mujoco.mjtCamera.mjCAMERA_FREE
     self._zoom_factor = zoom_factor
 
     if settings is not None:
@@ -413,7 +409,7 @@ class SceneCamera:
     """Enables 6 degrees of freedom of movement for the camera."""
     self._camera.trackbodyid = _NO_BODY_TRACKED_INDEX
     self._camera.fixedcamid = _FREE_CAMERA_INDEX
-    self._camera.type_ = enums.mjtCamera.mjCAMERA_FREE
+    self._camera.type_ = mujoco.mjtCamera.mjCAMERA_FREE
 
   def set_tracking_mode(self, body_id):
     """Latches the camera onto the specified body.
@@ -427,7 +423,7 @@ class SceneCamera:
       return
     self._camera.trackbodyid = body_id
     self._camera.fixedcamid = _FREE_CAMERA_INDEX
-    self._camera.type_ = enums.mjtCamera.mjCAMERA_TRACKING
+    self._camera.type_ = mujoco.mjtCamera.mjCAMERA_TRACKING
 
   def set_fixed_mode(self, fixed_camera_id):
     """Fixes the camera in a pre-defined position, taking away all DOF.
@@ -440,7 +436,7 @@ class SceneCamera:
       return
     self._camera.trackbodyid = _NO_BODY_TRACKED_INDEX
     self._camera.fixedcamid = fixed_camera_id
-    self._camera.type_ = enums.mjtCamera.mjCAMERA_FIXED
+    self._camera.type_ = mujoco.mjtCamera.mjCAMERA_FIXED
 
   def look_at(self, position, distance):
     """Positions the camera so that it's focused on the specified point."""
@@ -452,9 +448,8 @@ class SceneCamera:
     # Not checking the validity of arguments on purpose. This method is designed
     # to be called very often, so in order to avoid the overhead, all arguments
     # are assumed to be valid.
-    mjlib.mjv_moveCamera(self._model.ptr, action,
-                         viewport_offset[0], viewport_offset[1],
-                         self._scene.ptr, self._camera.ptr)
+    mujoco.mjv_moveCamera(self._model.ptr, action, viewport_offset[0],
+                          viewport_offset[1], self._scene.ptr, self._camera.ptr)
 
   def new_perturbation(self, body_id):
     """Creates a proxy that allows to manipulate the specified object."""
@@ -468,7 +463,7 @@ class SceneCamera:
     grab_world_pos = np.empty(3, dtype=np.double)
     selected_geom_id_arr = np.intc([-1])
     selected_skin_id_arr = np.intc([-1])
-    selected_body_id = mjlib.mjv_select(
+    selected_body_id = mujoco.mjv_select(
         self._model.ptr,
         self._data.ptr,
         self._options.visualization.ptr,
@@ -478,7 +473,8 @@ class SceneCamera:
         self._scene.ptr,
         grab_world_pos,
         selected_geom_id_arr,
-        selected_skin_id_arr)
+        selected_skin_id_arr,
+    )
     del selected_geom_id_arr, selected_skin_id_arr  # Unused.
     if selected_body_id < 0:
       selected_body_id = _INVALID_BODY_INDEX
@@ -494,10 +490,10 @@ class SceneCamera:
       Rendered scene, instance of MjvScene.
     """
     perturb_to_render = perturbation.ptr if perturbation else None
-    mjlib.mjv_updateScene(self._model.ptr, self._data.ptr,
-                          self._options.visualization.ptr,
-                          perturb_to_render, self._camera.ptr,
-                          enums.mjtCatBit.mjCAT_ALL, self._scene.ptr)
+    mujoco.mjv_updateScene(self._model.ptr, self._data.ptr,
+                           self._options.visualization.ptr, perturb_to_render,
+                           self._camera.ptr, mujoco.mjtCatBit.mjCAT_ALL,
+                           self._scene.ptr)
     return self._scene
 
   def zoom_to_scene(self):
@@ -542,13 +538,13 @@ class SceneCamera:
   @property
   def name(self):
     """Name of the active camera."""
-    if self._camera.type_ == enums.mjtCamera.mjCAMERA_TRACKING:
+    if self._camera.type_ == mujoco.mjtCamera.mjCAMERA_TRACKING:
       body_name = self._model.id2name(self._camera.trackbodyid, 'body')
       if body_name:
         return 'Tracking body "%s"' % body_name
       else:
         return 'Tracking body id %d' % self._camera.trackbodyid
-    elif self._camera.type_ == enums.mjtCamera.mjCAMERA_FIXED:
+    elif self._camera.type_ == mujoco.mjtCamera.mjCAMERA_FIXED:
       camera_name = self._model.id2name(self._camera.fixedcamid, 'camera')
       if camera_name:
         return str(camera_name)
@@ -567,8 +563,8 @@ class SceneCamera:
     """Returns True if camera is properly initialized."""
     if not self._scene:
       return False
-    frustum_near = self._scene.ptr.contents.camera[0].frustum_near
-    frustum_far = self._scene.ptr.contents.camera[0].frustum_far
+    frustum_near = self._scene.camera[0].frustum_near
+    frustum_far = self._scene.camera[0].frustum_far
     return frustum_near > 0 and frustum_near < frustum_far
 
 
@@ -582,7 +578,7 @@ class Viewport:
       width: Viewport width, in pixels.
       height: Viewport height, in pixels.
     """
-    self._screen_size = types.MJRRECT(0, 0, width, height)
+    self._screen_size = mujoco.MjrRect(0, 0, width, height)
 
   def set_size(self, width, height):
     """Changes the viewport size.

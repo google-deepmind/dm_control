@@ -30,6 +30,7 @@ import abc
 import atexit
 import collections
 import contextlib
+import sys
 import weakref
 
 from absl import logging
@@ -61,6 +62,11 @@ class ContextBase(metaclass=abc.ABCMeta):
     with self._render_executor.execution_context() as ctx:
       ctx.call(self._platform_init, max_width, max_height)
 
+    self._patients = []
+
+  def keep_alive(self, obj):
+    self._patients.append(obj)
+
   def increment_refcount(self):
     self._refcount += 1
 
@@ -75,11 +81,19 @@ class ContextBase(metaclass=abc.ABCMeta):
   def thread(self):
     return self._render_executor.thread
 
-  def _free_on_executor_thread(self):
+  def _free_on_executor_thread(self):  # pylint: disable=missing-function-docstring
     if _CURRENT_CONTEXT_FOR_THREAD[self._render_executor.thread] == id(self):
       del _CURRENT_THREAD_FOR_CONTEXT[id(self)]
       del _CURRENT_CONTEXT_FOR_THREAD[self._render_executor.thread]
-    self._platform_free()
+    self._platform_make_current()
+    try:
+      dummy = []
+      while self._patients:
+        patient = self._patients.pop()
+        assert sys.getrefcount(patient) == sys.getrefcount(dummy)
+        del patient
+    finally:
+      self._platform_free()
 
   def free(self):
     """Frees resources associated with this context if its refcount is zero."""

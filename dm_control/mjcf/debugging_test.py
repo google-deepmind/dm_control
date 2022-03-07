@@ -25,7 +25,6 @@ from absl.testing import absltest
 from dm_control import mjcf
 from dm_control.mjcf import code_for_debugging_test as test_code
 from dm_control.mjcf import debugging
-from dm_control.mujoco import wrapper as mujoco_wrapper
 
 ORIGINAL_DEBUG_MODE = debugging.debug_mode()
 
@@ -66,7 +65,7 @@ class DebuggingTest(absltest.TestCase):
     expected_message = (
         filename + '.py:' + str(test_code.LINE_REF[line_ref].line_number))
     print(expected_message)
-    with self.assertRaisesRegex(mujoco_wrapper.Error, expected_message):
+    with self.assertRaisesRegex(ValueError, expected_message):
       yield
 
   def test_get_current_stack_trace(self):
@@ -121,7 +120,7 @@ class DebuggingTest(absltest.TestCase):
     self.setup_debug_mode(debug_mode_enabled=False)
     mjcf_model = test_code.make_broken_model()
     # Make sure that we advertise debug mode if it's currently disabled.
-    with self.assertRaisesRegex(mujoco_wrapper.Error, '--pymjcf_debug'):
+    with self.assertRaisesRegex(ValueError, '--pymjcf_debug'):
       mjcf.Physics.from_mjcf_model(mjcf_model)
 
   def test_physics_error_message_in_debug_mode(self):
@@ -140,11 +139,10 @@ class DebuggingTest(absltest.TestCase):
     mjcf_model = test_code.make_valid_model()
     test_code.break_valid_model(mjcf_model)
     # Make sure that we advertise full dump mode if it's currently disabled.
-    with self.assertRaisesRegex(mujoco_wrapper.Error,
-                                '--pymjcf_debug_full_dump_dir'):
+    with self.assertRaisesRegex(ValueError, '--pymjcf_debug_full_dump_dir'):
       mjcf.Physics.from_mjcf_model(mjcf_model)
     self.setup_debug_mode(debug_mode_enabled=True, full_dump_enabled=True)
-    with self.assertRaises(mujoco_wrapper.Error):
+    with self.assertRaises(ValueError):
       mjcf.Physics.from_mjcf_model(mjcf_model)
 
     with open(os.path.join(self.dump_dir, 'model.xml')) as f:

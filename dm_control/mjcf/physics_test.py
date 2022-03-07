@@ -25,6 +25,7 @@ from dm_control import mjcf
 from dm_control.mjcf import physics as mjcf_physics
 from dm_control.mujoco.wrapper import mjbindings
 import mock
+import mujoco
 import numpy as np
 
 mjlib = mjbindings.mjlib
@@ -398,7 +399,7 @@ class PhysicsTest(parameterized.TestCase):
 
   def quat2mat(self, quat):
     result = np.empty(9, dtype=np.double)
-    mjlib.mju_quat2Mat(result, np.asarray(quat))
+    mujoco.mju_quat2Mat(result, np.asarray(quat))
     return result
 
   @parameterized.parameters(['body', 'geom', 'site'])

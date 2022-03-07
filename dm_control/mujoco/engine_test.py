@@ -15,6 +15,7 @@
 
 """Tests for `engine`."""
 
+import copy
 import pickle
 
 from absl.testing import absltest
@@ -22,14 +23,11 @@ from absl.testing import parameterized
 from dm_control.mujoco import engine
 from dm_control.mujoco import wrapper
 from dm_control.mujoco.testing import assets
-from dm_control.mujoco.wrapper import mjbindings
-from dm_control.mujoco.wrapper.mjbindings import constants
 from dm_control.mujoco.wrapper.mjbindings import enums
 from dm_control.rl import control
 import mock
+import mujoco
 import numpy as np
-
-mjlib = mjbindings.mjlib
 
 MODEL_PATH = assets.get_path('cartpole.xml')
 MODEL_WITH_ASSETS = assets.get_contents('model_with_assets.xml')
@@ -104,7 +102,7 @@ class MujocoEngineTest(parameterized.TestCase):
     obj_type_decor = enums.mjtObj.mjOBJ_UNKNOWN  # Decor object type
     scene_options = wrapper.MjvOption()
     if enable_geom_frame_rendering:
-      scene_options.frame = wrapper.mjbindings.enums.mjtFrame.mjFRAME_GEOM
+      scene_options.frame = mujoco.mjtFrame.mjFRAME_GEOM
     pixels = physics.render(height=200, width=200, camera_id='top',
                             segmentation=True, scene_option=scene_options)
 
@@ -148,7 +146,6 @@ class MujocoEngineTest(parameterized.TestCase):
   def testSceneOption(self):
     height, width = 480, 640
     scene_option = wrapper.MjvOption()
-    mjlib.mjv_defaultOption(scene_option.ptr)
 
     # Render geoms as semi-transparent.
     scene_option.flags[enums.mjtVisFlag.mjVIS_TRANSPARENT] = 1
@@ -381,21 +378,6 @@ class MujocoEngineTest(parameterized.TestCase):
         MODEL_WITH_ASSETS, assets=ASSETS)
     physics.reload_from_xml_string(MODEL_WITH_ASSETS, assets=ASSETS)
 
-  def testFree(self):
-    def mock_free(obj):
-      return mock.patch.object(obj, 'free', wraps=obj.free)
-
-    with mock_free(self._physics.model) as mock_free_model:
-      with mock_free(self._physics.data) as mock_free_data:
-        with mock_free(self._physics.contexts.mujoco) as mock_free_mjrcontext:
-          self._physics.free()
-
-    mock_free_model.assert_called_once()
-    mock_free_data.assert_called_once()
-    mock_free_mjrcontext.assert_called_once()
-    self.assertIsNone(self._physics.model.ptr)
-    self.assertIsNone(self._physics.data.ptr)
-
   @parameterized.parameters(*enums.mjtWarning._fields[:-1])
   def testDivergenceException(self, warning_name):
     warning_enum = getattr(enums.mjtWarning, warning_name)
@@ -417,10 +399,10 @@ class MujocoEngineTest(parameterized.TestCase):
       self._physics.data.qpos[0] = bad_value
     with self.assertRaises(control.PhysicsError):
       with self._physics.check_invalid_state():
-        mjlib.mj_checkPos(self._physics.model.ptr, self._physics.data.ptr)
+        mujoco.mj_checkPos(self._physics.model.ptr, self._physics.data.ptr)
     self._physics.reset()
     with self._physics.check_invalid_state():
-      mjlib.mj_checkPos(self._physics.model.ptr, self._physics.data.ptr)
+      mujoco.mj_checkPos(self._physics.model.ptr, self._physics.data.ptr)
 
   def testNanControl(self):
     with self._physics.reset_context():
@@ -460,6 +442,7 @@ class MujocoEngineTest(parameterized.TestCase):
 
   @parameterized.named_parameters(
       ('_copy', lambda x: x.copy()),
+      ('_deepcopy', copy.deepcopy),
       ('_pickle_and_unpickle', lambda x: pickle.loads(pickle.dumps(x))),
   )
   def testCopyOrPicklePhysics(self, func):
@@ -532,8 +515,8 @@ class MujocoEngineTest(parameterized.TestCase):
     physics = engine.Physics.from_xml_string(xml)
     spec = engine.action_spec(physics)
     self.assertEqual(float, spec.dtype)
-    np.testing.assert_array_equal(spec.minimum, [-constants.mjMAXVAL, -1.0])
-    np.testing.assert_array_equal(spec.maximum, [constants.mjMAXVAL, 2.0])
+    np.testing.assert_array_equal(spec.minimum, [-mujoco.mjMAXVAL, -1.0])
+    np.testing.assert_array_equal(spec.maximum, [mujoco.mjMAXVAL, 2.0])
 
 if __name__ == '__main__':
   absltest.main()

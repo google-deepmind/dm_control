@@ -529,6 +529,7 @@ class BindingGenerator:
         "# pylint: disable=wildcard-import",
         "from {} import util".format(_MODULE),
         "from {}.mjbindings.types import *".format(_MODULE),
+        "import mujoco",
         "import numpy as np",
         "# pylint: disable=line-too-long",
         "# pylint: disable=invalid-name",
@@ -537,41 +538,16 @@ class BindingGenerator:
     with open(fname, "w") as f:
       f.write(self.make_header(imports))
       f.write("mjlib = util.get_mjlib()\n")
-
-      f.write("\n" + codegen_util.comment_line("ctypes function declarations"))
-      for function in self.funcs_dict.values():
-        f.write("\n" + function.ctypes_func_decl(cdll_name="mjlib"))
-
-      # Only require strings for UI purposes.
-      f.write("\n" + codegen_util.comment_line("String arrays") + "\n")
-      for string_arr in self.strings_dict.values():
-        f.write(string_arr.ctypes_var_decl(cdll_name="mjlib"))
-
-      f.write("\n" + codegen_util.comment_line("Callback function pointers"))
-
-      fields = ["'_{0}'".format(func_ptr.name)
-                for func_ptr in self.func_ptrs_dict.values()]
-      values = [func_ptr.ctypes_var_decl(cdll_name="mjlib")
-                for func_ptr in self.func_ptrs_dict.values()]
       f.write(
           textwrap.dedent("""
-        class _Callbacks:
-
-          __slots__ = [
-              {0}
-          ]
-
-          def __init__(self):
-            {1}
-        """).format(",\n      ".join(fields), "\n    ".join(values)))
-
-      indent = codegen_util.Indenter()
-      with indent:
-        for func_ptr in self.func_ptrs_dict.values():
-          f.write(indent(func_ptr.getters_setters_with_custom_prefix("self._")))
-
-      f.write("\n\ncallbacks = _Callbacks()  # pylint: disable=invalid-name")
-      f.write("\ndel _Callbacks\n")
+          mjDISABLESTRING = mujoco.mjDISABLESTRING
+          mjENABLESTRING = mujoco.mjENABLESTRING
+          mjTIMERSTRING = mujoco.mjTIMERSTRING
+          mjLABELSTRING = mujoco.mjLABELSTRING
+          mjFRAMESTRING = mujoco.mjFRAMESTRING
+          mjVISSTRING = mujoco.mjVISSTRING
+          mjRNDSTRING = mujoco.mjRNDSTRING
+          """))
 
       f.write("\n" + codegen_util.comment_line("End of generated code"))
 

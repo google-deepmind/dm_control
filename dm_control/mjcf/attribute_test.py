@@ -22,16 +22,10 @@ import os
 from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control.mjcf import attribute
-from dm_control.mjcf import constants
 from dm_control.mjcf import element
 from dm_control.mjcf import namescope
 from dm_control.mjcf import schema
-from dm_control.mujoco.wrapper import mjbindings
-from dm_control.mujoco.wrapper import util
-from dm_control.mujoco.wrapper.mjbindings import types
 import numpy as np
-
-mjlib = mjbindings.mjlib
 
 ASSETS_DIR = os.path.join(os.path.dirname(__file__), 'test_assets')
 FAKE_SCHEMA_FILENAME = 'attribute_test_schema.xml'
@@ -389,24 +383,6 @@ class AttributeTest(parameterized.TestCase):
     self.assertXMLStringEqual(text_file, 'file', expected_xml)
     self.assertCanBeCleared(text_file, 'file')
     self.assertCanBeCleared(mujoco.files, 'text_path')
-
-  def testFileNameTrimming(self):
-    original_filename = (
-        'THIS_IS_AN_EXTREMELY_LONG_FILENAME_THAT_WOULD_CAUSE_MUJOCO_TO_COMPLAIN'
-        '_THAT_ITS_INTERNAL_LENGTH_LIMIT_IS_EXCEEDED_IF_NOT_TRIMMED_DOWN')
-    extension = '.some_extension'
-    asset = attribute.Asset(
-        contents='', extension=extension, prefix=original_filename)
-    vfs_filename = asset.get_vfs_filename()
-    self.assertLen(vfs_filename, constants.MAX_VFS_FILENAME_LENGTH)
-
-    vfs = types.MJVFS()
-    mjlib.mj_defaultVFS(vfs)
-    success_code = 0
-    retval = mjlib.mj_makeEmptyFileVFS(
-        vfs, util.to_binary_string(vfs_filename), 1)
-    self.assertEqual(retval, success_code)
-    mjlib.mj_deleteVFS(vfs)
 
   def testFileFromPlaceholder(self):
     mujoco = self._mujoco

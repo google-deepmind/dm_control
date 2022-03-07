@@ -17,21 +17,16 @@
 import abc
 import enum
 
-from dm_control.mujoco.wrapper import mjbindings
-from dm_control.mujoco.wrapper import util
 from dm_control.viewer import renderer
+import mujoco
 import numpy as np
-
-enums = mjbindings.enums
-mjlib = mjbindings.mjlib
-types = mjbindings.types
 
 
 class PanelLocation(enum.Enum):
-  TOP_LEFT = enums.mjtGridPos.mjGRID_TOPLEFT
-  TOP_RIGHT = enums.mjtGridPos.mjGRID_TOPRIGHT
-  BOTTOM_LEFT = enums.mjtGridPos.mjGRID_BOTTOMLEFT
-  BOTTOM_RIGHT = enums.mjtGridPos.mjGRID_BOTTOMRIGHT
+  TOP_LEFT = mujoco.mjtGridPos.mjGRID_TOPLEFT.value
+  TOP_RIGHT = mujoco.mjtGridPos.mjGRID_TOPRIGHT.value
+  BOTTOM_LEFT = mujoco.mjtGridPos.mjGRID_BOTTOMLEFT.value
+  BOTTOM_RIGHT = mujoco.mjtGridPos.mjGRID_BOTTOMRIGHT.value
 
 
 class BaseViewportView(metaclass=abc.ABCMeta):
@@ -89,10 +84,9 @@ class ColumnTextView(BaseViewportView):
     columns = np.asarray(columns)
     left_column = '\n'.join(columns[:, 0])
     right_column = '\n'.join(columns[:, 1])
-    mjlib.mjr_overlay(
-        enums.mjtFont.mjFONT_NORMAL, location.value,
-        viewport.mujoco_rect, util.to_binary_string(left_column),
-        util.to_binary_string(right_column), context.ptr)
+    mujoco.mjr_overlay(mujoco.mjtFont.mjFONT_NORMAL, location.value,
+                       viewport.mujoco_rect, left_column, right_column,
+                       context.ptr)
 
 
 class MujocoDepthBuffer(renderer.Component):
@@ -115,17 +109,17 @@ class MujocoDepthBuffer(renderer.Component):
       self._depth_buffer = np.empty(
           (viewport.width, viewport.height), np.float32)
 
-    mjlib.mjr_readPixels(
-        None, self._depth_buffer, viewport.mujoco_rect, context.ptr)
+    mujoco.mjr_readPixels(None, self._depth_buffer, viewport.mujoco_rect,
+                          context.ptr)
 
     # Subsample by 4, convert to RGB, and cast to unsigned bytes.
     depth_rgb = np.repeat(self._depth_buffer[::4, ::4, None] * 255, 3,
                           -1).astype(np.ubyte)
 
-    pos = types.MJRRECT(
+    pos = mujoco.MjrRect(
         int(3 * viewport.width / 4) + width_adjustment, 0,
         int(viewport.width / 4), int(viewport.height / 4))
-    mjlib.mjr_drawPixels(depth_rgb, None, pos, context.ptr)
+    mujoco.mjr_drawPixels(depth_rgb, None, pos, context.ptr)
 
 
 class ViewportLayout(renderer.Component):

@@ -20,6 +20,7 @@ import enum
 
 from dm_control.mujoco.wrapper import mjbindings
 from dm_control.viewer import util
+import mujoco
 import numpy as np
 
 mjlib = mjbindings.mjlib
@@ -232,7 +233,7 @@ class Runtime:
     return not self._error_logger.errors_found
 
   def _step_paused(self):
-    mjlib.mj_forward(self._env.physics.model.ptr, self._env.physics.data.ptr)
+    mujoco.mj_forward(self._env.physics.model.ptr, self._env.physics.data.ptr)
 
   def _step(self):
     """Generates an action and applies it to the environment.

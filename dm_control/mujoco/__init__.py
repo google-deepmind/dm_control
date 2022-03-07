@@ -21,3 +21,5 @@ from dm_control.mujoco.engine import Camera
 from dm_control.mujoco.engine import MovableCamera
 from dm_control.mujoco.engine import Physics
 from dm_control.mujoco.engine import TextOverlay
+
+from mujoco import *
