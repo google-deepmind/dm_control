@@ -170,5 +170,57 @@ class ObservableTest(parameterized.TestCase):
       mjcf_observable.MJCFCamera(mjcf_element=camera, segmentation=True,
                                  depth=True)
 
+  def testMJCFCameraConfigureOptions(self):
+    mjcf_root = mjcf.from_xml_string(_MJCF)
+    camera = mjcf_root.find('camera', 'world')
+    # Start with an RGB camera.
+    camera_observable = mjcf_observable.MJCFCamera(
+        mjcf_element=camera, height=480, width=640, update_interval=7,
+        segmentation=False, depth=False)
+    # Check attributes are configured correctly.
+    self.assertEqual(camera_observable.depth, False)
+    self.assertEqual(camera_observable.segmentation, False)
+    self.assertEqual(camera_observable.dtype, np.uint8)
+    self.assertEqual(camera_observable.n_channels, 3)
+    # We can't configure the camera to be both depth and segmentation.
+    with self.assertRaisesWithLiteralMatch(
+        ValueError, mjcf_observable._BOTH_SEGMENTATION_AND_DEPTH_ENABLED):
+      camera_observable.configure(depth=True, segmentation=True)
+    # But we should be able to set them both to False.
+    camera_observable.configure(depth=False, segmentation=False)
+    self.assertEqual(camera_observable.depth, False)
+    self.assertEqual(camera_observable.segmentation, False)
+    self.assertEqual(camera_observable.dtype, np.uint8)
+    self.assertEqual(camera_observable.n_channels, 3)
+    # When we set one to True, the other should be False automatically.
+    camera_observable.configure(depth=True)
+    self.assertEqual(camera_observable.depth, True)
+    self.assertEqual(camera_observable.segmentation, False)
+    self.assertEqual(camera_observable.dtype, np.float32)
+    self.assertEqual(camera_observable.n_channels, 1)
+    camera_observable.configure(segmentation=True)
+    self.assertEqual(camera_observable.depth, False)
+    self.assertEqual(camera_observable.segmentation, True)
+    self.assertEqual(camera_observable.dtype, np.int32)
+    self.assertEqual(camera_observable.n_channels, 2)
+    # We should also be able to explicitly set the second to False.
+    camera_observable.configure(depth=True, segmentation=False)
+    self.assertEqual(camera_observable.depth, True)
+    self.assertEqual(camera_observable.segmentation, False)
+    self.assertEqual(camera_observable.dtype, np.float32)
+    self.assertEqual(camera_observable.n_channels, 1)
+    camera_observable.configure(depth=False, segmentation=True)
+    self.assertEqual(camera_observable.depth, False)
+    self.assertEqual(camera_observable.segmentation, True)
+    self.assertEqual(camera_observable.dtype, np.int32)
+    self.assertEqual(camera_observable.n_channels, 2)
+    # Finally set both to False and make sure we recover RGB settings.
+    camera_observable.configure(depth=False, segmentation=False)
+    self.assertEqual(camera_observable.depth, False)
+    self.assertEqual(camera_observable.segmentation, False)
+    self.assertEqual(camera_observable.dtype, np.uint8)
+    self.assertEqual(camera_observable.n_channels, 3)
+
+
 if __name__ == '__main__':
   absltest.main()
