@@ -23,6 +23,7 @@ import platform
 import subprocess
 import sys
 
+import mujoco
 from setuptools import find_packages
 from setuptools import setup
 from setuptools.command import install
@@ -53,28 +54,7 @@ def _initialize_mjbindings_options(cmd_instance):
   """Set default values for options relating to `build_mjbindings`."""
   # A default value must be assigned to each user option here.
   cmd_instance.inplace = 0
-
-  candidate_paths = []
-  if PLATFORM == 'Linux':
-    candidate_paths.append(os.path.expanduser('~/.mujoco/mujoco-2.1.2/include'))
-    candidate_paths.append(os.path.expanduser('~/.mujoco/include'))
-  elif PLATFORM == 'Darwin':
-    framework_path = 'MuJoCo.Framework/Headers'
-    candidate_paths.append(
-        os.path.join(os.path.expanduser('~/.mujoco'), framework_path))
-    candidate_paths.append(os.path.join(
-        '/Applications/MuJoCo.App/Contents/Frameworks', framework_path))
-  elif PLATFORM == 'Windows':
-    candidate_paths.append(os.path.join(
-        os.environ['HOMEDRIVE'], os.environ['HOMEPATH'], 'MuJoCo\\include'))
-    candidate_paths.append(os.path.join(
-        os.environ['PUBLIC'], 'MuJoCo\\include'))
-
-  cmd_instance.headers_dir = ''
-  for path in candidate_paths:
-    if os.path.isdir(path):
-      cmd_instance.headers_dir = path
-      break
+  cmd_instance.headers_dir = mujoco.HEADERS_DIR
 
 
 def _finalize_mjbindings_options(cmd_instance):
@@ -193,12 +173,12 @@ def find_data_files(package_dir, patterns, excludes=()):
 
 setup(
     name='dm_control',
-    version='0.0.433559491',
+    version='0.0.433595398',
     description='Continuous control environments and MuJoCo Python bindings.',
     author='DeepMind',
     license='Apache License, Version 2.0',
     keywords='machine learning control physics MuJoCo AI',
-    python_requires='>=3.7, <3.10',
+    python_requires='>=3.7, <=3.10',
     install_requires=[
         'absl-py>=0.7.0',
         'dm-env',
@@ -208,6 +188,7 @@ setup(
         'h5py',
         'labmaze',
         'lxml',
+        'mujoco',
         'numpy >= 1.9.0',
         'protobuf >= 3.15.6',
         'pyopengl >= 3.1.4',
