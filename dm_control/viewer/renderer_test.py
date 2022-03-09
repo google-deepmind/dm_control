@@ -19,15 +19,15 @@ from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control.mujoco import wrapper
 from dm_control.mujoco.wrapper.mjbindings import enums
-from dm_control.mujoco.wrapper.mjbindings import types
 from dm_control.viewer import renderer
 import mock
+import mujoco
 import numpy as np
 
 
 renderer.mujoco = mock.MagicMock()
 
-_SCREEN_SIZE = types.MJRRECT(0, 0, 320, 240)
+_SCREEN_SIZE = mujoco.MjrRect(0, 0, 320, 240)
 
 
 class BaseRendererTest(absltest.TestCase):

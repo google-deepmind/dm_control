@@ -15,14 +15,9 @@
 
 """Misc helper functions needed by autowrap.py."""
 
-import builtins
 import collections
-import keyword
-import re
 
 _MJXMACRO_SUFFIX = "_POINTERS"
-_PYTHON_RESERVED_KEYWORDS = frozenset(
-    keyword.kwlist + dir(builtins) + ["buffer"])
 
 
 class Indenter:
@@ -89,37 +84,6 @@ def macro_struct_name(name, suffix=None):
 def is_macro_pointer(name):
   """Returns True if the mjxmacro struct name contains pointer sizes."""
   return name.endswith(_MJXMACRO_SUFFIX)
-
-
-def mangle_varname(s):
-  """Append underscores to ensure that `s` is not a reserved Python keyword."""
-  while s in _PYTHON_RESERVED_KEYWORDS:
-    s += "_"
-  return s
-
-
-def mangle_struct_typename(s):
-  """Strip leading and trailing underscores and make uppercase."""
-  return s.strip("_").upper()
-
-
-def mangle_comment(s):
-  """Strip extraneous whitespace, add full-stops at end of each line."""
-  if not isinstance(s, str):
-    return "\n".join(mangle_comment(line) for line in s)
-  elif not s:
-    return "<no header comment found>."
-  else:
-    out = "\n".join(" ".join(line.split()) for line in s.splitlines())
-    if not out.endswith("."):
-      out += "."
-    return out
-
-
-def camel_case(s):
-  """Convert a snake_case string (maybe with lowerCaseFirst) to CamelCase."""
-  tokens = re.sub(r"([A-Z])", r" \1", s.replace("_", " ")).split()
-  return "".join(w.title() for w in tokens)
 
 
 def try_coerce_to_num(s, try_types=(int, float)):

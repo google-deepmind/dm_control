@@ -21,8 +21,6 @@ from absl import logging
 from dm_control.mujoco.wrapper.mjbindings import constants
 from dm_control.mujoco.wrapper.mjbindings import enums
 from dm_control.mujoco.wrapper.mjbindings import sizes
-from dm_control.mujoco.wrapper.mjbindings import types
-from dm_control.mujoco.wrapper.mjbindings import wrappers
 
 # Internal analytics import.
 

@@ -30,10 +30,6 @@ generates the following Python source files:
   constants.py:  constants
   enums.py:      enums
   sizes.py:      size information for dynamically-shaped arrays
-  types.py:      ctypes declarations for structs
-  wrappers.py:   low-level Python wrapper classes for structs (these implement
-                 getter/setter methods for struct members where applicable)
-  functions.py:  ctypes function declarations for MuJoCo API functions
 
 Example usage:
 
@@ -115,22 +111,6 @@ def main(unused_argv):
   # Get shape hints from mjxmacro.h.
   parser.parse_hints(srcs[special_header_paths[_MJXMACRO_H]])
 
-  # Parse structs and function pointer type declarations.
-  for pth, src in srcs.items():
-    if pth is not special_header_paths[_MJXMACRO_H]:
-      parser.parse_structs_and_function_pointer_typedefs(src)
-
-  # Parse functions.
-  for pth, src in srcs.items():
-    if pth is not special_header_paths[_MJXMACRO_H]:
-      parser.parse_functions(src)
-
-  # Parse global strings and function pointers.
-  for pth, src in srcs.items():
-    if pth is not special_header_paths[_MJXMACRO_H]:
-      parser.parse_global_strings(src)
-      parser.parse_function_pointers(src)
-
   # Create the output directory if it doesn't already exist.
   if not os.path.exists(FLAGS.output_dir):
     os.makedirs(FLAGS.output_dir)
@@ -138,9 +118,6 @@ def main(unused_argv):
   # Generate Python source files and write them to the output directory.
   parser.write_consts(os.path.join(FLAGS.output_dir, "constants.py"))
   parser.write_enums(os.path.join(FLAGS.output_dir, "enums.py"))
-  parser.write_types(os.path.join(FLAGS.output_dir, "types.py"))
-  parser.write_wrappers(os.path.join(FLAGS.output_dir, "wrappers.py"))
-  parser.write_funcs_and_globals(os.path.join(FLAGS.output_dir, "functions.py"))
   parser.write_index_dict(os.path.join(FLAGS.output_dir, "sizes.py"))
 
 if __name__ == "__main__":
