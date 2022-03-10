@@ -47,66 +47,41 @@ If you use this package, please cite our accompanying [tech report]:
 }
 ```
 
-## Requirements and Installation
+## Installation
 
-`dm_control` is regularly tested on Ubuntu 16.04 against the following Python
-versions:
+Install `dm_control` from PyPI by running
 
-*   3.7
-*   3.8
-*   3.9
-
-Various people have been successful in getting `dm_control` to work on other
-Linux distros, macOS, and Windows. We do not provide active support for these,
-but will endeavour to answer questions on a best-effort basis.
-
-Follow these steps to install `dm_control`:
-
-1.  Download MuJoCo 2.1.1 from the
-    [Releases page on the MuJoCo GitHub repository]. MuJoCo must be installed
-    before `dm_control`, since `dm_control`'s install script generates Python
-    [`ctypes`] bindings based on MuJoCo's header files. By default, `dm_control`
-    assumes that MuJoCo is installed via the following instructions:
-
-    -   On Linux, extract the tarball into `~/.mujoco`.
-    -   On Windows, extract the zip archive into either `%HOMEPATH%\MuJoCo` or
-        `%PUBLIC%\MuJoCo`.
-    -   On macOS, either place `MuJoCo.app` into `/Applications`, or place
-        `MuJoCo.Framework` into `~/.mujoco`.
-
-2.  Install the `dm_control` Python package by running `pip install dm_control`.
-    We recommend `pip install`ing into a `virtualenv`, or with the `--user` flag
-    to avoid interfering with system packages. At installation time,
-    `dm_control` looks for the MuJoCo headers at the paths described in Step 1
-    by default, however this path can be configured with the `headers-dir`
-    command line argument.
-
-3.  If the shared library provided by MuJoCo (i.e. `libmujoco.so.2.1.1` or
-    `libmujoco.2.1.1.dylib` or `mujoco.dll`) is installed at a non-default path,
-    specify its location using the `MJLIB_PATH` environment variable. This
-    environment variable should be set to the full path to the library file
-    itself, e.g. `export MJLIB_PATH=/path/to/libmujoco.so.2.1.1`.
-
-**Note**: `dm_control` cannot be installed in "editable" mode (i.e. `pip install
--e`) due to the way in which we automatically generate the `ctypes` bindings for
-MuJoCo. Installing it in this way will result in import errors like:
-
-```
-ImportError: cannot import name 'constants' from partially initialized module 'dm_control.mujoco.wrapper.mjbindings' ...
+```sh
+pip install dm_control
 ```
 
-The solution is to `pip uninstall dm_control` and then reinstall it without the
-`-e` flag.
+> **Note**: **`dm_control` cannot be installed in "editable" mode** (i.e. `pip
+> install -e`).
+>
+> While `dm_control` has been largely updated to use the pybind11-based bindings
+> provided via the `mujoco` package, at this time it still relies on some legacy
+> components that are automatically generated from MuJoCo header files in a way
+> that is incompatible with editable mode. Attempting to install `dm_control` in
+> editable mode will result in import errors like:
+>
+> ```
+> ImportError: cannot import name 'constants' from partially initialized module 'dm_control.mujoco.wrapper.mjbindings' ...
+> ```
+>
+> The solution is to `pip uninstall dm_control` and then reinstall it without
+> the `-e` flag.
 
 ## Versioning
 
-Prior to version 1.0.0, the `dm_control` Python package was versioned `0.0.N`,
-where `N` was guaranteed to be strictly increasing. From 1.0.0, we adopted
-semantic versioning.
+Starting from version 1.0.0, we adopt semantic versioning.
 
-Occasionally the latest version on PyPI may lag behind the latest commit on
-GitHub. Should this happen, you can still install the unreleased version
-by running `pip install git+git://github.com/deepmind/dm_control.git`.
+Prior to version 1.0.0, the `dm_control` Python package was versioned `0.0.N`,
+where `N` was an internal revision number that increased by an arbitrary amount
+at every single Git commit.
+
+If you want to install an unreleased version of `dm_control` directly from our
+repository, you can do so by running `pip install
+git+git://github.com/deepmind/dm_control.git`.
 
 ## Rendering
 
