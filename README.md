@@ -100,15 +100,13 @@ The solution is to `pip uninstall dm_control` and then reinstall it without the
 
 ## Versioning
 
-`dm_control` is released on a rolling basis: the latest commit on the `master`
-branch of our GitHub repository represents our latest release. Our Python
-package is versioned `0.0.N`, where `N` is the number that appears in the
-`PiperOrigin-RevId` field of the commit message. We always ensure that `N`
-strictly increases between a parent commit and its children. We do not upload
-all versions to PyPI, and occasionally the latest version on PyPI may lag behind
-the latest commit on GitHub. Should this happen, you can still install the
-newest version available by running `pip install
-git+git://github.com/deepmind/dm_control.git`.
+Prior to version 1.0.0, the `dm_control` Python package was versioned `0.0.N`,
+where `N` was guaranteed to be strictly increasing. From 1.0.0, we adopted
+semantic versioning.
+
+Occasionally the latest version on PyPI may lag behind the latest commit on
+GitHub. Should this happen, you can still install the unreleased version
+by running `pip install git+git://github.com/deepmind/dm_control.git`.
 
 ## Rendering
 
