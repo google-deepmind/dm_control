@@ -282,6 +282,8 @@
             <attribute name="hfield" type="reference"/>
             <attribute name="mesh" type="reference"/>
             <attribute name="fitscale" type="float"/>
+            <attribute name="fluidshape" type="keyword" valid_values="none ellipsoid"/>
+            <attribute name="fluidcoef" type="array" array_type="float" array_size="5"/>
             <attribute name="user" type="array" array_type="float"/>
           </attributes>
         </element>
@@ -541,6 +543,8 @@
                 <attribute name="hfield" type="reference"/>
                 <attribute name="mesh" type="reference"/>
                 <attribute name="fitscale" type="float"/>
+                <attribute name="fluidshape" type="keyword" valid_values="none ellipsoid"/>
+                <attribute name="fluidcoef" type="array" array_type="float" array_size="5"/>
                 <attribute name="user" type="array" array_type="float"/>
               </attributes>
             </element>
@@ -855,6 +859,8 @@
             <attribute name="hfield" type="reference"/>
             <attribute name="mesh" type="reference"/>
             <attribute name="fitscale" type="float"/>
+            <attribute name="fluidshape" type="keyword" valid_values="none ellipsoid"/>
+            <attribute name="fluidcoef" type="array" array_type="float" array_size="5"/>
             <attribute name="user" type="array" array_type="float"/>
           </attributes>
         </element>
@@ -984,6 +990,8 @@
                 <attribute name="solimp" type="array" array_type="float" array_size="5"/>
                 <attribute name="margin" type="float"/>
                 <attribute name="gap" type="float"/>
+                <attribute name="fluidshape" type="keyword" valid_values="none ellipsoid"/>
+                <attribute name="fluidcoef" type="array" array_type="float" array_size="5"/>
               </attributes>
             </element>
             <element name="site">
@@ -1098,6 +1106,8 @@
                 <attribute name="hfield" type="reference"/>
                 <attribute name="mesh" type="reference"/>
                 <attribute name="fitscale" type="float"/>
+                <attribute name="fluidshape" type="keyword" valid_values="none ellipsoid"/>
+                <attribute name="fluidcoef" type="array" array_type="float" array_size="5"/>
                 <attribute name="user" type="array" array_type="float"/>
               </attributes>
             </element>
@@ -1227,6 +1237,8 @@
                     <attribute name="solimp" type="array" array_type="float" array_size="5"/>
                     <attribute name="margin" type="float"/>
                     <attribute name="gap" type="float"/>
+                    <attribute name="fluidshape" type="keyword" valid_values="none ellipsoid"/>
+                    <attribute name="fluidcoef" type="array" array_type="float" array_size="5"/>
                   </attributes>
                 </element>
                 <element name="site">
