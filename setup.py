@@ -201,7 +201,7 @@ setup(
     tests_require=[
         'mock',
         'nose',
-        'pillow>=7.1.0',  # https://github.com/advisories/GHSA-8843-m7mw-mxqm
+        'pillow>=9.0.1',  # https://github.com/advisories/GHSA-8vj2-vxx3-667w
     ],
     test_suite='nose.collector',
     packages=find_packages(),
