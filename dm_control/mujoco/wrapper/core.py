@@ -620,8 +620,10 @@ class MjrContext:
     necessary. This MjrContext object MUST NOT be used after this function has
     been called.
     """
-    self._gl_context.decrement_refcount()
-    self._gl_context.free()
+    if self._gl_context:
+      self._gl_context.decrement_refcount()
+      self._gl_context.free()
+      self._gl_context = None
 
   def __del__(self):
     self.free()

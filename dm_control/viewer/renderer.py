@@ -119,6 +119,7 @@ class OffScreenRenderer(BaseRenderer):
     """
     super().__init__()
     self._surface = surface
+    self._surface.increment_refcount()
     self._model = model
     self._mujoco_context = None
 
@@ -172,6 +173,8 @@ class OffScreenRenderer(BaseRenderer):
     if self._mujoco_context:
       self._mujoco_context.free()
       self._mujoco_context = None
+      self._surface.decrement_refcount()
+      self._surface.free()
 
   @property
   def pixels(self):
