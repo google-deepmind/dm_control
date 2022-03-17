@@ -37,7 +37,7 @@ _INVALID_REFERENCE_TYPE = (
     'Reference should be an MJCF Element whose type is {valid_type!r}: '
     'got {actual_type!r}.')
 
-_MESH_EXTENSIONS = ('.stl', '.msh')
+_MESH_EXTENSIONS = ('.stl', '.msh', '.obj')
 
 # MuJoCo's compiler enforces this.
 _INVALID_MESH_EXTENSION = (
@@ -142,7 +142,8 @@ class Integer(_Attribute):
       if float_value != int_value:
         raise ValueError
     except ValueError:
-      raise ValueError('Expect an integer value: got {}'.format(value))
+      raise ValueError(
+          'Expect an integer value: got {}'.format(value)) from None
     self._value = int_value
 
 
@@ -153,7 +154,7 @@ class Float(_Attribute):
     try:
       float_value = float(value)
     except ValueError:
-      raise ValueError('Expect a float value: got {}'.format(value))
+      raise ValueError('Expect a float value: got {}'.format(value)) from None
     self._value = float_value
 
 
@@ -175,7 +176,7 @@ class Keyword(_Attribute):
         self._value = self._valid_values[str(value).lower()]
       except KeyError:
         raise ValueError('Expect keyword to be one of {} but got: {}'.format(
-            list(self._valid_values.values()), value))
+            list(self._valid_values.values()), value)) from None
 
   @property
   def valid_values(self):
