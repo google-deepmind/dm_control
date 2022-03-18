@@ -173,8 +173,10 @@ class OffScreenRenderer(BaseRenderer):
     if self._mujoco_context:
       self._mujoco_context.free()
       self._mujoco_context = None
+    if self._surface:
       self._surface.decrement_refcount()
       self._surface.free()
+      self._surface = None
 
   @property
   def pixels(self):
