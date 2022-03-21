@@ -67,6 +67,12 @@ class ContextBase(metaclass=abc.ABCMeta):
   def keep_alive(self, obj):
     self._patients.append(obj)
 
+  def dont_keep_alive(self, obj):
+    try:
+      self._patients.remove(obj)
+    except ValueError:
+      pass
+
   def increment_refcount(self):
     self._refcount += 1
 
@@ -91,6 +97,8 @@ class ContextBase(metaclass=abc.ABCMeta):
       while self._patients:
         patient = self._patients.pop()
         assert sys.getrefcount(patient) == sys.getrefcount(dummy)
+        if hasattr(patient, 'free'):
+          patient.free()
         del patient
     finally:
       self._platform_free()

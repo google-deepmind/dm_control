@@ -620,6 +620,13 @@ class MjrContext:
     necessary. This MjrContext object MUST NOT be used after this function has
     been called.
     """
+    if self._gl_context and not self._gl_context.terminated:
+      ptr = self.ptr
+      if ptr:
+        self._gl_context.dont_keep_alive(ptr)
+        with self._gl_context.make_current() as ctx:
+          ctx.call(ptr.free)
+
     if self._gl_context:
       self._gl_context.decrement_refcount()
       self._gl_context.free()
