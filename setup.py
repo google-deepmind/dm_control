@@ -188,7 +188,7 @@ setup(
         'h5py',
         'labmaze',
         'lxml',
-        'mujoco',
+        'mujoco >= 2.1.3',
         'numpy >= 1.9.0',
         'protobuf >= 3.15.6',
         'pyopengl >= 3.1.4',
