@@ -21,7 +21,6 @@ import operator
 from dm_control.composer import variation
 from dm_control.locomotion.mocap import mocap_pb2
 from dm_control.locomotion.mocap import trajectory
-import h5py
 import numpy as np
 
 from google.protobuf import descriptor
@@ -76,10 +75,23 @@ class TrajectoryLoader(metaclass=abc.ABCMeta):
 
 
 class HDF5TrajectoryLoader(TrajectoryLoader):
-  """A helper for loading and decoding mocap trajectories from HDF5."""
+  """A helper for loading and decoding mocap trajectories from HDF5.
+
+  In order to use this class, h5py must be installed (it's an optional
+  dependency of dm_control).
+  """
 
   def __init__(self, path, trajectory_class=trajectory.Trajectory,
                proto_modifier=()):
+    # h5py is an optional dependency of dm_control, so only try to import
+    # if it's used.
+    try:
+      import h5py  # pylint: disable=g-import-not-at-top
+    except ImportError as e:
+      raise ImportError(
+          'h5py not found. When installing dm_control, '
+          'use `pip install dm_control[HDF5]` to enable HDF5TrajectoryLoader.'
+      ) from e
     self._h5_file = h5py.File(path, mode='r')
     self._keys = tuple(sorted(self._h5_file.keys()))
     super().__init__(

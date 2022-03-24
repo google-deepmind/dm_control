@@ -185,7 +185,6 @@ setup(
         'dm-tree != 0.1.2',
         'future',
         'glfw',
-        'h5py',
         'labmaze',
         'lxml',
         'mujoco >= 2.1.3',
@@ -198,6 +197,9 @@ setup(
         'scipy',
         'tqdm',
     ],
+    extras_require={
+        'HDF5': ['h5py'],
+    },
     tests_require=[
         'mock',
         'nose',
@@ -209,8 +211,10 @@ setup(
         'dm_control':
             find_data_files(
                 package_dir='dm_control',
-                patterns=['*.amc', '*.msh', '*.png', '*.skn', '*.stl', '*.xml',
-                          '*.textproto', '*.h5'],
+                patterns=[
+                    '*.amc', '*.msh', '*.png', '*.skn', '*.stl', '*.xml',
+                    '*.textproto', '*.h5'
+                ],
                 excludes=[
                     '*/dog_assets/extras/*',
                     '*/kinova/meshes/*',  # Exclude non-decimated meshes.
