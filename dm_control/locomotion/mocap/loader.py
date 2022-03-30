@@ -21,6 +21,7 @@ import operator
 from dm_control.composer import variation
 from dm_control.locomotion.mocap import mocap_pb2
 from dm_control.locomotion.mocap import trajectory
+from dm_control.utils import transformations as tr
 import numpy as np
 
 from google.protobuf import descriptor
@@ -232,3 +233,15 @@ class ZOffsetter:
       for prop_pose in t.props:
         # shift prop position
         self._add_z_offset(prop_pose.position)
+
+
+class AppendageFixer:
+
+  def __call__(self, proto, random_state=None):
+    for t in proto.timesteps:
+      for walker_pose in t.walkers:
+        xpos = np.asarray(walker_pose.position)
+        xquat = np.asarray(walker_pose.quaternion)
+        appendages = np.reshape(walker_pose.appendages, (-1, 3))
+        xmat = tr.quat_to_mat(xquat)[:3, :3]
+        walker_pose.appendages[:] = np.ravel((appendages - xpos) @ xmat)
