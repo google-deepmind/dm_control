@@ -228,7 +228,9 @@ class TaskTest(parameterized.TestCase):
     self.assertCountEqual(list(obs_a.keys()), list(obs_b.keys()))
     for k in sorted(obs_a.keys()):
       o_a, o_b = obs_a[k], obs_b[k]
-      np.testing.assert_allclose(o_a, o_b, err_msg=k + " not equal.", atol=1e-6)
+      self.assertTrue(
+          np.allclose(o_a, o_b) or np.allclose(o_a, -o_b),
+          k + " not equal:" + str(o_a) + ";" + str(o_b))
 
   def test_symmetric_dynamic_observations(self):
     env = _env(_home_team(1) + _away_team(1))
@@ -262,7 +264,9 @@ class TaskTest(parameterized.TestCase):
     self.assertCountEqual(list(obs_a.keys()), list(obs_b.keys()))
     for k in sorted(obs_a.keys()):
       o_a, o_b = obs_a[k], obs_b[k]
-      np.testing.assert_allclose(o_a, o_b, err_msg=k + " not equal.", atol=1e-6)
+      self.assertTrue(
+          np.allclose(o_a, o_b) or np.allclose(o_a, -o_b),
+          k + " not equal:" + str(o_a) + ";" + str(o_b))
 
   def test_prev_actions(self):
     env = _env(_home_team(1) + _away_team(1))
