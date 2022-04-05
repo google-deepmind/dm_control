@@ -40,8 +40,10 @@ class _Detection:
 
 
 class PositionDetector(composer.Entity):
-  """Detects the presence of registered entities within a cuboidal region.
+  """Detects the presence of registered entities within an axis-aligned box.
 
+  The volume of this detector is defined by a "lower" corner and an "upper"
+  corner, which suffice to define an axis-aligned box.
   An entity is considered "detected" if the `xpos` value of any one of its geom
   lies within the active region defined by this detector. Note that this is NOT
   a contact-based detector. Generally speaking, a geom will not be detected
@@ -265,6 +267,18 @@ class PositionDetector(composer.Entity):
   @property
   def mid(self):
     return (self._lower + self._upper) / 2.
+
+  @property
+  def lower_site(self):
+    return self._lower_site
+
+  @property
+  def mid_site(self):
+    return self._mid_site
+
+  @property
+  def upper_site(self):
+    return self._upper_site
 
   @property
   def lower_sensor(self):
