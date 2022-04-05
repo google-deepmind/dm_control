@@ -188,7 +188,7 @@ def _goalpost_fromto(unit_fromto, size, pos, direction):
     unit_fromto: two concatenated 3-vectors in the unit cube in xyzxyz order.
     size: a 3-vector, scaling of the goal.
     pos: a 3-vector, goal position.
-    direction: a 3-vector, either (1,1,1) or (-1,01,1), direction of the goal
+    direction: a 3-vector, either (1,1,1) or (-1,-1,1), direction of the goal
       along the x-axis.
 
   Returns:
