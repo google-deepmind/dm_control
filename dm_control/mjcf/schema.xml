@@ -84,6 +84,7 @@
             <attribute name="energy" type="keyword" valid_values="disable enable"/>
             <attribute name="fwdinv" type="keyword" valid_values="disable enable"/>
             <attribute name="sensornoise" type="keyword" valid_values="disable enable"/>
+            <attribute name="multiccd" type="keyword" valid_values="disable enable"/>
           </attributes>
         </element>
       </children>
