@@ -173,7 +173,7 @@ def find_data_files(package_dir, patterns, excludes=()):
 
 setup(
     name='dm_control',
-    version='1.0.1',
+    version='1.0.2',
     description='Continuous control environments and MuJoCo Python bindings.',
     author='DeepMind',
     license='Apache License, Version 2.0',
@@ -187,7 +187,7 @@ setup(
         'glfw',
         'labmaze',
         'lxml',
-        'mujoco >= 2.1.3',
+        'mujoco >= 2.1.5',
         'numpy >= 1.9.0',
         'protobuf >= 3.15.6',
         'pyopengl >= 3.1.4',
