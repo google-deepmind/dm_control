@@ -143,8 +143,11 @@ class Physics(_control.Physics):
     """
     np.copyto(self.data.ctrl, control)
 
-  def step(self):
+  def step(self, nstep=1):
     """Advances physics with up-to-date position and velocity dependent fields.
+
+    Args:
+      nstep: Optional integer, number of steps to take.
 
     The actuation can be updated by calling the `set_control` function first.
     """
@@ -155,10 +158,12 @@ class Physics(_control.Physics):
     # integrators (e.g. RK4) an additional mj_step1 must be called after the
     # last mj_step to ensure mjData syncing.
     with self.check_invalid_state():
-      if self.model.opt.integrator == mujoco.mjtIntegrator.mjINT_EULER.value:
+      if self.model.opt.integrator != mujoco.mjtIntegrator.mjINT_RK4.value:
         mujoco.mj_step2(self.model.ptr, self.data.ptr)
+        if nstep > 1:
+          mujoco.mj_step(self.model.ptr, self.data.ptr, nstep-1)
       else:
-        mujoco.mj_step(self.model.ptr, self.data.ptr)
+        mujoco.mj_step(self.model.ptr, self.data.ptr, nstep)
 
       mujoco.mj_step1(self.model.ptr, self.data.ptr)
 

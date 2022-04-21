@@ -518,5 +518,43 @@ class MujocoEngineTest(parameterized.TestCase):
     np.testing.assert_array_equal(spec.minimum, [-mujoco.mjMAXVAL, -1.0])
     np.testing.assert_array_equal(spec.maximum, [mujoco.mjMAXVAL, 2.0])
 
+  def testNstep(self):
+    # Make initial state.
+    with self._physics.reset_context():
+      self._physics.data.qvel[0] = 1
+      self._physics.data.qvel[1] = 1
+    initial_state = self._physics.get_state()
+
+    # step() 4 times.
+    for _ in range(4):
+      self._physics.step()
+    for_loop_state = self._physics.get_state()
+
+    # Reset state, call step(4).
+    with self._physics.reset_context():
+      self._physics.set_state(initial_state)
+    self._physics.step(4)
+    nstep_state = self._physics.get_state()
+
+    np.testing.assert_array_equal(for_loop_state, nstep_state)
+
+    # Repeat test with with RK4 integrator:
+    self._physics.model.opt.integrator = enums.mjtIntegrator.mjINT_RK4
+
+    # step() 4 times.
+    with self._physics.reset_context():
+      self._physics.set_state(initial_state)
+    for _ in range(4):
+      self._physics.step()
+    for_loop_state_rk4 = self._physics.get_state()
+
+    # Reset state, call step(4).
+    with self._physics.reset_context():
+      self._physics.set_state(initial_state)
+    self._physics.step(4)
+    nstep_state_rk4 = self._physics.get_state()
+
+    np.testing.assert_array_equal(for_loop_state_rk4, nstep_state_rk4)
+
 if __name__ == '__main__':
   absltest.main()

@@ -98,8 +98,7 @@ class Environment(dm_env.Environment):
       return self.reset()
 
     self._task.before_step(action, self._physics)
-    for _ in range(self._n_sub_steps):
-      self._physics.step()
+    self._physics.step(self._n_sub_steps)
     self._task.after_step(self._physics)
 
     reward = self._task.get_reward(self._physics)
