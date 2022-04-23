@@ -21,7 +21,6 @@ from dm_control import mjcf
 from dm_control.composer.observation import observable
 from dm_control.locomotion.walkers import base
 from dm_control.locomotion.walkers import legacy_base
-from dm_control.utils import transformations
 import numpy as np
 
 _XML_DIRNAME = os.path.join(os.path.dirname(__file__), '../../third_party/ant')
@@ -40,6 +39,9 @@ class Ant(legacy_base.Walker):
       initializer: (Optional) A `WalkerInitializer` object.
     """
     super()._build(initializer=initializer)
+    self._appendages_sensors = []
+    self._bodies_pos_sensors = []
+    self._bodies_quats_sensors = []
     self._mjcf_root = mjcf.from_path(os.path.join(_XML_DIRNAME, _XML_FILENAME))
     if name:
       self._mjcf_root.model = name
@@ -132,6 +134,18 @@ class Ant(legacy_base.Walker):
   def prev_action(self):
     return self._prev_action
 
+  @property
+  def appendages_sensors(self):
+    return self._appendages_sensors
+
+  @property
+  def bodies_pos_sensors(self):
+    return self._bodies_pos_sensors
+
+  @property
+  def bodies_quats_sensors(self):
+    return self._bodies_quats_sensors
+
 
 class AntObservables(legacy_base.WalkerObservables):
   """Observables for the Ant."""
@@ -139,47 +153,50 @@ class AntObservables(legacy_base.WalkerObservables):
   @composer.observable
   def appendages_pos(self):
     """Equivalent to `end_effectors_pos` with the head's position appended."""
-    def appendages_pos_in_egocentric_frame(physics):
-      appendages = self._entity.end_effectors
-      appendages_xpos = physics.bind(appendages).xpos
-      root_xpos = physics.bind(self._entity.root_body).xpos
-      root_xmat = np.reshape(physics.bind(self._entity.root_body).xmat, (3, 3))
+    appendages = self._entity.end_effectors
+    self._entity.appendages_sensors[:] = []
+    for body in appendages:
+      self._entity.appendages_sensors.append(
+          self._entity.mjcf_model.sensor.add(
+              'framepos', name=body.name + '_appendage',
+              objtype='body', objname=body,
+              reftype='body', refname=self._entity.root_body))
+    def appendages_ego_pos(physics):
       return np.reshape(
-          np.dot(appendages_xpos - root_xpos, root_xmat), -1)
-    return observable.Generic(appendages_pos_in_egocentric_frame)
+          physics.bind(self._entity.appendages_sensors).sensordata, -1)
+    return observable.Generic(appendages_ego_pos)
 
   @composer.observable
   def bodies_quats(self):
     """Orientations of the bodies as quaternions, in the egocentric frame."""
-    def bodies_orientations_in_egocentric_frame(physics):
-      """Compute relative orientation of the bodies."""
-      # Get the bodies
-      bodies = self._entity.bodies
-      # Get the quaternions of all the bodies &root in the global frame
-      bodies_xquat = physics.bind(bodies).xquat
-      root_xquat = physics.bind(self._entity.root_body).xquat
-      # Compute the relative quaternion of the bodies in the root frame
-      bodies_quat_diff = transformations.quat_diff(
-          np.tile(root_xquat, len(bodies)).reshape(-1, 4),
-          bodies_xquat)  # q1^-1 * q2
-      return np.reshape(bodies_quat_diff, -1)
-    return observable.Generic(bodies_orientations_in_egocentric_frame)
+    bodies = self._entity.bodies
+    self._entity.bodies_quats_sensors[:] = []
+    for body in bodies:
+      self._entity.bodies_quats_sensors.append(
+          self._entity.mjcf_model.sensor.add(
+              'framequat', name=body.name + '_ego_body_quat',
+              objtype='body', objname=body,
+              reftype='body', refname=self._entity.root_body))
+    def bodies_ego_orientation(physics):
+      return np.reshape(
+          physics.bind(self._entity.bodies_quats_sensors).sensordata, -1)
+    return observable.Generic(bodies_ego_orientation)
 
   @composer.observable
   def bodies_pos(self):
     """Position of bodies relative to root, in the egocentric frame."""
-    def bodies_pos_in_egocentric_frame(physics):
-      """Compute relative orientation of the bodies."""
-      # Get the bodies
-      bodies = self._entity.bodies
-      # Get the positions of all the bodies & root in the global frame
-      bodies_xpos = physics.bind(bodies).xpos
-      root_xpos, _ = self._entity.get_pose(physics)
-      # Compute the relative position of the bodies in the root frame
-      root_xmat = np.reshape(physics.bind(self._entity.root_body).xmat, (3, 3))
+    bodies = self._entity.bodies
+    self._entity.bodies_pos_sensors[:] = []
+    for body in bodies:
+      self._entity.bodies_pos_sensors.append(
+          self._entity.mjcf_model.sensor.add(
+              'framepos', name=body.name + '_ego_body_pos',
+              objtype='body', objname=body,
+              reftype='body', refname=self._entity.root_body))
+    def bodies_ego_pos(physics):
       return np.reshape(
-          np.dot(bodies_xpos - root_xpos, root_xmat), -1)
-    return observable.Generic(bodies_pos_in_egocentric_frame)
+          physics.bind(self._entity.bodies_pos_sensors).sensordata, -1)
+    return observable.Generic(bodies_ego_pos)
 
   @property
   def proprioception(self):

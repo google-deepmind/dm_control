@@ -32,6 +32,7 @@ class Walker(base.Walker):
   """Legacy base class for Walker robots."""
 
   def _build(self, initializer=None):
+    self._end_effectors_pos_sensors = []
     try:
       self._initializers = tuple(initializer)
     except TypeError:
@@ -193,6 +194,10 @@ class Walker(base.Walker):
     obs_to_mocap = [self.observable_joints.index(j) for j in self.mocap_joints]
     return obs_to_mocap
 
+  @property
+  def end_effectors_pos_sensors(self):
+    return self._end_effectors_pos_sensors
+
 
 class WalkerObservables(base.WalkerObservables):
   """Legacy base class for Walker obserables."""
@@ -208,11 +213,18 @@ class WalkerObservables(base.WalkerObservables):
   @composer.observable
   def end_effectors_pos(self):
     """Position of end effectors relative to torso, in the egocentric frame."""
+    self._entity.end_effectors_pos_sensors[:] = []
+    for effector in self._entity.end_effectors:
+      print(effector.name)
+      print(self._entity.root_body.tag)
+      self._entity.end_effectors_pos_sensors.append(
+          self._entity.mjcf_model.sensor.add(
+              'framepos', name=effector.name + '_end_effector',
+              objtype=effector.tag, objname=effector,
+              reftype='body', refname=self._entity.root_body))
     def relative_pos_in_egocentric_frame(physics):
-      end_effector = physics.bind(self._entity.end_effectors).xpos
-      torso = physics.bind(self._entity.root_body).xpos
-      xmat = np.reshape(physics.bind(self._entity.root_body).xmat, (3, 3))
-      return np.reshape(np.dot(end_effector - torso, xmat), -1)
+      return np.reshape(
+          physics.bind(self._entity.end_effectors_pos_sensors).sensordata, -1)
     return observable.Generic(relative_pos_in_egocentric_frame)
 
   @composer.observable
