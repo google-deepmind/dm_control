@@ -32,18 +32,21 @@ complex control tasks:
 
 -   [`dm_control.locomotion.soccer`]: Multi-agent soccer tasks.
 
-If you use this package, please cite our accompanying [tech report]:
+If you use this package, please cite our accompanying [publication]:
 
 ```
-@misc{tassa2020dmcontrol,
-    title={dm_control: Software and Tasks for Continuous Control},
-    author={Yuval Tassa and Saran Tunyasuvunakool and Alistair Muldal and
-            Yotam Doron and Siqi Liu and Steven Bohez and Josh Merel and
-            Tom Erez and Timothy Lillicrap and Nicolas Heess},
-    year={2020},
-    eprint={2006.12983},
-    archivePrefix={arXiv},
-    primaryClass={cs.RO}
+@article{tunyasuvunakool2020,
+         title = {dm_control: Software and tasks for continuous control},
+         journal = {Software Impacts},
+         volume = {6},
+         pages = {100022},
+         year = {2020},
+         issn = {2665-9638},
+         doi = {https://doi.org/10.1016/j.simpa.2020.100022},
+         url = {https://www.sciencedirect.com/science/article/pii/S2665963820300099},
+         author = {Saran Tunyasuvunakool and Alistair Muldal and Yotam Doron and
+                   Siqi Liu and Steven Bohez and Josh Merel and Tom Erez and
+                   Timothy Lillicrap and Nicolas Heess and Yuval Tassa},
 }
 ```
 
@@ -125,7 +128,7 @@ setting the environment variable `EGL_DEVICE_ID=` to the target GPU ID.
 [EXT_platform_device]: https://www.khronos.org/registry/EGL/extensions/EXT/EGL_EXT_platform_device.txt
 [Releases page on the MuJoCo GitHub repository]: https://github.com/deepmind/mujoco/releases
 [MuJoCo website]: https://mujoco.org/
-[tech report]: https://arxiv.org/abs/2006.12983
+[publication]: https://doi.org/10.1016/j.simpa.2020.100022
 [`ctypes`]: https://docs.python.org/3/library/ctypes.html
 [`dm_control.mjcf`]: dm_control/mjcf/README.md
 [`dm_control.mujoco`]: dm_control/mujoco/README.md
