@@ -511,19 +511,23 @@ class File(_Attribute):
       try:
         contents = resources.GetResource(full_path)
       except FileNotFoundError:
-        # Let's try and be helpful and check if this is an error due to the system being
-        # file path extension case-sensitive. This can happen if the user is loading
-        # a model that was created on a case-insensitive system.
+        # Let's try to be helpful and check if this is an error due to the system being
+        # file extension case-sensitive. This can happen if the user is loading a model
+        # that was created on a case-insensitive system.
         name_parts = path_parts[-1].split('.')
-        name_parts[-1] = name_parts[-1].upper()
-        name_with_ext_capitalized = '.'.join(name_parts)
-        debug_path = os.path.join(*path_parts[:-1] + [name_with_ext_capitalized])
+        if name_parts[-1].islower():
+          name_parts[-1] = name_parts[-1].upper()
+        else:
+          name_parts[-1] = name_parts[-1].lower()
+        new_name = '.'.join(name_parts)
+        debug_path = os.path.join(*path_parts[:-1] + [new_name])
         if os.path.exists(debug_path):
-          print(
+          raise FileNotFoundError(
             f'{full_path} is not in the asset list, but {debug_path} exists. '
             'Did you mean to use it?'
           )
-        raise
+        else:
+          raise
     if self._parent.tag == constants.SKIN:
       return SkinAsset(contents=contents, parent=self._parent,
                        extension=extension, prefix=filename)
