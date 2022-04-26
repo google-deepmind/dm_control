@@ -508,7 +508,22 @@ class File(_Attribute):
         pass
       path_parts.append(path)
       full_path = os.path.join(*path_parts)  # pylint: disable=no-value-for-parameter
-      contents = resources.GetResource(full_path)
+      try:
+        contents = resources.GetResource(full_path)
+      except FileNotFoundError:
+        # Let's try and be helpful and check if this is an error due to the system being
+        # file path extension case-sensitive. This can happen if the user is loading
+        # a model that was created on a case-insensitive system.
+        name_parts = path_parts[-1].split('.')
+        name_parts[-1] = name_parts[-1].upper()
+        name_with_ext_capitalized = '.'.join(name_parts)
+        debug_path = os.path.join(*path_parts[:-1] + [name_with_ext_capitalized])
+        if os.path.exists(debug_path):
+          print(
+            f'{full_path} is not in the asset list, but {debug_path} exists. '
+            'Did you mean to use it?'
+          )
+        raise
     if self._parent.tag == constants.SKIN:
       return SkinAsset(contents=contents, parent=self._parent,
                        extension=extension, prefix=filename)
