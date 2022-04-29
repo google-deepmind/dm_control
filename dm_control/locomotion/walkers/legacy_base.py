@@ -215,8 +215,6 @@ class WalkerObservables(base.WalkerObservables):
     """Position of end effectors relative to torso, in the egocentric frame."""
     self._entity.end_effectors_pos_sensors[:] = []
     for effector in self._entity.end_effectors:
-      print(effector.name)
-      print(self._entity.root_body.tag)
       self._entity.end_effectors_pos_sensors.append(
           self._entity.mjcf_model.sensor.add(
               'framepos', name=effector.name + '_end_effector',
