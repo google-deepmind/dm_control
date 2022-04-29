@@ -23,7 +23,7 @@ from dm_control import viewer
 from dm_control.locomotion import arenas
 from dm_control.locomotion import walkers
 
-from dm_control.locomotion.mocap.google import cmu_mocap_data
+from dm_control.locomotion.mocap import cmu_mocap_data
 from dm_control.locomotion.tasks.reference_pose import tracking
 
 
