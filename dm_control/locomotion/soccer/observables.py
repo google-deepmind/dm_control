@@ -104,43 +104,53 @@ class CoreObservablesAdder(ObservablesAdder):
     """
     if player is other:
       raise ValueError('Cannot add egocentric observables of player on itself.')
-    # Origin callable in xpos, xvel for `player`.
-    xpos_xyz_callable = lambda p: p.bind(player.walker.root_body).xpos
-    xvel_xyz_callable = lambda p: p.bind(player.walker.root_body).cvel[3:]
-    # Egocentric observation of other's position, orientation and
-    # linear velocities.
-    def _cvel_observation(physics, other=other):
-      # Velocitmeter reads in local frame but we need world frame observable
-      # for egocentric transformation.
-      return physics.bind(other.walker.root_body).cvel[3:]
 
-    def _egocentric_end_effectors_xpos(physics, other=other):
-      origin_xpos = xpos_xyz_callable(physics)
-      egocentric_end_effectors_xpos = []
-      for end_effector_body in other.walker.end_effectors:
-        xpos = physics.bind(end_effector_body).xpos
-        delta = xpos - origin_xpos
-        ego_xpos = player.walker.transform_vec_to_egocentric_frame(
-            physics, delta)
-        egocentric_end_effectors_xpos.append(ego_xpos)
-      return np.concatenate(egocentric_end_effectors_xpos)
-
-    player.walker.observables.add_egocentric_vector(
-        '{}_ego_linear_velocity'.format(prefix),
-        base_observable.Generic(_cvel_observation),
-        origin_callable=xvel_xyz_callable)
-    player.walker.observables.add_egocentric_vector(
-        '{}_ego_position'.format(prefix),
-        other.walker.observables.position,
-        origin_callable=xpos_xyz_callable)
-    player.walker.observables.add_egocentric_xmat(
-        '{}_ego_orientation'.format(prefix),
-        other.walker.observables.orientation)
-
+    sensors = []
+    for effector in other.walker.end_effectors:
+      name = effector.name + '_' + prefix + '_end_effector'
+      sensors.append(player.walker.mjcf_model.sensor.add(
+          'framepos', name=name,
+          objtype=effector.tag, objname=effector,
+          reftype='body', refname=player.walker.root_body))
+    def _egocentric_end_effectors_xpos(physics):
+      return np.reshape(physics.bind(sensors).sensordata, -1)
     # Adds end effectors of the other agents in the player's egocentric frame.
+    name = '{}_ego_end_effectors_pos'.format(prefix)
     player.walker.observables.add_observable(
-        '{}_ego_end_effectors_pos'.format(prefix),
+        name,
         base_observable.Generic(_egocentric_end_effectors_xpos))
+
+    ego_linvel_name = '{}_ego_linear_velocity'.format(prefix)
+    ego_linvel_sensor = player.walker.mjcf_model.sensor.add(
+        'framelinvel', name=ego_linvel_name,
+        objtype='body', objname=other.walker.root_body,
+        reftype='body', refname=player.walker.root_body)
+    player.walker.observables.add_observable(
+        ego_linvel_name,
+        base_observable.MJCFFeature('sensordata', ego_linvel_sensor))
+
+    ego_pos_name = '{}_ego_position'.format(prefix)
+    ego_pos_sensor = player.walker.mjcf_model.sensor.add(
+        'framepos', name=ego_pos_name,
+        objtype='body', objname=other.walker.root_body,
+        reftype='body', refname=player.walker.root_body)
+    player.walker.observables.add_observable(
+        ego_pos_name,
+        base_observable.MJCFFeature('sensordata', ego_pos_sensor))
+
+    sensors_rot = []
+    obsname = '{}_ego_orientation'.format(prefix)
+    for direction in ['x', 'y', 'z']:
+      sensorname = obsname + '_' + direction
+      sensors_rot.append(player.walker.mjcf_model.sensor.add(
+          'frame'+direction+'axis', name=sensorname,
+          objtype='body', objname=other.walker.root_body,
+          reftype='body', refname=player.walker.root_body))
+    def _egocentric_orientation(physics):
+      return np.reshape(physics.bind(sensors_rot).sensordata, -1)
+    player.walker.observables.add_observable(
+        obsname,
+        base_observable.Generic(_egocentric_orientation))
 
     # Adds end effectors of the other agents in the other's egocentric frame.
     # A is seeing B's hand extended to B's right.
@@ -155,21 +165,33 @@ class CoreObservablesAdder(ObservablesAdder):
       player: A `Walker` instance, the player we are adding observations for.
       ball: A `SoccerBall` instance.
     """
-    # Origin callables for egocentric transformations.
-    xpos_xyz_callable = lambda p: p.bind(player.walker.root_body).xpos
-    xvel_xyz_callable = lambda p: p.bind(player.walker.root_body).cvel[3:]
-
     # Add egocentric ball observations.
-    player.walker.observables.add_egocentric_vector(
-        'ball_ego_angular_velocity', ball.observables.angular_velocity)
-    player.walker.observables.add_egocentric_vector(
+    player.walker.ball_ego_angvel_sensor = player.walker.mjcf_model.sensor.add(
+        'frameangvel', name='ball_ego_angvel',
+        objtype='body', objname=ball.root_body,
+        reftype='body', refname=player.walker.root_body)
+    player.walker.observables.add_observable(
+        'ball_ego_angular_velocity',
+        base_observable.MJCFFeature('sensordata',
+                                    player.walker.ball_ego_angvel_sensor))
+
+    player.walker.ball_ego_pos_sensor = player.walker.mjcf_model.sensor.add(
+        'framepos', name='ball_ego_pos',
+        objtype='body', objname=ball.root_body,
+        reftype='body', refname=player.walker.root_body)
+    player.walker.observables.add_observable(
         'ball_ego_position',
-        ball.observables.position,
-        origin_callable=xpos_xyz_callable)
-    player.walker.observables.add_egocentric_vector(
+        base_observable.MJCFFeature('sensordata',
+                                    player.walker.ball_ego_pos_sensor))
+
+    player.walker.ball_ego_linvel_sensor = player.walker.mjcf_model.sensor.add(
+        'framelinvel', name='ball_ego_linvel',
+        objtype='body', objname=ball.root_body,
+        reftype='body', refname=player.walker.root_body)
+    player.walker.observables.add_observable(
         'ball_ego_linear_velocity',
-        ball.observables.linear_velocity,
-        origin_callable=xvel_xyz_callable)
+        base_observable.MJCFFeature('sensordata',
+                                    player.walker.ball_ego_linvel_sensor))
 
   def _add_player_proprio_observables(self, player):
     """Add proprioceptive observables to the given player.
