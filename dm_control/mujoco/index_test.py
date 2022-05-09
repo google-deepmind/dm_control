@@ -27,8 +27,6 @@ MODEL = assets.get_contents('cartpole.xml')
 MODEL_NO_NAMES = assets.get_contents('cartpole_no_names.xml')
 MODEL_3RD_ORDER_ACTUATORS = assets.get_contents(
     'model_with_third_order_actuators.xml')
-MODEL_INCORRECT_ACTUATOR_ORDER = assets.get_contents(
-    'model_incorrect_actuator_order.xml')
 
 FIELD_REPR = {
     'act': ('FieldIndexer(act):\n'
@@ -168,15 +166,6 @@ class MujocoIndexTest(parameterized.TestCase):
     # Check that the result of named indexing matches the result of numeric
     # indexing.
     np.testing.assert_array_equal(field[numeric_key], indexer[key])
-
-  def testIncorrectActuatorOrder(self):
-    # Our indexing of third-order actuators relies on an undocumented
-    # requirement of MuJoCo's compiler that all third-order actuators come after
-    # all second-order actuators. This test ensures that the rule still holds
-    # (e.g. in future versions of MuJoCo).
-    with self.assertRaisesRegex(
-        ValueError, '2nd-order actuators must come before 3rd-order'):
-      wrapper.MjModel.from_xml_string(MODEL_INCORRECT_ACTUATOR_ORDER)
 
   @parameterized.parameters(
       # (field name, named index key)
