@@ -81,6 +81,8 @@ def randomize_limited_and_rotational_joints(physics, random=None):
         qpos[joint_name] = quat
 
       elif joint_type == free:
+        # this should be random.randn, but changing it now could significantly
+        # affect benchmark results.
         quat = random.rand(4)
         quat /= np.linalg.norm(quat)
         qpos[joint_name][3:] = quat
