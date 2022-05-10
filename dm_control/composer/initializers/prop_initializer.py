@@ -58,8 +58,11 @@ class PropPlacer(composer.Initializer):
                position,
                quaternion=rotations.IDENTITY_QUATERNION,
                ignore_collisions=False,
+               max_qvel_tol=_SETTLE_QVEL_TOL,
+               max_qacc_tol=_SETTLE_QACC_TOL,
                max_attempts_per_prop=20,
                settle_physics=False,
+               min_settle_physics_time=0.,
                max_settle_physics_time=2.,
                max_settle_physics_attempts=1,
                raise_exception_on_settle_failure=False):
@@ -77,11 +80,19 @@ class PropPlacer(composer.Initializer):
         `variation.deterministic.Sequence`.
       ignore_collisions: (optional) If True, ignore collisions between props,
         i.e. do not run rejection sampling.
+      max_qvel_tol: Maximum post-initialization joint velocity for props. If
+        `settle_physics=True`, the simulation will be run until all prop joint
+        velocities are less than this threshold.
+      max_qacc_tol: Maximum post-initialization joint acceleration for props. If
+        `settle_physics=True`, the simulation will be run until all prop joint
+        velocities are less than this threshold.
       max_attempts_per_prop: The maximum number of rejection sampling attempts
         per prop. If a non-colliding pose cannot be found before this limit is
         reached, a `RuntimeError` will be raised.
       settle_physics: (optional) If True, the physics simulation will be
         advanced for a few steps to allow the prop positions to settle.
+      min_settle_physics_time: (optional) When `settle_physics` is True, lower
+        bound on time (in seconds) the physics simulation is advanced.
       max_settle_physics_time: (optional) When `settle_physics` is True, upper
         bound on time (in seconds) the physics simulation is advanced.
       max_settle_physics_attempts: (optional) When `settle_physics` is True, the
@@ -102,6 +113,9 @@ class PropPlacer(composer.Initializer):
     self._ignore_collisions = ignore_collisions
     self._max_attempts_per_prop = max_attempts_per_prop
     self._settle_physics = settle_physics
+    self._max_qvel_tol = max_qvel_tol
+    self._max_qacc_tol = max_qacc_tol
+    self._min_settle_physics_time = min_settle_physics_time
     self._max_settle_physics_time = max_settle_physics_time
     self._max_settle_physics_attempts = max_settle_physics_attempts
     self._raise_exception_on_settle_failure = raise_exception_on_settle_failure
@@ -230,7 +244,10 @@ class PropPlacer(composer.Initializer):
             physics.step()
           max_qvel = np.max(np.abs(prop_joints_mj.qvel))
           max_qacc = np.max(np.abs(prop_joints_mj.qacc))
-          if (max_qvel < _SETTLE_QVEL_TOL and max_qacc < _SETTLE_QACC_TOL):
+          if (max_qvel < self._max_qvel_tol) and (
+              max_qacc < self._max_qacc_tol) and (
+                  physics.data.time - original_time
+                  ) > self._min_settle_physics_time:
             return True
         physics.data.time = original_time
 
