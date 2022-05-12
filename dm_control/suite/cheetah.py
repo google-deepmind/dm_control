@@ -69,8 +69,7 @@ class Cheetah(base.Task):
     physics.data.qpos[is_limited] = self.random.uniform(lower, upper)
 
     # Stabilize the model before the actual simulation.
-    for _ in range(200):
-      physics.step()
+    physics.step(nstep=200)
 
     physics.data.time = 0
     self._timeout_progress = 0
