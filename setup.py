@@ -194,7 +194,7 @@ notebook:
         'License :: OSI Approved :: Apache Software License',
     ],
     keywords='machine learning control physics MuJoCo AI',
-    python_requires='>=3.7, <=3.10',
+    python_requires='>=3.7',
     install_requires=[
         'absl-py>=0.7.0',
         'dm-env',
