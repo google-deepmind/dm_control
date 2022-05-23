@@ -106,6 +106,9 @@ _ACTUATOR_STATE_FIELDS = _get_actuator_state_fields()
 
 def _filter_stateful_actuators(physics, actuator_names):
   """Removes any stateless actuators from the list of actuator names."""
+  if isinstance(actuator_names, str):
+    actuator_names = [actuator_names]
+
   if physics.model.na:
     # MuJoCo requires that stateful actuators always come after stateless
     # actuators in the model, so we keep actuator names only if their
