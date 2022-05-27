@@ -116,6 +116,7 @@ class CoreObservablesAdder(ObservablesAdder):
       return np.reshape(physics.bind(sensors).sensordata, -1)
     # Adds end effectors of the other agents in the player's egocentric frame.
     name = '{}_ego_end_effectors_pos'.format(prefix)
+    player.walker.obs_on_other[name] = sensors
     player.walker.observables.add_observable(
         name,
         base_observable.Generic(_egocentric_end_effectors_xpos))
@@ -125,6 +126,7 @@ class CoreObservablesAdder(ObservablesAdder):
         'framelinvel', name=ego_linvel_name,
         objtype='body', objname=other.walker.root_body,
         reftype='body', refname=player.walker.root_body)
+    player.walker.obs_on_other[ego_linvel_name] = [ego_linvel_sensor]
     player.walker.observables.add_observable(
         ego_linvel_name,
         base_observable.MJCFFeature('sensordata', ego_linvel_sensor))
@@ -134,6 +136,7 @@ class CoreObservablesAdder(ObservablesAdder):
         'framepos', name=ego_pos_name,
         objtype='body', objname=other.walker.root_body,
         reftype='body', refname=player.walker.root_body)
+    player.walker.obs_on_other[ego_pos_name] = [ego_pos_sensor]
     player.walker.observables.add_observable(
         ego_pos_name,
         base_observable.MJCFFeature('sensordata', ego_pos_sensor))
@@ -148,6 +151,7 @@ class CoreObservablesAdder(ObservablesAdder):
           reftype='body', refname=player.walker.root_body))
     def _egocentric_orientation(physics):
       return np.reshape(physics.bind(sensors_rot).sensordata, -1)
+    player.walker.obs_on_other[obsname] = sensors_rot
     player.walker.observables.add_observable(
         obsname,
         base_observable.Generic(_egocentric_orientation))
