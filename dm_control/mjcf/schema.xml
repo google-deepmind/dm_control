@@ -432,6 +432,20 @@
             <attribute name="kv" type="float"/>
           </attributes>
         </element>
+        <element name="intvelocity">
+          <attributes>
+            <attribute name="group" type="int"/>
+            <attribute name="ctrllimited" type="keyword" valid_values="false true"/>
+            <attribute name="forcelimited" type="keyword" valid_values="false true"/>
+            <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
+            <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
+            <attribute name="actrange" type="array" array_type="float" array_size="2"/>
+            <attribute name="gear" type="array" array_type="float" array_size="6"/>
+            <attribute name="cranklength" type="float"/>
+            <attribute name="user" type="array" array_type="float"/>
+            <attribute name="kp" type="float"/>
+          </attributes>
+        </element>
         <element name="cylinder">
           <attributes>
             <attribute name="group" type="int"/>
