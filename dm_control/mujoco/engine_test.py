@@ -132,6 +132,41 @@ class MujocoEngineTest(parameterized.TestCase):
       contains_decor = np.any(pixels[:, :, 1] == obj_type_decor)
       self.assertEqual(contains_decor, enable_geom_frame_rendering)
 
+  def testSceneCallback(self):
+    empty_world = """
+    <mujoco>
+      <worldbody>
+        <camera name="cam" pos="0 0 3"/>
+      </worldbody>
+    </mujoco>
+    """
+
+    def callback(_, scn: mujoco.MjvScene):
+      # Add a red box to the scene
+      scn.ngeom += 1
+      mujoco.mjv_initGeom(
+          scn.geoms[scn.ngeom - 1],
+          mujoco.mjtGeom.mjGEOM_BOX.value,
+          size=np.array([0.2, 0.2, 0.2]),
+          pos=np.zeros(3),
+          mat=np.eye(3).flatten(),
+          rgba=np.array([1, 0, 0, 1], dtype=np.float32))
+
+    physics = engine.Physics.from_xml_string(empty_world)
+
+    # Without the callback, render should return a black image.
+    empty_image = physics.render(
+        height=8, width=8, camera_id='cam', scene_callback=None)
+    np.testing.assert_array_equal(
+        np.zeros((8, 8, 3), dtype=np.uint8), empty_image)
+
+    # With the callback, there should be a red box.
+    pixels = physics.render(
+        height=8, width=8, camera_id='cam', scene_callback=callback)
+    # Are there any pixels where red component is bigger than green and blue?
+    any_red_pixels = np.any(pixels[:, :, 0] > np.max(pixels[:, :, 1:3], axis=2))
+    self.assertTrue(any_red_pixels, 'Expecting some red pixels.')
+
   def testTextOverlay(self):
     height, width = 480, 640
     overlay = engine.TextOverlay(title='Title', body='Body', style='big',

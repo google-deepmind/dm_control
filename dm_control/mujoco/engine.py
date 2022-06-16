@@ -34,7 +34,7 @@ also provides a `render` method that returns a pixel array directly.
 import collections
 import contextlib
 import threading
-from typing import NamedTuple
+from typing import Callable, NamedTuple, Optional, Union
 
 from absl import logging
 
@@ -177,6 +177,8 @@ class Physics(_control.Physics):
       segmentation=False,
       scene_option=None,
       render_flag_overrides=None,
+      scene_callback: Optional[Callable[['Physics', mujoco.MjvScene],
+                                        None]] = None,
   ):
     """Returns a camera view as a NumPy array of pixel values.
 
@@ -204,12 +206,18 @@ class Physics(_control.Physics):
         `{'wireframe': True}` or `{mujoco.mjtRndFlag.mjRND_WIREFRAME: True}`.
         See `mujoco.mjtRndFlag` for the set of valid flags. Must be None if
         either `depth` or `segmentation` is True.
+      scene_callback: Called after the scene has been created and before
+        it is rendered. Can be used to add more geoms to the scene.
 
     Returns:
       The rendered RGB, depth or segmentation image.
     """
     camera = Camera(
-        physics=self, height=height, width=width, camera_id=camera_id)
+        physics=self,
+        height=height,
+        width=width,
+        camera_id=camera_id,
+        scene_callback=scene_callback)
     image = camera.render(
         overlays=overlays, depth=depth, segmentation=segmentation,
         scene_option=scene_option, render_flag_overrides=render_flag_overrides)
@@ -602,12 +610,16 @@ class Camera:
   `camera_id`, for example to render the same view at different resolutions.
   """
 
-  def __init__(self,
-               physics,
-               height=240,
-               width=320,
-               camera_id=-1,
-               max_geom=None):
+  def __init__(
+      self,
+      physics,
+      height: int = 240,
+      width: int = 320,
+      camera_id: Union[int, str] = -1,
+      max_geom: Optional[int] = None,
+      scene_callback: Optional[Callable[[Physics, mujoco.MjvScene],
+                                        None]] = None,
+  ):
     """Initializes a new `Camera`.
 
     Args:
@@ -621,6 +633,8 @@ class Camera:
       max_geom: Optional integer specifying the maximum number of geoms that can
         be rendered in the same scene. If None this will be chosen automatically
         based on the estimated maximum number of renderable geoms in the model.
+      scene_callback: Called after the scene has been created and before
+        it is rendered. Can be used to add more geoms to the scene.
     Raises:
       ValueError: If `camera_id` is outside the valid range, or if `width` or
         `height` exceed the dimensions of MuJoCo's offscreen framebuffer.
@@ -652,6 +666,7 @@ class Camera:
     self._width = width
     self._height = height
     self._physics = physics
+    self._scene_callback = scene_callback
 
     # Variables corresponding to structs needed by Mujoco's rendering functions.
     self._scene = wrapper.MjvScene(model=physics.model, max_geom=max_geom)
@@ -843,6 +858,9 @@ class Camera:
 
     # Update scene geometry.
     self.update(scene_option=scene_option)
+
+    if self._scene_callback:
+      self._scene_callback(self._physics, self._scene)
 
     # Enable flags to compute segmentation labels
     if segmentation:
