@@ -446,6 +446,18 @@
             <attribute name="kp" type="float"/>
           </attributes>
         </element>
+        <element name="damper">
+          <attributes>
+            <attribute name="group" type="int"/>
+            <attribute name="forcelimited" type="keyword" valid_values="false true"/>
+            <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
+            <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
+            <attribute name="gear" type="array" array_type="float" array_size="6"/>
+            <attribute name="cranklength" type="float"/>
+            <attribute name="user" type="array" array_type="float"/>
+            <attribute name="kv" type="float"/>
+          </attributes>
+        </element>
         <element name="cylinder">
           <attributes>
             <attribute name="group" type="int"/>
@@ -692,6 +704,30 @@
             <element name="velocity">
               <attributes>
                 <attribute name="ctrllimited" type="keyword" valid_values="false true"/>
+                <attribute name="forcelimited" type="keyword" valid_values="false true"/>
+                <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
+                <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
+                <attribute name="gear" type="array" array_type="float" array_size="6"/>
+                <attribute name="cranklength" type="float"/>
+                <attribute name="user" type="array" array_type="float"/>
+                <attribute name="kv" type="float"/>
+              </attributes>
+            </element>
+            <element name="intvelocity">
+              <attributes>
+                <attribute name="ctrllimited" type="keyword" valid_values="false true"/>
+                <attribute name="forcelimited" type="keyword" valid_values="false true"/>
+                <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
+                <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
+                <attribute name="actrange" type="array" array_type="float" array_size="2"/>
+                <attribute name="gear" type="array" array_type="float" array_size="6"/>
+                <attribute name="cranklength" type="float"/>
+                <attribute name="user" type="array" array_type="float"/>
+                <attribute name="kp" type="float"/>
+              </attributes>
+            </element>
+            <element name="damper">
+              <attributes>
                 <attribute name="forcelimited" type="keyword" valid_values="false true"/>
                 <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
                 <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
@@ -1524,6 +1560,50 @@
             <attribute name="class" type="reference" reference_namespace="default"/>
             <attribute name="group" type="int"/>
             <attribute name="ctrllimited" type="keyword" valid_values="false true"/>
+            <attribute name="forcelimited" type="keyword" valid_values="false true"/>
+            <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
+            <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
+            <attribute name="lengthrange" type="array" array_type="float" array_size="2"/>
+            <attribute name="gear" type="array" array_type="float" array_size="6"/>
+            <attribute name="cranklength" type="float"/>
+            <attribute name="joint" type="reference"/>
+            <attribute name="jointinparent" type="reference" reference_namespace="joint"/>
+            <attribute name="tendon" type="reference"/>
+            <attribute name="cranksite" type="reference" reference_namespace="site"/>
+            <attribute name="slidersite" type="reference" reference_namespace="site"/>
+            <attribute name="site" type="reference"/>
+            <attribute name="user" type="array" array_type="float"/>
+            <attribute name="kv" type="float"/>
+          </attributes>
+        </element>
+        <element name="intvelocity" repeated="true" namespace="actuator">
+          <attributes>
+            <attribute name="name" type="identifier"/>
+            <attribute name="class" type="reference" reference_namespace="default"/>
+            <attribute name="group" type="int"/>
+            <attribute name="ctrllimited" type="keyword" valid_values="false true"/>
+            <attribute name="forcelimited" type="keyword" valid_values="false true"/>
+            <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
+            <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
+            <attribute name="actrange" type="array" array_type="float" array_size="2"/>
+            <attribute name="lengthrange" type="array" array_type="float" array_size="2"/>
+            <attribute name="gear" type="array" array_type="float" array_size="6"/>
+            <attribute name="cranklength" type="float"/>
+            <attribute name="joint" type="reference"/>
+            <attribute name="jointinparent" type="reference" reference_namespace="joint"/>
+            <attribute name="tendon" type="reference"/>
+            <attribute name="cranksite" type="reference" reference_namespace="site"/>
+            <attribute name="slidersite" type="reference" reference_namespace="site"/>
+            <attribute name="site" type="reference"/>
+            <attribute name="user" type="array" array_type="float"/>
+            <attribute name="kp" type="float"/>
+          </attributes>
+        </element>
+        <element name="damper" repeated="true" namespace="actuator">
+          <attributes>
+            <attribute name="name" type="identifier"/>
+            <attribute name="class" type="reference" reference_namespace="default"/>
+            <attribute name="group" type="int"/>
             <attribute name="forcelimited" type="keyword" valid_values="false true"/>
             <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
             <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
