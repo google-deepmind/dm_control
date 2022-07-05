@@ -2041,6 +2041,9 @@
             <attribute name="qpos" type="array" array_type="float"/>
             <attribute name="qvel" type="array" array_type="float"/>
             <attribute name="act" type="array" array_type="float"/>
+            <attribute name="ctrl" type="array" array_type="float"/>
+            <attribute name="mpos" type="array" array_type="float"/>
+            <attribute name="mquat" type="array" array_type="float"/>
           </attributes>
         </element>
       </children>
