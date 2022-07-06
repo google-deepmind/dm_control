@@ -290,6 +290,20 @@ class GlfwWindow:
       self._mouse.process_events()
       self._keyboard.process_events()
 
+  def update(self, render_func):
+    """Updates the window and renders a new image.
+
+    Args:
+      render_func: A callable returning a 3D numpy array of bytes (np.uint8),
+        with dimensions (width, height, 3).
+    """
+    pixels = render_func()
+    with self._context.make_current() as ctx:
+      ctx.call(
+          self._update_gui_on_render_thread, self._context.window, pixels)
+    self._mouse.process_events()
+    self._keyboard.process_events()
+
   def _update_gui_on_render_thread(self, window, pixels):
     self._fullscreen_quad.render(pixels, self.shape)
     glfw.swap_buffers(window)
