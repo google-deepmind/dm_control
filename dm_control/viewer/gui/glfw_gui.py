@@ -283,12 +283,7 @@ class GlfwWindow:
       tick_func: A callable, function to call every frame.
     """
     while not glfw.window_should_close(self._context.window):
-      pixels = tick_func()
-      with self._context.make_current() as ctx:
-        ctx.call(
-            self._update_gui_on_render_thread, self._context.window, pixels)
-      self._mouse.process_events()
-      self._keyboard.process_events()
+      self.update(tick_func)
 
   def update(self, render_func):
     """Updates the window and renders a new image.
