@@ -30,7 +30,7 @@ CONTEXT_PATH = _render.__name__ + '.glfw_renderer.glfw'
 
 
 @unittest.skipUnless(
-    _render.BACKEND == _render.constants.GLFW,
+    _render.BACKEND == _render.constants.GLFW[0],
     reason='GLFW beckend not selected.')
 class GLFWContextTest(absltest.TestCase):
 

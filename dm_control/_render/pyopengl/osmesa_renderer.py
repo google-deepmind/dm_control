@@ -23,13 +23,13 @@ from dm_control._render import constants
 PYOPENGL_PLATFORM = os.environ.get(constants.PYOPENGL_PLATFORM)
 
 if not PYOPENGL_PLATFORM:
-  os.environ[constants.PYOPENGL_PLATFORM] = constants.OSMESA
-elif PYOPENGL_PLATFORM != constants.OSMESA:
+  os.environ[constants.PYOPENGL_PLATFORM] = constants.OSMESA[0]
+elif PYOPENGL_PLATFORM != constants.OSMESA[0]:
   raise ImportError(
       'Cannot use OSMesa rendering platform. '
       'The PYOPENGL_PLATFORM environment variable is set to {!r} '
       '(should be either unset or {!r}).'
-      .format(PYOPENGL_PLATFORM, constants.OSMESA))
+      .format(PYOPENGL_PLATFORM, constants.OSMESA[0]))
 
 # pylint: disable=g-import-not-at-top
 from OpenGL import GL
