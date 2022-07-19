@@ -356,8 +356,8 @@ class EntityTest(parameterized.TestCase):
 
     subentity.set_pose(physics, position=position, quaternion=quaternion)
 
-    np.testing.assert_array_equal(physics.bind(frame).xpos, ground_truth_pos)
-    np.testing.assert_array_equal(physics.bind(frame).xquat, ground_truth_quat)
+    np.testing.assert_allclose(physics.bind(frame).xpos, ground_truth_pos)
+    np.testing.assert_allclose(physics.bind(frame).xquat, ground_truth_quat)
 
   @parameterized.parameters(*_param_product(
       original_position=[[-2, -1, -1.], [1., 0., -1.]],
