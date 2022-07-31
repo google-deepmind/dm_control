@@ -498,6 +498,16 @@
             <attribute name="fvmax" type="float"/>
           </attributes>
         </element>
+        <element name="adhesion">
+          <attributes>
+            <attribute name="group" type="int"/>
+            <attribute name="forcelimited" type="keyword" valid_values="false true"/>
+            <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
+            <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
+            <attribute name="user" type="array" array_type="float"/>
+            <attribute name="gain" type="float"/>
+          </attributes>
+        </element>
         <element name="default" recursive="true" repeated="true">
           <attributes>
             <attribute name="class" type="identifier" required="true"/>
@@ -753,6 +763,16 @@
                 <attribute name="area" type="float"/>
                 <attribute name="diameter" type="float"/>
                 <attribute name="bias" type="array" array_type="float" array_size="3"/>
+              </attributes>
+            </element>
+            <element name="adhesion">
+              <attributes>
+                <attribute name="group" type="int"/>
+                <attribute name="forcelimited" type="keyword" valid_values="false true"/>
+                <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
+                <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
+                <attribute name="user" type="array" array_type="float"/>
+                <attribute name="gain" type="float"/>
               </attributes>
             </element>
           </children>
@@ -1507,6 +1527,7 @@
             <attribute name="jointinparent" type="reference" reference_namespace="joint"/>
             <attribute name="site" type="reference"/>
             <attribute name="tendon" type="reference"/>
+            <attribute name="body" type="reference"/>
             <attribute name="cranksite" type="reference" reference_namespace="site"/>
             <attribute name="slidersite" type="reference" reference_namespace="site"/>
             <attribute name="user" type="array" array_type="float"/>
@@ -1680,6 +1701,19 @@
             <attribute name="vmax" type="float"/>
             <attribute name="fpmax" type="float"/>
             <attribute name="fvmax" type="float"/>
+          </attributes>
+        </element>
+        <element name="adhesion" repeated="true" namespace="actuator">
+          <attributes>
+            <attribute name="name" type="identifier"/>
+            <attribute name="class" type="reference" reference_namespace="default"/>
+            <attribute name="group" type="int"/>
+            <attribute name="forcelimited" type="keyword" valid_values="false true"/>
+            <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
+            <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
+            <attribute name="body" type="reference"/>
+            <attribute name="user" type="array" array_type="float"/>
+            <attribute name="gain" type="float"/>
           </attributes>
         </element>
       </children>
