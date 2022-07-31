@@ -22,6 +22,7 @@
         <attribute name="fusestatic" type="keyword" valid_values="false true"/>
         <attribute name="inertiafromgeom" type="keyword" valid_values="false true auto"/>
         <attribute name="inertiagrouprange" type="array" array_type="int" array_size="2"/>
+        <attribute name="exactmeshinertia" type="keyword" valid_values="false true"/>
       </attributes>
       <children>
         <element name="lengthrange">
@@ -268,6 +269,7 @@
             <attribute name="friction" type="array" array_type="float" array_size="3"/>
             <attribute name="mass" type="float"/>
             <attribute name="density" type="float"/>
+            <attribute name="shellinertia" type="keyword" valid_values="false true"/>
             <attribute name="solmix" type="float"/>
             <attribute name="solref" type="array" array_type="float" array_size="2"/>
             <attribute name="solimp" type="array" array_type="float" array_size="5"/>
@@ -555,6 +557,7 @@
                 <attribute name="friction" type="array" array_type="float" array_size="3"/>
                 <attribute name="mass" type="float"/>
                 <attribute name="density" type="float"/>
+                <attribute name="shellinertia" type="keyword" valid_values="false true"/>
                 <attribute name="solmix" type="float"/>
                 <attribute name="solref" type="array" array_type="float" array_size="2"/>
                 <attribute name="solimp" type="array" array_type="float" array_size="5"/>
@@ -895,6 +898,7 @@
             <attribute name="friction" type="array" array_type="float" array_size="3"/>
             <attribute name="mass" type="float"/>
             <attribute name="density" type="float"/>
+            <attribute name="shellinertia" type="keyword" valid_values="false true"/>
             <attribute name="solmix" type="float"/>
             <attribute name="solref" type="array" array_type="float" array_size="2"/>
             <attribute name="solimp" type="array" array_type="float" array_size="5"/>
@@ -1036,6 +1040,7 @@
                 <attribute name="friction" type="array" array_type="float" array_size="3"/>
                 <attribute name="mass" type="float"/>
                 <attribute name="density" type="float"/>
+                <attribute name="shellinertia" type="keyword" valid_values="false true"/>
                 <attribute name="solmix" type="float"/>
                 <attribute name="solref" type="array" array_type="float" array_size="2"/>
                 <attribute name="solimp" type="array" array_type="float" array_size="5"/>
@@ -1142,6 +1147,7 @@
                 <attribute name="friction" type="array" array_type="float" array_size="3"/>
                 <attribute name="mass" type="float"/>
                 <attribute name="density" type="float"/>
+                <attribute name="shellinertia" type="keyword" valid_values="false true"/>
                 <attribute name="solmix" type="float"/>
                 <attribute name="solref" type="array" array_type="float" array_size="2"/>
                 <attribute name="solimp" type="array" array_type="float" array_size="5"/>
@@ -1283,6 +1289,7 @@
                     <attribute name="friction" type="array" array_type="float" array_size="3"/>
                     <attribute name="mass" type="float"/>
                     <attribute name="density" type="float"/>
+                    <attribute name="shellinertia" type="keyword" valid_values="false true"/>
                     <attribute name="solmix" type="float"/>
                     <attribute name="solref" type="array" array_type="float" array_size="2"/>
                     <attribute name="solimp" type="array" array_type="float" array_size="5"/>
