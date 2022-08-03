@@ -293,6 +293,10 @@ class Application:
       self._runtime.stop()
     self._load_environment(zoom_to_scene=False)
 
+    if self._policy:
+      if hasattr(self._policy, 'reset'):
+        self._policy.reset()
+
   def _advance_simulation(self):
     if self._runtime:
       self._runtime.single_step()
@@ -307,7 +311,8 @@ class Application:
       policy: An optional callable corresponding to a policy to execute
         within the environment. It should accept a `TimeStep` and return
         a numpy array of actions conforming to the output of
-        `environment.action_spec()`.
+        `environment.action_spec()`. If the callable implements a method `reset`
+        then this method is called when the viewer is reset.
 
     Raises:
       ValueError: If `environment_loader` is None.
