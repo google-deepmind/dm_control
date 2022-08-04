@@ -324,11 +324,9 @@ class Physics(_control.Physics):
         context is nested inside a `suppress_physics_errors` context, in which
         case a warning will be logged instead.
     """
-    self._warnings_before[:] = [w.number for w in self._warnings]
+    np.copyto(self._warnings_before, self._warnings)
     yield
-    np.greater([w.number for w in self._warnings],
-               self._warnings_before,
-               out=self._new_warnings)
+    np.greater(self._warnings, self._warnings_before, out=self._new_warnings)
     if any(self._new_warnings):
       warning_names = np.compress(self._new_warnings,
                                   list(mujoco.mjtWarning.__members__))
@@ -379,7 +377,7 @@ class Physics(_control.Physics):
 
     # Performance optimization: pre-allocate numpy arrays used when checking for
     # MuJoCo warnings on each step.
-    self._warnings = self.data.warning
+    self._warnings = self.data.warning.number
     self._warnings_before = np.empty_like(self._warnings)
     self._new_warnings = np.empty(dtype=bool, shape=(len(self._warnings),))
 
