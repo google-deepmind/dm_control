@@ -223,11 +223,14 @@ class WalkerObservables(base.WalkerObservables):
     """Position of end effectors relative to torso, in the egocentric frame."""
     self._entity.end_effectors_pos_sensors[:] = []
     for effector in self._entity.end_effectors:
+      objtype = effector.tag
+      if objtype == 'body':
+        objtype = 'xbody'
       self._entity.end_effectors_pos_sensors.append(
           self._entity.mjcf_model.sensor.add(
               'framepos', name=effector.name + '_end_effector',
-              objtype=effector.tag, objname=effector,
-              reftype='body', refname=self._entity.root_body))
+              objtype=objtype, objname=effector,
+              reftype='xbody', refname=self._entity.root_body))
     def relative_pos_in_egocentric_frame(physics):
       return np.reshape(
           physics.bind(self._entity.end_effectors_pos_sensors).sensordata, -1)

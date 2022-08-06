@@ -159,8 +159,8 @@ class AntObservables(legacy_base.WalkerObservables):
       self._entity.appendages_sensors.append(
           self._entity.mjcf_model.sensor.add(
               'framepos', name=body.name + '_appendage',
-              objtype='body', objname=body,
-              reftype='body', refname=self._entity.root_body))
+              objtype='xbody', objname=body,
+              reftype='xbody', refname=self._entity.root_body))
     def appendages_ego_pos(physics):
       return np.reshape(
           physics.bind(self._entity.appendages_sensors).sensordata, -1)
@@ -175,8 +175,8 @@ class AntObservables(legacy_base.WalkerObservables):
       self._entity.bodies_quats_sensors.append(
           self._entity.mjcf_model.sensor.add(
               'framequat', name=body.name + '_ego_body_quat',
-              objtype='body', objname=body,
-              reftype='body', refname=self._entity.root_body))
+              objtype='xbody', objname=body,
+              reftype='xbody', refname=self._entity.root_body))
     def bodies_ego_orientation(physics):
       return np.reshape(
           physics.bind(self._entity.bodies_quats_sensors).sensordata, -1)
@@ -191,8 +191,8 @@ class AntObservables(legacy_base.WalkerObservables):
       self._entity.bodies_pos_sensors.append(
           self._entity.mjcf_model.sensor.add(
               'framepos', name=body.name + '_ego_body_pos',
-              objtype='body', objname=body,
-              reftype='body', refname=self._entity.root_body))
+              objtype='xbody', objname=body,
+              reftype='xbody', refname=self._entity.root_body))
     def bodies_ego_pos(physics):
       return np.reshape(
           physics.bind(self._entity.bodies_pos_sensors).sensordata, -1)
