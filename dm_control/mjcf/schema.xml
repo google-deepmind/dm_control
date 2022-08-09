@@ -113,6 +113,8 @@
           <attributes>
             <attribute name="fovy" type="float"/>
             <attribute name="ipd" type="float"/>
+            <attribute name="azimuth" type="float"/>
+            <attribute name="elevation" type="float"/>
             <attribute name="linewidth" type="float"/>
             <attribute name="glow" type="float"/>
             <attribute name="offwidth" type="int"/>

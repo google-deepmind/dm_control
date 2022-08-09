@@ -681,6 +681,7 @@ class Camera:
 
     if camera_id == -1:
       self._render_camera.type = mujoco.mjtCamera.mjCAMERA_FREE
+      mujoco.mjv_defaultFreeCamera(physics.model._model, self._render_camera)
     else:
       # As defined in the Mujoco documentation, mjCAMERA_FIXED refers to a
       # camera explicitly defined in the model.
