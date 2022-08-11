@@ -73,7 +73,7 @@ _SITE_GROUPS = user_input.Range([
     for i in range(min(_NUM_GROUP_KEYS, mujoco.mjNGROUP))
 ])
 _RENDERING_FLAGS = user_input.Range([
-    ord(functions.mjRNDSTRING[i][2])
+    ord(functions.mjRNDSTRING[i][2]) if functions.mjRNDSTRING[i][2] else 0
     for i in range(0, mujoco.mjtRndFlag.mjNRNDFLAG)
 ])
 
