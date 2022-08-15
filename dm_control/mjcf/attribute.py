@@ -158,12 +158,18 @@ class Float(_Attribute):
     self._value = float_value
 
   def to_xml_string(self, prefix_root=None,
-                    *, precision=constants.XML_DEFAULT_PRECISION, **kwargs):
+                    *,
+                    precision=constants.XML_DEFAULT_PRECISION,
+                    zero_threshold=0,
+                    **kwargs):
     if self._value is None:
       return None
     else:
       out = io.BytesIO()
-      np.savetxt(out, [self._value], fmt=f'%.{precision:d}g', newline=' ')
+      value = self._value
+      if abs(value) < zero_threshold:
+        value = 0.0
+      np.savetxt(out, [value], fmt=f'%.{precision:d}g', newline=' ')
       return util.to_native_string(out.getvalue())[:-1]  # Strip trailing space.
 
 
@@ -209,12 +215,19 @@ class Array(_Attribute):
     self._assign(np.fromstring(string, dtype=self._dtype, sep=' '))
 
   def to_xml_string(self, prefix_root=None,
-                    *, precision=constants.XML_DEFAULT_PRECISION, **kwargs):
+                    *,
+                    precision=constants.XML_DEFAULT_PRECISION,
+                    zero_threshold=0,
+                    **kwargs):
     if self._value is None:
       return None
     else:
       out = io.BytesIO()
-      np.savetxt(out, self._value, fmt=f'%.{precision:d}g', newline=' ')
+      value = self._value
+      if zero_threshold:
+        value = np.copy(value)
+        value[np.abs(value) < zero_threshold] = 0
+      np.savetxt(out, value, fmt=f'%.{precision:d}g', newline=' ')
       return util.to_native_string(out.getvalue())[:-1]  # Strip trailing space.
 
   def _check_shape(self, array):

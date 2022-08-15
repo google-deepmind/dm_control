@@ -223,7 +223,9 @@ class Element(metaclass=abc.ABCMeta):
 
   @abc.abstractmethod
   def to_xml(self, prefix_root=None, debug_context=None,
-             *, precision=constants.XML_DEFAULT_PRECISION):
+             *,
+             precision=constants.XML_DEFAULT_PRECISION,
+             zero_threshold=0):
     """Generates an etree._Element corresponding to this MJCF element.
 
     Args:
@@ -236,6 +238,8 @@ class Element(metaclass=abc.ABCMeta):
         manually pass this argument.
       precision: (optional) Number of digits to output for floating point
         quantities.
+      zero_threshold: (optional) When outputting XML, floating point quantities
+        whose absolute value falls below this threshold will be treated as zero.
 
     Returns:
       An etree._Element object.
@@ -244,7 +248,9 @@ class Element(metaclass=abc.ABCMeta):
   @abc.abstractmethod
   def to_xml_string(self, prefix_root=None,
                     self_only=False, pretty_print=True, debug_context=None,
-                    *, precision=constants.XML_DEFAULT_PRECISION):
+                    *,
+                    precision=constants.XML_DEFAULT_PRECISION,
+                    zero_threshold=0):
     """Generates an XML string corresponding to this MJCF element.
 
     Args:
@@ -261,6 +267,8 @@ class Element(metaclass=abc.ABCMeta):
         manually pass this argument.
       precision: (optional) Number of digits to output for floating point
         quantities.
+      zero_threshold: (optional) When outputting XML, floating point quantities
+        whose absolute value falls below this threshold will be treated as zero.
 
     Returns:
       A string.

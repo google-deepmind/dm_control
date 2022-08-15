@@ -203,6 +203,10 @@ class AttributeTest(parameterized.TestCase):
     self.assertEqual(
         mujoco.optional.get_attribute_xml_string('float_array', precision=5),
         '3.1416 2 1e-16')
+    self.assertEqual(
+        mujoco.optional.get_attribute_xml_string(
+            'float_array', precision=5, zero_threshold=1e-10),
+        '3.1416 2 0')
     self.assertCanBeCleared(mujoco.optional, 'float_array')
 
   def testFormatVeryLargeArray(self):
