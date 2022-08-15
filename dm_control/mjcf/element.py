@@ -75,7 +75,7 @@ def property(method):  # pylint: disable=redefined-builtin
       err_with_next_tb = err.with_traceback(tb.tb_next)
       if isinstance(err, AttributeError):
         self._last_attribute_error = err_with_next_tb  # pylint: disable=protected-access
-      raise err_with_next_tb
+      raise err_with_next_tb  # pylint: disable=raise-missing-from
   return _raw_property(_mjcf_property)
 
 
@@ -182,7 +182,7 @@ class _ElementImpl(base.Element):
             attribute_obj._force_clear()  # pylint: disable=protected-access
           # Then raise a meaningful error
           err_type, err, tb = sys.exc_info()
-          raise err_type(
+          raise err_type(  # pylint: disable=raise-missing-from
               f'during initialization of attribute {attribute_spec.name!r} of '
               f'element <{self._spec.name}>: {err}').with_traceback(tb)
 
@@ -507,9 +507,14 @@ class _ElementImpl(base.Element):
     self._check_valid_attribute(attribute_name)
     return self._attributes[attribute_name].value
 
-  def get_attribute_xml_string(self, attribute_name, prefix_root=None):
+  def get_attribute_xml_string(self,
+                               attribute_name,
+                               prefix_root=None,
+                               *,
+                               precision=constants.XML_DEFAULT_PRECISION):
     self._check_valid_attribute(attribute_name)
-    return self._attributes[attribute_name].to_xml_string(prefix_root)
+    return self._attributes[attribute_name].to_xml_string(
+        prefix_root, precision=precision)
 
   def get_attributes(self):
     fix_attribute_name = (
@@ -541,7 +546,7 @@ class _ElementImpl(base.Element):
             self._set_attribute(name, old_value)
           # Then raise a meaningful error.
           err_type, err, tb = sys.exc_info()
-          raise err_type(
+          raise err_type(  # pylint: disable=raise-missing-from
               f'during assignment to attribute {attribute_name!r} of '
               f'element <{self._spec.name}>: {err}').with_traceback(tb)
 
@@ -554,7 +559,7 @@ class _ElementImpl(base.Element):
     try:
       return self._spec.children[element_name]
     except KeyError:
-      raise AttributeError(
+      raise AttributeError(  # pylint: disable=raise-missing-from
           '<{}> is not a valid child of <{}>'
           .format(element_name, self._spec.name))
 
@@ -690,7 +695,8 @@ class _ElementImpl(base.Element):
                        if child.spec.repeated]
     return all_children
 
-  def to_xml(self, prefix_root=None, debug_context=None):
+  def to_xml(self, prefix_root=None, debug_context=None,
+             *, precision=constants.XML_DEFAULT_PRECISION):
     """Generates an etree._Element corresponding to this MJCF element.
 
     Args:
@@ -701,20 +707,26 @@ class _ElementImpl(base.Element):
         the debugging information associated with the generated XML is written.
         This is intended for internal use within PyMJCF; users should never need
         manually pass this argument.
+      precision: (optional) Number of digits to output for floating point
+        quantities.
 
     Returns:
       An etree._Element object.
     """
     prefix_root = prefix_root or self.namescope
     xml_element = etree.Element(self._spec.name)
-    self._attributes_to_xml(xml_element, prefix_root, debug_context)
-    self._children_to_xml(xml_element, prefix_root, debug_context)
+    self._attributes_to_xml(xml_element, prefix_root, debug_context,
+                            precision=precision)
+    self._children_to_xml(xml_element, prefix_root, debug_context,
+                          precision=precision)
     return xml_element
 
-  def _attributes_to_xml(self, xml_element, prefix_root, debug_context=None):
+  def _attributes_to_xml(self, xml_element, prefix_root, debug_context=None,
+                         *, precision):
     del debug_context  # Unused.
     for attribute_name, attribute in self._attributes.items():
-      attribute_value = attribute.to_xml_string(prefix_root)
+      attribute_value = attribute.to_xml_string(prefix_root,
+                                                precision=precision)
       if attribute_name == self._spec.identifier and attribute_value is None:
         xml_element.set(attribute_name, self.full_identifier)
       elif attribute_value is None:
@@ -722,9 +734,10 @@ class _ElementImpl(base.Element):
       else:
         xml_element.set(attribute_name, attribute_value)
 
-  def _children_to_xml(self, xml_element, prefix_root, debug_context=None):
+  def _children_to_xml(self, xml_element, prefix_root, debug_context=None,
+                       *, precision):
     for child in self.all_children():
-      child_xml = child.to_xml(prefix_root, debug_context)
+      child_xml = child.to_xml(prefix_root, debug_context, precision=precision)
       if (child_xml.attrib or len(child_xml)  # pylint: disable=g-explicit-length-test
           or child.spec.repeated or child.spec.on_demand):
         xml_element.append(child_xml)
@@ -735,7 +748,8 @@ class _ElementImpl(base.Element):
             child_xml.insert(0, copy.deepcopy(debug_comment))
 
   def to_xml_string(self, prefix_root=None,
-                    self_only=False, pretty_print=True, debug_context=None):
+                    self_only=False, pretty_print=True, debug_context=None,
+                    *, precision=constants.XML_DEFAULT_PRECISION):
     """Generates an XML string corresponding to this MJCF element.
 
     Args:
@@ -750,16 +764,19 @@ class _ElementImpl(base.Element):
         the debugging information associated with the generated XML is written.
         This is intended for internal use within PyMJCF; users should never need
         manually pass this argument.
+      precision: (optional) Number of digits to output for floating point
+        quantities.
 
     Returns:
       A string.
     """
-    xml_element = self.to_xml(prefix_root, debug_context)
+    xml_element = self.to_xml(prefix_root, debug_context, precision=precision)
     if self_only and len(xml_element) > 0:  # pylint: disable=g-explicit-length-test
       etree.strip_elements(xml_element, '*')
       xml_element.text = '...'
     if (self_only and self._spec.identifier and
-        not self._attributes[self._spec.identifier].to_xml_string(prefix_root)):
+        not self._attributes[self._spec.identifier].to_xml_string(
+            prefix_root, precision=precision)):
       del xml_element.attrib[self._spec.identifier]
     xml_string = util.to_native_string(
         etree.tostring(xml_element, pretty_print=pretty_print))
@@ -987,8 +1004,10 @@ class _AttachmentFrame(_ElementImpl):
     prefix = self.namescope.full_prefix(prefix_root)
     return prefix + self._attachment.namescope.name + constants.PREFIX_SEPARATOR
 
-  def to_xml(self, prefix_root=None, debug_context=None):
-    xml_element = (super().to_xml(prefix_root, debug_context))
+  def to_xml(self, prefix_root=None, debug_context=None,
+             *, precision=constants.XML_DEFAULT_PRECISION):
+    xml_element = (super().to_xml(prefix_root, debug_context,
+                                  precision=precision))
     xml_element.set('name', self.prefixed_identifier(prefix_root))
     return xml_element
 
@@ -1013,8 +1032,10 @@ class _AttachmentFrameChild(_ElementImpl):
   """
   __slots__ = []
 
-  def to_xml(self, prefix_root=None, debug_context=None):
-    xml_element = (super().to_xml(prefix_root, debug_context))
+  def to_xml(self, prefix_root=None, debug_context=None,
+             *, precision=constants.XML_DEFAULT_PRECISION):
+    xml_element = (super().to_xml(prefix_root, debug_context,
+                                  precision=precision))
     if self.spec.namespace is not None:
       if self.name:
         name = (self._parent.prefixed_identifier(prefix_root) +
@@ -1051,14 +1072,17 @@ class _DefaultElement(_ElementImpl):
   def all_children(self):
     return [child for child in self._children]
 
-  def to_xml(self, prefix_root=None, debug_context=None):
+  def to_xml(self, prefix_root=None, debug_context=None,
+             *, precision=constants.XML_DEFAULT_PRECISION):
     prefix_root = prefix_root or self.namescope
-    xml_element = (super().to_xml(prefix_root, debug_context))
+    xml_element = (super().to_xml(prefix_root, debug_context,
+                                  precision=precision))
     if isinstance(self._parent, RootElement):
       root_default = etree.Element(self._spec.name)
       root_default.append(xml_element)
       for attachment in self._attachments.values():
-        attachment_xml = attachment.to_xml(prefix_root, debug_context)
+        attachment_xml = attachment.to_xml(prefix_root, debug_context,
+                                           precision=precision)
         for attachment_child_xml in attachment_xml:
           root_default.append(attachment_child_xml)
       xml_element = root_default
@@ -1082,12 +1106,13 @@ class _ActuatorElement(_ElementImpl):
     else:
       return False  # No other actuator shortcuts have internal dynamics.
 
-  def _children_to_xml(self, xml_element, prefix_root, debug_context=None):
+  def _children_to_xml(self, xml_element, prefix_root, debug_context=None,
+                       *, precision=constants.XML_DEFAULT_PRECISION):
     second_order = []
     third_order = []
     debug_comments = {}
     for child in self.all_children():
-      child_xml = child.to_xml(prefix_root, debug_context)
+      child_xml = child.to_xml(prefix_root, debug_context, precision=precision)
       if (child_xml.attrib or len(child_xml)  # pylint: disable=g-explicit-length-test
           or child.spec.repeated or child.spec.on_demand):
         if self._is_third_order_actuator(child):
@@ -1297,7 +1322,7 @@ class _ElementListView:
         return scoped_elements[index[(len(scope_name) + 1):]]
       except KeyError:
         # Re-raise so that the error shows the full, un-stripped index string
-        raise self._identifier_not_found_error(index)
+        raise self._identifier_not_found_error(index)  # pylint: disable=raise-missing-from
     elif isinstance(index, slice) or (isinstance(index, int) and index < 0):
       return self._full_list()[index]
     else:

@@ -105,7 +105,7 @@ class _Attribute(metaclass=abc.ABCMeta):
   def _assign_from_string(self, string):
     self._assign(string)
 
-  def to_xml_string(self, prefix_root):  # pylint: disable=unused-argument
+  def to_xml_string(self, prefix_root, **kwargs):  # pylint: disable=unused-argument
     if self._value is None:
       return None
     else:
@@ -157,6 +157,15 @@ class Float(_Attribute):
       raise ValueError('Expect a float value: got {}'.format(value)) from None
     self._value = float_value
 
+  def to_xml_string(self, prefix_root=None,
+                    *, precision=constants.XML_DEFAULT_PRECISION, **kwargs):
+    if self._value is None:
+      return None
+    else:
+      out = io.BytesIO()
+      np.savetxt(out, [self._value], fmt=f'%.{precision:d}g', newline=' ')
+      return util.to_native_string(out.getvalue())[:-1]  # Strip trailing space.
+
 
 class Keyword(_Attribute):
   """A keyword MJCF attribute."""
@@ -199,15 +208,13 @@ class Array(_Attribute):
   def _assign_from_string(self, string):
     self._assign(np.fromstring(string, dtype=self._dtype, sep=' '))
 
-  def to_xml_string(self, prefix_root=None):  # pylint: disable=unused-argument
+  def to_xml_string(self, prefix_root=None,
+                    *, precision=constants.XML_DEFAULT_PRECISION, **kwargs):
     if self._value is None:
       return None
     else:
       out = io.BytesIO()
-      # 17 decimal digits is sufficient to represent a double float without loss
-      # of precision.
-      # https://en.wikipedia.org/wiki/IEEE_754#Character_representation
-      np.savetxt(out, self._value, fmt='%.17g', newline=' ')
+      np.savetxt(out, self._value, fmt=f'%.{precision:d}g', newline=' ')
       return util.to_native_string(out.getvalue())[:-1]  # Strip trailing space.
 
   def _check_shape(self, array):
@@ -255,7 +262,7 @@ class Identifier(_Attribute):
     prefix.append(self._value or '')
     return constants.PREFIX_SEPARATOR.join(prefix) or constants.PREFIX_SEPARATOR
 
-  def to_xml_string(self, prefix_root=None):
+  def to_xml_string(self, prefix_root=None, **kwargs):
     if self._parent.tag == constants.DEFAULT:
       return self._defaults_string(prefix_root)
     elif self._value:
@@ -352,7 +359,7 @@ class Reference(_Attribute):
       out_string = prefix + self._value
     return out_string
 
-  def to_xml_string(self, prefix_root):
+  def to_xml_string(self, prefix_root, **kwargs):
     self._check_dead_reference()
     if isinstance(self._value, base.Element):
       return self._value.prefixed_identifier(prefix_root)
@@ -388,7 +395,7 @@ class BasePath(_Attribute):
     if self._value:
       self._parent.namescope.remove(constants.BASEPATH, self._path_namespace)
 
-  def to_xml_string(self, prefix_root=None):
+  def to_xml_string(self, prefix_root=None, **kwargs):
     return None
 
 
@@ -527,7 +534,7 @@ class File(_Attribute):
                          'querying the contents.')
     return self._value.contents
 
-  def to_xml_string(self, prefix_root=None):
+  def to_xml_string(self, prefix_root=None, **kwargs):
     """Returns the asset filename as it will appear in the generated XML."""
     del prefix_root  # Unused
     if self._value is not None:

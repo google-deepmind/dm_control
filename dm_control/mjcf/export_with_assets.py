@@ -16,10 +16,13 @@
 """Saves Mujoco models with relevant assets."""
 
 import os
+
+from dm_control.mjcf import constants
 from dm_control.mujoco.wrapper import util
 
 
-def export_with_assets(mjcf_model, out_dir, out_file_name=None):
+def export_with_assets(mjcf_model, out_dir, out_file_name=None,
+                       *, precision=constants.XML_DEFAULT_PRECISION):
   """Saves mjcf.model in the given directory in MJCF (XML) format.
 
   Creates an MJCF XML file named `out_file_name` in the specified `out_dir`, and
@@ -31,6 +34,8 @@ def export_with_assets(mjcf_model, out_dir, out_file_name=None):
       not already exist.
     out_file_name: (Optional) Name of the XML file to create. Defaults to the
       model name (`mjcf_model.model`) suffixed with '.xml'.
+    precision: (optional) Number of digits to output for floating point
+      quantities.
 
   Raises:
     ValueError: If `out_file_name` is a string that does not end with '.xml'.
@@ -43,7 +48,7 @@ def export_with_assets(mjcf_model, out_dir, out_file_name=None):
   assets = mjcf_model.get_assets()
   # This should never happen because `mjcf` does not support `.xml` assets.
   assert out_file_name not in assets
-  assets[out_file_name] = mjcf_model.to_xml_string()
+  assets[out_file_name] = mjcf_model.to_xml_string(precision=precision)
   if not os.path.exists(out_dir):
     os.makedirs(out_dir)
   for filename, contents in assets.items():

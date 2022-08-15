@@ -17,6 +17,8 @@
 
 import abc
 
+from dm_control.mjcf import constants
+
 
 class Element(metaclass=abc.ABCMeta):
   """Abstract base class for an MJCF element.
@@ -220,7 +222,8 @@ class Element(metaclass=abc.ABCMeta):
     pass
 
   @abc.abstractmethod
-  def to_xml(self, prefix_root=None, debug_context=None):
+  def to_xml(self, prefix_root=None, debug_context=None,
+             *, precision=constants.XML_DEFAULT_PRECISION):
     """Generates an etree._Element corresponding to this MJCF element.
 
     Args:
@@ -231,6 +234,8 @@ class Element(metaclass=abc.ABCMeta):
         the debugging information associated with the generated XML is written.
         This is intended for internal use within PyMJCF; users should never need
         manually pass this argument.
+      precision: (optional) Number of digits to output for floating point
+        quantities.
 
     Returns:
       An etree._Element object.
@@ -238,7 +243,8 @@ class Element(metaclass=abc.ABCMeta):
 
   @abc.abstractmethod
   def to_xml_string(self, prefix_root=None,
-                    self_only=False, pretty_print=True, debug_context=None):
+                    self_only=False, pretty_print=True, debug_context=None,
+                    *, precision=constants.XML_DEFAULT_PRECISION):
     """Generates an XML string corresponding to this MJCF element.
 
     Args:
@@ -253,6 +259,8 @@ class Element(metaclass=abc.ABCMeta):
         the debugging information associated with the generated XML is written.
         This is intended for internal use within PyMJCF; users should never need
         manually pass this argument.
+      precision: (optional) Number of digits to output for floating point
+        quantities.
 
     Returns:
       A string.

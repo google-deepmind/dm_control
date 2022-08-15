@@ -338,6 +338,12 @@ class ElementTest(parameterized.TestCase):
         'pos="0.10000000000000001 0.10000000000000001 0.10000000000000001" '
         'quat="0 1 0 0" '
         'name="subsubmodel/">')
+    self.assertEqual(
+        subsubmodel_frame.to_xml_string(precision=5).split('\n')[0],
+        '<body '
+        'pos="0.1 0.1 0.1" '
+        'quat="0 1 0 0" '
+        'name="subsubmodel/">')
     self.assertEqual(subsubmodel_frame.all_children(),
                      subsubmujoco.worldbody.all_children())
 

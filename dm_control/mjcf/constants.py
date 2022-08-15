@@ -72,3 +72,8 @@ INDIRECT_REFERENCE_NAMESPACE_PREFIX = 'attrib:'
 INDIRECT_REFERENCE_ATTRIB = {
     'xbody': 'body',
 }
+
+# 17 decimal digits is sufficient to represent a double float without loss
+# of precision.
+# https://en.wikipedia.org/wiki/IEEE_754#Character_representation
+XML_DEFAULT_PRECISION = 17

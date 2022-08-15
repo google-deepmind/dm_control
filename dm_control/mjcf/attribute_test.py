@@ -131,15 +131,37 @@ class AttributeTest(parameterized.TestCase):
 
   def testFloatScalar(self):
     mujoco = self._mujoco
-    mujoco.optional.float = 5
-    self.assertEqual(mujoco.optional.float, 5)
+    mujoco.optional.float = 0.357357
+    self.assertEqual(mujoco.optional.float, 0.357357)
     self.assertEqual(type(mujoco.optional.float), float)
     with self.assertRaisesRegex(ValueError, 'Expect a float value'):
       mujoco.optional.float = 'five'
     # failed assignment should not change the value
-    self.assertEqual(mujoco.optional.float, 5)
-    self.assertXMLStringEqual(mujoco.optional, 'float', '5.0')
-    self.assertCanBeCleared(mujoco.optional, 'float')
+    self.assertEqual(mujoco.optional.float, 0.357357)
+    self.assertEqual(
+        mujoco.optional.get_attribute_xml_string('float', precision=1),
+        '0.4')
+    self.assertEqual(
+        mujoco.optional.get_attribute_xml_string('float', precision=2),
+        '0.36')
+    self.assertEqual(
+        mujoco.optional.get_attribute_xml_string('float', precision=3),
+        '0.357')
+    self.assertEqual(
+        mujoco.optional.get_attribute_xml_string('float', precision=4),
+        '0.3574')
+    self.assertEqual(
+        mujoco.optional.get_attribute_xml_string('float', precision=5),
+        '0.35736')
+    self.assertEqual(
+        mujoco.optional.get_attribute_xml_string('float', precision=6),
+        '0.357357')
+    self.assertEqual(
+        mujoco.optional.get_attribute_xml_string('float', precision=7),
+        '0.357357')
+    self.assertEqual(
+        mujoco.optional.get_attribute_xml_string('float', precision=8),
+        '0.357357')
 
   def testIntScalar(self):
     mujoco = self._mujoco
@@ -178,6 +200,9 @@ class AttributeTest(parameterized.TestCase):
     mujoco.optional.float_array = [np.pi, 2, 1e-16]
     self.assertXMLStringEqual(mujoco.optional, 'float_array',
                               '3.1415926535897931 2 9.9999999999999998e-17')
+    self.assertEqual(
+        mujoco.optional.get_attribute_xml_string('float_array', precision=5),
+        '3.1416 2 1e-16')
     self.assertCanBeCleared(mujoco.optional, 'float_array')
 
   def testFormatVeryLargeArray(self):
