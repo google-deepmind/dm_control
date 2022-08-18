@@ -116,7 +116,8 @@ class MJCFCamera(base.Observable):
                corruptor=None,
                depth=False,
                segmentation=False,
-               scene_option=None):
+               scene_option=None,
+               render_flag_overrides=None):
     """Initializes this observable.
 
     Args:
@@ -152,6 +153,12 @@ class MJCFCamera(base.Observable):
       scene_option: An optional `wrapper.MjvOption` instance that can be used to
         render the scene with custom visualization options. If None then the
         default options will be used.
+      render_flag_overrides: Optional mapping specifying rendering flags to
+        override. The keys can be either lowercase strings or `mjtRndFlag` enum
+        values, and the values are the overridden flag values, e.g.
+        `{'wireframe': True}` or `{mujoco.mjtRndFlag.mjRND_WIREFRAME: True}`.
+        See `mujoco.mjtRndFlag` for the set of valid flags. Must be None if
+        either `depth` or `segmentation` is True.
 
     Raises:
       ValueError: if `mjcf_element` is not a <camera> element.
@@ -179,6 +186,7 @@ class MJCFCamera(base.Observable):
     self._depth = depth
     self._segmentation = segmentation
     self._scene_option = scene_option
+    self._render_flag_overrides = render_flag_overrides
     super().__init__(update_interval, buffer_size, delay, aggregator, corruptor)
 
   @property
@@ -214,6 +222,22 @@ class MJCFCamera(base.Observable):
     self._segmentation = value
 
   @property
+  def scene_option(self):
+    return self._scene_option
+
+  @scene_option.setter
+  def scene_option(self, value):
+    self._scene_option = value
+
+  @property
+  def render_flag_overrides(self):
+    return self._render_flag_overrides
+
+  @render_flag_overrides.setter
+  def render_flag_overrides(self, value):
+    self._render_flag_overrides = value
+
+  @property
   def array_spec(self):
     if self._depth:
       # Note that these are loose bounds - the exact bounds are given by:
@@ -245,7 +269,8 @@ class MJCFCamera(base.Observable):
           camera_id=self._mjcf_element.full_identifier,
           depth=self._depth,
           segmentation=self._segmentation,
-          scene_option=self._scene_option)
+          scene_option=self._scene_option,
+          render_flag_overrides=self._render_flag_overrides)
       return np.atleast_3d(pixels)
 
     return get_observation
