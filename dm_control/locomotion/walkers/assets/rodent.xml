@@ -5,7 +5,8 @@
     <joint limited="true" solreflimit="0.01 1" solimplimit="0.99 0.9999 0" armature="6e-07" damping="0.001"/>
     <geom friction="0.7 0.005 0.0001" solref="0.005 1"/>
     <site group="3" rgba="0 0 1 1"/>
-    <general ctrllimited="true" ctrlrange="-1 1" gainprm="0.01"/>
+    <general ctrllimited="true" ctrlrange="-1 1" forcelimited="false" gainprm="0.01"/>
+    <tendon limited="false"/>
     <default class="bone">
       <geom contype="0" conaffinity="0" group="0" rgba="0.5 0.5 0.5 1" density="1100.0"/>
     </default>
