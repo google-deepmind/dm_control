@@ -252,6 +252,25 @@ class AttributeTest(parameterized.TestCase):
     self.assertXMLStringEqual(mujoco.optional, 'keyword', valid_values[-1])
     self.assertCanBeCleared(mujoco.optional, 'keyword')
 
+  def testKeywordFalseTrueAuto(self):
+    mujoco = self._mujoco
+    for value in ('false', 'False', False):
+      mujoco.optional.fta = value
+      self.assertEqual(mujoco.optional.fta, 'false')
+      self.assertXMLStringEqual(mujoco.optional, 'fta', 'false')
+    for value in ('true', 'True', True):
+      mujoco.optional.fta = value
+      self.assertEqual(mujoco.optional.fta, 'true')
+      self.assertXMLStringEqual(mujoco.optional, 'fta', 'true')
+    for value in ('auto', 'AUTO'):
+      mujoco.optional.fta = value
+      self.assertEqual(mujoco.optional.fta, 'auto')
+      self.assertXMLStringEqual(mujoco.optional, 'fta', 'auto')
+    for value in (None, ''):
+      mujoco.optional.fta = value
+      self.assertIsNone(mujoco.optional.fta)
+      self.assertXMLStringEqual(mujoco.optional, 'fta', None)
+
   def testIdentifier(self):
     mujoco = self._mujoco
 

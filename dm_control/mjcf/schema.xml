@@ -241,7 +241,7 @@
             <attribute name="pos" type="array" array_type="float" array_size="3"/>
             <attribute name="axis" type="array" array_type="float" array_size="3"/>
             <attribute name="springdamper" type="array" array_type="float" array_size="2"/>
-            <attribute name="limited" type="keyword" valid_values="false true"/>
+            <attribute name="limited" type="keyword" valid_values="false true auto"/>
             <attribute name="solreflimit" type="array" array_type="float" array_size="2"/>
             <attribute name="solimplimit" type="array" array_type="float" array_size="5"/>
             <attribute name="solreffriction" type="array" array_type="float" array_size="2"/>
@@ -361,7 +361,7 @@
         <element name="tendon">
           <attributes>
             <attribute name="group" type="int"/>
-            <attribute name="limited" type="keyword" valid_values="false true"/>
+            <attribute name="limited" type="keyword" valid_values="false true auto"/>
             <attribute name="range" type="array" array_type="float" array_size="2"/>
             <attribute name="solreflimit" type="array" array_type="float" array_size="2"/>
             <attribute name="solimplimit" type="array" array_type="float" array_size="5"/>
@@ -380,8 +380,8 @@
         <element name="general">
           <attributes>
             <attribute name="group" type="int"/>
-            <attribute name="ctrllimited" type="keyword" valid_values="false true"/>
-            <attribute name="forcelimited" type="keyword" valid_values="false true"/>
+            <attribute name="ctrllimited" type="keyword" valid_values="false true auto"/>
+            <attribute name="forcelimited" type="keyword" valid_values="false true auto"/>
             <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
             <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
             <attribute name="gear" type="array" array_type="float" array_size="6"/>
@@ -398,8 +398,8 @@
         <element name="motor">
           <attributes>
             <attribute name="group" type="int"/>
-            <attribute name="ctrllimited" type="keyword" valid_values="false true"/>
-            <attribute name="forcelimited" type="keyword" valid_values="false true"/>
+            <attribute name="ctrllimited" type="keyword" valid_values="false true auto"/>
+            <attribute name="forcelimited" type="keyword" valid_values="false true auto"/>
             <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
             <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
             <attribute name="gear" type="array" array_type="float" array_size="6"/>
@@ -413,8 +413,8 @@
         <element name="position">
           <attributes>
             <attribute name="group" type="int"/>
-            <attribute name="ctrllimited" type="keyword" valid_values="false true"/>
-            <attribute name="forcelimited" type="keyword" valid_values="false true"/>
+            <attribute name="ctrllimited" type="keyword" valid_values="false true auto"/>
+            <attribute name="forcelimited" type="keyword" valid_values="false true auto"/>
             <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
             <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
             <attribute name="gear" type="array" array_type="float" array_size="6"/>
@@ -426,8 +426,8 @@
         <element name="velocity">
           <attributes>
             <attribute name="group" type="int"/>
-            <attribute name="ctrllimited" type="keyword" valid_values="false true"/>
-            <attribute name="forcelimited" type="keyword" valid_values="false true"/>
+            <attribute name="ctrllimited" type="keyword" valid_values="false true auto"/>
+            <attribute name="forcelimited" type="keyword" valid_values="false true auto"/>
             <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
             <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
             <attribute name="gear" type="array" array_type="float" array_size="6"/>
@@ -439,8 +439,8 @@
         <element name="intvelocity">
           <attributes>
             <attribute name="group" type="int"/>
-            <attribute name="ctrllimited" type="keyword" valid_values="false true"/>
-            <attribute name="forcelimited" type="keyword" valid_values="false true"/>
+            <attribute name="ctrllimited" type="keyword" valid_values="false true auto"/>
+            <attribute name="forcelimited" type="keyword" valid_values="false true auto"/>
             <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
             <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
             <attribute name="actrange" type="array" array_type="float" array_size="2"/>
@@ -453,7 +453,7 @@
         <element name="damper">
           <attributes>
             <attribute name="group" type="int"/>
-            <attribute name="forcelimited" type="keyword" valid_values="false true"/>
+            <attribute name="forcelimited" type="keyword" valid_values="false true auto"/>
             <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
             <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
             <attribute name="gear" type="array" array_type="float" array_size="6"/>
@@ -465,8 +465,8 @@
         <element name="cylinder">
           <attributes>
             <attribute name="group" type="int"/>
-            <attribute name="ctrllimited" type="keyword" valid_values="false true"/>
-            <attribute name="forcelimited" type="keyword" valid_values="false true"/>
+            <attribute name="ctrllimited" type="keyword" valid_values="false true auto"/>
+            <attribute name="forcelimited" type="keyword" valid_values="false true auto"/>
             <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
             <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
             <attribute name="gear" type="array" array_type="float" array_size="6"/>
@@ -481,8 +481,8 @@
         <element name="muscle">
           <attributes>
             <attribute name="group" type="int"/>
-            <attribute name="ctrllimited" type="keyword" valid_values="false true"/>
-            <attribute name="forcelimited" type="keyword" valid_values="false true"/>
+            <attribute name="ctrllimited" type="keyword" valid_values="false true auto"/>
+            <attribute name="forcelimited" type="keyword" valid_values="false true auto"/>
             <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
             <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
             <attribute name="lengthrange" type="array" array_type="float" array_size="2"/>
@@ -503,7 +503,7 @@
         <element name="adhesion">
           <attributes>
             <attribute name="group" type="int"/>
-            <attribute name="forcelimited" type="keyword" valid_values="false true"/>
+            <attribute name="forcelimited" type="keyword" valid_values="false true auto"/>
             <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
             <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
             <attribute name="user" type="array" array_type="float"/>
@@ -675,8 +675,8 @@
             </element>
             <element name="general">
               <attributes>
-                <attribute name="ctrllimited" type="keyword" valid_values="false true"/>
-                <attribute name="forcelimited" type="keyword" valid_values="false true"/>
+                <attribute name="ctrllimited" type="keyword" valid_values="false true auto"/>
+                <attribute name="forcelimited" type="keyword" valid_values="false true auto"/>
                 <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
                 <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
                 <attribute name="gear" type="array" array_type="float" array_size="6"/>
@@ -692,8 +692,8 @@
             </element>
             <element name="motor">
               <attributes>
-                <attribute name="ctrllimited" type="keyword" valid_values="false true"/>
-                <attribute name="forcelimited" type="keyword" valid_values="false true"/>
+                <attribute name="ctrllimited" type="keyword" valid_values="false true auto"/>
+                <attribute name="forcelimited" type="keyword" valid_values="false true auto"/>
                 <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
                 <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
                 <attribute name="gear" type="array" array_type="float" array_size="6"/>
@@ -706,8 +706,8 @@
             </element>
             <element name="position">
               <attributes>
-                <attribute name="ctrllimited" type="keyword" valid_values="false true"/>
-                <attribute name="forcelimited" type="keyword" valid_values="false true"/>
+                <attribute name="ctrllimited" type="keyword" valid_values="false true auto"/>
+                <attribute name="forcelimited" type="keyword" valid_values="false true auto"/>
                 <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
                 <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
                 <attribute name="gear" type="array" array_type="float" array_size="6"/>
@@ -718,8 +718,8 @@
             </element>
             <element name="velocity">
               <attributes>
-                <attribute name="ctrllimited" type="keyword" valid_values="false true"/>
-                <attribute name="forcelimited" type="keyword" valid_values="false true"/>
+                <attribute name="ctrllimited" type="keyword" valid_values="false true auto"/>
+                <attribute name="forcelimited" type="keyword" valid_values="false true auto"/>
                 <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
                 <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
                 <attribute name="gear" type="array" array_type="float" array_size="6"/>
@@ -730,8 +730,8 @@
             </element>
             <element name="intvelocity">
               <attributes>
-                <attribute name="ctrllimited" type="keyword" valid_values="false true"/>
-                <attribute name="forcelimited" type="keyword" valid_values="false true"/>
+                <attribute name="ctrllimited" type="keyword" valid_values="false true auto"/>
+                <attribute name="forcelimited" type="keyword" valid_values="false true auto"/>
                 <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
                 <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
                 <attribute name="actrange" type="array" array_type="float" array_size="2"/>
@@ -743,7 +743,7 @@
             </element>
             <element name="damper">
               <attributes>
-                <attribute name="forcelimited" type="keyword" valid_values="false true"/>
+                <attribute name="forcelimited" type="keyword" valid_values="false true auto"/>
                 <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
                 <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
                 <attribute name="gear" type="array" array_type="float" array_size="6"/>
@@ -754,8 +754,8 @@
             </element>
             <element name="cylinder">
               <attributes>
-                <attribute name="ctrllimited" type="keyword" valid_values="false true"/>
-                <attribute name="forcelimited" type="keyword" valid_values="false true"/>
+                <attribute name="ctrllimited" type="keyword" valid_values="false true auto"/>
+                <attribute name="forcelimited" type="keyword" valid_values="false true auto"/>
                 <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
                 <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
                 <attribute name="gear" type="array" array_type="float" array_size="6"/>
@@ -770,7 +770,7 @@
             <element name="adhesion">
               <attributes>
                 <attribute name="group" type="int"/>
-                <attribute name="forcelimited" type="keyword" valid_values="false true"/>
+                <attribute name="forcelimited" type="keyword" valid_values="false true auto"/>
                 <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
                 <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
                 <attribute name="user" type="array" array_type="float"/>
@@ -1516,9 +1516,9 @@
             <attribute name="name" type="identifier"/>
             <attribute name="class" type="reference" reference_namespace="default"/>
             <attribute name="group" type="int"/>
-            <attribute name="ctrllimited" type="keyword" valid_values="false true"/>
-            <attribute name="forcelimited" type="keyword" valid_values="false true"/>
-            <attribute name="actlimited" type="keyword" valid_values="false true"/>
+            <attribute name="ctrllimited" type="keyword" valid_values="false true auto"/>
+            <attribute name="forcelimited" type="keyword" valid_values="false true auto"/>
+            <attribute name="actlimited" type="keyword" valid_values="false true auto"/>
             <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
             <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
             <attribute name="actrange" type="array" array_type="float" array_size="2"/>
@@ -1546,8 +1546,8 @@
             <attribute name="name" type="identifier"/>
             <attribute name="class" type="reference" reference_namespace="default"/>
             <attribute name="group" type="int"/>
-            <attribute name="ctrllimited" type="keyword" valid_values="false true"/>
-            <attribute name="forcelimited" type="keyword" valid_values="false true"/>
+            <attribute name="ctrllimited" type="keyword" valid_values="false true auto"/>
+            <attribute name="forcelimited" type="keyword" valid_values="false true auto"/>
             <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
             <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
             <attribute name="lengthrange" type="array" array_type="float" array_size="2"/>
@@ -1567,8 +1567,8 @@
             <attribute name="name" type="identifier"/>
             <attribute name="class" type="reference" reference_namespace="default"/>
             <attribute name="group" type="int"/>
-            <attribute name="ctrllimited" type="keyword" valid_values="false true"/>
-            <attribute name="forcelimited" type="keyword" valid_values="false true"/>
+            <attribute name="ctrllimited" type="keyword" valid_values="false true auto"/>
+            <attribute name="forcelimited" type="keyword" valid_values="false true auto"/>
             <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
             <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
             <attribute name="lengthrange" type="array" array_type="float" array_size="2"/>
@@ -1589,8 +1589,8 @@
             <attribute name="name" type="identifier"/>
             <attribute name="class" type="reference" reference_namespace="default"/>
             <attribute name="group" type="int"/>
-            <attribute name="ctrllimited" type="keyword" valid_values="false true"/>
-            <attribute name="forcelimited" type="keyword" valid_values="false true"/>
+            <attribute name="ctrllimited" type="keyword" valid_values="false true auto"/>
+            <attribute name="forcelimited" type="keyword" valid_values="false true auto"/>
             <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
             <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
             <attribute name="lengthrange" type="array" array_type="float" array_size="2"/>
@@ -1611,8 +1611,8 @@
             <attribute name="name" type="identifier"/>
             <attribute name="class" type="reference" reference_namespace="default"/>
             <attribute name="group" type="int"/>
-            <attribute name="ctrllimited" type="keyword" valid_values="false true"/>
-            <attribute name="forcelimited" type="keyword" valid_values="false true"/>
+            <attribute name="ctrllimited" type="keyword" valid_values="false true auto"/>
+            <attribute name="forcelimited" type="keyword" valid_values="false true auto"/>
             <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
             <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
             <attribute name="actrange" type="array" array_type="float" array_size="2"/>
@@ -1634,7 +1634,7 @@
             <attribute name="name" type="identifier"/>
             <attribute name="class" type="reference" reference_namespace="default"/>
             <attribute name="group" type="int"/>
-            <attribute name="forcelimited" type="keyword" valid_values="false true"/>
+            <attribute name="forcelimited" type="keyword" valid_values="false true auto"/>
             <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
             <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
             <attribute name="lengthrange" type="array" array_type="float" array_size="2"/>
@@ -1655,8 +1655,8 @@
             <attribute name="name" type="identifier"/>
             <attribute name="class" type="reference" reference_namespace="default"/>
             <attribute name="group" type="int"/>
-            <attribute name="ctrllimited" type="keyword" valid_values="false true"/>
-            <attribute name="forcelimited" type="keyword" valid_values="false true"/>
+            <attribute name="ctrllimited" type="keyword" valid_values="false true auto"/>
+            <attribute name="forcelimited" type="keyword" valid_values="false true auto"/>
             <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
             <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
             <attribute name="lengthrange" type="array" array_type="float" array_size="2"/>
@@ -1680,8 +1680,8 @@
             <attribute name="name" type="identifier"/>
             <attribute name="class" type="reference" reference_namespace="default"/>
             <attribute name="group" type="int"/>
-            <attribute name="ctrllimited" type="keyword" valid_values="false true"/>
-            <attribute name="forcelimited" type="keyword" valid_values="false true"/>
+            <attribute name="ctrllimited" type="keyword" valid_values="false true auto"/>
+            <attribute name="forcelimited" type="keyword" valid_values="false true auto"/>
             <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
             <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
             <attribute name="lengthrange" type="array" array_type="float" array_size="2"/>
@@ -1710,7 +1710,7 @@
             <attribute name="name" type="identifier"/>
             <attribute name="class" type="reference" reference_namespace="default"/>
             <attribute name="group" type="int"/>
-            <attribute name="forcelimited" type="keyword" valid_values="false true"/>
+            <attribute name="forcelimited" type="keyword" valid_values="false true auto"/>
             <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
             <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
             <attribute name="body" type="reference"/>

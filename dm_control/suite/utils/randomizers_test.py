@@ -46,7 +46,7 @@ class RandomizeUnlimitedJointsTest(parameterized.TestCase):
               <joint name="limited_hinge" type="hinge" limited="true"/>
               <joint name="slide" type="slide" limited="false"/>
               <joint name="limited_slide" type="slide" limited="true"/>
-              <joint name="hinge" type="hinge"/>
+              <joint name="hinge" type="hinge" limited="false"/>
             </body>
             <body>
               <geom type="box" size="1 1 1"/>

@@ -184,7 +184,7 @@ class Keyword(_Attribute):
                      conflict_behavior)
 
   def _assign(self, value):
-    if not value:
+    if value is None or value == '':  # pylint: disable=g-explicit-bool-comparison
       self.clear()
     else:
       try:

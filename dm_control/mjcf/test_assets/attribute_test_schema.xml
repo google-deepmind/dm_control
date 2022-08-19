@@ -12,6 +12,7 @@
         <attribute name="huge_float_array" type="array" array_type="float"/>
         <attribute name="int_array" type="array" array_type="int" array_size="2"/>
         <attribute name="keyword" type="keyword" valid_values="Alpha Beta Gamma"/>
+        <attribute name="fta" type="keyword" valid_values="false true auto"/>
         <attribute name="reftype" type="keyword" valid_values="entity optional"/>
         <attribute name="reference" type="reference" reference_namespace="attrib:reftype"/>
         <attribute name="fixed_type_ref" type="reference" reference_namespace="optional"/>
