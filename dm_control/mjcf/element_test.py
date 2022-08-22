@@ -198,6 +198,26 @@ class ElementTest(parameterized.TestCase):
       mujoco.add('default')
     self.assertIsNotNone(mujoco.default)
 
+  def testInsert(self):
+    mujoco = element.RootElement(model='test')
+
+    # add in order
+    mujoco.worldbody.add('body', name='0')
+    mujoco.worldbody.add('body', name='1')
+    mujoco.worldbody.add('body', name='2')
+
+    # insert into position 0, check order
+    mujoco.worldbody.insert('body', name='foo', position=0)
+    expected_order = ['foo', '0', '1', '2']
+    for i, child in enumerate(mujoco.worldbody._children):
+      self.assertEqual(child.name, expected_order[i])
+
+    # insert into position -1, check order
+    mujoco.worldbody.insert('body', name='bar', position=-1)
+    expected_order = ['foo', '0', '1', 'bar', '2']
+    for i, child in enumerate(mujoco.worldbody._children):
+      self.assertEqual(child.name, expected_order[i])
+
   def testAddWithInvalidAttribute(self):
     mujoco = element.RootElement(model='test')
     with self.assertRaisesRegex(AttributeError, 'not a valid attribute'):

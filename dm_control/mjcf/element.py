@@ -595,6 +595,23 @@ class _ElementImpl(base.Element):
     Returns:
       An `mjcf.Element` corresponding to the newly created child element.
     """
+    return self.insert(element_name, position=None, **kwargs)
+
+  def insert(self, element_name, position, **kwargs):
+    """Add a new child element to this element.
+
+    Args:
+      element_name: The tag of the element to add.
+      position: Where to insert the new element.
+      **kwargs: Attributes of the new element being created.
+
+    Raises:
+      ValueError: If the 'element_name' is not a valid child, or if an invalid
+        attribute is specified in `kwargs`.
+
+    Returns:
+      An `mjcf.Element` corresponding to the newly created child element.
+    """
     child_spec = self._check_valid_child(element_name)
     if child_spec.on_demand:
       need_new_on_demand = self.get_children(element_name) is None
@@ -604,7 +621,10 @@ class _ElementImpl(base.Element):
       raise ValueError('A <{}> child already exists, please access it directly.'
                        .format(element_name))
     new_element = _make_element(child_spec, self, attributes=kwargs)
-    self._children.append(new_element)
+    if position is not None:
+      self._children.insert(position, new_element)
+    else:
+      self._children.append(new_element)
     self.namescope.increment_revision()
     return new_element
 
