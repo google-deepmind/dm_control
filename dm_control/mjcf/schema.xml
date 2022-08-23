@@ -81,6 +81,7 @@
             <attribute name="filterparent" type="keyword" valid_values="disable enable"/>
             <attribute name="actuation" type="keyword" valid_values="disable enable"/>
             <attribute name="refsafe" type="keyword" valid_values="disable enable"/>
+            <attribute name="sensor" type="keyword" valid_values="disable enable"/>
             <attribute name="override" type="keyword" valid_values="disable enable"/>
             <attribute name="energy" type="keyword" valid_values="disable enable"/>
             <attribute name="fwdinv" type="keyword" valid_values="disable enable"/>
