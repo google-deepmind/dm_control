@@ -1399,6 +1399,8 @@
             <attribute name="body1" type="reference" required="true" reference_namespace="body"/>
             <attribute name="body2" type="reference" reference_namespace="body"/>
             <attribute name="relpose" type="array" array_type="float" array_size="7"/>
+            <attribute name="anchor" type="array" array_type="float" array_size="3"/>
+            <attribute name="torquescale" type="float"/>
           </attributes>
         </element>
         <element name="joint" repeated="true" namespace="equality">
