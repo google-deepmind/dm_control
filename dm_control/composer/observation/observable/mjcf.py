@@ -167,15 +167,7 @@ class MJCFCamera(base.Observable):
 
     if segmentation and depth:
       raise ValueError(_BOTH_SEGMENTATION_AND_DEPTH_ENABLED)
-    if segmentation:
-      self._dtype = np.int32
-      self._n_channels = 2
-    elif depth:
-      self._dtype = np.float32
-      self._n_channels = 1
-    else:
-      self._dtype = np.uint8
-      self._n_channels = 3
+
     self._depth = depth
     self._segmentation = segmentation
     self._scene_option = scene_option
@@ -214,6 +206,24 @@ class MJCFCamera(base.Observable):
     self._segmentation = value
 
   @property
+  def dtype(self):
+    if self._segmentation:
+      return np.int32
+    elif self._depth:
+      return np.float32
+    else:
+      return np.uint8
+
+  @property
+  def n_channels(self):
+    if self._segmentation:
+      return 2
+    elif self._depth:
+      return 1
+    else:
+      return 3
+
+  @property
   def array_spec(self):
     if self._depth:
       # Note that these are loose bounds - the exact bounds are given by:
@@ -225,16 +235,16 @@ class MJCFCamera(base.Observable):
       # -1 denotes background pixels. See dm_control.mujoco.Camera.render for
       # further details.
       minimum = -1
-      maximum = np.iinfo(self._dtype).max
+      maximum = np.iinfo(self.dtype).max
     else:
-      minimum = np.iinfo(self._dtype).min
-      maximum = np.iinfo(self._dtype).max
+      minimum = np.iinfo(self.dtype).min
+      maximum = np.iinfo(self.dtype).max
 
     return specs.BoundedArray(
         minimum=minimum,
         maximum=maximum,
-        shape=(self._height, self._width, self._n_channels),
-        dtype=self._dtype)
+        shape=(self._height, self._width, self.n_channels),
+        dtype=self.dtype)
 
   def _callable(self, physics):
 
@@ -249,3 +259,16 @@ class MJCFCamera(base.Observable):
       return np.atleast_3d(pixels)
 
     return get_observation
+
+  def configure(self, **kwargs):
+    if "depth" in kwargs and not "segmentation" in kwargs:
+      if kwargs["depth"]:
+        kwargs["segmentation"] = False
+    if "segmentation" in kwargs and not "depth" in kwargs:
+      if kwargs["segmentation"]:
+        kwargs["depth"] = False
+    if "depth" in kwargs and "segmentation" in kwargs:
+      if kwargs["depth"] == kwargs["segmentation"] == True:
+        raise ValueError(_BOTH_SEGMENTATION_AND_DEPTH_ENABLED)
+
+    return super().configure(**kwargs)
