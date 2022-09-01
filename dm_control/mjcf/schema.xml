@@ -1531,6 +1531,7 @@
             <attribute name="joint" type="reference"/>
             <attribute name="jointinparent" type="reference" reference_namespace="joint"/>
             <attribute name="site" type="reference"/>
+            <attribute name="refsite" type="reference" reference_namespace="site"/>
             <attribute name="tendon" type="reference"/>
             <attribute name="body" type="reference"/>
             <attribute name="cranksite" type="reference" reference_namespace="site"/>
@@ -1562,6 +1563,7 @@
             <attribute name="cranksite" type="reference" reference_namespace="site"/>
             <attribute name="slidersite" type="reference" reference_namespace="site"/>
             <attribute name="site" type="reference"/>
+            <attribute name="refsite" type="reference" reference_namespace="site"/>
             <attribute name="user" type="array" array_type="float"/>
           </attributes>
         </element>
@@ -1583,6 +1585,7 @@
             <attribute name="cranksite" type="reference" reference_namespace="site"/>
             <attribute name="slidersite" type="reference" reference_namespace="site"/>
             <attribute name="site" type="reference"/>
+            <attribute name="refsite" type="reference" reference_namespace="site"/>
             <attribute name="user" type="array" array_type="float"/>
             <attribute name="kp" type="float"/>
           </attributes>
@@ -1605,6 +1608,7 @@
             <attribute name="cranksite" type="reference" reference_namespace="site"/>
             <attribute name="slidersite" type="reference" reference_namespace="site"/>
             <attribute name="site" type="reference"/>
+            <attribute name="refsite" type="reference" reference_namespace="site"/>
             <attribute name="user" type="array" array_type="float"/>
             <attribute name="kv" type="float"/>
           </attributes>
@@ -1628,6 +1632,7 @@
             <attribute name="cranksite" type="reference" reference_namespace="site"/>
             <attribute name="slidersite" type="reference" reference_namespace="site"/>
             <attribute name="site" type="reference"/>
+            <attribute name="refsite" type="reference" reference_namespace="site"/>
             <attribute name="user" type="array" array_type="float"/>
             <attribute name="kp" type="float"/>
           </attributes>
@@ -1649,6 +1654,7 @@
             <attribute name="cranksite" type="reference" reference_namespace="site"/>
             <attribute name="slidersite" type="reference" reference_namespace="site"/>
             <attribute name="site" type="reference"/>
+            <attribute name="refsite" type="reference" reference_namespace="site"/>
             <attribute name="user" type="array" array_type="float"/>
             <attribute name="kv" type="float"/>
           </attributes>
@@ -1671,6 +1677,7 @@
             <attribute name="cranksite" type="reference" reference_namespace="site"/>
             <attribute name="slidersite" type="reference" reference_namespace="site"/>
             <attribute name="site" type="reference"/>
+            <attribute name="refsite" type="reference" reference_namespace="site"/>
             <attribute name="user" type="array" array_type="float"/>
             <attribute name="timeconst" type="float"/>
             <attribute name="area" type="float"/>
