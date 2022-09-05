@@ -110,6 +110,27 @@ class ContextBaseTests(absltest.TestCase):
     self.assertNotIn(id(self.context), base._CURRENT_THREAD_FOR_CONTEXT)
     self.assertNotIn(thread, base._CURRENT_CONTEXT_FOR_THREAD)
 
+  def test_free_with_multiple_contexts(self):
+    context1 = ContextBaseTests.ContextMock(WIDTH, HEIGHT,
+                                            executor.PassthroughRenderExecutor)
+    with context1.make_current():
+      pass
+
+    context2 = ContextBaseTests.ContextMock(WIDTH, HEIGHT,
+                                            executor.PassthroughRenderExecutor)
+    with context2.make_current():
+      pass
+
+    self.assertEqual(base._CURRENT_CONTEXT_FOR_THREAD[threading.main_thread()],
+                     id(context2))
+    self.assertIs(base._CURRENT_THREAD_FOR_CONTEXT[id(context2)],
+                  threading.main_thread())
+
+    context1.free()
+    self.assertIsNone(
+        base._CURRENT_CONTEXT_FOR_THREAD[self.context.free_thread])
+    self.assertIsNone(base._CURRENT_THREAD_FOR_CONTEXT[id(context2)])
+
   def test_refcounting(self):
     thread = self.context.thread
 

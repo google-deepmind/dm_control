@@ -88,10 +88,13 @@ class ContextBase(metaclass=abc.ABCMeta):
     return self._render_executor.thread
 
   def _free_on_executor_thread(self):  # pylint: disable=missing-function-docstring
-    if _CURRENT_CONTEXT_FOR_THREAD[self._render_executor.thread] == id(self):
-      del _CURRENT_THREAD_FOR_CONTEXT[id(self)]
-      del _CURRENT_CONTEXT_FOR_THREAD[self._render_executor.thread]
+    current_ctx = _CURRENT_CONTEXT_FOR_THREAD[self._render_executor.thread]
+    if current_ctx is not None:
+      del _CURRENT_THREAD_FOR_CONTEXT[current_ctx]
+    del _CURRENT_CONTEXT_FOR_THREAD[self._render_executor.thread]
+
     self._platform_make_current()
+
     try:
       dummy = []
       while self._patients:
