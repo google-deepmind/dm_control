@@ -12,7 +12,7 @@ nose-xunitmp==0.4.1
 numpy==1.21.6; python_version == '3.7'
 numpy==1.23.1; python_version >= '3.8'
 Pillow==9.2.0
-protobuf==3.20.1
+protobuf==3.19.4  # TensorFlow requires protobuf<3.20 (b/182876485)
 pyopengl==3.1.6
 pyparsing==2.4.7
 requests==2.28.1
