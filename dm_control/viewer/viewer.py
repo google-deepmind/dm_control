@@ -95,7 +95,7 @@ class Viewer:
   """Viewport displaying the contents of a physics world."""
 
   def __init__(self, viewport, mouse, keyboard, camera_settings=None,
-               zoom_factor=_FULL_SCENE_ZOOM_FACTOR):
+               zoom_factor=_FULL_SCENE_ZOOM_FACTOR, scene_callback=None):
     """Instance initializer.
 
     Args:
@@ -104,6 +104,9 @@ class Viewer:
       keyboard: A keyboard device.
       camera_settings: Properties of the scene MjvCamera.
       zoom_factor: Initial scale factor for zooming into the scene.
+      scene_callback: Scene callback.
+        This is a callable of the form: `my_callable(MjModel, MjData, MjvScene)`
+        that gets applied to every rendered scene.
     """
     self._viewport = viewport
     self._mouse = mouse
@@ -119,6 +122,7 @@ class Viewer:
     self._free_camera = None
     self._camera_select = None
     self._zoom_factor = zoom_factor
+    self._scene_callback = scene_callback
 
   def __del__(self):
     del self._camera
@@ -136,8 +140,12 @@ class Viewer:
       touchpad: A boolean, use input dedicated to touchpad.
     """
     self._camera = renderer.SceneCamera(
-        physics.model, physics.data, self._render_settings,
-        settings=self._camera_settings, zoom_factor=self._zoom_factor)
+        physics.model,
+        physics.data,
+        self._render_settings,
+        settings=self._camera_settings,
+        zoom_factor=self._zoom_factor,
+        scene_callback=self._scene_callback)
 
     self._manipulator = ManipulationController(
         self._viewport, self._camera, self._mouse)

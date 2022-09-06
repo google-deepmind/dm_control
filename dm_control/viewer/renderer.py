@@ -378,7 +378,8 @@ class SceneCamera:
                data,
                options,
                settings=None,
-               zoom_factor=_FULL_SCENE_ZOOM_FACTOR):
+               zoom_factor=_FULL_SCENE_ZOOM_FACTOR,
+               scene_callback=None):
     """Instance initializer.
 
     Args:
@@ -388,6 +389,9 @@ class SceneCamera:
       settings: Optional, internal camera settings obtained from another
         SceneCamera instance using 'settings' property.
       zoom_factor: The initial zoom factor for zooming into the scene.
+      scene_callback: Scene callback.
+        This is a callable of the form: `my_callable(MjModel, MjData, MjvScene)`
+        that gets applied to every rendered scene.
     """
     # Design notes:
     # We need to recreate the camera for each new model, because each model
@@ -403,6 +407,7 @@ class SceneCamera:
     self._camera.fixedcamid = _FREE_CAMERA_INDEX
     self._camera.type_ = mujoco.mjtCamera.mjCAMERA_FREE
     self._zoom_factor = zoom_factor
+    self._scene_callback = scene_callback
 
     if settings is not None:
       self._settings = settings
@@ -499,6 +504,10 @@ class SceneCamera:
                            self._options.visualization.ptr, perturb_to_render,
                            self._camera.ptr, mujoco.mjtCatBit.mjCAT_ALL,
                            self._scene.ptr)
+
+    # Apply callback if defined.
+    if self._scene_callback is not None:
+      self._scene_callback(self._model, self._data, self._scene)
     return self._scene
 
   def zoom_to_scene(self):
