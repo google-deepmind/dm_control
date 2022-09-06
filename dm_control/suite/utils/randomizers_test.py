@@ -50,7 +50,7 @@ class RandomizeUnlimitedJointsTest(parameterized.TestCase):
             </body>
             <body>
               <geom type="box" size="1 1 1"/>
-              <joint name="ball" type="ball"/>
+              <joint name="ball" type="ball" limited="false"/>
             </body>
             <body>
               <geom type="box" size="1 1 1"/>

@@ -5,6 +5,7 @@
   <children>
     <element name="compiler">
       <attributes>
+        <attribute name="autolimits" type="keyword" valid_values="false true"/>
         <attribute name="boundmass" type="float"/>
         <attribute name="boundinertia" type="float"/>
         <attribute name="settotalmass" type="float"/>
