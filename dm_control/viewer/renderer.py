@@ -42,6 +42,7 @@ _DEFAULT_RENDER_FLAGS = np.zeros(mujoco.mjtRndFlag.mjNRNDFLAG, dtype=np.ubyte)
 _DEFAULT_RENDER_FLAGS[mujoco.mjtRndFlag.mjRND_SHADOW.value] = 1
 _DEFAULT_RENDER_FLAGS[mujoco.mjtRndFlag.mjRND_REFLECTION.value] = 1
 _DEFAULT_RENDER_FLAGS[mujoco.mjtRndFlag.mjRND_SKYBOX.value] = 1
+_DEFAULT_RENDER_FLAGS[mujoco.mjtRndFlag.mjRND_CULL_FACE.value] = 1
 
 
 class BaseRenderer(metaclass=abc.ABCMeta):
