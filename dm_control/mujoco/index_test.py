@@ -15,6 +15,8 @@
 
 """Tests for index."""
 
+import collections
+
 from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control.mujoco import index
@@ -311,10 +313,14 @@ class MujocoIndexTest(parameterized.TestCase):
 
 def _iter_indexers(model, data):
   size_to_axis_indexer = index.make_axis_indexers(model)
+  all_fields = collections.OrderedDict()
   for struct, struct_name in ((model, 'mjmodel'), (data, 'mjdata')):
     indexer = index.struct_indexer(struct, struct_name, size_to_axis_indexer)
     for field_name, field_indexer in indexer._asdict().items():
-      yield field_name, field_indexer
+      if field_name not in all_fields:
+        all_fields[field_name] = field_indexer
+  for field_name, field_indexer in all_fields.items():
+    yield field_name, field_indexer
 
 
 class AllFieldsTest(parameterized.TestCase):

@@ -69,9 +69,11 @@ class UniqueOrderedDict(collections.OrderedDict):
   """Subclass of `OrderedDict` that enforces the uniqueness of keys."""
 
   def __setitem__(self, k, v):
-    if k in self:
+    existing_v = self.get(k)
+    if existing_v is None:
+      super().__setitem__(k, v)
+    elif v != existing_v:
       raise ValueError("Key '{}' already exists.".format(k))
-    super().__setitem__(k, v)
 
 
 def macro_struct_name(name, suffix=None):

@@ -783,6 +783,30 @@
         </element>
       </children>
     </element>
+    <element name="extension">
+      <children>
+        <element name="required" repeated="true" namespace="plugin">
+          <attributes>
+            <attribute name="plugin" type="identifier" required="true"/>
+          </attributes>
+          <children>
+            <element name="instance" repeated="true" namespace="plugin_instance">
+              <attributes>
+                <attribute name="name" type="identifier" required="true"/>
+              </attributes>
+              <children>
+                <element name="config" repeated="true">
+                  <attributes>
+                    <attribute name="key" type="string"/>
+                    <attribute name="value" type="string"/>
+                  </attributes>
+                </element>
+              </children>
+            </element>
+          </children>
+        </element>
+      </children>
+    </element>
     <element name="custom">
       <children>
         <element name="numeric" repeated="true">
@@ -1729,6 +1753,37 @@
             <attribute name="gain" type="float"/>
           </attributes>
         </element>
+        <element name="plugin" repeated="true" namespace="actuator">
+          <attributes>
+            <attribute name="name" type="identifier"/>
+            <attribute name="class" type="reference" reference_namespace="default"/>
+            <attribute name="plugin" type="reference" reference_namespace="plugin"/>
+            <attribute name="instance" type="reference" reference_namespace="plugin_instance"/>
+            <attribute name="group" type="int"/>
+            <attribute name="ctrllimited" type="keyword" valid_values="false true auto"/>
+            <attribute name="forcelimited" type="keyword" valid_values="false true auto"/>
+            <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
+            <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
+            <attribute name="lengthrange" type="array" array_type="float" array_size="2"/>
+            <attribute name="gear" type="array" array_type="float" array_size="6"/>
+            <attribute name="cranklength" type="float"/>
+            <attribute name="joint" type="reference"/>
+            <attribute name="jointinparent" type="reference" reference_namespace="joint"/>
+            <attribute name="site" type="reference"/>
+            <attribute name="tendon" type="reference"/>
+            <attribute name="cranksite" type="reference" reference_namespace="site"/>
+            <attribute name="slidersite" type="reference" reference_namespace="site"/>
+            <attribute name="user" type="array" array_type="float"/>
+          </attributes>
+          <children>
+            <element name="config" repeated="true">
+              <attributes>
+                <attribute name="key" type="string"/>
+                <attribute name="value" type="string"/>
+              </attributes>
+            </element>
+          </children>
+        </element>
       </children>
     </element>
     <element name="sensor">
@@ -2083,6 +2138,25 @@
             <attribute name="needstage" type="keyword" required="true" valid_values="pos vel acc"/>
             <attribute name="dim" type="int" required="true"/>
           </attributes>
+        </element>
+        <element name="plugin" repeated="true" namespace="sensor">
+          <attributes>
+            <attribute name="name" type="identifier"/>
+            <attribute name="plugin" type="reference" reference_namespace="plugin"/>
+            <attribute name="instance" type="reference" reference_namespace="plugin_instance"/>
+            <attribute name="cutoff" type="float"/>
+            <attribute name="objtype" type="keyword" required="true" valid_values="body joint geom site camera light mesh skin hfield texture material equality tendon actuator sensor numeric text tuple contact keyframe"/>
+            <attribute name="objname" type="reference" required="true" reference_namespace="attrib:objtype"/>
+            <attribute name="user" type="array" array_type="float"/>
+          </attributes>
+          <children>
+            <element name="config" repeated="true">
+              <attributes>
+                <attribute name="key" type="string"/>
+                <attribute name="value" type="string"/>
+              </attributes>
+            </element>
+          </children>
         </element>
       </children>
     </element>
