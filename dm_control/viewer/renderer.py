@@ -404,9 +404,7 @@ class SceneCamera:
     self._options = options
 
     self._camera = wrapper.MjvCamera()
-    self._camera.trackbodyid = _NO_BODY_TRACKED_INDEX
-    self._camera.fixedcamid = _FREE_CAMERA_INDEX
-    self._camera.type_ = mujoco.mjtCamera.mjCAMERA_FREE
+    self.set_freelook_mode()
     self._zoom_factor = zoom_factor
     self._scene_callback = scene_callback
 
@@ -421,6 +419,7 @@ class SceneCamera:
     self._camera.trackbodyid = _NO_BODY_TRACKED_INDEX
     self._camera.fixedcamid = _FREE_CAMERA_INDEX
     self._camera.type_ = mujoco.mjtCamera.mjCAMERA_FREE
+    mujoco.mjv_defaultFreeCamera(self._model.ptr, self._camera.ptr)
 
   def set_tracking_mode(self, body_id):
     """Latches the camera onto the specified body.
