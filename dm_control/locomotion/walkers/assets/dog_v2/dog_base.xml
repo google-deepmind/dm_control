@@ -1,0 +1,161 @@
+<mujoco model="dog">
+  <compiler meshdir="dog_assets/" texturedir="dog_assets/"/>
+
+  <option timestep="0.005" noslip_iterations="4"/>
+
+  <size njmax="900" nconmax="300" nkey="1"/>
+
+  <visual>
+    <global offwidth="1920" offheight="1080"/>
+    <map znear="0.001"/>
+    <scale jointlength="8.0" jointwidth="0.5" framelength="2.0" framewidth="0.3"/>
+  </visual>
+
+  <statistic meansize="0.01" extent="1.0"/>
+
+  <default>
+    <joint limited="true" solreflimit="0.01 1" solimplimit="0.9 0.99 0.01" stiffness="0.1" armature="0.0001" damping="0.01"/>
+    <geom friction="0.9" solref="0.01 1" solimp="0.95 0.99 0.001"/>
+    <tendon rgba="0.5 0 0 1"/>
+    <general ctrllimited="true" ctrlrange="-1 1" dyntype="filter" dynprm="0.05" gainprm="0.02"/>
+    <default class="bone">
+      <geom type="mesh" contype="0" conaffinity="0" group="5" rgba="0.5 0.5 0.5 1" density="1100.0"/>
+      <default class="light_bone">
+        <geom density="300.0"/>
+      </default>
+      <default class="visible_bone">
+        <geom contype="0" conaffinity="0" group="1"/>
+      </default>
+    </default>
+    <default class="collision_primitive">
+      <geom type="capsule" contype="1" conaffinity="1" condim="1" group="3" rgba="0 0.5 0.5 1" density="300.0"/>
+      <default class="foot_primitive">
+        <geom rgba="0 0.6 0.4 1" solimp="0.9 0.95 0.001"/>
+      </default>
+      <default class="tooth_primitive">
+        <geom condim="6" priority="2" friction="0.5 0.01 0.01"/>
+      </default>
+      <default class="nonself_collision_primitive">
+        <geom conaffinity="0"/>
+      </default>
+    </default>
+    <default class="connector">
+      <site group="5" rgba="0 0.5 0 1" size="0.005"/>
+    </default>
+    <default class="muscle">
+      <geom contype="0" conaffinity="0" group="4" rgba="0.5 0 0 1"/>
+    </default>
+    <default class="lumbar">
+      <joint group="3" pos="0.012 0 0.01" armature="0.01" damping="3.0"/>
+      <general gainprm="40"/>
+      <default class="lumbar_extend">
+        <joint stiffness="30.0" range="-24.5 24.5"/>
+        <general gainprm="60"/>
+      </default>
+      <default class="lumbar_bend">
+        <joint stiffness="45.0" range="-21 21"/>
+      </default>
+      <default class="lumbar_twist">
+        <joint stiffness="45.0" range="-16.333 16.333"/>
+      </default>
+    </default>
+    <default class="cervical">
+      <joint group="3" pos="-0.7 0 0" stiffness="4.0" armature="0.01" damping="3.0"/>
+      <default class="cervical_extend">
+        <joint range="-17.5 61.25"/>
+        <general gainprm="20"/>
+      </default>
+      <default class="cervical_bend">
+        <joint range="-35 35"/>
+        <general gainprm="20"/>
+      </default>
+      <default class="cervical_twist">
+        <joint range="-23.333 23.333"/>
+        <general gainprm="14"/>
+      </default>
+    </default>
+    <default class="atlas">
+      <joint axis="0 -1 0" stiffness="2.0" range="-15 30" damping="0.2"/>
+      <general gainprm="10"/>
+    </default>
+    <default class="caudal">
+      <joint group="3" springdamper="0.001 50"/>
+      <general gainprm="0.5"/>
+      <default class="caudal_extend">
+        <joint range="-15 15"/>
+      </default>
+      <default class="caudal_bend">
+        <joint range="-15 15"/>
+      </default>
+    </default>
+    <default class="mandible">
+      <joint stiffness="2.0" range="-15 20" springref="-11.0" damping="0.2"/>
+      <general gainprm="3"/>
+    </default>
+    <default class="hip">
+      <joint stiffness="5.0" armature="0.01" damping="0.5"/>
+      <general gainprm="10"/>
+      <default class="hip_supinate">
+        <joint range="-20 20"/>
+      </default>
+      <default class="hip_abduct">
+        <joint range="-30 90"/>
+      </default>
+      <default class="hip_extend">
+        <joint range="-130 60"/>
+        <general gainprm="40"/>
+      </default>
+    </default>
+    <default class="knee">
+      <joint range="-120 10" damping="0.5"/>
+      <general gainprm="30"/>
+    </default>
+    <default class="ankle">
+      <joint range="-100 20" damping="0.3"/>
+      <general gainprm="20"/>
+    </default>
+    <default class="toe">
+      <joint stiffness="2.0" range="-15 70" damping="0.02"/>
+      <general gainprm="2"/>
+    </default>
+    <default class="scapula">
+      <joint stiffness="10.0" damping="1.5"/>
+      <general gainprm="30"/>
+      <default class="scapula_supinate">
+        <joint pos="-0.03 0.02 0" range="-15 35"/>
+      </default>
+      <default class="scapula_abduct">
+        <joint pos="0 0.05 -0.07" range="-15 20"/>
+      </default>
+      <default class="scapula_extend">
+        <joint pos="0 0 0" range="-30 30"/>
+        <general gainprm="30"/>
+      </default>
+    </default>
+    <default class="shoulder">
+      <joint stiffness="5.0" damping="1.0"/>
+      <general gainprm="30"/>
+      <default class="shoulder_extend">
+        <joint range="-40 60"/>
+      </default>
+      <default class="shoulder_supinate">
+        <joint range="-30 15"/>
+      </default>
+    </default>
+    <default class="elbow">
+      <joint range="-100 30" damping="0.3"/>
+      <general gainprm="20"/>
+    </default>
+    <default class="wrist">
+      <joint range="-110 10" damping="0.2"/>
+      <general gainprm="10"/>
+    </default>
+    <default class="finger">
+      <joint stiffness="1.0" range="-15 100" damping="0.02"/>
+      <general gainprm="2"/>
+    </default>
+    <default class="sensor">
+      <site group="4"/>
+    </default>
+  </default>
+</mujoco>

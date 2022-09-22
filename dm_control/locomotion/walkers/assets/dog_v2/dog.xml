@@ -1,0 +1,988 @@
+<mujoco model="dog">
+  <compiler meshdir="../../../../suite/dog_assets" texturedir="../../../../suite/dog_assets"/>
+
+  <option timestep="0.005" noslip_iterations="4"/>
+
+  <size njmax="900" nconmax="300" nkey="1"/>
+
+  <visual>
+    <global offwidth="1920" offheight="1080"/>
+    <map znear="0.001"/>
+    <scale jointlength="8" jointwidth="0.5" framelength="2" framewidth="0.3"/>
+  </visual>
+
+  <statistic meansize="0.01" extent="1"/>
+
+  <default>
+    <joint limited="true" solreflimit="0.01 1" solimplimit="0.9 0.99 0.01" stiffness="0.1" armature="0.0001" damping="0.01"/>
+    <geom friction="0.9" solref="0.01 1" solimp="0.95 0.99 0.001"/>
+    <tendon rgba="0.5 0 0 1"/>
+    <general ctrllimited="true" ctrlrange="-1 1" dyntype="filter" dynprm="0.05" gainprm="0.02"/>
+    <default class="bone">
+      <geom type="mesh" contype="0" conaffinity="0" group="5" rgba="0.5 0.5 0.5 1" density="1100"/>
+      <default class="light_bone">
+        <geom density="300"/>
+      </default>
+      <default class="visible_bone">
+        <geom contype="0" conaffinity="0" group="1"/>
+      </default>
+    </default>
+    <default class="collision_primitive">
+      <geom type="capsule" contype="1" conaffinity="1" condim="1" group="3" rgba="0 0.5 0.5 1" density="300"/>
+      <default class="foot_primitive">
+        <geom rgba="0 0.6 0.4 1" solimp="0.9 0.95 0.001"/>
+      </default>
+      <default class="tooth_primitive">
+        <geom condim="6" priority="2" friction="0.5 0.01 0.01"/>
+      </default>
+      <default class="nonself_collision_primitive">
+        <geom conaffinity="0"/>
+      </default>
+    </default>
+    <default class="connector">
+      <site group="5" rgba="0 0.5 0 1" size="0.005"/>
+    </default>
+    <default class="muscle">
+      <geom contype="0" conaffinity="0" group="4" rgba="0.5 0 0 1"/>
+    </default>
+    <default class="lumbar">
+      <joint group="3" pos="0.012 0 0.01" armature="0.01" damping="3"/>
+      <general gainprm="40"/>
+      <default class="lumbar_extend">
+        <joint stiffness="30" range="-42.88 42.88"/>
+        <general gainprm="60"/>
+      </default>
+      <default class="lumbar_bend">
+        <joint stiffness="45" range="-36.75 36.75"/>
+      </default>
+      <default class="lumbar_twist">
+        <joint stiffness="45" range="-38.11 38.11"/>
+      </default>
+    </default>
+    <default class="cervical">
+      <joint group="3" pos="-0.7 0 0" stiffness="4" armature="0.01" damping="3"/>
+      <default class="cervical_extend">
+        <joint range="-30.62 107.2"/>
+        <general gainprm="20"/>
+      </default>
+      <default class="cervical_bend">
+        <joint range="-61.25 61.25"/>
+        <general gainprm="20"/>
+      </default>
+      <default class="cervical_twist">
+        <joint range="-54.44 54.44"/>
+        <general gainprm="14"/>
+      </default>
+    </default>
+    <default class="atlas">
+      <joint axis="0 -1 0" stiffness="2" range="-15 30" damping="0.2"/>
+      <general gainprm="10"/>
+    </default>
+    <default class="caudal">
+      <joint group="3" springdamper="0.001 50"/>
+      <general gainprm="0.5"/>
+      <default class="caudal_extend">
+        <joint range="-15 15"/>
+      </default>
+      <default class="caudal_bend">
+        <joint range="-15 15"/>
+      </default>
+    </default>
+    <default class="mandible">
+      <joint stiffness="2" range="-15 20" springref="-11" damping="0.2"/>
+      <general gainprm="3"/>
+    </default>
+    <default class="hip">
+      <joint stiffness="5" armature="0.01" damping="0.5"/>
+      <general gainprm="10"/>
+      <default class="hip_supinate">
+        <joint range="-20 20"/>
+      </default>
+      <default class="hip_abduct">
+        <joint range="-30 90"/>
+      </default>
+      <default class="hip_extend">
+        <joint range="-130 60"/>
+        <general gainprm="40"/>
+      </default>
+    </default>
+    <default class="knee">
+      <joint range="-120 10" damping="0.5"/>
+      <general gainprm="30"/>
+    </default>
+    <default class="ankle">
+      <joint range="-100 20" damping="0.3"/>
+      <general gainprm="20"/>
+    </default>
+    <default class="toe">
+      <joint stiffness="2" range="-15 70" damping="0.02"/>
+      <general gainprm="2"/>
+    </default>
+    <default class="scapula">
+      <joint stiffness="10" damping="1.5"/>
+      <general gainprm="30"/>
+      <default class="scapula_supinate">
+        <joint pos="-0.03 0.02 0" range="-15 35"/>
+      </default>
+      <default class="scapula_abduct">
+        <joint pos="0 0.05 -0.07" range="-15 20"/>
+      </default>
+      <default class="scapula_extend">
+        <joint pos="0 0 0" range="-30 30"/>
+        <general gainprm="30"/>
+      </default>
+    </default>
+    <default class="shoulder">
+      <joint stiffness="5" damping="1"/>
+      <general gainprm="30"/>
+      <default class="shoulder_extend">
+        <joint range="-40 60"/>
+      </default>
+      <default class="shoulder_supinate">
+        <joint range="-30 15"/>
+      </default>
+    </default>
+    <default class="elbow">
+      <joint range="-100 30" damping="0.3"/>
+      <general gainprm="20"/>
+    </default>
+    <default class="wrist">
+      <joint range="-110 10" damping="0.2"/>
+      <general gainprm="10"/>
+    </default>
+    <default class="finger">
+      <joint stiffness="1" range="-15 100" damping="0.02"/>
+      <general gainprm="2"/>
+    </default>
+    <default class="sensor">
+      <site group="4"/>
+    </default>
+  </default>
+
+  <asset>
+    <mesh name="C_1" file="BONEC_1.stl"/>
+    <mesh name="C_2" file="BONEC_2.stl"/>
+    <mesh name="C_3" file="BONEC_3.stl"/>
+    <mesh name="C_4" file="BONEC_4.stl"/>
+    <mesh name="C_5" file="BONEC_5.stl"/>
+    <mesh name="C_6" file="BONEC_6.stl"/>
+    <mesh name="C_7" file="BONEC_7.stl"/>
+    <mesh name="Ca_1" file="BONECa_1.stl"/>
+    <mesh name="Ca_10" file="BONECa_10.stl"/>
+    <mesh name="Ca_11" file="BONECa_11.stl"/>
+    <mesh name="Ca_12" file="BONECa_12.stl"/>
+    <mesh name="Ca_13" file="BONECa_13.stl"/>
+    <mesh name="Ca_14" file="BONECa_14.stl"/>
+    <mesh name="Ca_15" file="BONECa_15.stl"/>
+    <mesh name="Ca_16" file="BONECa_16.stl"/>
+    <mesh name="Ca_17" file="BONECa_17.stl"/>
+    <mesh name="Ca_18" file="BONECa_18.stl"/>
+    <mesh name="Ca_19" file="BONECa_19.stl"/>
+    <mesh name="Ca_2" file="BONECa_2.stl"/>
+    <mesh name="Ca_20" file="BONECa_20.stl"/>
+    <mesh name="Ca_21" file="BONECa_21.stl"/>
+    <mesh name="Ca_3" file="BONECa_3.stl"/>
+    <mesh name="Ca_4" file="BONECa_4.stl"/>
+    <mesh name="Ca_5" file="BONECa_5.stl"/>
+    <mesh name="Ca_6" file="BONECa_6.stl"/>
+    <mesh name="Ca_7" file="BONECa_7.stl"/>
+    <mesh name="Ca_8" file="BONECa_8.stl"/>
+    <mesh name="Ca_9" file="BONECa_9.stl"/>
+    <mesh name="Calcaneal_tuber_L" file="BONECalcaneal_tuber_L.stl"/>
+    <mesh name="Calcaneal_tuber_R" file="BONECalcaneal_tuber_R.stl"/>
+    <mesh name="Carpal_III_L" file="BONECarpal_III_L.stl"/>
+    <mesh name="Carpal_III_R" file="BONECarpal_III_R.stl"/>
+    <mesh name="Carpal_II_L" file="BONECarpal_II_L.stl"/>
+    <mesh name="Carpal_II_R" file="BONECarpal_II_R.stl"/>
+    <mesh name="Carpal_IV_L" file="BONECarpal_IV_L.stl"/>
+    <mesh name="Carpal_IV_R" file="BONECarpal_IV_R.stl"/>
+    <mesh name="Carpal_I_L" file="BONECarpal_I_L.stl"/>
+    <mesh name="Carpal_I_R" file="BONECarpal_I_R.stl"/>
+    <mesh name="Carpal_L" file="BONECarpal_L.stl"/>
+    <mesh name="Carpal_R" file="BONECarpal_R.stl"/>
+    <mesh name="Carpal_Sesamoid_L" file="BONECarpal_Sesamoid_L.stl"/>
+    <mesh name="Carpal_Sesamoid_R" file="BONECarpal_Sesamoid_R.stl"/>
+    <mesh name="Carpal_accessory_L" file="BONECarpal_accessory_L.stl"/>
+    <mesh name="Carpal_accessory_R" file="BONECarpal_accessory_R.stl"/>
+    <mesh name="Carpal_ulnar_L" file="BONECarpal_ulnar_L.stl"/>
+    <mesh name="Carpal_ulnar_R" file="BONECarpal_ulnar_R.stl"/>
+    <mesh name="Femoris_L" file="BONEFemoris_L.stl"/>
+    <mesh name="Femoris_R" file="BONEFemoris_R.stl"/>
+    <mesh name="Femoris_fabellae_L_1" file="BONEFemoris_fabellae_L_1.stl"/>
+    <mesh name="Femoris_fabellae_L_2" file="BONEFemoris_fabellae_L_2.stl"/>
+    <mesh name="Femoris_fabellae_R_1" file="BONEFemoris_fabellae_R_1.stl"/>
+    <mesh name="Femoris_fabellae_R_2" file="BONEFemoris_fabellae_R_2.stl"/>
+    <mesh name="Fibula_L" file="BONEFibula_L.stl"/>
+    <mesh name="Fibula_R" file="BONEFibula_R.stl"/>
+    <mesh name="Jaw" file="BONEJaw.stl"/>
+    <mesh name="L_1" file="BONEL_1.stl"/>
+    <mesh name="L_2" file="BONEL_2.stl"/>
+    <mesh name="L_3" file="BONEL_3.stl"/>
+    <mesh name="L_4" file="BONEL_4.stl"/>
+    <mesh name="L_5" file="BONEL_5.stl"/>
+    <mesh name="L_6" file="BONEL_6.stl"/>
+    <mesh name="L_7" file="BONEL_7.stl"/>
+    <mesh name="MergedSkull" file="BONEMergedSkull.stl"/>
+    <mesh name="Metatarsi_L_1" file="BONEMetatarsi_L_1.stl"/>
+    <mesh name="Metatarsi_L_2" file="BONEMetatarsi_L_2.stl"/>
+    <mesh name="Metatarsi_L_3" file="BONEMetatarsi_L_3.stl"/>
+    <mesh name="Metatarsi_L_4" file="BONEMetatarsi_L_4.stl"/>
+    <mesh name="Metatarsi_R_1" file="BONEMetatarsi_R_1.stl"/>
+    <mesh name="Metatarsi_R_2" file="BONEMetatarsi_R_2.stl"/>
+    <mesh name="Metatarsi_R_3" file="BONEMetatarsi_R_3.stl"/>
+    <mesh name="Metatarsi_R_4" file="BONEMetatarsi_R_4.stl"/>
+    <mesh name="Os_metacarpale_III_L" file="BONEOs_metacarpale_III_L.stl"/>
+    <mesh name="Os_metacarpale_III_R" file="BONEOs_metacarpale_III_R.stl"/>
+    <mesh name="Os_metacarpale_II_L" file="BONEOs_metacarpale_II_L.stl"/>
+    <mesh name="Os_metacarpale_II_R" file="BONEOs_metacarpale_II_R.stl"/>
+    <mesh name="Os_metacarpale_IV_L" file="BONEOs_metacarpale_IV_L.stl"/>
+    <mesh name="Os_metacarpale_IV_R" file="BONEOs_metacarpale_IV_R.stl"/>
+    <mesh name="Os_metacarpale_I_L" file="BONEOs_metacarpale_I_L.stl"/>
+    <mesh name="Os_metacarpale_I_R" file="BONEOs_metacarpale_I_R.stl"/>
+    <mesh name="Os_metacarpale_V_L.001" file="BONEOs_metacarpale_V_L.001.stl"/>
+    <mesh name="Os_metacarpale_V_L" file="BONEOs_metacarpale_V_L.stl"/>
+    <mesh name="Os_metacarpale_V_R.001" file="BONEOs_metacarpale_V_R.001.stl"/>
+    <mesh name="Os_metacarpale_V_R" file="BONEOs_metacarpale_V_R.stl"/>
+    <mesh name="Patella_L" file="BONEPatella_L.stl"/>
+    <mesh name="Patella_R" file="BONEPatella_R.stl"/>
+    <mesh name="Pelvis" file="BONEPelvis.stl"/>
+    <mesh name="Phalanges_B_2_L_1" file="BONEPhalanges_B_2_L_1.stl"/>
+    <mesh name="Phalanges_B_2_L_2" file="BONEPhalanges_B_2_L_2.stl"/>
+    <mesh name="Phalanges_B_2_L_3" file="BONEPhalanges_B_2_L_3.stl"/>
+    <mesh name="Phalanges_B_2_L_4" file="BONEPhalanges_B_2_L_4.stl"/>
+    <mesh name="Phalanges_B_2_R_1" file="BONEPhalanges_B_2_R_1.stl"/>
+    <mesh name="Phalanges_B_2_R_2" file="BONEPhalanges_B_2_R_2.stl"/>
+    <mesh name="Phalanges_B_2_R_3" file="BONEPhalanges_B_2_R_3.stl"/>
+    <mesh name="Phalanges_B_2_R_4" file="BONEPhalanges_B_2_R_4.stl"/>
+    <mesh name="Phalanges_B_3_L_1" file="BONEPhalanges_B_3_L_1.stl"/>
+    <mesh name="Phalanges_B_3_L_2" file="BONEPhalanges_B_3_L_2.stl"/>
+    <mesh name="Phalanges_B_3_L_3" file="BONEPhalanges_B_3_L_3.stl"/>
+    <mesh name="Phalanges_B_3_L_4" file="BONEPhalanges_B_3_L_4.stl"/>
+    <mesh name="Phalanges_B_3_R_1" file="BONEPhalanges_B_3_R_1.stl"/>
+    <mesh name="Phalanges_B_3_R_2" file="BONEPhalanges_B_3_R_2.stl"/>
+    <mesh name="Phalanges_B_3_R_3" file="BONEPhalanges_B_3_R_3.stl"/>
+    <mesh name="Phalanges_B_3_R_4" file="BONEPhalanges_B_3_R_4.stl"/>
+    <mesh name="Phalanges_B_L_1" file="BONEPhalanges_B_L_1.stl"/>
+    <mesh name="Phalanges_B_L_2" file="BONEPhalanges_B_L_2.stl"/>
+    <mesh name="Phalanges_B_L_3" file="BONEPhalanges_B_L_3.stl"/>
+    <mesh name="Phalanges_B_L_4" file="BONEPhalanges_B_L_4.stl"/>
+    <mesh name="Phalanges_B_R_1" file="BONEPhalanges_B_R_1.stl"/>
+    <mesh name="Phalanges_B_R_2" file="BONEPhalanges_B_R_2.stl"/>
+    <mesh name="Phalanges_B_R_3" file="BONEPhalanges_B_R_3.stl"/>
+    <mesh name="Phalanges_B_R_4" file="BONEPhalanges_B_R_4.stl"/>
+    <mesh name="Phalanx_distalis_digiti_III_L" file="BONEPhalanx_distalis_digiti_III_L.stl"/>
+    <mesh name="Phalanx_distalis_digiti_III_R" file="BONEPhalanx_distalis_digiti_III_R.stl"/>
+    <mesh name="Phalanx_distalis_digiti_II_L" file="BONEPhalanx_distalis_digiti_II_L.stl"/>
+    <mesh name="Phalanx_distalis_digiti_II_R" file="BONEPhalanx_distalis_digiti_II_R.stl"/>
+    <mesh name="Phalanx_distalis_digiti_IV_L" file="BONEPhalanx_distalis_digiti_IV_L.stl"/>
+    <mesh name="Phalanx_distalis_digiti_IV_R" file="BONEPhalanx_distalis_digiti_IV_R.stl"/>
+    <mesh name="Phalanx_distalis_digiti_I_L" file="BONEPhalanx_distalis_digiti_I_L.stl"/>
+    <mesh name="Phalanx_distalis_digiti_I_R" file="BONEPhalanx_distalis_digiti_I_R.stl"/>
+    <mesh name="Phalanx_distalis_digiti_V_L" file="BONEPhalanx_distalis_digiti_V_L.stl"/>
+    <mesh name="Phalanx_distalis_digiti_V_R" file="BONEPhalanx_distalis_digiti_V_R.stl"/>
+    <mesh name="Phalanx_media_digiti_III_L" file="BONEPhalanx_media_digiti_III_L.stl"/>
+    <mesh name="Phalanx_media_digiti_III_R" file="BONEPhalanx_media_digiti_III_R.stl"/>
+    <mesh name="Phalanx_media_digiti_II_L" file="BONEPhalanx_media_digiti_II_L.stl"/>
+    <mesh name="Phalanx_media_digiti_II_R" file="BONEPhalanx_media_digiti_II_R.stl"/>
+    <mesh name="Phalanx_media_digiti_IV_L" file="BONEPhalanx_media_digiti_IV_L.stl"/>
+    <mesh name="Phalanx_media_digiti_IV_R" file="BONEPhalanx_media_digiti_IV_R.stl"/>
+    <mesh name="Phalanx_media_digiti_V_L" file="BONEPhalanx_media_digiti_V_L.stl"/>
+    <mesh name="Phalanx_media_digiti_V_R" file="BONEPhalanx_media_digiti_V_R.stl"/>
+    <mesh name="Phalanxpmxinutlis_digiti_III_L_" file="BONEPhalanxpmxinutlis_digiti_III_L_.stl"/>
+    <mesh name="Phalanxpmxinutlis_digiti_III_R" file="BONEPhalanxpmxinutlis_digiti_III_R.stl"/>
+    <mesh name="Phalanxpmxinutlis_digiti_II_L" file="BONEPhalanxpmxinutlis_digiti_II_L.stl"/>
+    <mesh name="Phalanxpmxinutlis_digiti_II_R" file="BONEPhalanxpmxinutlis_digiti_II_R.stl"/>
+    <mesh name="Phalanxpmxinutlis_digiti_IV_L_" file="BONEPhalanxpmxinutlis_digiti_IV_L_.stl"/>
+    <mesh name="Phalanxpmxinutlis_digiti_IV_R" file="BONEPhalanxpmxinutlis_digiti_IV_R.stl"/>
+    <mesh name="Phalanxpmxinutlis_digiti_V_L" file="BONEPhalanxpmxinutlis_digiti_V_L.stl"/>
+    <mesh name="Phalanxpmxinutlis_digiti_V_R" file="BONEPhalanxpmxinutlis_digiti_V_R.stl"/>
+    <mesh name="Radius_L" file="BONERadius_L.stl"/>
+    <mesh name="Radius_R" file="BONERadius_R.stl"/>
+    <mesh name="Ribcage" file="BONERibcage.stl"/>
+    <mesh name="Sacrum" file="BONESacrum.stl"/>
+    <mesh name="Scapula_L" file="BONEScapula_L.stl"/>
+    <mesh name="Scapula_R" file="BONEScapula_R.stl"/>
+    <mesh name="Tarsus_L_I" file="BONETarsus_L_I.stl"/>
+    <mesh name="Tarsus_L_II" file="BONETarsus_L_II.stl"/>
+    <mesh name="Tarsus_L_III" file="BONETarsus_L_III.stl"/>
+    <mesh name="Tarsus_L_IV" file="BONETarsus_L_IV.stl"/>
+    <mesh name="Tarsus_R_I" file="BONETarsus_R_I.stl"/>
+    <mesh name="Tarsus_R_II" file="BONETarsus_R_II.stl"/>
+    <mesh name="Tarsus_R_III" file="BONETarsus_R_III.stl"/>
+    <mesh name="Tarsus_R_IV" file="BONETarsus_R_IV.stl"/>
+    <mesh name="Tarsus_central_L" file="BONETarsus_central_L.stl"/>
+    <mesh name="Tarsus_central_R" file="BONETarsus_central_R.stl"/>
+    <mesh name="Tibia_L" file="BONETibia_L.stl"/>
+    <mesh name="Tibia_R" file="BONETibia_R.stl"/>
+    <mesh name="Tibial_tarsal_L" file="BONETibial_tarsal_L.stl"/>
+    <mesh name="Tibial_tarsal_R" file="BONETibial_tarsal_R.stl"/>
+    <mesh name="Ulna_L" file="BONEUlna_L.stl"/>
+    <mesh name="Ulna_R" file="BONEUlna_R.stl"/>
+    <mesh name="eye_L" file="BONEeye_L.stl"/>
+    <mesh name="eye_R" file="BONEeye_R.stl"/>
+    <mesh name="humerus_L" file="BONEhumerus_L.stl"/>
+    <mesh name="humerus_R" file="BONEhumerus_R.stl"/>
+    <texture name="skin" type="2d" file="skin_texture.png"/>
+    <material name="skin" texture="skin"/>
+    <skin name="skin" file="dog_skin.skn" material="skin"/>
+  </asset>
+
+  <worldbody>
+    <body name="torso" pos="0.0404 0 0.4152">
+      <freejoint name="root"/>
+      <light name="light" mode="trackcom" pos="0 0 3"/>
+      <camera name="y-axis" mode="trackcom" pos="0 -1.5 0.8" xyaxes="1 0 0 0 0.6 1"/>
+      <camera name="x-axis" mode="trackcom" pos="2 0 0.5" xyaxes="0 1 0 -0.3 0 1"/>
+      <geom name="collision_torso" class="nonself_collision_primitive" type="ellipsoid" size="0.2 0.09 0.11" density="200" pos="0 0 0" euler="0 10 0"/>
+      <body name="L_1" pos="-0.1235 0 0.09287">
+        <geom name="L_1" class="bone" pos="0.08309 0 -0.5081" mesh="L_1"/>
+        <geom name="L_1_collision" class="nonself_collision_primitive" type="sphere" size="0.05" pos="0 0 -0.02"/>
+        <body name="L_2" pos="-0.02302 0 0.0009603">
+          <geom name="L_2" class="bone" pos="0.1061 0 -0.5091" mesh="L_2"/>
+          <geom name="L_2_collision" class="nonself_collision_primitive" type="sphere" size="0.05" pos="0 0 -0.02"/>
+          <body name="L_3" pos="-0.0233 0 0.0003924">
+            <geom name="L_3" class="bone" pos="0.1294 0 -0.5094" mesh="L_3"/>
+            <geom name="L_3_collision" class="nonself_collision_primitive" type="sphere" size="0.05" pos="0 0 -0.02"/>
+            <body name="L_4" pos="-0.02425 0 -0.0004178">
+              <geom name="L_4" class="bone" pos="0.1537 0 -0.509" mesh="L_4"/>
+              <geom name="L_4_collision" class="nonself_collision_primitive" type="sphere" size="0.05" pos="0 0 -0.02"/>
+              <body name="L_5" pos="-0.02446 0 -0.0001499">
+                <geom name="L_5" class="bone" pos="0.1781 0 -0.5089" mesh="L_5"/>
+                <geom name="L_5_collision" class="nonself_collision_primitive" type="sphere" size="0.05" pos="0 0 -0.02"/>
+                <body name="L_6" pos="-0.02344 0 0.000669">
+                  <geom name="L_6" class="bone" pos="0.2016 0 -0.5095" mesh="L_6"/>
+                  <geom name="L_6_collision" class="nonself_collision_primitive" type="sphere" size="0.05" pos="0 0 -0.02"/>
+                  <body name="L_7" pos="-0.0264 0 0.001422">
+                    <geom name="L_7" class="bone" pos="0.228 0 -0.511" mesh="L_7"/>
+                    <geom name="L_7_collision" class="nonself_collision_primitive" type="sphere" size="0.05" pos="0 0 -0.02"/>
+                    <joint name="L_7_extend" class="lumbar_extend" axis="0 1 0"/>
+                    <joint name="L_7_bend" class="lumbar_bend" axis="0 0 1"/>
+                    <body name="pelvis" pos="-0.08022 0 -0.0348">
+                      <geom name="Sacrum" class="bone" pos="0.3082 0 -0.4762" mesh="Sacrum"/>
+                      <geom name="Pelvis" class="bone" pos="0.3082 0 -0.4762" mesh="Pelvis"/>
+                      <geom name="collision_pelvis_L" class="nonself_collision_primitive" size="0.05 0.05 0" pos="0.01 0.02 -0.01" euler="0 70 0"/>
+                      <geom name="collision_pelvis_R" class="nonself_collision_primitive" size="0.05 0.05 0" pos="0.01 -0.02 -0.01" euler="0 70 0"/>
+                      <body name="upper_leg_L" pos="-0.01811 0.04724 -0.0126">
+                        <geom name="Femoris_L" class="bone" pos="0.3263 -0.04724 -0.4636" mesh="Femoris_L"/>
+                        <geom name="Femoris_fabellae_L_1" class="bone" pos="0.3263 -0.04724 -0.4636" mesh="Femoris_fabellae_L_1"/>
+                        <geom name="Femoris_fabellae_L_2" class="bone" pos="0.3263 -0.04724 -0.4636" mesh="Femoris_fabellae_L_2"/>
+                        <geom name="Patella_L" class="bone" pos="0.3263 -0.04724 -0.4636" mesh="Patella_L"/>
+                        <joint name="hip_L_supinate" class="hip_supinate" axis="0 0 -1"/>
+                        <joint name="hip_L_abduct" class="hip_abduct" axis="-1 0 0"/>
+                        <joint name="hip_L_extend" class="hip_extend" axis="0 1 0"/>
+                        <geom name="upper_leg_L0_collision" class="collision_primitive" size="0.04 0.08" pos="-0.01 0.02 -0.08" euler="10 20 0"/>
+                        <geom name="upper_leg_L1_collision" class="collision_primitive" size="0.04 0.04" pos="-0.03 0 -0.05" euler="10 5 0"/>
+                        <body name="lower_leg_L" pos="-0.02304 0.0311 -0.167">
+                          <geom name="Fibula_L" class="bone" pos="0.3493 -0.07834 -0.2966" mesh="Fibula_L"/>
+                          <geom name="Tibia_L" class="bone" pos="0.3493 -0.07834 -0.2966" mesh="Tibia_L"/>
+                          <joint name="knee_L" class="knee" axis="0 -1 0"/>
+                          <body name="foot_L" pos="-0.1791 -0.005642 -0.1382">
+                            <geom name="Calcaneal_tuber_L" class="bone" pos="0.5285 -0.07269 -0.1583" mesh="Calcaneal_tuber_L"/>
+                            <geom name="Metatarsi_L_1" class="bone" pos="0.5285 -0.07269 -0.1583" mesh="Metatarsi_L_1"/>
+                            <geom name="Metatarsi_L_2" class="bone" pos="0.5285 -0.07269 -0.1583" mesh="Metatarsi_L_2"/>
+                            <geom name="Metatarsi_L_3" class="bone" pos="0.5285 -0.07269 -0.1583" mesh="Metatarsi_L_3"/>
+                            <geom name="Metatarsi_L_4" class="bone" pos="0.5285 -0.07269 -0.1583" mesh="Metatarsi_L_4"/>
+                            <geom name="Tarsus_L_I" class="bone" pos="0.5285 -0.07269 -0.1583" mesh="Tarsus_L_I"/>
+                            <geom name="Tarsus_L_II" class="bone" pos="0.5285 -0.07269 -0.1583" mesh="Tarsus_L_II"/>
+                            <geom name="Tarsus_L_III" class="bone" pos="0.5285 -0.07269 -0.1583" mesh="Tarsus_L_III"/>
+                            <geom name="Tarsus_L_IV" class="bone" pos="0.5285 -0.07269 -0.1583" mesh="Tarsus_L_IV"/>
+                            <geom name="Tarsus_central_L" class="bone" pos="0.5285 -0.07269 -0.1583" mesh="Tarsus_central_L"/>
+                            <geom name="Tibial_tarsal_L" class="bone" pos="0.5285 -0.07269 -0.1583" mesh="Tibial_tarsal_L"/>
+                            <joint name="ankle_L" class="ankle" axis="0 1 0"/>
+                            <geom name="foot_L_collision" class="collision_primitive" size="0.015 0.07" pos="-0.01 0.005 -0.05"/>
+                            <body name="foot_anchor_L" pos="-0.01504 0.008131 -0.1199">
+                              <geom name="foot_anchor_L" class="foot_primitive" type="box" contype="0" conaffinity="0" size="0.005 0.005 0.005"/>
+                              <site name="foot_anchor_L" class="sensor"/>
+                              <body name="toe_L">
+                                <geom name="Phalanges_B_2_L_1" class="bone" pos="0.5435 -0.08083 -0.03838" mesh="Phalanges_B_2_L_1"/>
+                                <geom name="Phalanges_B_2_L_2" class="bone" pos="0.5435 -0.08083 -0.03838" mesh="Phalanges_B_2_L_2"/>
+                                <geom name="Phalanges_B_2_L_3" class="bone" pos="0.5435 -0.08083 -0.03838" mesh="Phalanges_B_2_L_3"/>
+                                <geom name="Phalanges_B_2_L_4" class="bone" pos="0.5435 -0.08083 -0.03838" mesh="Phalanges_B_2_L_4"/>
+                                <geom name="Phalanges_B_3_L_1" class="visible_bone" pos="0.5435 -0.08083 -0.03838" mesh="Phalanges_B_3_L_1"/>
+                                <geom name="Phalanges_B_3_L_2" class="visible_bone" pos="0.5435 -0.08083 -0.03838" mesh="Phalanges_B_3_L_2"/>
+                                <geom name="Phalanges_B_3_L_3" class="visible_bone" pos="0.5435 -0.08083 -0.03838" mesh="Phalanges_B_3_L_3"/>
+                                <geom name="Phalanges_B_3_L_4" class="visible_bone" pos="0.5435 -0.08083 -0.03838" mesh="Phalanges_B_3_L_4"/>
+                                <geom name="Phalanges_B_L_1" class="bone" pos="0.5435 -0.08083 -0.03838" mesh="Phalanges_B_L_1"/>
+                                <geom name="Phalanges_B_L_2" class="bone" pos="0.5435 -0.08083 -0.03838" mesh="Phalanges_B_L_2"/>
+                                <geom name="Phalanges_B_L_3" class="bone" pos="0.5435 -0.08083 -0.03838" mesh="Phalanges_B_L_3"/>
+                                <geom name="Phalanges_B_L_4" class="bone" pos="0.5435 -0.08083 -0.03838" mesh="Phalanges_B_L_4"/>
+                                <joint name="toe_L" class="toe" axis="0 1 0"/>
+                                <geom name="toe_L0_collision" class="foot_primitive" size="0.018 0.012" pos="0.015 0 -0.02" euler="90 0 0"/>
+                                <geom name="toe_L1_collision" class="foot_primitive" size="0.01 0.015" pos="0.035 0 -0.028" euler="90 0 0"/>
+                                <geom name="toe_L2_collision" class="foot_primitive" size="0.008 0.01" pos="0.045 0 -0.03" euler="90 0 0"/>
+                                <site name="sole_L" class="sensor" type="box" size="0.025 0.03 0.008" pos="0.026 0 -0.033"/>
+                              </body>
+                            </body>
+                          </body>
+                          <geom name="lower_leg_L_collision" class="collision_primitive" size="0.02 0.1" pos="-0.09513 -1.177e-05 -0.06865" quat="0.8005 0.187 0.4209 0.3835"/>
+                        </body>
+                      </body>
+                      <body name="upper_leg_R" pos="-0.01811 -0.04724 -0.0126">
+                        <geom name="Femoris_R" class="bone" pos="0.3263 0.04724 -0.4636" mesh="Femoris_R"/>
+                        <geom name="Femoris_fabellae_R_1" class="bone" pos="0.3263 0.04724 -0.4636" mesh="Femoris_fabellae_R_1"/>
+                        <geom name="Femoris_fabellae_R_2" class="bone" pos="0.3263 0.04724 -0.4636" mesh="Femoris_fabellae_R_2"/>
+                        <geom name="Patella_R" class="bone" pos="0.3263 0.04724 -0.4636" mesh="Patella_R"/>
+                        <joint name="hip_R_supinate" class="hip_supinate" axis="0 0 1"/>
+                        <joint name="hip_R_abduct" class="hip_abduct" axis="1 0 0"/>
+                        <joint name="hip_R_extend" class="hip_extend" axis="0 1 0"/>
+                        <geom name="upper_leg_R0_collision" class="collision_primitive" size="0.04 0.08" pos="-0.01 -0.02 -0.08" euler="-10 20 0"/>
+                        <geom name="upper_leg_R1_collision" class="collision_primitive" size="0.04 0.04" pos="-0.03 0 -0.05" euler="-10 5 0"/>
+                        <body name="lower_leg_R" pos="-0.02304 -0.0311 -0.167">
+                          <geom name="Fibula_R" class="bone" pos="0.3493 0.07834 -0.2966" mesh="Fibula_R"/>
+                          <geom name="Tibia_R" class="bone" pos="0.3493 0.07834 -0.2966" mesh="Tibia_R"/>
+                          <joint name="knee_R" class="knee" axis="0 -1 0"/>
+                          <body name="foot_R" pos="-0.1791 0.005642 -0.1382">
+                            <geom name="Calcaneal_tuber_R" class="bone" pos="0.5285 0.07269 -0.1583" mesh="Calcaneal_tuber_R"/>
+                            <geom name="Metatarsi_R_1" class="bone" pos="0.5285 0.07269 -0.1583" mesh="Metatarsi_R_1"/>
+                            <geom name="Metatarsi_R_2" class="bone" pos="0.5285 0.07269 -0.1583" mesh="Metatarsi_R_2"/>
+                            <geom name="Metatarsi_R_3" class="bone" pos="0.5285 0.07269 -0.1583" mesh="Metatarsi_R_3"/>
+                            <geom name="Metatarsi_R_4" class="bone" pos="0.5285 0.07269 -0.1583" mesh="Metatarsi_R_4"/>
+                            <geom name="Tarsus_R_I" class="bone" pos="0.5285 0.07269 -0.1583" mesh="Tarsus_R_I"/>
+                            <geom name="Tarsus_R_II" class="bone" pos="0.5285 0.07269 -0.1583" mesh="Tarsus_R_II"/>
+                            <geom name="Tarsus_R_III" class="bone" pos="0.5285 0.07269 -0.1583" mesh="Tarsus_R_III"/>
+                            <geom name="Tarsus_R_IV" class="bone" pos="0.5285 0.07269 -0.1583" mesh="Tarsus_R_IV"/>
+                            <geom name="Tarsus_central_R" class="bone" pos="0.5285 0.07269 -0.1583" mesh="Tarsus_central_R"/>
+                            <geom name="Tibial_tarsal_R" class="bone" pos="0.5285 0.07269 -0.1583" mesh="Tibial_tarsal_R"/>
+                            <joint name="ankle_R" class="ankle" axis="0 1 0"/>
+                            <geom name="foot_R_collision" class="collision_primitive" size="0.015 0.07" pos="-0.01 -0.005 -0.05"/>
+                            <body name="foot_anchor_R" pos="-0.01504 -0.008131 -0.1199">
+                              <geom name="foot_anchor_R" class="foot_primitive" type="box" contype="0" conaffinity="0" size="0.005 0.005 0.005"/>
+                              <site name="foot_anchor_R" class="sensor"/>
+                              <body name="toe_R">
+                                <geom name="Phalanges_B_2_R_1" class="bone" pos="0.5435 0.08083 -0.03838" mesh="Phalanges_B_2_R_1"/>
+                                <geom name="Phalanges_B_2_R_2" class="bone" pos="0.5435 0.08083 -0.03838" mesh="Phalanges_B_2_R_2"/>
+                                <geom name="Phalanges_B_2_R_3" class="bone" pos="0.5435 0.08083 -0.03838" mesh="Phalanges_B_2_R_3"/>
+                                <geom name="Phalanges_B_2_R_4" class="bone" pos="0.5435 0.08083 -0.03838" mesh="Phalanges_B_2_R_4"/>
+                                <geom name="Phalanges_B_3_R_1" class="visible_bone" pos="0.5435 0.08083 -0.03838" mesh="Phalanges_B_3_R_1"/>
+                                <geom name="Phalanges_B_3_R_2" class="visible_bone" pos="0.5435 0.08083 -0.03838" mesh="Phalanges_B_3_R_2"/>
+                                <geom name="Phalanges_B_3_R_3" class="visible_bone" pos="0.5435 0.08083 -0.03838" mesh="Phalanges_B_3_R_3"/>
+                                <geom name="Phalanges_B_3_R_4" class="visible_bone" pos="0.5435 0.08083 -0.03838" mesh="Phalanges_B_3_R_4"/>
+                                <geom name="Phalanges_B_R_1" class="bone" pos="0.5435 0.08083 -0.03838" mesh="Phalanges_B_R_1"/>
+                                <geom name="Phalanges_B_R_2" class="bone" pos="0.5435 0.08083 -0.03838" mesh="Phalanges_B_R_2"/>
+                                <geom name="Phalanges_B_R_3" class="bone" pos="0.5435 0.08083 -0.03838" mesh="Phalanges_B_R_3"/>
+                                <geom name="Phalanges_B_R_4" class="bone" pos="0.5435 0.08083 -0.03838" mesh="Phalanges_B_R_4"/>
+                                <joint name="toe_R" class="toe" axis="0 1 0"/>
+                                <geom name="toe_R0_collision" class="foot_primitive" size="0.018 0.012" pos="0.015 0 -0.02" euler="90 0 0"/>
+                                <geom name="toe_R1_collision" class="foot_primitive" size="0.01 0.015" pos="0.035 0 -0.028" euler="90 0 0"/>
+                                <geom name="toe_R2_collision" class="foot_primitive" size="0.008 0.01" pos="0.045 0 -0.03" euler="90 0 0"/>
+                                <site name="sole_R" class="sensor" type="box" size="0.025 0.03 0.008" pos="0.026 0 -0.033"/>
+                              </body>
+                            </body>
+                          </body>
+                          <geom name="lower_leg_R_collision" class="collision_primitive" size="0.02 0.1" pos="-0.09513 1.172e-05 -0.06865" quat="0.3835 0.4209 0.187 0.8005"/>
+                        </body>
+                      </body>
+                      <body name="Ca_1" pos="0.008246 0 0.04354">
+                        <geom name="Ca_1" class="bone" pos="0.2999 0 -0.5197" mesh="Ca_1"/>
+                        <body name="Ca_2" pos="-0.01491 0 4.68e-05">
+                          <geom name="Ca_2" class="bone" pos="0.3148 0 -0.5198" mesh="Ca_2"/>
+                          <body name="Ca_3" pos="-0.01408 0 -0.001087">
+                            <geom name="Ca_3" class="bone" pos="0.3289 0 -0.5187" mesh="Ca_3"/>
+                            <body name="Ca_4" pos="-0.01251 0 -0.002837">
+                              <geom name="Ca_4" class="bone" pos="0.3414 0 -0.5158" mesh="Ca_4"/>
+                              <body name="Ca_5" pos="-0.01378 -1.652e-06 -0.006535">
+                                <geom name="Ca_5" class="bone" pos="0.3552 1.687e-06 -0.5093" mesh="Ca_5"/>
+                                <body name="Ca_6" pos="-0.01638 -1.001e-05 -0.009834">
+                                  <geom name="Ca_6" class="bone" pos="0.3716 1.17e-05 -0.4995" mesh="Ca_6"/>
+                                  <body name="Ca_7" pos="-0.01621 1.419e-05 -0.01147">
+                                    <geom name="Ca_7" class="bone" pos="0.3878 -2.497e-06 -0.488" mesh="Ca_7"/>
+                                    <body name="Ca_8" pos="-0.01845 0.0002126 -0.01312">
+                                      <geom name="Ca_8" class="bone" pos="0.4063 -0.0002151 -0.4749" mesh="Ca_8"/>
+                                      <body name="Ca_9" pos="-0.01983 -1.086e-05 -0.01768">
+                                        <geom name="Ca_9" class="bone" pos="0.4261 -0.0002042 -0.4572" mesh="Ca_9"/>
+                                        <body name="Ca_10" pos="-0.02339 1.141e-05 -0.02203">
+                                          <geom name="Ca_10" class="bone" pos="0.4495 -0.0002156 -0.4352" mesh="Ca_10"/>
+                                          <body name="Ca_11" pos="-0.0242 -5.344e-06 -0.02238">
+                                            <geom name="Ca_11" class="bone" pos="0.4737 -0.0002103 -0.4128" mesh="Ca_11"/>
+                                            <body name="Ca_12" pos="-0.02408 -5.542e-05 -0.01968">
+                                              <geom name="Ca_12" class="bone" pos="0.4978 -0.0001549 -0.3931" mesh="Ca_12"/>
+                                              <body name="Ca_13" pos="-0.02323 -1.203e-05 -0.01778">
+                                                <geom name="Ca_13" class="bone" pos="0.521 -0.0001428 -0.3753" mesh="Ca_13"/>
+                                                <body name="Ca_14" pos="-0.02324 -9.035e-05 -0.01833">
+                                                  <geom name="Ca_14" class="bone" pos="0.5442 -5.248e-05 -0.357" mesh="Ca_14"/>
+                                                  <body name="Ca_15" pos="-0.02464 5.041e-05 -0.01425">
+                                                    <geom name="Ca_15" class="bone" pos="0.5689 -0.0001029 -0.3427" mesh="Ca_15"/>
+                                                    <body name="Ca_16" pos="-0.02334 -3.137e-05 -0.008501">
+                                                      <geom name="Ca_16" class="bone" pos="0.5922 -7.152e-05 -0.3342" mesh="Ca_16"/>
+                                                      <body name="Ca_17" pos="-0.02444 -1.408e-05 -0.005367">
+                                                        <geom name="Ca_17" class="bone" pos="0.6167 -5.744e-05 -0.3289" mesh="Ca_17"/>
+                                                        <body name="Ca_18" pos="-0.02601 1.355e-05 -0.002206">
+                                                          <geom name="Ca_18" class="bone" pos="0.6427 -7.099e-05 -0.3267" mesh="Ca_18"/>
+                                                          <body name="Ca_19" pos="-0.02665 3.203e-05 0.0006858">
+                                                            <geom name="Ca_19" class="bone" pos="0.6693 -0.000103 -0.3274" mesh="Ca_19"/>
+                                                            <body name="Ca_20" pos="-0.02684 -6.567e-05 0.004027">
+                                                            <geom name="Ca_20" class="bone" pos="0.6962 -3.735e-05 -0.3314" mesh="Ca_20"/>
+                                                            <body name="Ca_21" pos="-0.02029 4.463e-05 0.004863">
+                                                            <geom name="Ca_21" class="bone" pos="0.7165 -8.198e-05 -0.3363" mesh="Ca_21"/>
+                                                            <joint name="Ca_21_extend" class="caudal_extend" pos="0.01019 -2.24e-05 -0.002441" axis="0 1 0"/>
+                                                            <site name="tail_tip" class="sensor" size="0.005"/>
+                                                            <geom name="Ca_21_collision" class="collision_primitive" size="0.002333 0.01465 0.01047" pos="0 0 0" quat="-0.01753 0.8023 -0.02359 0.5962"/>
+                                                            </body>
+                                                            <joint name="Ca_20_bend" class="caudal_bend" pos="0.01208 2.955e-05 -0.001812" axis="-0.1484 0 -0.9889"/>
+                                                            <geom name="Ca_20_collision" class="collision_primitive" size="0.002796 0.01437 0.01221" pos="0 0 0" quat="-0.08266 0.759 -0.09852 0.6383"/>
+                                                            </body>
+                                                            <joint name="Ca_19_extend" class="caudal_extend" pos="0.01374 -1.65e-05 -0.0003534" axis="0 1 0"/>
+                                                            <geom name="Ca_19_collision" class="collision_primitive" size="0.003607 0.01675 0.01374" pos="0 0 0" quat="-0.06402 0.751 -0.07658 0.6527"/>
+                                                          </body>
+                                                          <joint name="Ca_18_bend" class="caudal_bend" pos="0.01376 -7.166e-06 0.001167" axis="0.0845 0 -0.9964"/>
+                                                          <geom name="Ca_18_collision" class="collision_primitive" size="0.004119 0.01638 0.01381" pos="0 0 0" quat="0.5134 0.488 0.4862 0.5118"/>
+                                                        </body>
+                                                        <joint name="Ca_17_extend" class="caudal_extend" pos="0.01258 7.25e-06 0.002763" axis="0 1 0"/>
+                                                        <geom name="Ca_17_collision" class="collision_primitive" size="0.004119 0.01702 0.01288" pos="0 0 0" quat="-0.1046 0.6553 -0.09504 0.742"/>
+                                                      </body>
+                                                      <joint name="Ca_16_bend" class="caudal_bend" pos="0.01112 1.495e-05 0.004052" axis="0.3423 0 -0.9396"/>
+                                                      <geom name="Ca_16_collision" class="collision_primitive" size="0.003778 0.01477 0.01184" pos="0 0 0" quat="-0.08502 0.5886 -0.06582 0.8012"/>
+                                                    </body>
+                                                    <joint name="Ca_15_extend" class="caudal_extend" pos="0.0101 -2.067e-05 0.005844" axis="0 1 0"/>
+                                                    <geom name="Ca_15_collision" class="collision_primitive" size="0.004057 0.01382 0.01167" pos="0 0 0" quat="-0.08361 0.5581 -0.05982 0.8234"/>
+                                                  </body>
+                                                  <joint name="Ca_14_bend" class="caudal_bend" pos="0.01209 4.701e-05 0.009535" axis="0.6191 0 -0.7853"/>
+                                                  <geom name="Ca_14_collision" class="collision_primitive" size="0.00485 0.01443 0.0154" pos="0 0 0" quat="0.6807 0.2956 0.3441 0.5752"/>
+                                                </body>
+                                                <joint name="Ca_13_extend" class="caudal_extend" pos="0.01024 5.3e-06 0.007833" axis="0 1 0"/>
+                                                <geom name="Ca_13_collision" class="collision_primitive" size="0.005011 0.01403 0.01289" pos="0 0 0" quat="0.6568 0.301 0.3235 0.611"/>
+                                              </body>
+                                              <joint name="Ca_12_bend" class="caudal_bend" pos="0.01171 2.695e-05 0.009567" axis="0.6328 0 -0.7743"/>
+                                              <geom name="Ca_12_collision" class="collision_primitive" size="0.005297 0.01585 0.01512" pos="0 0 0" quat="-0.06718 0.4323 -0.03222 0.8986"/>
+                                            </body>
+                                            <joint name="Ca_11_extend" class="caudal_extend" pos="0.01111 2.453e-06 0.01027" axis="0 1 0"/>
+                                            <geom name="Ca_11_collision" class="collision_primitive" size="0.005697 0.01602 0.01513" pos="0 0 0" quat="-0.04424 0.416 -0.02013 0.9081"/>
+                                          </body>
+                                          <joint name="Ca_10_bend" class="caudal_bend" pos="0.01207 -5.889e-06 0.01137" axis="0.6856 0 -0.728"/>
+                                          <geom name="Ca_10_collision" class="collision_primitive" size="0.006059 0.01487 0.01658" pos="0 0 0" quat="-0.05502 0.3972 -0.02343 0.9158"/>
+                                        </body>
+                                        <joint name="Ca_9_extend" class="caudal_extend" pos="0.009022 4.94e-06 0.008041" axis="0 1 0"/>
+                                        <geom name="Ca_9_collision" class="collision_primitive" size="0.005861 0.01177 0.01208" pos="0 0 0" quat="0.7194 0.2402 0.298 0.5796"/>
+                                      </body>
+                                      <joint name="Ca_8_bend" class="caudal_bend" pos="0.008997 -0.0001036 0.006397" axis="0.5795 0 -0.8149"/>
+                                      <geom name="Ca_8_collision" class="collision_primitive" size="0.00523 0.01025 0.01104" pos="0 0 0" quat="-0.224 0.4003 -0.1018 0.8827"/>
+                                    </body>
+                                    <joint name="Ca_7_extend" class="caudal_extend" pos="0.00811 -7.103e-06 0.005741" axis="0 1 0"/>
+                                    <geom name="Ca_7_collision" class="collision_primitive" size="0.007262 0.01135 0.009937" pos="0 0 0" quat="0.6232 0.3295 0.3258 0.63"/>
+                                  </body>
+                                  <joint name="Ca_6_bend" class="caudal_bend" pos="0.008263 5.048e-06 0.00496" axis="0.5146 0 -0.8574"/>
+                                  <geom name="Ca_6_collision" class="collision_primitive" size="0.007325 0.01226 0.009637" pos="0 0 0" quat="-0.01458 0.4737 -0.007547 0.8805"/>
+                                </body>
+                                <joint name="Ca_5_extend" class="caudal_extend" pos="0.01004 1.203e-06 0.004759" axis="0 1 0"/>
+                                <geom name="Ca_5_collision" class="collision_primitive" size="0.007544 0.01236 0.01111" pos="0 0 0" quat="0.007306 0.5097 0.005025 0.8603"/>
+                              </body>
+                              <joint name="Ca_4_bend" class="caudal_bend" pos="0.01009 0 0.002288" axis="0.2212 0 -0.9752"/>
+                              <geom name="Ca_4_collision" class="collision_primitive" size="0.009202 0.01246 0.01034" pos="0 0 0" quat="0 0.3944 0 0.9189"/>
+                            </body>
+                            <joint name="Ca_3_extend" class="caudal_extend" pos="0.01091 0 0.0008425" axis="0 1 0"/>
+                            <geom name="Ca_3_collision" class="collision_primitive" size="0.01121 0.01144 0.01094" pos="0 0 0" quat="0 0.449 0 0.8935"/>
+                          </body>
+                          <joint name="Ca_2_bend" class="caudal_bend" pos="0.01165 0 -3.655e-05" axis="-0.003138 0 -1"/>
+                          <geom name="Ca_2_collision" class="collision_primitive" size="0.01221 0.009222 0.01165" pos="0 0 0" quat="0 0.5116 0 0.8592"/>
+                        </body>
+                        <joint name="Ca_1_extend" class="caudal_extend" pos="0.01121 0 -0.002007" axis="0 1 0"/>
+                        <geom name="Ca_1_collision" class="collision_primitive" size="0.01365 0.006455 0.01139" pos="0 0 0" quat="0 0.4196 0 0.9077"/>
+                      </body>
+                    </body>
+                  </body>
+                  <joint name="L_6_twist" class="lumbar_twist" axis="1 0 0"/>
+                </body>
+                <joint name="L_5_extend" class="lumbar_extend" axis="0 1 0"/>
+                <joint name="L_5_bend" class="lumbar_bend" axis="0 0 1"/>
+              </body>
+              <joint name="L_4_twist" class="lumbar_twist" axis="1 0 0"/>
+            </body>
+            <joint name="L_3_extend" class="lumbar_extend" axis="0 1 0"/>
+            <joint name="L_3_bend" class="lumbar_bend" axis="0 0 1"/>
+          </body>
+          <joint name="L_2_twist" class="lumbar_twist" axis="1 0 0"/>
+        </body>
+        <joint name="L_1_extend" class="lumbar_extend" axis="0 1 0"/>
+        <joint name="L_1_bend" class="lumbar_bend" axis="0 0 1"/>
+      </body>
+      <body name="C_7" pos="0.1433 0 0.0869">
+        <geom name="C_7" class="light_bone" pos="-0.1837 0 -0.5021" mesh="C_7"/>
+        <geom name="C_7_R_collision" class="nonself_collision_primitive" type="sphere" size="0.07"/>
+        <body name="C_6" pos="0.01819 0 0.009342">
+          <geom name="C_6" class="light_bone" pos="-0.2019 0 -0.5115" mesh="C_6"/>
+          <geom name="C_6_R_collision" class="nonself_collision_primitive" type="sphere" size="0.064"/>
+          <body name="C_5" pos="0.01335 0 0.02553">
+            <geom name="C_5" class="light_bone" pos="-0.2153 0 -0.537" mesh="C_5"/>
+            <geom name="C_5_R_collision" class="nonself_collision_primitive" type="sphere" size="0.058"/>
+            <body name="C_4" pos="0.01092 0 0.03448">
+              <geom name="C_4" class="light_bone" pos="-0.2262 0 -0.5715" mesh="C_4"/>
+              <geom name="C_4_R_collision" class="nonself_collision_primitive" type="sphere" size="0.052"/>
+              <body name="C_3" pos="0.006257 0 0.0361">
+                <geom name="C_3" class="bone" pos="-0.2324 0 -0.6076" mesh="C_3"/>
+                <geom name="C_3_R_collision" class="nonself_collision_primitive" type="sphere" size="0.046"/>
+                <body name="C_2" pos="0.007591 0 0.03699">
+                  <geom name="C_2" class="bone" pos="-0.24 0 -0.6446" mesh="C_2"/>
+                  <geom name="C_2_R_collision" class="nonself_collision_primitive" type="sphere" size="0.04"/>
+                  <body name="C_1" pos="0.02309 0 0.03212">
+                    <geom name="C_1" class="bone" pos="-0.2631 0 -0.6767" mesh="C_1"/>
+                    <geom name="C_1_R_collision" class="nonself_collision_primitive" type="sphere" size="0.034"/>
+                    <joint name="C_1_extend" class="cervical_extend" pos="-0.01147 0 -0.01595" axis="0 1 0"/>
+                    <joint name="C_1_bend" class="cervical_bend" pos="-0.01147 0 -0.01595" axis="-0.8119 0 0.5837"/>
+                    <body name="skull" pos="0.07792 0 0.01783">
+                      <geom name="eye_L" class="visible_bone" rgba="1 1 1 1" pos="-0.341 0 -0.6945" mesh="eye_L"/>
+                      <geom name="eye_R" class="visible_bone" rgba="1 1 1 1" pos="-0.341 0 -0.6945" mesh="eye_R"/>
+                      <geom name="iris_L" class="visible_bone" type="ellipsoid" size="0.003 0.007 0.007" rgba="0.45 0.45 0.225 0.4" pos="0.023 0.027 0.01" euler="0 0 20"/>
+                      <geom name="pupil_L" class="visible_bone" type="sphere" size="0.003 0 0" rgba="0 0 0 1" pos="0.0215 0.0275 0.01"/>
+                      <geom name="iris_R" class="visible_bone" type="ellipsoid" size="0.003 0.007 0.007" rgba="0.45 0.45 0.225 0.4" pos="0.023 -0.027 0.01" euler="0 0 -20"/>
+                      <geom name="pupil_R" class="visible_bone" type="sphere" size="0.003 0 0" rgba="0 0 0 1" pos="0.0215 -0.0275 0.01"/>
+                      <geom name="skull0_collision" class="collision_primitive" type="ellipsoid" size="0.06 0.06 0.04" pos="-0.02 0 0.01" euler="0 10 0"/>
+                      <geom name="skull1_collision" class="collision_primitive" type="capsule" size="0.015 0.04 0.015" pos="0.06 0 -0.01" euler="0 110 0"/>
+                      <geom name="skull2_collision" class="collision_primitive" type="box" size="0.03 0.028 0.008" pos="0.02 0 -0.03"/>
+                      <geom name="skull3_collision" class="collision_primitive" type="box" size="0.02 0.018 0.006" pos="0.07 0 -0.03"/>
+                      <geom name="skull4_collision" class="collision_primitive" type="box" size="0.005 0.015 0.004" pos="0.095 0 -0.03"/>
+                      <joint name="atlas" class="atlas" pos="-0.06246 0 0"/>
+                      <site name="head" class="sensor" type="box" size="0.01 0.01 0.01"/>
+                      <site name="upper_bite" class="sensor" size="0.005" pos="0.065 0 -0.07"/>
+                      <body name="jaw" pos="0.008292 0 -0.05824">
+                        <geom name="jaw0_collision" class="collision_primitive" type="box" size="0.03 0.028 0.008" pos="-0.03 0 0.01" euler="0 55 0"/>
+                        <geom name="jaw1_collision" class="collision_primitive" type="box" size="0.02 0.022 0.005" pos="0 0 -0.012" euler="0 30 0"/>
+                        <geom name="jaw2_collision" class="collision_primitive" type="box" size="0.02 0.018 0.005" pos="0.03 0 -0.028" euler="0 25 0"/>
+                        <geom name="jaw3_collision" class="collision_primitive" type="box" size="0.015 0.013 0.003" pos="0.052 0 -0.035" euler="0 15 0"/>
+                        <joint name="mandible" class="mandible" pos="-0.043 0 0.05" axis="0 1 0"/>
+                        <site name="lower_bite" class="sensor" size="0.005" pos="0.063 0 0.005"/>
+                        <geom name="Canine_Bottom_L_collision" class="tooth_primitive" type="ellipsoid" size="0.002328 0.002986 0.01131" pos="0.06044 0.01277 -0.03027" quat="0.6022 0.2004 0.3918 0.6661"/>
+                        <geom name="Canine_Bottom_R_collision" class="tooth_primitive" type="ellipsoid" size="0.002328 0.002986 0.01131" pos="0.06044 -0.01277 -0.03027" quat="0.6661 0.3918 0.2004 0.6022"/>
+                        <geom name="Incisors_Bottom_L_1_collision" class="tooth_primitive" type="ellipsoid" size="0.001279 0.001692 0.007546" pos="0.06955 0.002027 -0.03336" quat="-0.002788 0.5069 0.004741 0.862"/>
+                        <geom name="Incisors_Bottom_L_2_collision" class="tooth_primitive" type="ellipsoid" size="0.001254 0.001718 0.007304" pos="0.06876 0.00565 -0.03294" quat="-0.2463 0.4941 -0.04671 0.8325"/>
+                        <geom name="Incisors_Bottom_L_3_collision" class="tooth_primitive" type="ellipsoid" size="0.001485 0.001894 0.007572" pos="0.06678 0.009306 -0.0316" quat="0.7925 0.07161 0.4413 0.4149"/>
+                        <geom name="Incisors_Bottom_R_1_collision" class="tooth_primitive" type="ellipsoid" size="0.001279 0.001692 0.007546" pos="0.06955 -0.002027 -0.03336" quat="0.002788 0.5069 -0.004741 0.862"/>
+                        <geom name="Incisors_Bottom_R_2_collision" class="tooth_primitive" type="ellipsoid" size="0.001254 0.001718 0.007304" pos="0.06876 -0.00565 -0.03294" quat="0.2463 0.4941 0.04671 0.8325"/>
+                        <geom name="Incisors_Bottom_R_3_collision" class="tooth_primitive" type="ellipsoid" size="0.001485 0.001894 0.007572" pos="0.06678 -0.009306 -0.0316" quat="0.4149 0.4413 0.07161 0.7925"/>
+                        <geom name="Molars_Bottom_3L_collision" class="tooth_primitive" type="ellipsoid" size="0.001801 0.002691 0.00272" pos="-0.01458 0.021 0.007374" quat="0.5671 0.5671 0.4224 0.4224"/>
+                        <geom name="Molars_Bottom_L_1_collision" class="tooth_primitive" type="ellipsoid" size="0.00288 0.008714 0.01042" pos="0.002785 0.01936 -0.007411" quat="0.4265 0.5875 0.5295 0.4388"/>
+                        <geom name="Molars_Bottom_L_2_collision" class="tooth_primitive" type="ellipsoid" size="0.00265 0.003984 0.004844" pos="-0.01055 0.0204 0.0009622" quat="0.7003 0.3385 0.2739 0.5656"/>
+                        <geom name="Molars_Bottom_R_1_collision" class="tooth_primitive" type="ellipsoid" size="0.00288 0.008714 0.01042" pos="0.002785 -0.01936 -0.007411" quat="0.4388 0.5295 0.5875 0.4265"/>
+                        <geom name="Molars_Bottom_R_2_collision" class="tooth_primitive" type="ellipsoid" size="0.00265 0.003984 0.004844" pos="-0.01055 -0.0204 0.0009622" quat="0.5656 0.2739 0.3385 0.7003"/>
+                        <geom name="Molars_Bottom_R_3_collision" class="tooth_primitive" type="ellipsoid" size="0.001801 0.002691 0.00272" pos="-0.01458 -0.021 0.007374" quat="0.4224 0.4224 0.5671 0.5671"/>
+                        <geom name="Premolars_Bottom_L_1_collision" class="tooth_primitive" type="ellipsoid" size="0.001284 0.002038 0.004378" pos="0.04749 0.0128 -0.02757" quat="0.7238 0.08379 0.215 0.6503"/>
+                        <geom name="Premolars_Bottom_L_2_collision" class="tooth_primitive" type="ellipsoid" size="0.002052 0.005183 0.005716" pos="0.03953 0.01408 -0.02416" quat="0.6029 0.4748 0.3942 0.5056"/>
+                        <geom name="Premolars_Bottom_L_3_collision" class="tooth_primitive" type="ellipsoid" size="0.002063 0.005281 0.005983" pos="0.02897 0.01613 -0.0198" quat="0.6475 0.4081 0.3402 0.5464"/>
+                        <geom name="Premolars_Bottom_L_4_collision" class="tooth_primitive" type="ellipsoid" size="0.002223 0.006001 0.006939" pos="0.01772 0.01819 -0.015" quat="0.6201 0.4387 0.3756 0.5309"/>
+                        <geom name="Premolars_Bottom_R_1_collision" class="tooth_primitive" type="ellipsoid" size="0.001284 0.002038 0.004378" pos="0.04749 -0.0128 -0.02757" quat="0.6503 0.215 0.08379 0.7238"/>
+                        <geom name="Premolars_Bottom_R_2_collision" class="tooth_primitive" type="ellipsoid" size="0.002052 0.005183 0.005716" pos="0.03953 -0.01408 -0.02416" quat="0.5056 0.3942 0.4748 0.6029"/>
+                        <geom name="Premolars_Bottom_R_3_collision" class="tooth_primitive" type="ellipsoid" size="0.002063 0.005281 0.005983" pos="0.02897 -0.01613 -0.0198" quat="0.5464 0.3402 0.4081 0.6475"/>
+                        <geom name="Premolars_Bottom_R_4_collision" class="tooth_primitive" type="ellipsoid" size="0.002223 0.006001 0.006939" pos="0.01772 -0.01819 -0.015" quat="0.5309 0.3756 0.4387 0.6201"/>
+                        <inertial pos="-0.001515 0 -0.0009565" quat="0 0.8971 0 0.4419" mass="0.1333" diaginertia="0.0002144 0.0001855 6.348e-05"/>
+                        <geom name="Jaw" class="bone" pos="-0.356 0 -0.6325" mesh="Jaw"/>
+                      </body>
+                      <geom name="Canine_Top_L_collision" class="tooth_primitive" type="ellipsoid" size="0.00255 0.004356 0.01479" pos="0.08408 0.01464 -0.03788" quat="0.7247 -0.0126 -0.145 0.6735"/>
+                      <geom name="Canine_Top_R_collision" class="tooth_primitive" type="ellipsoid" size="0.00255 0.004356 0.01479" pos="0.08408 -0.01464 -0.03788" quat="0.6735 -0.145 -0.0126 0.7247"/>
+                      <geom name="Incisors_Top_L_1_collision" class="tooth_primitive" type="ellipsoid" size="0.001775 0.002136 0.00544" pos="0.1016 0.002792 -0.03825" quat="0.9779 0.02384 -0.1986 -0.06071"/>
+                      <geom name="Incisors_Top_L_2_collision" class="tooth_primitive" type="ellipsoid" size="0.002026 0.002206 0.005704" pos="0.1001 0.007781 -0.03812" quat="0.9774 0.1136 -0.1769 0.02056"/>
+                      <geom name="Incisors_Top_L_3_collision" class="tooth_primitive" type="ellipsoid" size="0.002374 0.002715 0.007059" pos="0.09564 0.01222 -0.03872" quat="0.9289 0.1742 0.005002 -0.3266"/>
+                      <geom name="Incisors_Top_R_1_collision" class="tooth_primitive" type="ellipsoid" size="0.001775 0.002136 0.00544" pos="0.1016 -0.002792 -0.03825" quat="0.9779 -0.02384 -0.1986 0.06071"/>
+                      <geom name="Incisors_Top_R_2_collision" class="tooth_primitive" type="ellipsoid" size="0.002026 0.002206 0.005704" pos="0.1001 -0.007781 -0.03812" quat="0.9774 -0.1136 -0.1769 -0.02056"/>
+                      <geom name="Incisors_Top_R_3_collision" class="tooth_primitive" type="ellipsoid" size="0.002374 0.002715 0.007059" pos="0.09564 -0.01222 -0.03872" quat="0.9289 -0.1742 0.005002 0.3266"/>
+                      <geom name="Molars_Top_1L_collision" class="tooth_primitive" type="ellipsoid" size="0.004616 0.006227 0.00653" pos="0.0197 0.02796 -0.04033" quat="-0.1696 0.7939 0.228 0.5375"/>
+                      <geom name="Molars_Top_2L_collision" class="tooth_primitive" type="ellipsoid" size="0.003681 0.004128 0.00467" pos="0.01075 0.0263 -0.03575" quat="0.7973 0.5314 0.2697 0.09594"/>
+                      <geom name="Molars_Top_R_1_collision" class="tooth_primitive" type="ellipsoid" size="0.004616 0.006227 0.00653" pos="0.0197 -0.02796 -0.04033" quat="0.1696 0.7939 -0.228 0.5375"/>
+                      <geom name="Molars_Top_R_2_collision" class="tooth_primitive" type="ellipsoid" size="0.003681 0.004128 0.00467" pos="0.01075 -0.0263 -0.03575" quat="0.5314 0.7973 -0.09594 -0.2697"/>
+                      <geom name="Premolars_Top_L_1_collision" class="tooth_primitive" type="ellipsoid" size="0.001716 0.002936 0.005556" pos="0.07323 0.01581 -0.03909" quat="0.7276 -0.01398 -0.1308 0.6732"/>
+                      <geom name="Premolars_Top_L_2_collision" class="tooth_primitive" type="ellipsoid" size="0.002204 0.005472 0.006079" pos="0.0633 0.01715 -0.03957" quat="0.4065 0.6855 0.529 0.2914"/>
+                      <geom name="Premolars_Top_L_3_collision" class="tooth_primitive" type="ellipsoid" size="0.002255 0.005977 0.006518" pos="0.05089 0.02105 -0.03949" quat="0.3489 0.7868 0.4704 0.1946"/>
+                      <geom name="Premolars_Top_L_4_collision" class="tooth_primitive" type="ellipsoid" size="0.00362 0.007657 0.01008" pos="0.03536 0.02589 -0.0405" quat="0.5461 0.5802 0.4361 0.4182"/>
+                      <geom name="Premolars_Top_R_1_collision" class="tooth_primitive" type="ellipsoid" size="0.001716 0.002936 0.005556" pos="0.07323 -0.01581 -0.03909" quat="0.6732 -0.1308 -0.01398 0.7276"/>
+                      <geom name="Premolars_Top_R_2_collision" class="tooth_primitive" type="ellipsoid" size="0.002204 0.005472 0.006079" pos="0.0633 -0.01715 -0.03957" quat="0.2914 0.529 0.6855 0.4065"/>
+                      <geom name="Premolars_Top_R_3_collision" class="tooth_primitive" type="ellipsoid" size="0.002255 0.005977 0.006518" pos="0.05089 -0.02105 -0.03949" quat="0.1946 0.4704 0.7868 0.3489"/>
+                      <geom name="Premolars_Top_R_7_collision" class="tooth_primitive" type="ellipsoid" size="0.00362 0.007657 0.01008" pos="0.03536 -0.02589 -0.0405" quat="0.4182 0.4361 0.5802 0.5461"/>
+                      <inertial pos="-0.002207 0 0.002279" quat="0 0.8161 0 0.5779" mass="0.359" diaginertia="0.0007356 0.0006518 0.0002839"/>
+                      <geom name="MergedSkull" class="bone" pos="-0.3477 0 -0.691" mesh="MergedSkull"/>
+                    </body>
+                  </body>
+                  <joint name="C_2_twist" class="cervical_twist" pos="-0.004829 0 -0.02353" axis="0.201 0 0.9796"/>
+                </body>
+                <joint name="C_3_extend" class="cervical_extend" pos="-0.002825 0 -0.0163" axis="0 1 0"/>
+                <joint name="C_3_bend" class="cervical_bend" pos="-0.002825 0 -0.0163" axis="-0.9853 0 0.1708"/>
+              </body>
+              <joint name="C_4_twist" class="cervical_twist" pos="-0.005062 0 -0.01598" axis="0.3019 0 0.9533"/>
+            </body>
+            <joint name="C_5_extend" class="cervical_extend" pos="-0.007455 0 -0.01425" axis="0 1 0"/>
+            <joint name="C_5_bend" class="cervical_bend" pos="-0.007455 0 -0.01425" axis="-0.8861 0 0.4636"/>
+          </body>
+          <joint name="C_6_twist" class="cervical_twist" pos="-0.0139 0 -0.007136" axis="0.8896 0 0.4568"/>
+        </body>
+        <joint name="C_7_extend" class="cervical_extend" pos="-0.01571 0 -0.001623" axis="0 1 0"/>
+        <joint name="C_7_bend" class="cervical_bend" pos="-0.01571 0 -0.001623" axis="-0.1027 0 0.9947"/>
+      </body>
+      <body name="scapula_L" pos="0.08 0.02 0.14">
+        <geom name="Scapula_L" class="bone" pos="-0.1204 -0.02 -0.5552" mesh="Scapula_L"/>
+        <joint name="scapula_L_supinate" class="scapula_supinate" pos="-0.03 -0.02 0" axis="0 0 1"/>
+        <joint name="scapula_L_abduct" class="scapula_abduct" pos="0 -0.05 -0.07" axis="1 0 0"/>
+        <joint name="scapula_L_extend" class="scapula_extend" pos="0 0 0" axis="0.3 1 0"/>
+        <body name="upper_arm_L" pos="0.075 0.033 -0.13">
+          <geom name="humerus_L" class="bone" pos="-0.1954 -0.053 -0.4252" mesh="humerus_L"/>
+          <joint name="shoulder_L_supinate" class="shoulder_supinate" axis="-1 0 1"/>
+          <joint name="shoulder_L_extend" class="shoulder_extend" axis="0 1 0"/>
+          <body name="lower_arm_L" pos="-0.05 0.015 -0.145">
+            <geom name="Carpal_accessory_L" class="bone" pos="-0.1454 -0.068 -0.2802" mesh="Carpal_accessory_L"/>
+            <geom name="Carpal_ulnar_L" class="bone" pos="-0.1454 -0.068 -0.2802" mesh="Carpal_ulnar_L"/>
+            <geom name="Radius_L" class="bone" pos="-0.1454 -0.068 -0.2802" mesh="Radius_L"/>
+            <geom name="Ulna_L" class="bone" pos="-0.1454 -0.068 -0.2802" mesh="Ulna_L"/>
+            <joint name="elbow_L" class="elbow" axis="0 1 0.2"/>
+            <body name="hand_anchor_L" pos="0.003 -0.015 -0.19">
+              <geom name="hand_anchor_L" class="foot_primitive" type="box" contype="0" conaffinity="0" size="0.005 0.005 0.005"/>
+              <site name="hand_anchor_L" class="sensor"/>
+              <body name="hand_L">
+                <geom name="Carpal_III_L" class="bone" pos="-0.1484 -0.053 -0.09022" mesh="Carpal_III_L"/>
+                <geom name="Carpal_II_L" class="bone" pos="-0.1484 -0.053 -0.09022" mesh="Carpal_II_L"/>
+                <geom name="Carpal_IV_L" class="bone" pos="-0.1484 -0.053 -0.09022" mesh="Carpal_IV_L"/>
+                <geom name="Carpal_I_L" class="bone" pos="-0.1484 -0.053 -0.09022" mesh="Carpal_I_L"/>
+                <geom name="Carpal_L" class="bone" pos="-0.1484 -0.053 -0.09022" mesh="Carpal_L"/>
+                <geom name="Carpal_Sesamoid_L" class="bone" pos="-0.1484 -0.053 -0.09022" mesh="Carpal_Sesamoid_L"/>
+                <geom name="Os_metacarpale_III_L" class="bone" pos="-0.1484 -0.053 -0.09022" mesh="Os_metacarpale_III_L"/>
+                <geom name="Os_metacarpale_II_L" class="bone" pos="-0.1484 -0.053 -0.09022" mesh="Os_metacarpale_II_L"/>
+                <geom name="Os_metacarpale_IV_L" class="bone" pos="-0.1484 -0.053 -0.09022" mesh="Os_metacarpale_IV_L"/>
+                <geom name="Os_metacarpale_I_L" class="bone" pos="-0.1484 -0.053 -0.09022" mesh="Os_metacarpale_I_L"/>
+                <geom name="Os_metacarpale_V_L.001" class="bone" pos="-0.1484 -0.053 -0.09022" mesh="Os_metacarpale_V_L.001"/>
+                <geom name="Os_metacarpale_V_L" class="bone" pos="-0.1484 -0.053 -0.09022" mesh="Os_metacarpale_V_L"/>
+                <geom name="Phalanx_distalis_digiti_I_L" class="bone" pos="-0.1484 -0.053 -0.09022" mesh="Phalanx_distalis_digiti_I_L"/>
+                <joint name="wrist_L" class="wrist" axis="0 -1 0"/>
+                <geom name="hand_L_collision" class="collision_primitive" type="box" size="0.03 0.016 0.012" pos="0.01 0 -0.04" euler="0 65 0"/>
+                <body name="finger_L" pos="0.02 0 -0.06">
+                  <geom name="Phalanx_distalis_digiti_III_L" class="visible_bone" pos="-0.1684 -0.053 -0.03022" mesh="Phalanx_distalis_digiti_III_L"/>
+                  <geom name="Phalanx_distalis_digiti_II_L" class="visible_bone" pos="-0.1684 -0.053 -0.03022" mesh="Phalanx_distalis_digiti_II_L"/>
+                  <geom name="Phalanx_distalis_digiti_IV_L" class="visible_bone" pos="-0.1684 -0.053 -0.03022" mesh="Phalanx_distalis_digiti_IV_L"/>
+                  <geom name="Phalanx_distalis_digiti_V_L" class="visible_bone" pos="-0.1684 -0.053 -0.03022" mesh="Phalanx_distalis_digiti_V_L"/>
+                  <geom name="Phalanx_media_digiti_III_L" class="bone" pos="-0.1684 -0.053 -0.03022" mesh="Phalanx_media_digiti_III_L"/>
+                  <geom name="Phalanx_media_digiti_II_L" class="bone" pos="-0.1684 -0.053 -0.03022" mesh="Phalanx_media_digiti_II_L"/>
+                  <geom name="Phalanx_media_digiti_IV_L" class="bone" pos="-0.1684 -0.053 -0.03022" mesh="Phalanx_media_digiti_IV_L"/>
+                  <geom name="Phalanx_media_digiti_V_L" class="bone" pos="-0.1684 -0.053 -0.03022" mesh="Phalanx_media_digiti_V_L"/>
+                  <geom name="Phalanxpmxinutlis_digiti_III_L_" class="bone" pos="-0.1684 -0.053 -0.03022" mesh="Phalanxpmxinutlis_digiti_III_L_"/>
+                  <geom name="Phalanxpmxinutlis_digiti_II_L" class="bone" pos="-0.1684 -0.053 -0.03022" mesh="Phalanxpmxinutlis_digiti_II_L"/>
+                  <geom name="Phalanxpmxinutlis_digiti_IV_L_" class="bone" pos="-0.1684 -0.053 -0.03022" mesh="Phalanxpmxinutlis_digiti_IV_L_"/>
+                  <geom name="Phalanxpmxinutlis_digiti_V_L" class="bone" pos="-0.1684 -0.053 -0.03022" mesh="Phalanxpmxinutlis_digiti_V_L"/>
+                  <joint name="finger_L" class="finger" axis="0 1 0.2"/>
+                  <geom name="finger_L0_collision" class="foot_primitive" size="0.018 0.012" pos="0.012 0 -0.012" euler="90 0 0"/>
+                  <geom name="finger_L1_collision" class="foot_primitive" size="0.01 0.015" pos="0.032 0 -0.02" euler="90 0 0"/>
+                  <geom name="finger_L2_collision" class="foot_primitive" size="0.008 0.01" pos="0.042 0 -0.022" euler="90 0 0"/>
+                  <site name="palm_L" class="sensor" type="box" size="0.028 0.03 0.007" pos="0.02 0 -0.024"/>
+                </body>
+              </body>
+            </body>
+            <geom name="Radius_L_collision" class="collision_primitive" size="0.017 0.09" pos="-0.001654 -0.006968 -0.1081" quat="0.9802 -0.05682 0.01088 0.1893"/>
+            <geom name="Ulna_L_collision" class="collision_primitive" size="0.015 0.06" pos="-0.01187 -0.0004415 -0.05165" quat="0.6993 -0.03224 -0.02206 0.7137"/>
+          </body>
+          <geom name="humerus_L_collision" class="collision_primitive" size="0.02 0.08" pos="-0.01803 0.00985 -0.07704" quat="0.5692 0.1782 0.08 0.7987"/>
+        </body>
+        <geom name="Scapula_L_collision" class="collision_primitive" type="box" size="0.01758 0.03491 0.05749" pos="0.03882 0.03083 -0.06493" quat="0.7347 -0.1644 -0.2717 0.5995"/>
+      </body>
+      <body name="scapula_R" pos="0.08 -0.02 0.14">
+        <geom name="Scapula_R" class="bone" pos="-0.1204 0.02 -0.5552" mesh="Scapula_R"/>
+        <joint name="scapula_R_supinate" class="scapula_supinate" pos="-0.03 0.02 0" axis="0 0 -1"/>
+        <joint name="scapula_R_abduct" class="scapula_abduct" pos="0 0.05 -0.07" axis="-1 0 0"/>
+        <joint name="scapula_R_extend" class="scapula_extend" pos="0 0 0" axis="-0.3 1 0"/>
+        <body name="upper_arm_R" pos="0.075 -0.033 -0.13">
+          <geom name="humerus_R" class="bone" pos="-0.1954 0.053 -0.4252" mesh="humerus_R"/>
+          <joint name="shoulder_R_supinate" class="shoulder_supinate" axis="1 0 -1"/>
+          <joint name="shoulder_R_extend" class="shoulder_extend" axis="0 1 0"/>
+          <body name="lower_arm_R" pos="-0.05 -0.015 -0.145">
+            <geom name="Carpal_accessory_R" class="bone" pos="-0.1454 0.068 -0.2802" mesh="Carpal_accessory_R"/>
+            <geom name="Carpal_ulnar_R" class="bone" pos="-0.1454 0.068 -0.2802" mesh="Carpal_ulnar_R"/>
+            <geom name="Radius_R" class="bone" pos="-0.1454 0.068 -0.2802" mesh="Radius_R"/>
+            <geom name="Ulna_R" class="bone" pos="-0.1454 0.068 -0.2802" mesh="Ulna_R"/>
+            <joint name="elbow_R" class="elbow" axis="0 1 -0.2"/>
+            <body name="hand_anchor_R" pos="0.003 0.015 -0.19">
+              <geom name="hand_anchor_R" class="foot_primitive" type="box" contype="0" conaffinity="0" size="0.005 0.005 0.005"/>
+              <site name="hand_anchor_R" class="sensor"/>
+              <body name="hand_R">
+                <geom name="Carpal_III_R" class="bone" pos="-0.1484 0.053 -0.09022" mesh="Carpal_III_R"/>
+                <geom name="Carpal_II_R" class="bone" pos="-0.1484 0.053 -0.09022" mesh="Carpal_II_R"/>
+                <geom name="Carpal_IV_R" class="bone" pos="-0.1484 0.053 -0.09022" mesh="Carpal_IV_R"/>
+                <geom name="Carpal_I_R" class="bone" pos="-0.1484 0.053 -0.09022" mesh="Carpal_I_R"/>
+                <geom name="Carpal_R" class="bone" pos="-0.1484 0.053 -0.09022" mesh="Carpal_R"/>
+                <geom name="Carpal_Sesamoid_R" class="bone" pos="-0.1484 0.053 -0.09022" mesh="Carpal_Sesamoid_R"/>
+                <geom name="Os_metacarpale_III_R" class="bone" pos="-0.1484 0.053 -0.09022" mesh="Os_metacarpale_III_R"/>
+                <geom name="Os_metacarpale_II_R" class="bone" pos="-0.1484 0.053 -0.09022" mesh="Os_metacarpale_II_R"/>
+                <geom name="Os_metacarpale_IV_R" class="bone" pos="-0.1484 0.053 -0.09022" mesh="Os_metacarpale_IV_R"/>
+                <geom name="Os_metacarpale_I_R" class="bone" pos="-0.1484 0.053 -0.09022" mesh="Os_metacarpale_I_R"/>
+                <geom name="Os_metacarpale_V_R.001" class="bone" pos="-0.1484 0.053 -0.09022" mesh="Os_metacarpale_V_R.001"/>
+                <geom name="Os_metacarpale_V_R" class="bone" pos="-0.1484 0.053 -0.09022" mesh="Os_metacarpale_V_R"/>
+                <geom name="Phalanx_distalis_digiti_I_R" class="bone" pos="-0.1484 0.053 -0.09022" mesh="Phalanx_distalis_digiti_I_R"/>
+                <joint name="wrist_R" class="wrist" axis="0 -1 0"/>
+                <geom name="hand_R_collision" class="collision_primitive" type="box" size="0.03 0.016 0.012" pos="0.01 0 -0.04" euler="0 65 0"/>
+                <body name="finger_R" pos="0.02 0 -0.06">
+                  <geom name="Phalanx_distalis_digiti_III_R" class="visible_bone" pos="-0.1684 0.053 -0.03022" mesh="Phalanx_distalis_digiti_III_R"/>
+                  <geom name="Phalanx_distalis_digiti_II_R" class="visible_bone" pos="-0.1684 0.053 -0.03022" mesh="Phalanx_distalis_digiti_II_R"/>
+                  <geom name="Phalanx_distalis_digiti_IV_R" class="visible_bone" pos="-0.1684 0.053 -0.03022" mesh="Phalanx_distalis_digiti_IV_R"/>
+                  <geom name="Phalanx_distalis_digiti_V_R" class="visible_bone" pos="-0.1684 0.053 -0.03022" mesh="Phalanx_distalis_digiti_V_R"/>
+                  <geom name="Phalanx_media_digiti_III_R" class="bone" pos="-0.1684 0.053 -0.03022" mesh="Phalanx_media_digiti_III_R"/>
+                  <geom name="Phalanx_media_digiti_II_R" class="bone" pos="-0.1684 0.053 -0.03022" mesh="Phalanx_media_digiti_II_R"/>
+                  <geom name="Phalanx_media_digiti_IV_R" class="bone" pos="-0.1684 0.053 -0.03022" mesh="Phalanx_media_digiti_IV_R"/>
+                  <geom name="Phalanx_media_digiti_V_R" class="bone" pos="-0.1684 0.053 -0.03022" mesh="Phalanx_media_digiti_V_R"/>
+                  <geom name="Phalanxpmxinutlis_digiti_III_R" class="bone" pos="-0.1684 0.053 -0.03022" mesh="Phalanxpmxinutlis_digiti_III_R"/>
+                  <geom name="Phalanxpmxinutlis_digiti_II_R" class="bone" pos="-0.1684 0.053 -0.03022" mesh="Phalanxpmxinutlis_digiti_II_R"/>
+                  <geom name="Phalanxpmxinutlis_digiti_IV_R" class="bone" pos="-0.1684 0.053 -0.03022" mesh="Phalanxpmxinutlis_digiti_IV_R"/>
+                  <geom name="Phalanxpmxinutlis_digiti_V_R" class="bone" pos="-0.1684 0.053 -0.03022" mesh="Phalanxpmxinutlis_digiti_V_R"/>
+                  <joint name="finger_R" class="finger" axis="0 1 -0.2"/>
+                  <geom name="finger_R0_collision" class="foot_primitive" size="0.018 0.012" pos="0.012 0 -0.012" euler="90 0 0"/>
+                  <geom name="finger_R1_collision" class="foot_primitive" size="0.01 0.015" pos="0.032 0 -0.02" euler="90 0 0"/>
+                  <geom name="finger_R2_collision" class="foot_primitive" size="0.008 0.01" pos="0.042 0 -0.022" euler="90 0 0"/>
+                  <site name="palm_R" class="sensor" type="box" size="0.028 0.03 0.007" pos="0.02 0 -0.024"/>
+                </body>
+              </body>
+            </body>
+            <geom name="Radius_R_collision" class="collision_primitive" size="0.017 0.09" pos="-0.001654 0.006968 -0.1081" quat="0.9802 0.05682 0.01088 -0.1893"/>
+            <geom name="Ulna_R_collision" class="collision_primitive" size="0.015 0.06" pos="-0.01187 0.0004416 -0.05165" quat="0.7137 -0.02206 -0.03224 0.6993"/>
+          </body>
+          <geom name="humerus_R_collision" class="collision_primitive" size="0.02 0.08" pos="-0.01803 -0.00985 -0.07704" quat="0.7987 0.08 0.1782 0.5692"/>
+        </body>
+        <geom name="Scapula_R_collision" class="collision_primitive" type="box" size="0.01758 0.03491 0.05749" pos="0.03882 -0.03083 -0.06493" quat="0.5995 -0.2717 -0.1644 0.7347"/>
+      </body>
+      <inertial pos="0 0 0" quat="0.4552 0.5411 0.5411 0.4552" mass="2.676" diaginertia="0.02603 0.02333 0.01159"/>
+      <geom name="Ribcage" class="bone" pos="-0.05279 -0.0003659 -0.4218" mesh="Ribcage"/>
+    </body>
+  </worldbody>
+
+  <contact>
+    <exclude name="upper_arm_L:torso" body1="upper_arm_L" body2="torso"/>
+    <exclude name="upper_arm_R:torso" body1="upper_arm_R" body2="torso"/>
+    <exclude name="pelvis:Ca_2" body1="pelvis" body2="Ca_2"/>
+    <exclude name="pelvis:Ca_3" body1="pelvis" body2="Ca_3"/>
+    <exclude name="Ca_1:Ca_3" body1="Ca_1" body2="Ca_3"/>
+    <exclude name="Ca_2:Ca_4" body1="Ca_2" body2="Ca_4"/>
+    <exclude name="Ca_3:Ca_5" body1="Ca_3" body2="Ca_5"/>
+    <exclude name="Ca_4:Ca_6" body1="Ca_4" body2="Ca_6"/>
+    <exclude name="C_7:scapula_L" body1="C_7" body2="scapula_L"/>
+    <exclude name="C_7:scapula_R" body1="C_7" body2="scapula_R"/>
+    <exclude name="C_6:scapula_L" body1="C_6" body2="scapula_L"/>
+    <exclude name="C_6:scapula_R" body1="C_6" body2="scapula_R"/>
+    <exclude name="C_5:scapula_L" body1="C_5" body2="scapula_L"/>
+    <exclude name="C_5:scapula_R" body1="C_5" body2="scapula_R"/>
+    <exclude name="C_1:jaw" body1="C_1" body2="jaw"/>
+    <exclude name="torso:lower_arm_L" body1="torso" body2="lower_arm_L"/>
+    <exclude name="torso:lower_arm_R" body1="torso" body2="lower_arm_R"/>
+    <exclude name="C_4:scapula_R" body1="C_4" body2="scapula_R"/>
+    <exclude name="C_4:scapula_L" body1="C_4" body2="scapula_L"/>
+    <exclude name="C_5:upper_arm_R" body1="C_5" body2="upper_arm_R"/>
+    <exclude name="C_5:upper_arm_L" body1="C_5" body2="upper_arm_L"/>
+    <exclude name="C_6:upper_arm_R" body1="C_6" body2="upper_arm_R"/>
+    <exclude name="C_6:upper_arm_L" body1="C_6" body2="upper_arm_L"/>
+    <exclude name="C_7:upper_arm_R" body1="C_7" body2="upper_arm_R"/>
+    <exclude name="C_7:upper_arm_L" body1="C_7" body2="upper_arm_L"/>
+    <exclude name="upper_leg_L:upper_leg_R" body1="upper_leg_L" body2="upper_leg_R"/>
+    <exclude name="lower_leg_L:pelvis" body1="lower_leg_L" body2="pelvis"/>
+    <exclude name="upper_leg_L:foot_L" body1="upper_leg_L" body2="foot_L"/>
+    <exclude name="lower_leg_R:pelvis" body1="lower_leg_R" body2="pelvis"/>
+    <exclude name="upper_leg_R:foot_R" body1="upper_leg_R" body2="foot_R"/>
+  </contact>
+
+  <tendon>
+    <fixed name="lumbar_extend" class="lumbar_extend">
+      <joint joint="L_1_extend" coef="1.089"/>
+      <joint joint="L_3_extend" coef="1.029"/>
+      <joint joint="L_5_extend" coef="0.9677"/>
+      <joint joint="L_7_extend" coef="0.9142"/>
+    </fixed>
+    <fixed name="lumbar_bend" class="lumbar_bend">
+      <joint joint="L_1_bend" coef="1.136"/>
+      <joint joint="L_3_bend" coef="1.049"/>
+      <joint joint="L_5_bend" coef="0.9554"/>
+      <joint joint="L_7_bend" coef="0.8588"/>
+    </fixed>
+    <fixed name="lumbar_twist" class="lumbar_twist">
+      <joint joint="L_2_twist" coef="1.001"/>
+      <joint joint="L_4_twist" coef="0.9997"/>
+      <joint joint="L_6_twist" coef="0.9996"/>
+    </fixed>
+    <fixed name="cervical_extend" class="cervical_extend">
+      <joint joint="C_7_extend" coef="1.165"/>
+      <joint joint="C_5_extend" coef="1.064"/>
+      <joint joint="C_3_extend" coef="0.9279"/>
+      <joint joint="C_1_extend" coef="0.8431"/>
+    </fixed>
+    <fixed name="cervical_bend" class="cervical_bend">
+      <joint joint="C_7_bend" coef="1.103"/>
+      <joint joint="C_5_bend" coef="1.115"/>
+      <joint joint="C_3_bend" coef="0.9256"/>
+      <joint joint="C_1_bend" coef="0.8558"/>
+    </fixed>
+    <fixed name="cervical_twist" class="cervical_twist">
+      <joint joint="C_6_twist" coef="1.049"/>
+      <joint joint="C_4_twist" coef="0.968"/>
+      <joint joint="C_2_twist" coef="0.9832"/>
+    </fixed>
+    <fixed name="caudal_extend" class="caudal_extend">
+      <joint joint="Ca_1_extend" coef="1.42"/>
+      <joint joint="Ca_3_extend" coef="1.356"/>
+      <joint joint="Ca_5_extend" coef="1.292"/>
+      <joint joint="Ca_7_extend" coef="1.198"/>
+      <joint joint="Ca_9_extend" coef="1.089"/>
+      <joint joint="Ca_11_extend" coef="0.9549"/>
+      <joint joint="Ca_13_extend" coef="0.8383"/>
+      <joint joint="Ca_15_extend" coef="0.7561"/>
+      <joint joint="Ca_17_extend" coef="0.7132"/>
+      <joint joint="Ca_19_extend" coef="0.6934"/>
+      <joint joint="Ca_21_extend" coef="0.6894"/>
+    </fixed>
+    <fixed name="caudal_bend" class="caudal_bend">
+      <joint joint="Ca_2_bend" coef="1.326"/>
+      <joint joint="Ca_4_bend" coef="1.315"/>
+      <joint joint="Ca_6_bend" coef="1.27"/>
+      <joint joint="Ca_8_bend" coef="1.172"/>
+      <joint joint="Ca_10_bend" coef="1.041"/>
+      <joint joint="Ca_12_bend" coef="0.905"/>
+      <joint joint="Ca_14_bend" coef="0.8028"/>
+      <joint joint="Ca_16_bend" coef="0.7458"/>
+      <joint joint="Ca_18_bend" coef="0.7167"/>
+      <joint joint="Ca_20_bend" coef="0.7062"/>
+    </fixed>
+  </tendon>
+
+  <actuator>
+    <general name="lumbar_extend" class="lumbar_extend" tendon="lumbar_extend"/>
+    <general name="lumbar_bend" class="lumbar_bend" tendon="lumbar_bend"/>
+    <general name="lumbar_twist" class="lumbar_twist" tendon="lumbar_twist"/>
+    <general name="cervical_extend" class="cervical_extend" tendon="cervical_extend"/>
+    <general name="cervical_bend" class="cervical_bend" tendon="cervical_bend"/>
+    <general name="cervical_twist" class="cervical_twist" tendon="cervical_twist"/>
+    <general name="caudal_extend" class="caudal_extend" tendon="caudal_extend"/>
+    <general name="caudal_bend" class="caudal_bend" tendon="caudal_bend"/>
+    <general name="hip_L_supinate" class="hip_supinate" joint="hip_L_supinate"/>
+    <general name="hip_L_abduct" class="hip_abduct" joint="hip_L_abduct"/>
+    <general name="hip_L_extend" class="hip_extend" joint="hip_L_extend"/>
+    <general name="knee_L" class="knee" joint="knee_L"/>
+    <general name="ankle_L" class="ankle" joint="ankle_L"/>
+    <general name="toe_L" class="toe" joint="toe_L"/>
+    <general name="hip_R_supinate" class="hip_supinate" joint="hip_R_supinate"/>
+    <general name="hip_R_abduct" class="hip_abduct" joint="hip_R_abduct"/>
+    <general name="hip_R_extend" class="hip_extend" joint="hip_R_extend"/>
+    <general name="knee_R" class="knee" joint="knee_R"/>
+    <general name="ankle_R" class="ankle" joint="ankle_R"/>
+    <general name="toe_R" class="toe" joint="toe_R"/>
+    <general name="atlas" class="atlas" joint="atlas"/>
+    <general name="mandible" class="mandible" joint="mandible"/>
+    <general name="scapula_L_supinate" class="scapula_supinate" joint="scapula_L_supinate"/>
+    <general name="scapula_L_abduct" class="scapula_abduct" joint="scapula_L_abduct"/>
+    <general name="scapula_L_extend" class="scapula_extend" joint="scapula_L_extend"/>
+    <general name="shoulder_L_supinate" class="shoulder_supinate" joint="shoulder_L_supinate"/>
+    <general name="shoulder_L_extend" class="shoulder_extend" joint="shoulder_L_extend"/>
+    <general name="elbow_L" class="elbow" joint="elbow_L"/>
+    <general name="wrist_L" class="wrist" joint="wrist_L"/>
+    <general name="finger_L" class="finger" joint="finger_L"/>
+    <general name="scapula_R_supinate" class="scapula_supinate" joint="scapula_R_supinate"/>
+    <general name="scapula_R_abduct" class="scapula_abduct" joint="scapula_R_abduct"/>
+    <general name="scapula_R_extend" class="scapula_extend" joint="scapula_R_extend"/>
+    <general name="shoulder_R_supinate" class="shoulder_supinate" joint="shoulder_R_supinate"/>
+    <general name="shoulder_R_extend" class="shoulder_extend" joint="shoulder_R_extend"/>
+    <general name="elbow_R" class="elbow" joint="elbow_R"/>
+    <general name="wrist_R" class="wrist" joint="wrist_R"/>
+    <general name="finger_R" class="finger" joint="finger_R"/>
+  </actuator>
+
+  <sensor>
+    <accelerometer name="accelerometer" site="head"/>
+    <velocimeter name="velocimeter" site="head"/>
+    <gyro name="gyro" site="head"/>
+    <subtreelinvel name="torso_linvel" body="torso"/>
+    <subtreeangmom name="torso_angmom" body="torso"/>
+    <touch name="palm_L" site="palm_L"/>
+    <touch name="palm_R" site="palm_R"/>
+    <touch name="sole_L" site="sole_L"/>
+    <touch name="sole_R" site="sole_R"/>
+    <force name="foot_L" site="foot_anchor_L"/>
+    <force name="foot_R" site="foot_anchor_R"/>
+    <force name="hand_L" site="hand_anchor_L"/>
+    <force name="hand_R" site="hand_anchor_R"/>
+  </sensor>
+
+</mujoco>

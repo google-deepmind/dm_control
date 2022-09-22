@@ -1,0 +1,50 @@
+<mujoco>
+  <compiler meshdir="../../../../suite/dog_assets" texturedir="../../../../suite/dog_assets"/>
+
+  <visual>
+    <headlight ambient=".4 .4 .4" diffuse=".8 .8 .8" specular="0.1 0.1 0.1"/>
+    <map znear=".01"/>
+  </visual>
+
+  <asset>
+    <texture name="grid" type="2d" builtin="checker" rgb1=".1 .2 .3" rgb2=".2 .3 .4" width="300" height="300" mark="edge" markrgb=".2 .3 .4"/>
+    <material name="grid" texture="grid" texrepeat="1 1" texuniform="true" reflectance=".2"/>
+    <texture name="skybox" type="skybox" builtin="gradient" rgb1=".4 .6 .8" rgb2="0 0 0"
+           width="100" height="100"/>
+    <material name="self" rgba=".7 .5 .3 1"/>
+    <material name="self_default" rgba=".7 .5 .3 1"/>
+    <material name="self_highlight" rgba="0 .5 .3 1"/>
+    <material name="effector" rgba=".7 .4 .2 1"/>
+    <material name="effector_default" rgba=".7 .4 .2 1"/>
+    <material name="effector_highlight" rgba="0 .5 .3 1"/>
+    <material name="decoration" rgba=".3 .5 .7 1"/>
+    <material name="eye" rgba="0 .2 1 1"/>
+    <material name="target" rgba=".6 .3 .3 1"/>
+    <material name="target_default" rgba=".6 .3 .3 1"/>
+    <material name="target_highlight" rgba=".6 .3 .3 .4"/>
+    <material name="site" rgba=".5 .5 .5 .3"/>
+    <texture name="tennis_ball" file="tennis_ball.png" gridsize="3 4" gridlayout=".U..LFRB.D.."/>
+    <material name="tennis_ball" texture="tennis_ball"/>
+  </asset>
+
+  <include file="dog.xml"/>
+
+  <default>
+    <default class="bouncy">
+      <geom condim="6" priority="1" friction="0.5 0.001 0.001" solref="-5000 -5" solimp="0.5 0.9 0.01"/>
+    </default>
+  </default>
+
+  <worldbody>
+    <geom name="floor" type="plane" size="10 10 0.1" material="grid"/>
+    <geom name="wall_px" type="plane" size="1 10 0.5" material="decoration" pos="-10.7 0 0.7" zaxis="1 0 1"/>
+    <geom name="wall_py" type="plane" size="10 1 0.5" material="decoration" pos="0 -10.7 0.7" zaxis="0 1 1"/>
+    <geom name="wall_nx" type="plane" size="1 10 0.5" material="decoration" pos="10.7 0 0.7" zaxis="-1 0 1"/>
+    <geom name="wall_ny" type="plane" size="10 1 0.5" material="decoration" pos="0 10.7 0.7" zaxis="0 -1 1"/>
+    <body name="ball" pos="0.5 0 0.1">
+      <freejoint name="ball_root"/>
+      <geom name="ball" class="bouncy" size="0.03" material="tennis_ball" mass="0.056"/>
+    </body>
+  </worldbody>
+
+</mujoco>
