@@ -105,7 +105,8 @@ class Physics(_control.Physics):
   _contexts = None
 
   def __new__(cls, *args, **kwargs):
-    obj = super(Physics, cls).__new__(cls)
+    # TODO(b/174603485): Re-enable once lint stops spuriously firing here.
+    obj = super(Physics, cls).__new__(cls)  # pylint: disable=no-value-for-parameter
     # The lock is created in `__new__` rather than `__init__` because there are
     # a number of existing subclasses that override `__init__` without calling
     # the `__init__` method of the  superclass.
@@ -610,7 +611,7 @@ class Camera:
 
   def __init__(
       self,
-      physics,
+      physics: Physics,
       height: int = 240,
       width: int = 320,
       camera_id: Union[int, str] = -1,
@@ -955,15 +956,29 @@ class MovableCamera(Camera):
   A `MovableCamera` always corresponds to a MuJoCo free camera with id -1.
   """
 
-  def __init__(self, physics, height=240, width=320):
+  def __init__(
+      self,
+      physics: Physics,
+      height: int = 240,
+      width: int = 320,
+      max_geom: Optional[int] = None,
+      scene_callback: Optional[Callable[[Physics, mujoco.MjvScene],
+                                        None]] = None,
+  ):
     """Initializes a new `MovableCamera`.
 
     Args:
       physics: Instance of `Physics`.
       height: Optional image height. Defaults to 240.
       width: Optional image width. Defaults to 320.
+      max_geom: Optional integer specifying the maximum number of geoms that can
+        be rendered in the same scene. If None this will be chosen automatically
+        based on the estimated maximum number of renderable geoms in the model.
+      scene_callback: Called after the scene has been created and before
+        it is rendered. Can be used to add more geoms to the scene.
     """
-    super().__init__(physics=physics, height=height, width=width, camera_id=-1)
+    super().__init__(physics=physics, height=height, width=width, camera_id=-1,
+                     max_geom=max_geom, scene_callback=scene_callback)
 
   def get_pose(self):
     """Returns the pose of the camera.
