@@ -17,6 +17,7 @@
         <attribute name="eulerseq" type="string"/>
         <attribute name="meshdir" type="basepath" path_namespace="mesh" conflict_allowed="true"/>
         <attribute name="texturedir" type="basepath" path_namespace="texture" conflict_allowed="true"/>
+        <attribute name="assetdir" type="basepath" path_namespace="asset" conflict_allowed="true"/>
         <attribute name="discardvisual" type="keyword" valid_values="false true"/>
         <attribute name="convexhull" type="keyword" valid_values="false true"/>
         <attribute name="userthread" type="keyword" valid_values="false true"/>
