@@ -20,10 +20,8 @@ from absl.testing import parameterized
 from dm_control import composer
 from dm_control import mjcf
 from dm_control.composer.initializers import prop_initializer
-from dm_control.composer.variation import deterministic
 from dm_control.composer.variation import distributions
 from dm_control.entities import props
-from dm_control.rl import control
 import numpy as np
 
 
@@ -157,62 +155,6 @@ class PropPlacerTest(parameterized.TestCase):
     prop_placer_seq[1](physics, random_state=np.random.RandomState(0),
                        ignore_contacts_with_entities=None)
     self.assertNoContactsInvolvingEntities(physics, spheres)
-
-  def test_exception_if_contact_buffer_always_full(self):
-    max_attempts_per_prop = 2
-    radius = 0.1
-    num_spheres = 5
-    physics, spheres = _make_spheres(num_spheres=num_spheres,
-                                     radius=radius, nconmax=1)
-
-    candidate_positions = np.multiply.outer(
-        np.arange(num_spheres * max_attempts_per_prop), [radius * 2.01, 0, 0])
-
-    # If we only place the first sphere then the others will all be overlapping
-    # at the origin, so we get an error due to filling the contact buffer.
-    prop_placer_failure = prop_initializer.PropPlacer(
-        props=[spheres[0]],
-        position=deterministic.Sequence(candidate_positions),
-        ignore_collisions=False,
-        max_attempts_per_prop=max_attempts_per_prop)
-    with self.assertRaises(control.PhysicsError):
-      prop_placer_failure(physics, random_state=np.random.RandomState(0))
-
-    physics, spheres = _make_spheres(num_spheres=num_spheres,
-                                     radius=radius, nconmax=1)
-
-    # If we place all of the spheres then we can find a configuration where they
-    # are non-colliding, so the contact buffer is not full when the initializer
-    # returns.
-    prop_placer = prop_initializer.PropPlacer(
-        props=spheres,
-        position=deterministic.Sequence(candidate_positions),
-        ignore_collisions=False,
-        max_attempts_per_prop=max_attempts_per_prop)
-    prop_placer(physics, random_state=np.random.RandomState(0))
-
-  def test_no_exception_if_contact_buffer_transiently_full(self):
-    max_attempts_per_prop = 2
-    radius = 0.1
-    num_spheres = 3
-    physics, spheres = _make_spheres(num_spheres=num_spheres,
-                                     radius=radius, nconmax=1)
-    fixed_positions = [[-radius * 1.01, 0., 0],
-                       [radius * 1.01, 0., 0.]]
-    for sphere, position in zip(spheres[:2], fixed_positions):
-      sphere.set_pose(physics, position=position)
-
-    candidate_positions = [
-        [0., 0., 0.],  # Collides with both fixed spheres.
-        [5 * radius, 0., 0.]]  # Does not collide with either sphere.
-
-    # The first candidate position transiently fills the contact buffer.
-    prop_placer = prop_initializer.PropPlacer(
-        props=spheres[2:],
-        position=deterministic.Sequence(candidate_positions),
-        ignore_collisions=False,
-        max_attempts_per_prop=max_attempts_per_prop)
-    prop_placer(physics, random_state=np.random.RandomState(0))
 
   @parameterized.parameters([False, True])
   def test_settle_physics(self, settle_physics):

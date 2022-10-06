@@ -45,7 +45,7 @@ class Task(composer.Task):
       observables=None,
       disable_walker_contacts=False,
       nconmax_per_player=200,
-      njmax_per_player=200,
+      njmax_per_player=400,
       control_timestep=0.025,
       tracking_cameras=(),
   ):
@@ -229,7 +229,7 @@ class MultiturnTask(Task):
                observables=None,
                disable_walker_contacts=False,
                nconmax_per_player=200,
-               njmax_per_player=200,
+               njmax_per_player=400,
                control_timestep=0.025,
                tracking_cameras=()):
     """See base class."""

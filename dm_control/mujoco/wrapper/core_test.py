@@ -24,7 +24,6 @@ from absl.testing import parameterized
 from dm_control import _render
 from dm_control.mujoco.testing import assets
 from dm_control.mujoco.wrapper import core
-import mock
 import mujoco
 import numpy as np
 
@@ -92,11 +91,7 @@ class CoreTest(parameterized.TestCase):
     # simulation step.
     model = core.MjModel.from_xml_string(xml_with_warning)
     data = core.MjData(model)
-    with mock.patch.object(core, "logging") as mock_logging:
-      mujoco.mj_step(model.ptr, data.ptr)
-    mock_logging.warning.assert_called_once_with(
-        "Pre-allocated constraint buffer is full. Increase njmax above 2. "
-        "Time = 0.0000.")
+    mujoco.mj_step(model.ptr, data.ptr)
 
   def testLoadXMLWithAssetsFromString(self):
     core.MjModel.from_xml_string(MODEL_WITH_ASSETS, assets=ASSETS)
