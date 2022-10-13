@@ -235,7 +235,8 @@ class _CMUHumanoidBase(legacy_base.Walker, metaclass=abc.ABCMeta):
   def _build_observables(self):
     return CMUHumanoidObservables(self)
 
-  @abc.abstractproperty
+  @property
+  @abc.abstractmethod
   def _xml_path(self):
     raise NotImplementedError
 

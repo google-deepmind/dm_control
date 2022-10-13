@@ -172,19 +172,23 @@ class Observables:
 class FreePropObservableMixin(metaclass=abc.ABCMeta):
   """Enforce observables of a free-moving object."""
 
-  @abc.abstractproperty
+  @property
+  @abc.abstractmethod
   def position(self):
     pass
 
-  @abc.abstractproperty
+  @property
+  @abc.abstractmethod
   def orientation(self):
     pass
 
-  @abc.abstractproperty
+  @property
+  @abc.abstractmethod
   def linear_velocity(self):
     pass
 
-  @abc.abstractproperty
+  @property
+  @abc.abstractmethod
   def angular_velocity(self):
     pass
 
@@ -284,7 +288,8 @@ class Entity(metaclass=abc.ABCMeta):
     """Callback executed after an agent control step."""
     pass
 
-  @abc.abstractproperty
+  @property
+  @abc.abstractmethod
   def mjcf_model(self):
     raise NotImplementedError
 

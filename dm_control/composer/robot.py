@@ -26,7 +26,8 @@ DOWN_QUATERNION = np.array([0., 0.70710678118, 0.70710678118, 0.])
 class Robot(entity.Entity, metaclass=abc.ABCMeta):
   """The abstract base class for robots."""
 
-  @abc.abstractproperty
+  @property
+  @abc.abstractmethod
   def actuators(self):
     """Returns the actuator elements of the robot."""
     raise NotImplementedError

@@ -800,7 +800,8 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
         name='\t'.join(actuator.full_identifier  # pytype: disable=attribute-error
                        for actuator in self._walker.actuators))
 
-  @abc.abstractproperty
+  @property
+  @abc.abstractmethod
   def name(self):
     raise NotImplementedError
 

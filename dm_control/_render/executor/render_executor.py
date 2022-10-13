@@ -96,11 +96,13 @@ class BaseRenderExecutor(metaclass=abc.ABCMeta):
   def terminated(self):
     return self._terminated
 
-  @abc.abstractproperty
+  @property
+  @abc.abstractmethod
   def thread(self):
     pass
 
-  @abc.abstractproperty
+  @property
+  @abc.abstractmethod
   def _lock_if_necessary(self):
     pass
 

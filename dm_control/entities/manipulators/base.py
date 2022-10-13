@@ -150,12 +150,14 @@ class RobotArm(composer.Robot, metaclass=abc.ABCMeta):
 
     return success
 
-  @abc.abstractproperty
+  @property
+  @abc.abstractmethod
   def joints(self):
     """Returns the joint elements of the arm."""
     raise NotImplementedError
 
-  @abc.abstractproperty
+  @property
+  @abc.abstractmethod
   def wrist_site(self):
     """Returns the wrist site element of the arm."""
     raise NotImplementedError
@@ -188,6 +190,7 @@ class RobotHand(composer.Robot, metaclass=abc.ABCMeta):
         number is specified, the same position is applied to all fingers.
     """
 
-  @abc.abstractproperty
+  @property
+  @abc.abstractmethod
   def tool_center_point(self):
     """Returns the tool center point element of the hand."""

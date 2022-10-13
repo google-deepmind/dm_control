@@ -35,15 +35,18 @@ class Corridor(composer.Arena, metaclass=abc.ABCMeta):
   def regenerate(self, random_state):
     raise NotImplementedError
 
-  @abc.abstractproperty
+  @property
+  @abc.abstractmethod
   def corridor_length(self):
     raise NotImplementedError
 
-  @abc.abstractproperty
+  @property
+  @abc.abstractmethod
   def corridor_width(self):
     raise NotImplementedError
 
-  @abc.abstractproperty
+  @property
+  @abc.abstractmethod
   def ground_geoms(self):
     raise NotImplementedError
 
@@ -175,6 +178,7 @@ class EmptyCorridor(Corridor):
 class GapsCorridor(EmptyCorridor):
   """A corridor that consists of multiple platforms separated by gaps."""
 
+  # pylint: disable=arguments-renamed
   def _build(self,
              platform_length=1.,
              gap_length=2.5,
@@ -235,6 +239,8 @@ class GapsCorridor(EmptyCorridor):
           gridlayout=sky_info.gridlayout)
 
     self._ground_body = self._mjcf_root.worldbody.add('body', name='ground')
+
+  # pylint: enable=arguments-renamed
 
   def regenerate(self, random_state):
     """Regenerates this corridor.
@@ -334,6 +340,7 @@ class GapsCorridor(EmptyCorridor):
 class WallsCorridor(EmptyCorridor):
   """A corridor obstructed by multiple walls aligned against the two sides."""
 
+  # pylint: disable=arguments-renamed
   def _build(self,
              wall_gap=2.5,
              wall_width=2.5,
@@ -381,6 +388,8 @@ class WallsCorridor(EmptyCorridor):
     self._wall_width = wall_width
     self._swap_wall_side = swap_wall_side
     self._include_initial_padding = include_initial_padding
+
+  # pylint: enable=arguments-renamed
 
   def regenerate(self, random_state):
     """Regenerates this corridor.
