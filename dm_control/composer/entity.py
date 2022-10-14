@@ -56,8 +56,9 @@ class _ObservableKeys:
   def __getattr__(self, name):
     try:
       model_identifier = self._entity.mjcf_model.full_identifier
-    except AttributeError:
-      raise ValueError('cannot retrieve the full identifier of mjcf_model')
+    except AttributeError as exc:
+      raise ValueError(
+          'cannot retrieve the full identifier of mjcf_model') from exc
     return os.path.join(model_identifier, name)
 
   def __dir__(self):
@@ -106,8 +107,9 @@ class Observables:
       # otherwise __getattr__ is executed and we get a very funky error.
       try:
         model_identifier = self._entity.mjcf_model.full_identifier
-      except AttributeError:
-        raise ValueError('cannot retrieve the full identifier of mjcf_model')
+      except AttributeError as exc:
+        raise ValueError(
+            'Cannot retrieve the full identifier of mjcf_model.') from exc
 
       return collections.OrderedDict(
           [(os.path.join(model_identifier, name), observable)
@@ -128,8 +130,9 @@ class Observables:
     if name_fully_qualified:
       try:
         model_identifier = self._entity.mjcf_model.full_identifier
-      except AttributeError:
-        raise ValueError('cannot retrieve the full identifier of mjcf_model')
+      except AttributeError as exc:
+        raise ValueError(
+            'Cannot retrieve the full identifier of mjcf_model.') from exc
       return self._observables[name.replace(model_identifier, '')]
     else:
       return self._observables[name]
@@ -150,8 +153,8 @@ class Observables:
     for obs_key, obs_options in options.items():
       try:
         obs = self._observables[obs_key]
-      except KeyError:
-        raise KeyError('No observable with name {!r}'.format(obs_key))
+      except KeyError as exc:
+        raise KeyError('No observable with name {!r}'.format(obs_key)) from exc
       obs.configure(**obs_options)
 
   def enable_all(self):
