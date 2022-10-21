@@ -266,7 +266,7 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
     self._reset_reward_channels()
 
   def _strip_reference_prefix(self):
-    self._clip_reference_features = _strip_reference_prefix(
+    self._clip_reference_features = _strip_reference_prefix(  # pytype: disable=wrong-arg-types
         self._clip_reference_features,
         'walker/',
         keep_prefixes=self._prop_prefixes)
