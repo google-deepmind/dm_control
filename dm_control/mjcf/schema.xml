@@ -1485,7 +1485,7 @@
             <attribute name="width" type="float"/>
             <attribute name="material" type="reference"/>
             <attribute name="rgba" type="array" array_type="float" array_size="4"/>
-            <attribute name="springlength" type="float"/>
+            <attribute name="springlength" type="float" array_size="2"/>
             <attribute name="stiffness" type="float"/>
             <attribute name="damping" type="float"/>
             <attribute name="user" type="array" array_type="float"/>
@@ -1525,7 +1525,7 @@
             <attribute name="solimplimit" type="array" array_type="float" array_size="5"/>
             <attribute name="solreffriction" type="array" array_type="float" array_size="2"/>
             <attribute name="solimpfriction" type="array" array_type="float" array_size="5"/>
-            <attribute name="springlength" type="float"/>
+            <attribute name="springlength" type="float" array_size="2"/>
           </attributes>
           <children>
             <element name="joint" repeated="true">
