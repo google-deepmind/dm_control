@@ -18,7 +18,6 @@
 import contextlib
 import copy
 import ctypes
-import threading
 import weakref
 
 from absl import logging
@@ -31,16 +30,11 @@ import numpy as np
 
 # Unused internal import: resources.
 
-_NULL = b"\00"
 _FAKE_BINARY_FILENAME = "model.mjb"
 
 _CONTACT_ID_OUT_OF_RANGE = (
     "`contact_id` must be between 0 and {max_valid} (inclusive), got: {actual}."
 )
-
-# Global cache used to store finalizers for freeing ctypes pointers.
-# Contains {pointer_address: weakref_object} pairs.
-_FINALIZERS = {}
 
 
 class Error(Exception):
@@ -51,9 +45,6 @@ class Error(Exception):
 if mujoco.mjVERSION_HEADER != mujoco.mj_version():
   raise Error("MuJoCo library version ({0}) does not match header version "
               "({1})".format(mujoco.mjVERSION_HEADER, mujoco.mj_version()))
-
-_REGISTERED = False
-_REGISTRATION_LOCK = threading.Lock()
 
 # This is used to keep track of the `MJMODEL` pointer that was most recently
 # loaded by `_get_model_ptr_from_xml`. Only this model can be saved to XML.
