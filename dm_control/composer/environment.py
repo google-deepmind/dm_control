@@ -383,10 +383,7 @@ class Environment(_CommonEnvironment, dm_env.Environment):
 
     try:
       for i in range(self._n_sub_steps):
-        self._hooks.before_substep(self._physics_proxy, action,
-                                   self._random_state)
-        self._physics.step()
-        self._hooks.after_substep(self._physics_proxy, self._random_state)
+        self._substep(action)
         # The final observation update must happen after all the hooks in
         # `self._hooks.after_step` is called. Otherwise, if any of these hooks
         # modify the physics state then we might capture an observation that is
@@ -423,6 +420,12 @@ class Environment(_CommonEnvironment, dm_env.Environment):
     else:
       self._reset_next_step = True
       return dm_env.TimeStep(dm_env.StepType.LAST, reward, discount, obs)
+
+  def _substep(self, action):
+    self._hooks.before_substep(
+        self._physics_proxy, action, self._random_state)
+    self._physics.step()
+    self._hooks.after_substep(self._physics_proxy, self._random_state)
 
   def action_spec(self):
     """Returns the action specification for this environment."""
