@@ -94,6 +94,7 @@ import numpy as np
 _RAGGED_ADDRS = {
     'nq': 'jnt_qposadr',
     'nv': 'jnt_dofadr',
+    'na': 'actuator_actadr',
     'nsensordata': 'sensor_adr',
     'nnumericdata': 'numeric_adr',
 }
@@ -218,6 +219,8 @@ def _get_size_name_to_element_names(model):
   # For example, the element names for "nv" axis come from "njnt".
   for size_name, address_field_name in _RAGGED_ADDRS.items():
     donor = 'n' + address_field_name.split('_')[0]
+    if donor == 'nactuator':
+      donor = 'nu'
     if donor in size_name_to_element_names:
       size_name_to_element_names[size_name] = size_name_to_element_names[donor]
 
@@ -229,13 +232,6 @@ def _get_size_name_to_element_names(model):
       mocap_body_names[body_mocapid] = body_name
   assert None not in mocap_body_names
   size_name_to_element_names['nmocap'] = mocap_body_names
-
-  # Arrays with dimension `na` correspond to stateful actuators. MuJoCo's
-  # compiler requires that these are always defined after stateless actuators,
-  # so we only need the final `na` elements in the list of all actuator names.
-  if model.na:
-    all_actuator_names = size_name_to_element_names['nu']
-    size_name_to_element_names['na'] = all_actuator_names[-model.na:]
 
   return size_name_to_element_names
 
@@ -255,8 +251,11 @@ def _get_size_name_to_element_sizes(model):
 
   for size_name, address_field_name in _RAGGED_ADDRS.items():
     addresses = getattr(model, address_field_name).ravel()
-    total_length = getattr(model, size_name)
-    element_sizes = np.diff(np.r_[addresses, total_length])
+    if size_name == 'na':
+      element_sizes = np.where(addresses == -1, 0, 1)
+    else:
+      total_length = getattr(model, size_name)
+      element_sizes = np.diff(np.r_[addresses, total_length])
     size_name_to_element_sizes[size_name] = element_sizes
 
   return size_name_to_element_sizes
@@ -282,7 +281,9 @@ def make_axis_indexers(model):
     element_names = size_name_to_element_names[size_name]
     if size_name in _RAGGED_ADDRS:
       element_sizes = size_name_to_element_sizes[size_name]
-      indexer = RaggedNamedAxis(element_names, element_sizes)
+      singleton = (size_name == 'na')
+      indexer = RaggedNamedAxis(element_names, element_sizes,
+                                singleton=singleton)
     else:
       indexer = RegularNamedAxis(element_names)
     axis_indexers[size_name] = indexer
@@ -377,12 +378,13 @@ class RegularNamedAxis(Axis):
 class RaggedNamedAxis(Axis):
   """Represents an axis where the named elements may vary in size."""
 
-  def __init__(self, element_names, element_sizes):
+  def __init__(self, element_names, element_sizes, singleton=False):
     """Initializes a new `RaggedNamedAxis` instance.
 
     Args:
       element_names: A list or array containing the element names.
       element_sizes: A list or array containing the size of each element.
+      singleton: Whether to reduce singleton slices to scalars.
     """
     names_to_slices = {}
     names_to_indices = {}
@@ -391,7 +393,10 @@ class RaggedNamedAxis(Axis):
     for name, size in zip(element_names, element_sizes):
       # Don't add unnamed elements to the dicts.
       if name:
-        names_to_slices[name] = slice(offset, offset + size)
+        if size == 1 and singleton:
+          names_to_slices[name] = offset
+        else:
+          names_to_slices[name] = slice(offset, offset + size)
         names_to_indices[name] = range(offset, offset + size)
       offset += size
 
@@ -400,29 +405,29 @@ class RaggedNamedAxis(Axis):
     self._names_to_slices = names_to_slices
     self._names_to_indices = names_to_indices
 
-  def convert_key_item(self, key):
+  def convert_key_item(self, key_item):
     """Converts a named indexing expression to a numpy-friendly index."""
 
-    _validate_key_item(key)
+    _validate_key_item(key_item)
 
-    if isinstance(key, str):
-      key = self._names_to_slices[util.to_native_string(key)]
+    if isinstance(key_item, str):
+      key_item = self._names_to_slices[util.to_native_string(key_item)]
 
-    elif isinstance(key, (list, np.ndarray)):
+    elif isinstance(key_item, (list, np.ndarray)):
       # We assume that either all or none of the items in the sequence are
       # strings representing names. If there is a mix, we will let NumPy throw
       # an error when trying to index with the returned key.
-      if isinstance(key[0], str):
+      if isinstance(key_item[0], str):
         new_key = []
-        for k in key:
+        for k in key_item:
           idx = self._names_to_indices[util.to_native_string(k)]
           if isinstance(idx, int):
             new_key.append(idx)
           else:
             new_key.extend(idx)
-        key = new_key
+        key_item = new_key
 
-    return key
+    return key_item
 
   @property
   def names(self):

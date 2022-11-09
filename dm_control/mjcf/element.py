@@ -1134,47 +1134,24 @@ class _DefaultElement(_ElementImpl):
 
 
 class _ActuatorElement(_ElementImpl):
-  """Specialized object representing an <actuator> element.
+  """Specialized object representing an <actuator> element."""
 
-  This is necessary because MuJoCo requires that all 3rd-order actuators (i.e.
-  those with internal dynamics) come after all 2nd-order actuators in the
-  generated XML.
-  """
   __slots__ = ()
-
-  def _is_third_order_actuator(self, child):
-    if child.tag == 'general':
-      return child.dyntype and child.dyntype != 'none'
-    elif child.tag == 'cylinder':
-      return True  # The `<cylinder>` shortcut has 'filter' dynamics.
-    else:
-      return False  # No other actuator shortcuts have internal dynamics.
 
   def _children_to_xml(self, xml_element, prefix_root, debug_context=None,
                        *,
                        precision=constants.XML_DEFAULT_PRECISION,
                        zero_threshold=0):
-    second_order = []
-    third_order = []
     debug_comments = {}
     for child in self.all_children():
       child_xml = child.to_xml(prefix_root, debug_context,
                                precision=precision,
                                zero_threshold=zero_threshold)
-      if (child_xml.attrib or len(child_xml)  # pylint: disable=g-explicit-length-test
-          or child.spec.repeated or child.spec.on_demand):
-        if self._is_third_order_actuator(child):
-          third_order.append(child_xml)
-        else:
-          second_order.append(child_xml)
-        if debugging.debug_mode() and debug_context:
-          debug_comment = debug_context.register_element_for_debugging(child)
-          debug_comments[child_xml] = debug_comment
-          if len(child_xml) > 0:  # pylint: disable=g-explicit-length-test
-            child_xml.insert(0, copy.deepcopy(debug_comment))
-    # Ensure that all second-order actuators come before third-order actuators
-    # in the XML.
-    for child_xml in second_order + third_order:
+      if debugging.debug_mode() and debug_context:
+        debug_comment = debug_context.register_element_for_debugging(child)
+        debug_comments[child_xml] = debug_comment
+        if len(child_xml) > 0:  # pylint: disable=g-explicit-length-test
+          child_xml.insert(0, copy.deepcopy(debug_comment))
       xml_element.append(child_xml)
       if debugging.debug_mode() and debug_context:
         xml_element.append(debug_comments[child_xml])

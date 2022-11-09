@@ -6,11 +6,9 @@
     </body>
   </worldbody>
   <actuator>
-    <!-- Second-order actuators -->
-    <motor name="motor" joint="slide_joint"/>
-    <velocity name="velocity" joint="slide_joint"/>
-    <!-- Third-order actuators -->
-    <cylinder name="cylinder" joint="slide_joint"/>
-    <general name="general" joint="slide_joint" dyntype="integrator" biastype="affine" dynprm="1 0 0"/>
+    <motor name="motor" joint="slide_joint"/> <!-- Second-order -->
+    <cylinder name="cylinder" joint="slide_joint"/> <!-- Third-order -->
+    <velocity name="velocity" joint="slide_joint"/> <!-- Second-order -->
+    <general name="general" joint="slide_joint" dyntype="integrator" biastype="affine" dynprm="1 0 0"/> <!-- Third-order -->
   </actuator>
 </mujoco>
