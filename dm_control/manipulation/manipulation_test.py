@@ -86,7 +86,7 @@ class ManipulationTest(parameterized.TestCase):
           self._validate_reward_range(time_step.reward)
           self._validate_discount(time_step.discount)
         action = random_state.uniform(action_spec.minimum, action_spec.maximum)
-        env.step(action)
+        time_step = env.step(action)
 
 if __name__ == '__main__':
   absltest.main()
