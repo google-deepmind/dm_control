@@ -521,6 +521,12 @@ class MjData(metaclass=_MjDataMeta):
     if not 0 <= contact_id < self.ncon:
       raise ValueError(_CONTACT_ID_OUT_OF_RANGE
                        .format(max_valid=self.ncon-1, actual=contact_id))
+
+    # Run the portion of `mj_step2` that are needed for correct contact forces.
+    mujoco.mj_fwdActuation(self._model.ptr, self._data)
+    mujoco.mj_fwdAcceleration(self._model.ptr, self._data)
+    mujoco.mj_fwdConstraint(self._model.ptr, self._data)
+
     wrench = np.empty(6, dtype=np.float64)
     mujoco.mj_contactForce(self._model.ptr, self._data, contact_id, wrench)
     return wrench.reshape(2, 3)
