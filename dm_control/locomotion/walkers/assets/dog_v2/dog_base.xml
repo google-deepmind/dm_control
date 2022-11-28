@@ -158,4 +158,13 @@
       <site group="4"/>
     </default>
   </default>
+
+  <asset>
+    <texture name="grid" type="2d" builtin="checker" rgb1="0.1 0.2 0.3" rgb2="0.2 0.3 0.4" mark="edge" markrgb="0.2 0.3 0.4" width="300" height="300"/>
+    <material name="grid" texture="grid" texrepeat="1 1" texuniform="true" reflectance="0.2"/>
+  </asset>
+
+  <worldbody>
+    <geom name="floor" conaffinity="1" type="plane" size="10 10 0.1" material="grid"/>
+  </worldbody>
 </mujoco>
