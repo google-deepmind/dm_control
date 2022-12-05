@@ -113,7 +113,7 @@ By default, `dm_control` will attempt to use GLFW first, then EGL, then OSMesa.
 You can also specify a particular backend to use by setting the `MUJOCO_GL=`
 environment variable to `"glfw"`, `"egl"`, or `"osmesa"`, respectively. When
 rendering with EGL, you can also specify which GPU to use for rendering by
-setting the environment variable `EGL_DEVICE_ID=` to the target GPU ID.
+setting the environment variable `MUJOCO_EGL_DEVICE_ID=` to the target GPU ID.
 
 ## Additional instructions for Homebrew users on macOS
 
