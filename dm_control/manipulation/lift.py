@@ -67,9 +67,7 @@ class _VertexSitesMixin:
     """Add sites corresponding to the vertices of a box geom or site."""
     offsets = (
         (-half_length, half_length) for half_length in box_geom_or_site.size)
-
-    site_positions = list(itertools.product(*offsets))
-    site_positions = np.vstack(site_positions)
+    site_positions = np.vstack(list(itertools.product(*offsets)))
     if box_geom_or_site.pos is not None:
       site_positions += box_geom_or_site.pos
     self._vertices = []
