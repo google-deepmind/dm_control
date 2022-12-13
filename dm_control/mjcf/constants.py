@@ -42,7 +42,9 @@ WORLDBODY = 'worldbody'
 MJDATA_TRIGGERS_DIRTY = [
     'qpos', 'qvel', 'act', 'ctrl', 'qfrc_applied', 'xfrc_applied']
 MJMODEL_DOESNT_TRIGGER_DIRTY = [
-    'rgba', 'matid', 'emission', 'specular', 'shininess', 'reflectance']
+    'rgba', 'matid', 'emission', 'specular', 'shininess', 'reflectance',
+    'needstage',
+]
 
 # When writing into `model.{body,geom,site}_{pos,quat}` we must ensure that the
 # corresponding rows in `model.{body,geom,site}_sameframe` are set to zero,
