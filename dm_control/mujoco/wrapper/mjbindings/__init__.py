@@ -28,7 +28,7 @@ from dm_control.mujoco.wrapper.mjbindings import sizes
 try:
   from dm_control.mujoco.wrapper.mjbindings import functions
   from dm_control.mujoco.wrapper.mjbindings.functions import mjlib
-  logging.info('MuJoCo library version is: %d', mjlib.mj_version())
+  logging.info('MuJoCo library version is: %s', mjlib.mj_versionString())
   # Internal analytics.
 except (IOError, OSError):
   logging.warning('mjbindings failed to import mjlib and other functions. '
