@@ -17,6 +17,7 @@
 
 
 from dm_control.composer.variation import base
+from dm_control.composer.variation.variation_values import evaluate
 
 
 class Constant(base.Variation):
@@ -42,10 +43,12 @@ class Sequence(base.Variation):
 
   def __call__(self, initial_value=None, current_value=None, random_state=None):
     try:
-      return next(self._iterator)
+      return evaluate(next(self._iterator), initial_value=initial_value,
+                      current_value=current_value, random_state=random_state)
     except StopIteration:
       self._iterator = iter(self._values)
-      return next(self._iterator)
+      return evaluate(next(self._iterator), initial_value=initial_value,
+                      current_value=current_value, random_state=random_state)
 
 
 class Identity(base.Variation):

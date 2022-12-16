@@ -17,8 +17,8 @@
 import abc
 import functools
 
-from dm_control.composer import variation
 from dm_control.composer.variation import base
+from dm_control.composer.variation.variation_values import evaluate
 import numpy as np
 
 
@@ -45,12 +45,12 @@ class Distribution(base.Variation, metaclass=abc.ABCMeta):
     size = (
         None if self._single_sample or initial_value is None  # pylint: disable=g-long-ternary
         else np.shape(initial_value))
-    local_args = variation.evaluate(
+    local_args = evaluate(
         self._args,
         initial_value=initial_value,
         current_value=current_value,
         random_state=random_state)
-    local_kwargs = variation.evaluate(
+    local_kwargs = evaluate(
         self._kwargs,
         initial_value=initial_value,
         current_value=current_value,
