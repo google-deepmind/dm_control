@@ -219,7 +219,7 @@ class Viewer:
     self._input_map.bind(self._free_camera.set_rotate_mode, _ROTATE_CAMERA)
     self._input_map.bind(self._free_camera.center, _CENTER_CAMERA)
     self._input_map.bind(self._free_camera.track, _TRACK_OBJECT)
-    self._input_map.bind(self._free_camera.free_look, _FREE_LOOK)
+    self._input_map.bind(self._camera_select.escape, _FREE_LOOK)
     self._input_map.bind(self._manipulator.select, _SELECT_OBJECT)
     self._input_map.bind_plane(self._manipulator.on_move)
 
@@ -310,6 +310,11 @@ class CameraSelector:
     self._camera_idx += 1
     if not self._model.ncam or self._camera_idx >= self._model.ncam:
       self._camera_idx = -1
+    self._commit_selection()
+
+  def escape(self) -> None:
+    """Unconditionally switches to the free camera."""
+    self._camera_idx = -1
     self._commit_selection()
 
   def _commit_selection(self):
