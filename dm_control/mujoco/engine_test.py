@@ -370,6 +370,10 @@ class MujocoEngineTest(parameterized.TestCase):
 
   def testSetGetPhysicsState(self):
     physics_state = self._physics.get_state()
+
+    # qpos, qvel, act
+    self.assertLen(self._physics._physics_state_items(), 3)
+
     self._physics.set_state(physics_state)
 
     new_physics_state = np.random.random_sample(physics_state.shape)
@@ -377,6 +381,50 @@ class MujocoEngineTest(parameterized.TestCase):
 
     np.testing.assert_allclose(new_physics_state,
                                self._physics.get_state())
+
+  def testSetGetPhysicsStateWithPlugin(self):
+    # Model copied from mujoco/test/plugin/elasticity/elasticity_test.cc
+    model_with_cable_plugin = """
+    <mujoco>
+      <option gravity="0 0 0"/>
+      <extension>
+        <required plugin="mujoco.elasticity.cable"/>
+      </extension>
+      <worldbody>
+        <geom type="plane" size="0 0 1" quat="1 0 0 0"/>
+        <site name="reference" pos="0 0 0"/>
+        <composite type="cable" curve="s" count="41 1 1" size="1" offset="0 0 1" initial="none">
+          <plugin plugin="mujoco.elasticity.cable">
+            <config key="twist" value="1e6"/>
+            <config key="bend" value="1e9"/>
+          </plugin>
+          <joint kind="main" damping="2"/>
+          <geom type="capsule" size=".005" density="1"/>
+        </composite>
+      </worldbody>
+      <contact>
+        <exclude body1="B_first" body2="B_last"/>
+      </contact>
+      <sensor>
+        <framepos objtype="site" objname="S_last"/>
+      </sensor>
+      <actuator>
+        <motor site="S_last" gear="0 0 0 0 1 0" ctrllimited="true" ctrlrange="0 4"/>
+      </actuator>
+    </mujoco>
+    """
+    physics = engine.Physics.from_xml_string(model_with_cable_plugin)
+    physics_state = physics.get_state()
+
+    # qpos, qvel, act, plugin_state
+    self.assertLen(physics._physics_state_items(), 4)
+
+    physics.set_state(physics_state)
+
+    new_physics_state = np.random.random_sample(physics_state.shape)
+    physics.set_state(new_physics_state)
+
+    np.testing.assert_allclose(new_physics_state, physics.get_state())
 
   def testSetInvalidPhysicsState(self):
     badly_shaped_state = np.repeat(self._physics.get_state(), repeats=2)

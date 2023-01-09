@@ -538,12 +538,21 @@ class Physics(_control.Physics):
     """Returns list of arrays making up internal physics simulation state.
 
     The physics state consists of the state variables, their derivatives and
-    actuation activations.
+    actuation activations. If the model contains plugins, then the state will
+    also contain any plugin state.
 
     Returns:
       List of NumPy arrays containing full physics simulation state.
     """
-    return [self.data.qpos, self.data.qvel, self.data.act]
+    if self.model.nplugin > 0:
+      return [
+          self.data.qpos,
+          self.data.qvel,
+          self.data.act,
+          self.data.plugin_state,
+      ]
+    else:
+      return [self.data.qpos, self.data.qvel, self.data.act]
 
   # Named views of simulation data.
 
