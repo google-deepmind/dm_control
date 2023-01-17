@@ -221,6 +221,7 @@
     <mesh name="Phalanges_B_L_3" file="BONEPhalanges_B_L_3.stl"/>
     <mesh name="Carpal_II_R" file="BONECarpal_II_R.stl"/>
     <mesh name="Ca_17" file="BONECa_17.stl"/>
+    <mesh name="Xiphoid_cartilage" file="BONEXiphoid_cartilage.stl"/>
     <mesh name="Ca_16" file="BONECa_16.stl"/>
     <mesh name="Phalanges_B_3_L_4" file="BONEPhalanges_B_3_L_4.stl"/>
     <mesh name="Phalanges_B_L_2" file="BONEPhalanges_B_L_2.stl"/>
@@ -324,7 +325,6 @@
     <mesh name="Carpal_Sesamoid_R" file="BONECarpal_Sesamoid_R.stl"/>
     <mesh name="Phalanxpmxinutlis_digiti_II_L" file="BONEPhalanxpmxinutlis_digiti_II_L.stl"/>
     <mesh name="Phalanx_media_digiti_IV_R" file="BONEPhalanx_media_digiti_IV_R.stl"/>
-    <mesh name="Xiphoid_cartilage" file="BONEXiphoid_cartilage.stl"/>
     <texture name="skin" type="2d" file="skin_texture.png"/>
     <material name="skin" texture="skin"/>
     <skin name="skin" file="dog_skin.skn" material="skin"/>
