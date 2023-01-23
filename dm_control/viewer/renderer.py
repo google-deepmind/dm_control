@@ -16,6 +16,8 @@
 
 import abc
 import contextlib
+import subprocess
+import sys
 
 from dm_control.mujoco import wrapper
 from dm_control.viewer import util
@@ -43,6 +45,25 @@ _DEFAULT_RENDER_FLAGS[mujoco.mjtRndFlag.mjRND_SHADOW.value] = 1
 _DEFAULT_RENDER_FLAGS[mujoco.mjtRndFlag.mjRND_REFLECTION.value] = 1
 _DEFAULT_RENDER_FLAGS[mujoco.mjtRndFlag.mjRND_SKYBOX.value] = 1
 _DEFAULT_RENDER_FLAGS[mujoco.mjtRndFlag.mjRND_CULL_FACE.value] = 1
+
+# Font scale values.
+_DEFAULT_FONT_SCALE = mujoco.mjtFontScale.mjFONTSCALE_100
+_HIDPI_FONT_SCALE = mujoco.mjtFontScale.mjFONTSCALE_200
+
+
+def _has_high_dpi() -> bool:
+  """Returns True if the display is a high DPI display."""
+  if sys.platform == 'darwin':
+    # On macOS, we can use the system_profiler command to determine if the
+    # display is retina.
+    return subprocess.call(
+        'system_profiler SPDisplaysDataType | grep -i "retina"',
+        shell=True,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL
+    ) == 0
+  # TODO(zakka): Figure out how to detect high DPI displays on Linux.
+  return False
 
 
 class BaseRenderer(metaclass=abc.ABCMeta):
@@ -150,10 +171,11 @@ class OffScreenRenderer(BaseRenderer):
       new_offheight = max(self._model.vis.global_.offheight, viewport.height)
       self._model.vis.global_.offwidth = new_offwidth
       self._model.vis.global_.offheight = new_offheight
+      font_scale = _HIDPI_FONT_SCALE if _has_high_dpi() else _DEFAULT_FONT_SCALE
       self._mujoco_context = wrapper.MjrContext(
           model=self._model,
           gl_context=self._surface,
-          font_scale=mujoco.mjtFontScale.mjFONTSCALE_100)
+          font_scale=font_scale)
       self._rgb_buffer = np.empty(
           (viewport.height, viewport.width, 3), dtype=np.uint8)
 
