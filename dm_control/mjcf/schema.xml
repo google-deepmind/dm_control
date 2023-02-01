@@ -1037,6 +1037,21 @@
             <attribute name="solimpsmooth" type="array" array_type="float" array_size="5"/>
           </attributes>
           <children>
+            <element name="plugin" repeated="true" namespace="composite">
+              <attributes>
+                <attribute name="name" type="identifier"/>
+                <attribute name="plugin" type="string" reference_namespace="plugin"/>
+                <attribute name="instance" type="reference" reference_namespace="plugin"/>
+              </attributes>
+              <children>
+                <element name="config" repeated="true">
+                  <attributes>
+                    <attribute name="key" type="string"/>
+                    <attribute name="value" type="string"/>
+                  </attributes>
+                </element>
+              </children>
+            </element>
             <element name="joint" repeated="true">
               <attributes>
                 <attribute name="kind" type="keyword" valid_values="main twist stretch" required="true"/>
@@ -1139,6 +1154,21 @@
             <attribute name="gravcomp" type="float"/>
           </attributes>
           <children>
+            <element name="plugin" repeated="true" namespace="body">
+              <attributes>
+                <attribute name="name" type="identifier"/>
+                <attribute name="plugin" type="string" reference_namespace="plugin"/>
+                <attribute name="instance" type="reference" reference_namespace="plugin"/>
+              </attributes>
+              <children>
+                <element name="config" repeated="true">
+                  <attributes>
+                    <attribute name="key" type="string"/>
+                    <attribute name="value" type="string"/>
+                  </attributes>
+                </element>
+              </children>
+            </element>
             <element name="inertial" on_demand="true">
               <attributes>
                 <attribute name="pos" type="array" required="true" array_type="float" array_size="3"/>
@@ -2147,7 +2177,7 @@
         <element name="plugin" repeated="true" namespace="sensor">
           <attributes>
             <attribute name="name" type="identifier"/>
-            <attribute name="plugin" type="reference" reference_namespace="plugin"/>
+            <attribute name="plugin" type="string" reference_namespace="plugin"/>
             <attribute name="instance" type="reference" reference_namespace="plugin"/>
             <attribute name="cutoff" type="float"/>
             <attribute name="objtype" type="keyword" valid_values="body joint geom site camera light mesh skin hfield texture material equality tendon actuator sensor numeric text tuple contact keyframe"/>
