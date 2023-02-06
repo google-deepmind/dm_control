@@ -56,6 +56,17 @@ def stand(time_limit=_DEFAULT_TIME_LIMIT, random=None, environment_kwargs=None):
 
 
 @SUITE.add()
+def walk(time_limit=_DEFAULT_TIME_LIMIT, random=None, environment_kwargs=None):
+  """Returns the Walk task."""
+  physics = Physics.from_xml_string(*get_model_and_assets())
+  task = HumanoidCMU(move_speed=_WALK_SPEED, random=random)
+  environment_kwargs = environment_kwargs or {}
+  return control.Environment(
+      physics, task, time_limit=time_limit, control_timestep=_CONTROL_TIMESTEP,
+      **environment_kwargs)
+
+
+@SUITE.add()
 def run(time_limit=_DEFAULT_TIME_LIMIT, random=None, environment_kwargs=None):
   """Returns the Run task."""
   physics = Physics.from_xml_string(*get_model_and_assets())
