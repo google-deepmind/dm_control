@@ -17,22 +17,25 @@
 
 import collections
 
+from dm_control import mjcf
 import numpy as np
 
-from dm_control import mjcf
 
-
-def create_tail(caudal_dofs_per_vertebra, bone_size, model, bone_position,
-                parent):
+def create_tail(
+    caudal_dofs_per_vertebra, bone_size, model, bone_position, parent
+):
   """Add tail in the dog model.
 
-      Args:
-        caudal_dofs_per_vertebra: a number that the determines how many
-        dofs are going to be used between each pair of caudal vetebrae.
-        bone_size: dictionary containing the scale of the geometry.
-        model: model in which we want to add the tail.
-        bone_position: a dictionary of bones positions.
-        parent: parent object on which we should start attaching new components.
+  Args:
+    caudal_dofs_per_vertebra: a number that the determines how many dofs are
+      going to be used between each pair of caudal vetebrae.
+    bone_size: dictionary containing the scale of the geometry.
+    model: model in which we want to add the tail.
+    bone_position: a dictionary of bones positions.
+    parent: parent object on which we should start attaching new components.
+
+  Returns:
+    A list of caudal joints.
   """
   # Caudal spine (tail) bodies:
   caudal_bones = ['Ca_' + str(i + 1) for i in range(21)]
@@ -56,10 +59,10 @@ def create_tail(caudal_dofs_per_vertebra, bone_size, model, bone_position,
 
   # Caudal spine joints:
   caudal_axis = collections.OrderedDict()
-  caudal_axis['extend'] = np.array((0., 1., 0.))
+  caudal_axis['extend'] = np.array((0.0, 1.0, 0.0))
 
   scale = np.asarray([bone_size[bone] for bone in caudal_bones]).mean()
-  joint_pos = np.array((.3, 0, .26)) * scale
+  joint_pos = np.array((0.3, 0, 0.26)) * scale
   num_dofs = 0
   caudal_joints = []
   caudal_joint_names = []
@@ -68,7 +71,6 @@ def create_tail(caudal_dofs_per_vertebra, bone_size, model, bone_position,
     while num_dofs < (i + 1) * caudal_dofs_per_vertebra:
       dof = num_dofs % 2
       dof_name = list(caudal_axis.keys())[dof]
-      dof_axis = caudal_axis[dof_name]
       caudal_joint_names.append(vertebra.name + '_' + dof_name)
       rel_pos = physics.bind(parent).xpos - physics.bind(vertebra).xpos
       twist_dir = rel_pos / np.linalg.norm(rel_pos)
@@ -77,15 +79,17 @@ def create_tail(caudal_dofs_per_vertebra, bone_size, model, bone_position,
       joint_pos = twist_dir * physics.bind(caudal_geoms[i]).size[2]
 
       joint = vertebra.add(
-        'joint',
-        name=caudal_joint_names[-1],
-        dclass='caudal_' + dof_name,
-        axis=caudal_axis[dof_name],
-        pos=joint_pos)
+          'joint',
+          name=caudal_joint_names[-1],
+          dclass='caudal_' + dof_name,
+          axis=caudal_axis[dof_name],
+          pos=joint_pos,
+      )
       caudal_joints.append(joint)
       num_dofs += 1
     parent = vertebra
-  vertebra.add('site', name='tail_tip', dclass='sensor', size=(0.005,))
+
+  parent.add('site', name='tail_tip', dclass='sensor', size=(0.005,))
 
   physics = mjcf.Physics.from_mjcf_model(model)
   all_geoms = model.find_all('geom')
@@ -96,10 +100,11 @@ def create_tail(caudal_dofs_per_vertebra, bone_size, model, bone_position,
       scale = np.array((1.2, sc, 1))
       bound_geom = physics.bind(geom)
       geom.parent.add(
-        'geom',
-        name=geom.name + '_collision',
-        pos=bound_geom.pos,
-        size=bound_geom.size * scale,
-        quat=bound_geom.quat,
-        dclass='collision_primitive')
+          'geom',
+          name=geom.name + '_collision',
+          pos=bound_geom.pos,
+          size=bound_geom.size * scale,
+          quat=bound_geom.quat,
+          dclass='collision_primitive',
+      )
   return caudal_joints
