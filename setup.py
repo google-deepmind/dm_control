@@ -15,15 +15,15 @@
 
 """Install script for setuptools."""
 
-from distutils import cmd
-from distutils import log
 import fnmatch
+import logging
 import os
 import platform
 import subprocess
 import sys
 
 import mujoco
+import setuptools
 from setuptools import find_packages
 from setuptools import setup
 from setuptools.command import install
@@ -69,7 +69,7 @@ def _finalize_mjbindings_options(cmd_instance):
   cmd_instance.header_paths = ' '.join(header_paths)
 
 
-class BuildMJBindingsCommand(cmd.Command):
+class BuildMJBindingsCommand(setuptools.Command):
   """Runs `autowrap.py` to generate the low-level ctypes bindings for MuJoCo."""
   description = __doc__
   user_options = [
@@ -101,7 +101,7 @@ class BuildMJBindingsCommand(cmd.Command):
         '--header_paths={}'.format(self.header_paths),
         '--output_dir={}'.format(output_dir)
     ]
-    self.announce('Running command: {}'.format(command), level=log.DEBUG)
+    self.announce('Running command: {}'.format(command), level=logging.DEBUG)
     try:
       # Prepend the current directory to $PYTHONPATH so that internal imports
       # in `autowrap` can succeed before we've installed anything.
@@ -173,7 +173,7 @@ def find_data_files(package_dir, patterns, excludes=()):
 
 setup(
     name='dm_control',
-    version='1.0.9',
+    version='1.0.10',
     description='Continuous control environments and MuJoCo Python bindings.',
     long_description="""
 # `dm_control`: DeepMind Infrastructure for Physics-Based Simulation.
@@ -201,7 +201,7 @@ notebook: [Open In Google Colab](https://colab.research.google.com/github/deepmi
         'glfw',
         'labmaze',
         'lxml',
-        'mujoco >= 2.3.1.post1',
+        'mujoco >= 2.3.2',
         'numpy >= 1.9.0',
         'protobuf >= 3.19.4',  # TensorFlow requires protobuf<3.20 (b/182876485)
         'pyopengl >= 3.1.4',
