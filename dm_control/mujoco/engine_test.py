@@ -388,7 +388,7 @@ class MujocoEngineTest(parameterized.TestCase):
     <mujoco>
       <option gravity="0 0 0"/>
       <extension>
-        <required plugin="mujoco.elasticity.cable"/>
+        <plugin plugin="mujoco.elasticity.cable"/>
       </extension>
       <worldbody>
         <geom type="plane" size="0 0 1" quat="1 0 0 0"/>

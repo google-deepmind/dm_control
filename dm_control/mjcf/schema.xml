@@ -788,7 +788,7 @@
     </element>
     <element name="extension">
       <children>
-        <element name="required" repeated="true" namespace="plugin">
+        <element name="plugin" repeated="true" namespace="plugin">
           <attributes>
             <attribute name="plugin" type="string" required="true"/>
           </attributes>
