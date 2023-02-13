@@ -37,7 +37,7 @@
             <attribute name="timeconst" type="float"/>
             <attribute name="timestep" type="float"/>
             <attribute name="inttotal" type="float"/>
-            <attribute name="inteval" type="float"/>
+            <attribute name="interval" type="float"/>
             <attribute name="tolrange" type="float"/>
           </attributes>
         </element>
