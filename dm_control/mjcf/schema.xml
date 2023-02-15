@@ -95,6 +95,7 @@
     </element>
     <element name="size">
       <attributes>
+        <attribute name="memory" type="string" conflict_allowed="true" conflict_behavior="max_bytes"/>
         <attribute name="njmax" type="int" conflict_allowed="true" conflict_behavior="max"/>
         <attribute name="nconmax" type="int" conflict_allowed="true" conflict_behavior="max"/>
         <attribute name="nstack" type="int"/>

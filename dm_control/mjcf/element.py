@@ -34,8 +34,40 @@ import numpy as np
 
 _raw_property = property  # pylint: disable=invalid-name
 
+_UNITS = ('K', 'M', 'G', 'T', 'P', 'E')
 
-_CONFLICT_BEHAVIOR_FUNC = {'min': min, 'max': max}
+
+def _to_bytes(value_str):
+  """Converts a `str` value representing a size in bytes to `int`.
+
+  Args:
+    value_str: `str` value to be converted.
+
+  Returns:
+    `int` corresponding size in bytes.
+
+  Raises:
+    ValueError: if the `str` value passed has an unsupported unit.
+  """
+  if value_str.isdigit():
+    value_int = int(value_str)
+  else:
+    value_int = int(value_str[:-1])
+    unit = value_str[-1].upper()
+    if unit not in _UNITS:
+      raise ValueError(
+          f'unit of `size.memory` should be one of [{", ".join(_UNITS)}], got'
+          f' {unit}')
+    power = 10 * (_UNITS.index(unit) + 1)
+    value_int *= 2**power
+  return value_int
+
+
+def _max_bytes(first, second):
+  return str(max(_to_bytes(first), _to_bytes(second)))
+
+
+_CONFLICT_BEHAVIOR_FUNC = {'min': min, 'max': max, 'max_bytes': _max_bytes}
 
 
 def property(method):  # pylint: disable=redefined-builtin

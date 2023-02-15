@@ -1055,6 +1055,16 @@ class ElementTest(parameterized.TestCase):
     self.assertEqual(model_1.size.nconmax, 345)
     self.assertEqual(model_1.size.njmax, 456)
 
+  def testMaxBytesConflictingValues(self):
+    model_1 = mjcf.RootElement()
+    model_1.size.memory = '10000'
+
+    model_2 = mjcf.RootElement()
+    model_2.size.memory = '1M'
+
+    model_1.attach(model_2)
+    self.assertEqual(model_1.size.memory, '1048576')
+
 
 if __name__ == '__main__':
   absltest.main()
