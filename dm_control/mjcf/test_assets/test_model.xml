@@ -42,4 +42,7 @@
     <velocity name="b_0_0" joint="b_0_0"/>
     <velocity name="b_1_0" joint="b_1_0"/>
   </actuator>
+  <sensor>
+    <user name="dummy" dim="1" user="0 1 0 1" />
+  </sensor>
 </mujoco>
