@@ -68,10 +68,10 @@ class WalkerPose(collections.namedtuple(
 class Walker(composer.Robot, metaclass=abc.ABCMeta):
   """Abstract base class for Walker robots."""
 
-  def create_root_joints(self, attachment_frame):
+  def create_root_joints(self, attachment_frame) -> None:
     attachment_frame.add('freejoint')
 
-  def _build_observables(self):
+  def _build_observables(self) -> 'WalkerObservables':
     return WalkerObservables(self)
 
   def transform_vec_to_egocentric_frame(self, physics, vec_in_world_frame):
@@ -122,11 +122,13 @@ class Walker(composer.Robot, metaclass=abc.ABCMeta):
     """
     return super().global_xmat_to_local_frame(physics, xmat)
 
-  @abc.abstractproperty
+  @property
+  @abc.abstractmethod
   def root_body(self):
     raise NotImplementedError
 
-  @abc.abstractproperty
+  @property
+  @abc.abstractmethod
   def observable_joints(self):
     raise NotImplementedError
 
