@@ -392,9 +392,9 @@
             <attribute name="gear" type="array" array_type="float" array_size="6"/>
             <attribute name="cranklength" type="float"/>
             <attribute name="user" type="array" array_type="float"/>
-            <attribute name="dyntype" type="keyword" valid_values="none integrator filter user"/>
-            <attribute name="gaintype" type="keyword" valid_values="fixed affine user"/>
-            <attribute name="biastype" type="keyword" valid_values="none affine user"/>
+            <attribute name="dyntype" type="keyword" valid_values="none integrator filter muscle user"/>
+            <attribute name="gaintype" type="keyword" valid_values="fixed affine muscle user"/>
+            <attribute name="biastype" type="keyword" valid_values="none affine muscle user"/>
             <attribute name="dynprm" type="array" array_type="float" array_size="10"/>
             <attribute name="gainprm" type="array" array_type="float" array_size="10"/>
             <attribute name="biasprm" type="array" array_type="float" array_size="10"/>
@@ -688,9 +688,9 @@
                 <attribute name="cranklength" type="float"/>
                 <attribute name="user" type="array" array_type="float"/>
                 <attribute name="actdim" type="int"/>
-                <attribute name="dyntype" type="keyword" valid_values="none integrator filter user"/>
-                <attribute name="gaintype" type="keyword" valid_values="fixed affine user"/>
-                <attribute name="biastype" type="keyword" valid_values="none affine user"/>
+                <attribute name="dyntype" type="keyword" valid_values="none integrator filter muscle user"/>
+                <attribute name="gaintype" type="keyword" valid_values="fixed affine muscle user"/>
+                <attribute name="biastype" type="keyword" valid_values="none affine muscle user"/>
                 <attribute name="dynprm" type="array" array_type="float" array_size="10"/>
                 <attribute name="gainprm" type="array" array_type="float" array_size="10"/>
                 <attribute name="biasprm" type="array" array_type="float" array_size="10"/>
