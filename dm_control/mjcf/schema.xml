@@ -2168,10 +2168,10 @@
             <attribute name="noise" type="float"/>
             <attribute name="cutoff" type="float"/>
             <attribute name="user" type="array" array_type="float"/>
-            <attribute name="objtype" type="keyword" required="true" valid_values="body joint geom site camera light mesh skin hfield texture material equality tendon actuator sensor numeric text tuple contact keyframe"/>
-            <attribute name="objname" type="reference" required="true" reference_namespace="attrib:objtype"/>
-            <attribute name="datatype" type="keyword" required="true" valid_values="real positive axis quaternion"/>
-            <attribute name="needstage" type="keyword" required="true" valid_values="pos vel acc"/>
+            <attribute name="objtype" type="keyword" valid_values="body joint geom site camera light mesh skin hfield texture material equality tendon actuator sensor numeric text tuple contact keyframe"/>
+            <attribute name="objname" type="reference" reference_namespace="attrib:objtype"/>
+            <attribute name="datatype" type="keyword" valid_values="real positive axis quaternion"/>
+            <attribute name="needstage" type="keyword" valid_values="pos vel acc"/>
             <attribute name="dim" type="int" required="true"/>
           </attributes>
         </element>
