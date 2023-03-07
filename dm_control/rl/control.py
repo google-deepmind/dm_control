@@ -34,7 +34,8 @@ class Environment(dm_env.Environment):
                time_limit=float('inf'),
                control_timestep=None,
                n_sub_steps=None,
-               flat_observation=False):
+               flat_observation=False,
+               legacy_step: bool = True):
     """Initializes a new `Environment`.
 
     Args:
@@ -48,12 +49,16 @@ class Environment(dm_env.Environment):
         `control_timestep` is not specified.
       flat_observation: If True, observations will be flattened and concatenated
         into a single numpy array.
+      legacy_step: If True, steps the state with up-to-date position and
+        velocity dependent fields. See Page 6 of
+        https://arxiv.org/abs/2006.12983 for more information.
 
     Raises:
       ValueError: If both `n_sub_steps` and `control_timestep` are supplied.
     """
     self._task = task
     self._physics = physics
+    self._physics.legacy_step = legacy_step
     self._flat_observation = flat_observation
 
     if n_sub_steps is not None and control_timestep is not None:
@@ -200,6 +205,8 @@ def _spec_from_observation(observation):
 
 class Physics(metaclass=abc.ABCMeta):
   """Simulates a physical environment."""
+
+  legacy_step: bool = True
 
   @abc.abstractmethod
   def step(self, n_sub_steps=1):

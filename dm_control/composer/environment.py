@@ -169,7 +169,8 @@ class _CommonEnvironment:
                n_sub_steps=None,
                raise_exception_on_physics_error=True,
                strip_singleton_obs_buffer_dim=False,
-               delayed_observation_padding=ObservationPadding.ZERO):
+               delayed_observation_padding=ObservationPadding.ZERO,
+               legacy_step: bool = True):
     """Initializes an instance of `_CommonEnvironment`.
 
     Args:
@@ -194,6 +195,9 @@ class _CommonEnvironment:
         observables. If `ZERO` then the buffer is initially filled with zeroes.
         If `INITIAL_VALUE` then the buffer is initially filled with the first
         observation values.
+      legacy_step: If True, steps the state with up-to-date position and
+        velocity dependent fields. See Page 6 of
+        https://arxiv.org/abs/2006.12983 for more information.
     """
     if not isinstance(delayed_observation_padding, ObservationPadding):
       raise ValueError(
@@ -210,6 +214,7 @@ class _CommonEnvironment:
     self._raise_exception_on_physics_error = raise_exception_on_physics_error
     self._strip_singleton_obs_buffer_dim = strip_singleton_obs_buffer_dim
     self._delayed_observation_padding = delayed_observation_padding
+    self._legacy_step = legacy_step
 
     if n_sub_steps is not None:
       warnings.simplefilter('once', DeprecationWarning)
@@ -248,6 +253,7 @@ class _CommonEnvironment:
       self._physics.free()
     self._physics = mjcf.Physics.from_mjcf_model(
         self._task.root_entity.mjcf_model)
+    self._physics.legacy_step = self._legacy_step
 
   def _make_observation_updater(self):
     pad_with_initial_value = (
@@ -291,7 +297,8 @@ class Environment(_CommonEnvironment, dm_env.Environment):
                raise_exception_on_physics_error=True,
                strip_singleton_obs_buffer_dim=False,
                max_reset_attempts=1,
-               delayed_observation_padding=ObservationPadding.ZERO):
+               delayed_observation_padding=ObservationPadding.ZERO,
+               legacy_step: bool = True):
     """Initializes an instance of `Environment`.
 
     Args:
@@ -320,6 +327,8 @@ class Environment(_CommonEnvironment, dm_env.Environment):
         observables. If `ZERO` then the buffer is initially filled with zeroes.
         If `INITIAL_VALUE` then the buffer is initially filled with the first
         observation values.
+      legacy_step: If True, steps the state with up-to-date position and
+        velocity dependent fields.
     """
     super().__init__(
         task=task,
@@ -328,7 +337,8 @@ class Environment(_CommonEnvironment, dm_env.Environment):
         n_sub_steps=n_sub_steps,
         raise_exception_on_physics_error=raise_exception_on_physics_error,
         strip_singleton_obs_buffer_dim=strip_singleton_obs_buffer_dim,
-        delayed_observation_padding=delayed_observation_padding)
+        delayed_observation_padding=delayed_observation_padding,
+        legacy_step=legacy_step)
     self._max_reset_attempts = max_reset_attempts
     self._reset_next_step = True
 
