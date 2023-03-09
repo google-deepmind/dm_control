@@ -26,14 +26,36 @@ _ARENA_XML_PATH = os.path.join(os.path.dirname(__file__), 'arena.xml')
 class Arena(entity_module.Entity):
   """The base empty arena that defines global settings for Composer."""
 
-  def _build(self, name=None):
+  def __init__(self, *args, **kwargs):
+    self._mjcf_root = None  # Declare that _mjcf_root exists to allay pytype.
+    super().__init__(*args, **kwargs)
+
+  # _build uses *args and **kwargs rather than named arguments, to get
+  # around a signature-mismatch error from pytype in derived classes.
+
+  def _build(self, *args, **kwargs) -> None:
     """Initializes this arena.
 
+    The function takes two arguments through args, kwargs:
+      name: A string, the name of this arena. If `None`, use the model name
+        defined in the MJCF file.
+      xml_path: An optional path to an XML file that will override the default
+        composer arena MJCF.
+
     Args:
-      name: (optional) A string, the name of this arena. If `None`, use the
-        model name defined in the MJCF file.
+      *args: See above.
+      **kwargs: See above.
     """
-    self._mjcf_root = mjcf.from_path(_ARENA_XML_PATH)
+    if args:
+      name = args[0]
+    else:
+      name = kwargs.get('name', None)
+    if len(args) > 1:
+      xml_path = args[1]
+    else:
+      xml_path = kwargs.get('xml_path', None)
+
+    self._mjcf_root = mjcf.from_path(xml_path or _ARENA_XML_PATH)
     if name:
       self._mjcf_root.model = name
 
