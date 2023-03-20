@@ -93,7 +93,7 @@ class MujocoDepthBuffer(renderer.Component):
   """Displays the contents of the scene's depth buffer."""
 
   def __init__(self):
-    self._depth_buffer = np.empty((1, 1), np.float32)
+    self._depth_buffer = np.zeros((1, 1), np.float32)
 
   def render(self, context, viewport):
     """Renders the overlay on screen.
@@ -106,7 +106,7 @@ class MujocoDepthBuffer(renderer.Component):
     rect_shape = (viewport.width - width_adjustment, viewport.height)
 
     if self._depth_buffer is None or self._depth_buffer.shape != rect_shape:
-      self._depth_buffer = np.empty(
+      self._depth_buffer = np.zeros(
           (viewport.width, viewport.height), np.float32)
 
     mujoco.mjr_readPixels(None, self._depth_buffer, viewport.mujoco_rect,
