@@ -44,6 +44,10 @@ _ACCUM_BITS = 0
 class OSMesaContext(base.ContextBase):
   """An OpenGL context backed by OSMesa."""
 
+  def __init__(self, *args, **kwargs):
+    self._context = None
+    super().__init__(*args, **kwargs)
+
   def _platform_init(self, max_width, max_height):
     """Initializes this OSMesa context."""
     self._context = osmesa.OSMesaCreateContextExt(
