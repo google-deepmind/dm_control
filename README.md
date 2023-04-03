@@ -84,7 +84,7 @@ at every single Git commit.
 
 If you want to install an unreleased version of `dm_control` directly from our
 repository, you can do so by running `pip install
-git+git://github.com/deepmind/dm_control.git`.
+git+https://github.com/deepmind/dm_control.git`.
 
 ## Rendering
 
