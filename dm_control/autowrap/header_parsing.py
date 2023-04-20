@@ -80,8 +80,9 @@ def _nested_if_else(if_, pred, else_, endif, match_if_true, match_if_false):
 
 # Some common string patterns to suppress.
 # ------------------------------------------------------------------------------
-(X, LPAREN, RPAREN, LBRACK, RBRACK, LBRACE, RBRACE, SEMI, COMMA, EQUAL, FSLASH,
- BSLASH) = list(map(pp.Suppress, "X()[]{};,=/\\"))
+(LPAREN, RPAREN, LBRACK, RBRACK, LBRACE, RBRACE, SEMI, COMMA, EQUAL, FSLASH,
+ BSLASH) = list(map(pp.Suppress, "()[]{};,=/\\"))
+X = (pp.Keyword("X") | pp.Keyword("XMJV")).suppress()
 EOL = pp.LineEnd().suppress()
 
 # Comments, continuation.
