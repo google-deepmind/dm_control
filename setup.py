@@ -201,7 +201,7 @@ notebook: [Open In Google Colab](https://colab.research.google.com/github/deepmi
         'glfw',
         'labmaze',
         'lxml',
-        'mujoco >= 2.3.4',
+        'mujoco >= 2.3.5',
         'numpy >= 1.9.0',
         'protobuf >= 3.19.4',  # TensorFlow requires protobuf<3.20 (b/182876485)
         'pyopengl >= 3.1.4',
