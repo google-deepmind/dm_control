@@ -1,0 +1,65 @@
+<mujoco model="Humanoid Track">
+    <include file="./common.xml"/>
+    <include file="./humanoid.xml" />
+
+    <default>
+        <default class="mocap_site">
+            <site type="sphere" size="0.027" rgba="0 0 1 1" group="3" material="target"/>
+        </default>
+    </default>
+
+    <option timestep="0.005"/>
+
+    <worldbody>
+        <body name="mocap[pelvis]" mocap="true">
+            <site name="mocap[pelvis]" class="mocap_site" size="0.05" />
+        </body>
+        <body name="mocap[head]" mocap="true">
+            <site name="mocap[head]" class="mocap_site" />
+        </body>
+        <body name="mocap[ltoe]" mocap="true">
+            <site name="mocap[ltoe]" class="mocap_site" />
+        </body>
+        <body name="mocap[rtoe]" mocap="true">
+            <site name="mocap[rtoe]" class="mocap_site" />
+        </body>
+        <body name="mocap[lheel]" mocap="true">
+            <site name="mocap[lheel]" class="mocap_site" />
+        </body>
+        <body name="mocap[rheel]" mocap="true">
+            <site name="mocap[rheel]" class="mocap_site" />
+        </body>
+        <body name="mocap[lknee]" mocap="true">
+            <site name="mocap[lknee]" class="mocap_site" />
+        </body>
+        <body name="mocap[rknee]" mocap="true">
+            <site name="mocap[rknee]" class="mocap_site" />
+        </body>
+        <body name="mocap[lhand]" mocap="true">
+            <site name="mocap[lhand]" class="mocap_site" />
+        </body>
+        <body name="mocap[rhand]" mocap="true">
+            <site name="mocap[rhand]" class="mocap_site" />
+        </body>
+        <body name="mocap[lelbow]" mocap="true">
+            <site name="mocap[lelbow]" class="mocap_site" />
+        </body>
+        <body name="mocap[relbow]" mocap="true">
+            <site name="mocap[relbow]" class="mocap_site" />
+        </body>
+        <body name="mocap[lshoulder]" mocap="true">
+            <site name="mocap[lshoulder]" class="mocap_site" />
+        </body>
+        <body name="mocap[rshoulder]" mocap="true">
+            <site name="mocap[rshoulder]" class="mocap_site" />
+        </body>
+        <body name="mocap[lhip]" mocap="true">
+            <site name="mocap[lhip]" class="mocap_site" />
+        </body>
+        <body name="mocap[rhip]" mocap="true">
+            <site name="mocap[rhip]" class="mocap_site" />
+        </body>
+    </worldbody>
+
+    <include file="./CMU-CMU-02-02_04_poses.xml" />    <!-\- simple jump, balance -\->
+</mujoco>

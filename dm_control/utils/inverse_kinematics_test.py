@@ -24,6 +24,7 @@ from dm_control.mujoco.testing import assets
 from dm_control.mujoco.wrapper import mjbindings
 from dm_control.utils import inverse_kinematics as ik
 import numpy as np
+import os
 
 mjlib = mjbindings.mjlib
 
@@ -80,6 +81,54 @@ class _ResetArm:
 
 class InverseKinematicsTest(parameterized.TestCase):
 
+  def testQposFromMultipleSitesPose(self):
+      dir_path = os.path.dirname(os.path.realpath(__file__))
+      model_dir = os.path.join(dir_path, "./task.xml")
+      physics = mujoco.Physics.from_xml_path(model_dir)
+
+      target_pos = physics.model.key_mpos[0]
+      target_pos = target_pos.reshape((-1, 3))
+      target_quat = None
+
+      _SITES_NAMES = []
+
+      body_names = [
+        "pelvis",    "head",      "ltoe",  "rtoe",  "lheel",  "rheel",
+        "lknee",     "rknee",     "lhand", "rhand", "lelbow", "relbow",
+        "lshoulder", "rshoulder", "lhip",  "rhip",
+      ]
+
+      for name in body_names:
+          _SITES_NAMES.append("tracking[" + name + "]")
+
+      _MAX_STEPS = 5000
+      result = ik.qpos_from_site_pose(
+          physics=physics,
+          sites_names=_SITES_NAMES,
+          target_pos=target_pos,
+          target_quat=target_quat,
+          joint_names=None,
+          tol=1e-14,
+          regularization_threshold=0.5,
+          regularization_strength=1e-2,
+          max_update_norm=2.0,
+          progress_thresh=5000.0,
+          max_steps=_MAX_STEPS,
+          inplace=False,
+          null_space_method=False
+      )
+
+      self.assertLessEqual(result.steps, _MAX_STEPS)
+      physics.data.qpos[:] = result.qpos
+
+      save_path = os.path.join(dir_path, "./result_qpos")
+      np.save(save_path, result.qpos)
+      mjlib.mj_fwdPosition(physics.model.ptr, physics.data.ptr)
+
+      pos = physics.named.data.site_xpos[_SITES_NAMES]
+      err_norm = np.linalg.norm(target_pos - pos)
+      self.assertLessEqual(err_norm, 0.11)
+
   @parameterized.parameters(itertools.product(_TARGETS, _INPLACE))
   def testQposFromSitePose(self, target, inplace):
     physics = mujoco.Physics.from_xml_string(_ARM_XML)
@@ -90,7 +139,7 @@ class InverseKinematicsTest(parameterized.TestCase):
     while True:
       result = ik.qpos_from_site_pose(
           physics=physics2,
-          site_name=_SITE_NAME,
+          sites_names=[_SITE_NAME],
           target_pos=target_pos,
           target_quat=target_quat,
           joint_names=_JOINTS,
@@ -133,7 +182,7 @@ class InverseKinematicsTest(parameterized.TestCase):
     target_pos = (0.05, 0.05, 0)
     result = ik.qpos_from_site_pose(
         physics=physics,
-        site_name=site_name,
+        sites_names=[site_name],
         target_pos=target_pos,
         joint_names=joint_names,
         tol=_TOL,
@@ -150,7 +199,7 @@ class InverseKinematicsTest(parameterized.TestCase):
     physics.reset()
     result = ik.qpos_from_site_pose(
         physics=physics,
-        site_name=site_name,
+        sites_names=[site_name],
         target_pos=target_pos,
         joint_names=joint_names[:1],
         tol=_TOL,
@@ -170,7 +219,7 @@ class InverseKinematicsTest(parameterized.TestCase):
     target_pos = (0.05, 0.05, 0)
     ik.qpos_from_site_pose(
         physics=physics,
-        site_name=site_name,
+        sites_names=[site_name],
         target_pos=target_pos,
         joint_names=joint_names,
         tol=_TOL,
@@ -192,7 +241,7 @@ class InverseKinematicsTest(parameterized.TestCase):
     with self.assertRaisesWithLiteralMatch(ValueError, expected_message):
       ik.qpos_from_site_pose(
           physics=physics,
-          site_name=site_name,
+          sites_names=[site_name],
           target_pos=target_pos,
           joint_names=joint_names,
           tol=_TOL,
@@ -206,7 +255,7 @@ class InverseKinematicsTest(parameterized.TestCase):
         ValueError, ik._REQUIRE_TARGET_POS_OR_QUAT):
       ik.qpos_from_site_pose(
           physics=physics,
-          site_name=site_name,
+          sites_names=[site_name],
           tol=_TOL,
           max_steps=_MAX_STEPS,
           inplace=True)
