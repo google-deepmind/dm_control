@@ -83,7 +83,7 @@ class InverseKinematicsTest(parameterized.TestCase):
 
   def testQposFromMultipleSitesPose(self):
       dir_path = os.path.dirname(os.path.realpath(__file__))
-      model_dir = os.path.join(dir_path, "./task.xml")
+      model_dir = os.path.join(dir_path, "./testing/assets/task.xml")
       physics = mujoco.Physics.from_xml_path(model_dir)
 
       target_pos = physics.model.key_mpos[0]
@@ -121,7 +121,7 @@ class InverseKinematicsTest(parameterized.TestCase):
       self.assertLessEqual(result.steps, _MAX_STEPS)
       physics.data.qpos[:] = result.qpos
 
-      save_path = os.path.join(dir_path, "./result_qpos")
+      save_path = os.path.join(dir_path, "./testing/assets/result_qpos")
       np.save(save_path, result.qpos)
       mjlib.mj_fwdPosition(physics.model.ptr, physics.data.ptr)
 

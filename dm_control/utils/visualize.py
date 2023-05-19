@@ -48,10 +48,10 @@ class Task(suite.base.Task):
 
 if __name__ == '__main__':
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    model_dir = os.path.join(dir_path, "./task.xml")
+    model_dir = os.path.join(dir_path, "./testing/assets/task.xml")
     physics = mujoco.Physics.from_xml_path(model_dir)
 
-    qpos_dir = os.path.join(dir_path, "./result_qpos.npy")
+    qpos_dir = os.path.join(dir_path, "./testing/assets/result_qpos.npy")
     mocap_qpos = np.load(qpos_dir)
 
     env = control.Environment(physics, Task(mocap_qpos=[mocap_qpos]))
