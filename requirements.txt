@@ -15,7 +15,7 @@ Pillow==9.5.0
 protobuf==3.19.4  # TensorFlow requires protobuf<3.20 (b/182876485)
 pyopengl==3.1.6
 pyparsing==3.0.9
-requests==2.28.2
+requests==2.31.0
 scipy==1.7.3; python_version < '3.8'
 scipy==1.10.1; python_version >= '3.8'
 setuptools==67.7.0
