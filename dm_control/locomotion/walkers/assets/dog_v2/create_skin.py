@@ -23,7 +23,7 @@ import numpy as np
 from scipy import spatial
 
 
-def create(model, skin_msh):
+def create(model, mesh_file, name_mesh, tex_coords = True, transform = True):
   """Create and add skin in the dog model.
 
   Args:
@@ -32,42 +32,50 @@ def create(model, skin_msh):
   """
   print('Making Skin.')
   # Add skin mesh:
-  skinmesh = model.worldbody.add(
+  if transform:
+    skinmesh = model.worldbody.add(
       'geom',
-      name='skinmesh',
-      mesh='skin_msh',
+      name=name_mesh,
+      mesh=name_mesh,
       type='mesh',
       contype=0,
       conaffinity=0,
-      rgba=[1, 0.5, 0.5, 0.5],
+      rgba=[1, .5, .5, .5],
       group=1,
-      euler=(0, 0, 90),
-  )
+      euler=(0, 0, 90))
+  else:
+    skinmesh = model.worldbody.add(
+      'geom',
+      name=name_mesh,
+      mesh=name_mesh,
+      type='mesh',
+      contype=0,
+      conaffinity=0)
   physics = mjcf.Physics.from_mjcf_model(model)
 
   # Get skinmesh vertices in global coordinates
-  vertadr = physics.named.model.mesh_vertadr['skin_msh']
-  vertnum = physics.named.model.mesh_vertnum['skin_msh']
-  skin_vertices = physics.model.mesh_vert[vertadr : vertadr + vertnum, :]
+  vertadr = physics.named.model.mesh_vertadr[name_mesh]
+  vertnum = physics.named.model.mesh_vertnum[name_mesh]
+  skin_vertices = physics.model.mesh_vert[vertadr:vertadr + vertnum, :]
   skin_vertices = skin_vertices.dot(
-      physics.named.data.geom_xmat['skinmesh'].reshape(3, 3).T
-  )
-  skin_vertices += physics.named.data.geom_xpos['skinmesh']
-  skin_normals = physics.model.mesh_normal[vertadr : vertadr + vertnum, :]
+    physics.named.data.geom_xmat[name_mesh].reshape(3, 3).T)
+  skin_vertices += physics.named.data.geom_xpos[name_mesh]
+  skin_normals = physics.model.mesh_normal[vertadr:vertadr + vertnum, :]
   skin_normals = skin_normals.dot(
-      physics.named.data.geom_xmat['skinmesh'].reshape(3, 3).T
-  )
-  skin_normals += physics.named.data.geom_xpos['skinmesh']
+    physics.named.data.geom_xmat[name_mesh].reshape(3, 3).T)
+  skin_normals += physics.named.data.geom_xpos[name_mesh]
 
   # Get skinmesh faces
-  faceadr = physics.named.model.mesh_faceadr['skin_msh']
-  facenum = physics.named.model.mesh_facenum['skin_msh']
-  skin_faces = physics.model.mesh_face[faceadr : faceadr + facenum, :]
+  faceadr = physics.named.model.mesh_faceadr[name_mesh]
+  facenum = physics.named.model.mesh_facenum[name_mesh]
+  skin_faces = physics.model.mesh_face[faceadr:faceadr + facenum, :]
 
   # Make skin
   skin = model.asset.add(
-      'skin', name='skin', vertex=skin_vertices.ravel(), face=skin_faces.ravel()
-  )
+    'skin',
+    name='skin_tmp',
+    vertex=skin_vertices.ravel(),
+    face=skin_faces.ravel())
 
   # Functions for capsule vertices
   numslices = 10
@@ -179,18 +187,25 @@ def create(model, skin_msh):
 
   # Convert skin into *.skn file according to
   # https://mujoco.readthedocs.io/en/latest/XMLreference.html#asset-skin
-  f = open('dog_skin.skn', 'w+b')
+  f = open(name_mesh + '.skn', 'w+b')
   nvert = skin.vertex.size // 3
+
+  if tex_coords:
+    n_tex_coord = nvert
+  else:
+    n_tex_coord = 0
   f.write(
-      struct.pack(
-          '4i', nvert, nvert, skin.face.size // 3, physics.model.nbody - 1
-      )
-  )
+    struct.pack('4i', nvert, n_tex_coord, skin.face.size // 3,
+                len(skin.bone)))
   f.write(struct.pack(str(skin.vertex.size) + 'f', *skin.vertex))
-  assert physics.model.mesh_texcoord.shape[0] == physics.bind(skin_msh).vertnum
-  f.write(
-      struct.pack(str(2 * nvert) + 'f', *physics.model.mesh_texcoord.flatten())
-  )
+
+  if n_tex_coord:
+    assert physics.model.mesh_texcoord.shape[0] == physics.bind(
+      mesh_file).vertnum
+    f.write(
+      struct.pack(
+        str(2 * nvert) + 'f', *physics.model.mesh_texcoord.flatten()))
+
   f.write(struct.pack(str(skin.face.size) + 'i', *skin.face))
   for bone in skin.bone:
     name_length = len(bone.body)
