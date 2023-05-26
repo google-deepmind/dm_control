@@ -99,15 +99,15 @@
         <joint range="-20 20"/>
       </default>
       <default class="hip_abduct">
-        <joint range="-30 90"/>
+        <joint range="-50 10"/>
       </default>
       <default class="hip_extend">
-        <joint range="-130 60"/>
+        <joint range="-115 60"/>
         <general gainprm="40"/>
       </default>
     </default>
     <default class="knee">
-      <joint range="-120 10" damping="0.5"/>
+      <joint range="-95 25" damping="0.5"/>
       <general gainprm="30"/>
     </default>
     <default class="ankle">
@@ -156,6 +156,10 @@
     </default>
     <default class="sensor">
       <site group="4"/>
+    </default>
+    <default class="wrapping">
+      <geom type='cylinder' mass="0" contype="0" conaffinity="0" group="2" rgba="0 0 1 1" euler="90 0 0"/>
+      <site group="2" rgba="0 0 1 1" />
     </default>
   </default>
 
