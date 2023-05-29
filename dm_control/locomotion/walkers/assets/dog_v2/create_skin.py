@@ -23,7 +23,7 @@ import numpy as np
 from scipy import spatial
 
 
-def create(model, mesh_file, name_mesh, tex_coords = True, transform = True):
+def create(model, mesh_file, name_mesh, asset_dir, tex_coords=True, transform=True):
   """Create and add skin in the dog model.
 
   Args:
@@ -87,7 +87,7 @@ def create(model, mesh_file, name_mesh, tex_coords = True, transform = True):
     for az in np.linspace(0, 2 * np.pi, numslices, False):
       for el in np.linspace(0, np.pi, numstacks, False):
         pos = np.asarray(
-            [np.cos(el) * np.cos(az), np.cos(el) * np.sin(az), np.sin(el)]
+          [np.cos(el) * np.cos(az), np.cos(el) * np.sin(az), np.sin(el)]
         )
         positions.append(pos)
     return radius * np.asarray(positions)
@@ -97,7 +97,7 @@ def create(model, mesh_file, name_mesh, tex_coords = True, transform = True):
     for az in np.linspace(0, 2 * np.pi, numslices, False):
       for el in np.linspace(-1, 1, numstacks):
         pos = np.asarray(
-            [radius * np.cos(az), radius * np.sin(az), height * el]
+          [radius * np.cos(az), radius * np.sin(az), height * el]
         )
         positions.append(pos)
     return np.asarray(positions)
@@ -125,8 +125,8 @@ def create(model, mesh_file, name_mesh, tex_coords = True, transform = True):
 
   # Find smallest distance between
   # each skin vertex and vertices of all meshes in body i
-  distance = np.zeros((skin_vertices.shape[0], physics.model.nbody))
-  for i in range(1, physics.model.nbody):
+  distance = np.ones((skin_vertices.shape[0], physics.model.nbody)) * 1e6
+  for i in range(2, physics.model.nbody):
     geom_id = np.argwhere(physics.model.geom_bodyid == i).ravel()
     mesh_id = physics.model.geom_dataid[geom_id]
     body_verts = []
@@ -135,7 +135,7 @@ def create(model, mesh_file, name_mesh, tex_coords = True, transform = True):
       if physics.model.geom_type[gid] == enums.mjtGeom.mjGEOM_MESH:
         vertadr = physics.model.mesh_vertadr[mesh_id[k]]
         vertnum = physics.model.mesh_vertnum[mesh_id[k]]
-        vertices = physics.model.mesh_vert[vertadr : vertadr + vertnum, :]
+        vertices = physics.model.mesh_vert[vertadr: vertadr + vertnum, :]
       elif physics.model.geom_type[gid] == enums.mjtGeom.mjGEOM_CAPSULE:
         radius = physics.model.geom_size[gid, 0]
         height = physics.model.geom_size[gid, 1]
@@ -169,17 +169,17 @@ def create(model, mesh_file, name_mesh, tex_coords = True, transform = True):
   weights[weights < threshold] = 0
   weights /= np.atleast_2d(np.sum(weights, axis=1)).T
 
-  for i in range(1, physics.model.nbody):
+  for i in range(2, physics.model.nbody):
     vertweight = weights[weights[:, i - 1] >= threshold, i - 1]
     vertid = np.argwhere(weights[:, i - 1] >= threshold).ravel()
     if vertid.any():
       skin.add(
-          'bone',
-          body=physics.model.id2name(i, 'body'),
-          bindquat=[1, 0, 0, 0],
-          bindpos=physics.data.xpos[i, :],
-          vertid=vertid,
-          vertweight=vertweight,
+        'bone',
+        body=physics.model.id2name(i, 'body'),
+        bindquat=[1, 0, 0, 0],
+        bindpos=physics.data.xpos[i, :],
+        vertid=vertid,
+        vertweight=vertweight,
       )
 
   # Remove skinmesh
@@ -187,7 +187,11 @@ def create(model, mesh_file, name_mesh, tex_coords = True, transform = True):
 
   # Convert skin into *.skn file according to
   # https://mujoco.readthedocs.io/en/latest/XMLreference.html#asset-skin
-  f = open(name_mesh + '.skn', 'w+b')
+  # import os
+  # dir_path = os.path.dirname(os.path.realpath(__file__))
+  # print(dir_path)
+  f = open(asset_dir + '/skins/' + name_mesh + '.skn', 'w+b')
+
   nvert = skin.vertex.size // 3
 
   if tex_coords:
@@ -211,7 +215,7 @@ def create(model, mesh_file, name_mesh, tex_coords = True, transform = True):
     name_length = len(bone.body)
     assert name_length <= 40
     f.write(
-        struct.pack(str(name_length) + 'c', *[s.encode() for s in bone.body])
+      struct.pack(str(name_length) + 'c', *[s.encode() for s in bone.body])
     )
     f.write((40 - name_length) * b'\x00')
     f.write(struct.pack('3f', *bone.bindpos))

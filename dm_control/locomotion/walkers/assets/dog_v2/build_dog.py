@@ -198,7 +198,7 @@ def main(argv):
     for filename in filenames:
       if 'dog_skin.msh' in filename:
         skin_msh = model.asset.add(
-          'mesh', name='skin_msh', file=filename, scale=(1.25, 1.25, 1.25)
+          'mesh', name='dog_skin', file=filename, scale=(1.25, 1.25, 1.25)
         )
       name = filename[4:-4]
       name = name.replace('*', ':')
@@ -326,23 +326,22 @@ def main(argv):
             pos=-bone_position[meshname],
           )
 
-  print('Add Actuators')
-  if use_muscles:
-    # Add wrapping geometries
-    add_wrapping_geoms.add_wrapping_geoms(model)
-    # Add muscles
-    add_muscles.add_muscles(model, muscle_strength_scale,
-                            muscle_dynamics, ASSET_DIR)
-  else:
-    actuated_joints = add_torque_actuators.add_motors(
-      physics, model, lumbar_joints, cervical_joints, caudal_joints
-    )
-
   print('Excluding contacts.')
   exclude_contacts(model)
 
   if make_skin:
-    create_skin.create(model, skin_msh)
+    create_skin.create(model=model, mesh_file=skin_msh, asset_dir=ASSET_DIR,
+                       name_mesh='dog_skin')
+
+    # Add skin from .skn
+    print('Adding Skin.')
+    skin_texture = model.asset.add('texture', name='skin',
+                                   file='skin_texture.png', type='2d')
+    skin_material = model.asset.add('material', name='skin',
+                                    texture=skin_texture)
+    model.asset.add('skin', name='skin', file='./skins/dog_skin.skn',
+                    material=skin_material, group=0)
+    skin_msh.remove()
 
   if make_muscles_skin:
     muscle_material = model.asset.add('material', name='muscle',
@@ -351,12 +350,12 @@ def main(argv):
       for filename in filenames:
         if filename[-4:] not in ['.obj', '.stl']:
           continue
+        print("filename", filename)
         muscle_msh = model.asset.add('mesh', name=filename[:-4],
-                                     file='../muscles/' + filename)
-        create_skin.create(model=model,
+                                     file=ASSET_DIR + '/muscles/' + filename)
+        create_skin.create(model=model, asset_dir=ASSET_DIR,
                            mesh_file=muscle_msh, name_mesh=filename[:-4],
-                           rel_dir='./muscles/', ext='.stl', tex_coords=False,
-                           transform=False)
+                           tex_coords=False, transform=False)
 
         # Add skin from .skn
         print('Adding Skin --> ' + filename[:-4])
@@ -368,16 +367,24 @@ def main(argv):
                         group=1)
         muscle_msh.remove()
 
-  # Add skin from .skn
-  print('Adding Skin.')
-  skin_texture = model.asset.add(
-    'texture', name='skin', file='skin_texture.png', type='2d'
-  )
-  skin_material = model.asset.add('material', name='skin', texture=skin_texture)
-  model.asset.add(
-    'skin', name='skin', file='dog_skin.skn', material=skin_material
-  )
-  skin_msh.remove()
+  model.option.timestep = 0.005
+  model.option.integrator = "implicit"
+  model.option.iterations = 1500
+  model.option.noslip_iterations = 15
+  model.option.cone = "elliptic"
+  model.option.solver = "PGS"
+
+  print('Add Actuators')
+  if use_muscles:
+    # Add wrapping geometries
+    add_wrapping_geoms.add_wrapping_geoms(model)
+    # Add muscles
+    add_muscles.add_muscles(model, muscle_strength_scale,
+                            muscle_dynamics, ASSET_DIR)
+  else:
+    actuated_joints = add_torque_actuators.add_motors(
+      physics, model, lumbar_joints, cervical_joints, caudal_joints
+    )
 
   print('Removing non-essential sites.')
   all_sites = model.find_all('site')
@@ -442,7 +449,10 @@ def main(argv):
     if asset_filename is not None:
       name = asset_filename[:-4]
       extension = asset_filename[-4:]
-      asset.set('file', name[:-41] + extension)
+      if asset_filename[-3:] == 'skn':
+        asset.set('file', 'skins/' + name[:-41] + extension)
+      else:
+        asset.set('file', name[:-41] + extension)
 
   print('Add <compiler meshdir/>, for locally-loadable model')
   compiler = etree.Element(

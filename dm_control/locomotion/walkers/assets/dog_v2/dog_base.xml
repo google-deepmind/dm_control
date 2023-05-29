@@ -7,8 +7,9 @@
 
   <visual>
     <global offwidth="1920" offheight="1080"/>
+    <headlight ambient="0.4 0.4 0.4" diffuse="0.8 0.8 0.8" specular="0.1 0.1 0.1"/>
     <map znear="0.001"/>
-    <scale jointlength="8.0" jointwidth="0.5" framelength="2.0" framewidth="0.3"/>
+    <scale jointlength="8" jointwidth="0.5" framelength="2" framewidth="0.3"/>
   </visual>
 
   <statistic meansize="0.01" extent="1.0"/>
@@ -165,10 +166,13 @@
 
   <asset>
     <texture name="grid" type="2d" builtin="checker" rgb1="0.1 0.2 0.3" rgb2="0.2 0.3 0.4" mark="edge" markrgb="0.2 0.3 0.4" width="300" height="300"/>
+    <texture type="skybox" name="skybox" builtin="gradient" mark="random" rgb1="0.4 0.6 0.8" rgb2="0 0 0" markrgb="1 1 1" width="800" height="4800"/>
     <material name="grid" texture="grid" texrepeat="1 1" texuniform="true" reflectance="0.2"/>
   </asset>
 
   <worldbody>
-    <geom name="floor" conaffinity="1" type="plane" size="10 10 0.1" material="grid"/>
+    <body name="floor">
+        <geom name="floor" type="plane" conaffinity="1" size="10 10 0.1" material="grid"/>
+    </body>
   </worldbody>
 </mujoco>

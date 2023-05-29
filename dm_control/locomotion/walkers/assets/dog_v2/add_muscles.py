@@ -15,41 +15,20 @@
 
 """Add muscle actuators to the dog model."""
 
-import csv
-import os
 from os import listdir
 from os.path import isfile, join
-import sys
-
-from copy import deepcopy
 
 import numpy as np
-
-from lxml import etree
-
 from scipy.spatial.transform import Rotation as Rot
 from pykdtree.kdtree import KDTree
 import trimesh
-
 import pyvista as pv
-
 from dm_control import mjcf as mjcf_module
-from dm_control import mujoco
-from dm_control import suite
-from dm_control import viewer
-from dm_control.mujoco import math
-from dm_control.mujoco import wrapper
-from dm_control.mujoco.wrapper import mjbindings
-from dm_control.mujoco.wrapper import util
-from dm_control.rl import control
-from dm_control.suite import common
-from dm_control.utils import io as resources
-from dm_control.utils import xml_tools
 
 from muscles import extensors_back, extensors_front, flexors_back, \
-  flexors_front, lateral, neck, tail, to_skip, torso
+  flexors_front, lateral, neck, tail, torso
 
-from utils import array_to_string, export, get_model_and_assets, slices2paths
+from utils import array_to_string, slices2paths
 
 muscle_legs = extensors_back + extensors_front + \
               flexors_back + flexors_front
@@ -169,9 +148,8 @@ def add_muscles(model, scale_multiplier, muscle_dynamics, asset_dir):
   bones_kd_trees = {}
   bones_meshes = {}
   for bone in bones:
-    if "BONE" in bone and "simpl" not in bone and "Lingual" not in bone:
-      bone_mesh = trimesh.load_mesh(bones_path + bone, process=False)
-
+    if "BONE" in bone and "simpl" not in bone and "Lingual" not in bone and "cartilage" not in bone:
+      bone_mesh = trimesh.load_mesh(bones_path + '/' + bone, process=False)
       bones_kd_trees[bone[4:-4]] = KDTree(bone_mesh.vertices)
       bones_meshes[bone[4:-4]] = bone_mesh
 
@@ -340,8 +318,9 @@ def add_muscles(model, scale_multiplier, muscle_dynamics, asset_dir):
                           sidesite=closest_g + '_forward')
 
     if muscle_dynamics in ['Millard', 'Sigmoid']:
-      muscle = mjcf.actuator.add('muscle', tendon=spatial, name=spatial.name,
-                                 dclass=spatial.dclass)
+      muscle = mjcf.actuator.add('general', tendon=spatial, name=spatial.name,
+                                 dclass=spatial.dclass, dyntype="muscle",
+                                 gaintype="muscle", biastype="muscle")
 
       prms = [0] * 10
       prms[0] = 0.01
@@ -352,14 +331,10 @@ def add_muscles(model, scale_multiplier, muscle_dynamics, asset_dir):
         prms[2] = 0.1
         muscle.dynprm = prms
 
-      muscle.range = [0.75, 1.05]
-      muscle.force = -1
-      muscle.scale = 2620
-      muscle.lmin = 0.5
-      muscle.lmax = 1.6
-      muscle.vmax = 1.5
-      muscle.fvmax = 1.2
-      muscle.fpmax = 1.3
+      # range(2), force, scale, lmin, lmax, vmax, fpmax, fvmax
+      gainprm = [0.75, 1.05, -1, 2620, 0.5, 1.6, 1.5, 1.3, 1.2, 0]
+      muscle.gainprm = gainprm
+      muscle.biasprm = gainprm
       muscle.ctrllimited = True
       muscle.ctrlrange = [0.0, 1.0]
     elif muscle_dynamics == 'General':
@@ -384,9 +359,8 @@ def add_muscles(model, scale_multiplier, muscle_dynamics, asset_dir):
       physics = mjcf_module.Physics.from_mjcf_model(mjcf)
       everything_ok = True
 
-      forces = None
       # compute anatomical forces if we provide a scale_multiplier > 0
-      if muscle_dynamics in ['Millard', 'Sigmoid'] and scale_multiplier > 0:
+      if muscle_dynamics in ['Millard', 'Sigmoid']:
         volumes = np.array(volumes)
         cross_sections = np.array(cross_sections)
         lm = []
@@ -399,19 +373,21 @@ def add_muscles(model, scale_multiplier, muscle_dynamics, asset_dir):
           lm.append(LM)
 
         lm = np.array(lm)
-        forces = ((cross_sections * 10) + (volumes / lm)) * scale_multiplier
 
-      actuators = mjcf.find_all('actuator')
-      print("actuators", len(actuators))
+        forces = None
+        if scale_multiplier > 0:
+          forces = ((cross_sections * 10) + (volumes / lm)) * scale_multiplier
 
-      # assign forces and length ranges
-      idx = 0
-      for muscle in actuators:
-        muscle.lengthrange = lr[idx]
-        if forces is not None:
-          muscle.force = forces[idx]
-        print("mtu {}".format(muscle.name))
-        idx += 1
+        actuators = mjcf.find_all('actuator')
+        print("num actuators", len(actuators))
+
+        # assign forces and length ranges
+        idx = 0
+        for muscle in actuators:
+          muscle.lengthrange = lr[idx]
+          if forces is not None:
+            muscle.force = forces[idx]
+          idx += 1
 
     except Exception as inst:
       print(inst)
