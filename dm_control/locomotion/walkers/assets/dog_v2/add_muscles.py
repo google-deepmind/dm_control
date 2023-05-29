@@ -332,7 +332,7 @@ def add_muscles(model, scale_multiplier, muscle_dynamics, asset_dir):
         muscle.dynprm = prms
 
       # range(2), force, scale, lmin, lmax, vmax, fpmax, fvmax
-      gainprm = [0.75, 1.05, -1, 2620, 0.5, 1.6, 1.5, 1.3, 1.2, 0]
+      gainprm = [0.75, 1.05, -1, 1620, 0.5, 1.6, 1.5, 1.3, 1.2, 0]
       muscle.gainprm = gainprm
       muscle.biasprm = gainprm
       muscle.ctrllimited = True

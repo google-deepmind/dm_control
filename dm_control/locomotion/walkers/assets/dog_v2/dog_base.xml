@@ -162,6 +162,9 @@
       <geom type='cylinder' mass="0" contype="0" conaffinity="0" group="2" rgba="0 0 1 1" euler="90 0 0"/>
       <site group="2" rgba="0 0 1 1" />
     </default>
+    <default class="marker">
+      <site group="3"/>
+    </default>
   </default>
 
   <asset>

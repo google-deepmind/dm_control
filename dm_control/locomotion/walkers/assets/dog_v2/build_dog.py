@@ -21,6 +21,8 @@ from absl import app
 from absl import flags
 from dm_control import mjcf
 from dm_control.locomotion.walkers.assets.dog_v2 import add_torque_actuators
+from dm_control.locomotion.walkers.assets.dog_v2 import add_markers as \
+  add_markers_func
 from dm_control.locomotion.walkers.assets.dog_v2 import add_muscles
 from dm_control.locomotion.walkers.assets.dog_v2 import add_wrapping_geoms
 from dm_control.locomotion.walkers.assets.dog_v2 import build_back_legs
@@ -37,6 +39,8 @@ from dm_control.utils import io as resources
 flags.DEFINE_boolean('make_skin', True, 'Whether to make a new dog_skin.skn')
 flags.DEFINE_boolean('use_muscles', False,
                      'Whether to use muscles or torque actuators')
+flags.DEFINE_boolean('add_markers', False,
+                     'Whether to add markers; used for motion capture tracking')
 flags.DEFINE_integer(
   'muscle_strength_scale', -1,
   'muscle force multiplier, if negative we let MuJoCo computer the strength')
@@ -161,6 +165,7 @@ def main(argv):
     muscle_strength_scale = FLAGS.muscle_strength_scale
     make_muscles_skin = FLAGS.make_muscles_skin
     muscle_dynamics = FLAGS.muscle_dynamics
+    add_markers = FLAGS.add_markers
   else:
     lumbar_dofs_per_vert = FLAGS['lumbar_dofs_per_vertebra'].default
     cervical_dofs_per_vertebra = FLAGS['cervical_dofs_per_vertebra'].default
@@ -170,6 +175,7 @@ def main(argv):
     muscle_strength_scale = FLAGS['muscle_strength_scale'].default
     make_muscles_skin = FLAGS['make_muscles_skin'].default
     muscle_dynamics = FLAGS['muscle_dynamics'].default
+    add_markers = FLAGS['add_markers'].default
 
   print('Load base model.')
   with open(BASE_MODEL, 'r') as f:
@@ -368,11 +374,15 @@ def main(argv):
         muscle_msh.remove()
 
   model.option.timestep = 0.005
-  model.option.integrator = "implicit"
-  model.option.iterations = 1500
+  model.option.integrator = "implicitfast"
+  model.option.iterations = 1000
   model.option.noslip_iterations = 15
   model.option.cone = "elliptic"
-  model.option.solver = "PGS"
+  model.option.solver = "Newton"
+
+  if add_markers:
+    print('Add Markers')
+    add_markers_func.add_markers(model)
 
   print('Add Actuators')
   if use_muscles:
