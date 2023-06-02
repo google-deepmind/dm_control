@@ -3,7 +3,7 @@
 
   <option timestep="0.005" noslip_iterations="4"/>
 
-  <size njmax="900" nconmax="300" nkey="1"/>
+  <size njmax="900" nconmax="900" nkey="1"/>
 
   <visual>
     <global offwidth="1920" offheight="1080"/>
