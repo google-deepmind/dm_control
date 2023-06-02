@@ -24,6 +24,7 @@ from pykdtree.kdtree import KDTree
 import trimesh
 import pyvista as pv
 from dm_control import mjcf as mjcf_module
+from dm_control.mujoco.wrapper import mjbindings
 
 from muscles import extensors_back, extensors_front, flexors_back, \
   flexors_front, lateral, neck, tail, torso
@@ -332,7 +333,7 @@ def add_muscles(model, scale_multiplier, muscle_dynamics, asset_dir):
         muscle.dynprm = prms
 
       # range(2), force, scale, lmin, lmax, vmax, fpmax, fvmax
-      gainprm = [0.75, 1.05, -1, 1620, 0.5, 1.6, 1.5, 1.3, 1.2, 0]
+      gainprm = [0.75, 1.05, -1, 5620, 0.5, 1.6, 1.5, 1.3, 1.2, 0]
       muscle.gainprm = gainprm
       muscle.biasprm = gainprm
       muscle.ctrllimited = True
@@ -361,15 +362,45 @@ def add_muscles(model, scale_multiplier, muscle_dynamics, asset_dir):
 
       # compute anatomical forces if we provide a scale_multiplier > 0
       if muscle_dynamics in ['Millard', 'Sigmoid']:
+
+        # compute length ranges
+        vector_min = np.ones(physics.model.nu) * np.inf
+        vector_max = np.ones(physics.model.nu) * -np.inf
+
+        for i in range(1000000):
+
+          hinge = mjbindings.enums.mjtJoint.mjJNT_HINGE
+          slide = mjbindings.enums.mjtJoint.mjJNT_SLIDE
+
+          for joint_id in range(physics.model.njnt):
+            joint_name = physics.model.id2name(joint_id, 'joint')
+            joint_type = physics.model.jnt_type[joint_id]
+            is_limited = physics.model.jnt_limited[joint_id]
+            range_min, range_max = physics.model.jnt_range[joint_id]
+
+            if is_limited and (joint_type == hinge or joint_type == slide):
+              physics.named.data.qpos[joint_name] = np.random.uniform(range_min, range_max)
+            else:
+              continue
+
+          physics.step()
+
+          vector_min = np.minimum(vector_min, physics.data.actuator_length[:])
+          vector_max = np.maximum(vector_max, physics.data.actuator_length[:])
+
+          physics.reset()
+
         volumes = np.array(volumes)
         cross_sections = np.array(cross_sections)
         lm = []
+        physics.named.model.actuator_lengthrange[:, 0] = vector_min
+        physics.named.model.actuator_lengthrange[:, 1] = vector_max
         lr = physics.named.model.actuator_lengthrange
         for mtu in used_muscles:
           mtu_name = mtu + "_tendon"
           L0 = (lr[mtu_name, 1] - lr[mtu_name, 0]) / (1.05 - 0.75)
           LM = physics.named.model.actuator_length0[mtu_name] - \
-               (lr[mtu_name] - 0.75 * L0)
+               (lr[mtu_name, 0] - 0.75 * L0)
           lm.append(LM)
 
         lm = np.array(lm)
@@ -386,7 +417,7 @@ def add_muscles(model, scale_multiplier, muscle_dynamics, asset_dir):
         for muscle in actuators:
           muscle.lengthrange = lr[idx]
           if forces is not None:
-            muscle.force = forces[idx]
+            muscle.gainprm[2] = forces[idx]
           idx += 1
 
     except Exception as inst:
