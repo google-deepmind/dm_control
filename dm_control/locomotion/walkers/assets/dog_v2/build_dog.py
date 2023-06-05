@@ -37,6 +37,8 @@ import numpy as np
 from dm_control.utils import io as resources
 
 flags.DEFINE_boolean('make_skin', True, 'Whether to make a new dog_skin.skn')
+flags.DEFINE_boolean('lengthrange_from_joints', False,
+                     'Whether to compute the length ranges of spatial tendons from joints')
 flags.DEFINE_boolean('use_muscles', False,
                      'Whether to use muscles or torque actuators')
 flags.DEFINE_boolean('add_markers', False,
@@ -166,6 +168,7 @@ def main(argv):
     make_muscles_skin = FLAGS.make_muscles_skin
     muscle_dynamics = FLAGS.muscle_dynamics
     add_markers = FLAGS.add_markers
+    lengthrange_from_joints = FLAGS.lengthrange_from_joints.default
   else:
     lumbar_dofs_per_vert = FLAGS['lumbar_dofs_per_vertebra'].default
     cervical_dofs_per_vertebra = FLAGS['cervical_dofs_per_vertebra'].default
@@ -176,6 +179,7 @@ def main(argv):
     make_muscles_skin = FLAGS['make_muscles_skin'].default
     muscle_dynamics = FLAGS['muscle_dynamics'].default
     add_markers = FLAGS['add_markers'].default
+    lengthrange_from_joints = FLAGS['lengthrange_from_joints'].default
 
   print('Load base model.')
   with open(BASE_MODEL, 'r') as f:
@@ -374,10 +378,10 @@ def main(argv):
         muscle_msh.remove()
 
   model.option.timestep = 0.005
-  model.option.integrator = "implicitfast"
-  model.option.iterations = 1000
-  model.option.noslip_iterations = 15
-  model.option.cone = "elliptic"
+  model.option.integrator = "Euler"
+  model.option.iterations = 10
+  model.option.noslip_iterations = 0
+  model.option.cone = "pyramidal"
   model.option.solver = "Newton"
 
   if add_markers:
@@ -390,7 +394,7 @@ def main(argv):
     add_wrapping_geoms.add_wrapping_geoms(model)
     # Add muscles
     add_muscles.add_muscles(model, muscle_strength_scale,
-                            muscle_dynamics, ASSET_DIR)
+                            muscle_dynamics, ASSET_DIR, lengthrange_from_joints)
   else:
     actuated_joints = add_torque_actuators.add_motors(
       physics, model, lumbar_joints, cervical_joints, caudal_joints

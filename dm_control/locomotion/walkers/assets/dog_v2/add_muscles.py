@@ -135,7 +135,8 @@ def calculate_transformation(element):
   return T
 
 
-def add_muscles(model, scale_multiplier, muscle_dynamics, asset_dir):
+def add_muscles(model, scale_multiplier, muscle_dynamics,
+                asset_dir, lengthrange_from_joints):
   physics = mjcf_module.Physics.from_mjcf_model(model)
 
   mjcf = model
@@ -360,15 +361,11 @@ def add_muscles(model, scale_multiplier, muscle_dynamics, asset_dir):
       physics = mjcf_module.Physics.from_mjcf_model(mjcf)
       everything_ok = True
 
-      # compute anatomical forces if we provide a scale_multiplier > 0
-      if muscle_dynamics in ['Millard', 'Sigmoid']:
-
-        # compute length ranges
+      # compute length ranges
+      if lengthrange_from_joints:
         vector_min = np.ones(physics.model.nu) * np.inf
         vector_max = np.ones(physics.model.nu) * -np.inf
-
-        for i in range(1000000):
-
+        for _ in range(1000000):
           hinge = mjbindings.enums.mjtJoint.mjJNT_HINGE
           slide = mjbindings.enums.mjtJoint.mjJNT_SLIDE
 
@@ -390,11 +387,14 @@ def add_muscles(model, scale_multiplier, muscle_dynamics, asset_dir):
 
           physics.reset()
 
+        physics.named.model.actuator_lengthrange[:, 0] = vector_min
+        physics.named.model.actuator_lengthrange[:, 1] = vector_max
+      
+      # compute anatomical forces if we provide a scale_multiplier > 0
+      if muscle_dynamics in ['Millard', 'Sigmoid']:
         volumes = np.array(volumes)
         cross_sections = np.array(cross_sections)
         lm = []
-        physics.named.model.actuator_lengthrange[:, 0] = vector_min
-        physics.named.model.actuator_lengthrange[:, 1] = vector_max
         lr = physics.named.model.actuator_lengthrange
         for mtu in used_muscles:
           mtu_name = mtu + "_tendon"
@@ -407,7 +407,7 @@ def add_muscles(model, scale_multiplier, muscle_dynamics, asset_dir):
 
         forces = None
         if scale_multiplier > 0:
-          forces = ((cross_sections * 10) + (volumes / lm)) * scale_multiplier
+          forces = (volumes / lm) * scale_multiplier
 
         actuators = mjcf.find_all('actuator')
         print("num actuators", len(actuators))
