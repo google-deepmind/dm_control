@@ -351,6 +351,7 @@
             <attribute name="condim" type="int"/>
             <attribute name="friction" type="array" array_type="float" array_size="5"/>
             <attribute name="solref" type="array" array_type="float" array_size="2"/>
+            <attribute name="solreffriction" type="array" array_type="float" array_size="2"/>
             <attribute name="solimp" type="array" array_type="float" array_size="5"/>
             <attribute name="margin" type="float"/>
             <attribute name="gap" type="float"/>
@@ -1422,6 +1423,7 @@
             <attribute name="condim" type="int"/>
             <attribute name="friction" type="array" array_type="float" array_size="5"/>
             <attribute name="solref" type="array" array_type="float" array_size="2"/>
+            <attribute name="solreffriction" type="array" array_type="float" array_size="2"/>
             <attribute name="solimp" type="array" array_type="float" array_size="5"/>
             <attribute name="margin" type="float"/>
             <attribute name="gap" type="float"/>
