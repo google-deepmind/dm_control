@@ -168,7 +168,7 @@ def main(argv):
     make_muscles_skin = FLAGS.make_muscles_skin
     muscle_dynamics = FLAGS.muscle_dynamics
     add_markers = FLAGS.add_markers
-    lengthrange_from_joints = FLAGS.lengthrange_from_joints.default
+    lengthrange_from_joints = FLAGS.lengthrange_from_joints
   else:
     lumbar_dofs_per_vert = FLAGS['lumbar_dofs_per_vertebra'].default
     cervical_dofs_per_vertebra = FLAGS['cervical_dofs_per_vertebra'].default

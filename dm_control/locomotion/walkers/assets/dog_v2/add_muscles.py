@@ -325,12 +325,12 @@ def add_muscles(model, scale_multiplier, muscle_dynamics,
                                  gaintype="muscle", biastype="muscle")
 
       prms = [0] * 10
-      prms[0] = 0.01
+      prms[0] = 0.04
       prms[1] = 0.04
       if muscle_dynamics == 'Millard':
         muscle.dynprm = prms
       else:
-        prms[2] = 0.1
+        prms[2] = 0.001
         muscle.dynprm = prms
 
       # range(2), force, scale, lmin, lmax, vmax, fpmax, fvmax
@@ -343,13 +343,13 @@ def add_muscles(model, scale_multiplier, muscle_dynamics,
       muscle = mjcf.actuator.add('general', tendon=spatial,
                                  name=spatial.name, dclass=spatial.dclass)
       muscle.ctrllimited = True
-      muscle.ctrlrange = [-1.0, 0.0]
+      muscle.ctrlrange = [0.0, 1.0]
       muscle.dyntype = "filter"
-      muscle.dynprm = [0.05]
-      if mtu in torso or mtu in neck:
-        muscle.gainprm = [100]
-      else:
-        muscle.gainprm = [300]
+      # gain_term = gain_prm[0] + gain_prm[1]*length + gain_prm[2]*velocity
+      muscle.gaintype = "affine"
+      muscle.dyntype = "muscle"
+      muscle.dynprm = [0.01, 0.04, 0.1]
+      muscle.gainprm = [-200, -50, -10]
     else:
       raise NameError(muscle_dynamics)
 
