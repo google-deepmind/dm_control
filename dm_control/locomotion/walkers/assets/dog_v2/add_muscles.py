@@ -158,10 +158,10 @@ def add_muscles(model, scale_multiplier, muscle_dynamics,
   muscle = mjcf.default.default["muscle"]
 
   flexors = muscle.add("default", dclass="flexors")
-  flexors.tendon.rgba = [1, 1, 0, 1]
+  flexors.tendon.rgba = [0.5, 0, 0, 1]
 
   extensors = muscle.add("default", dclass="extensors")
-  extensors.tendon.rgba = [1, 0.6, 0, 1]
+  extensors.tendon.rgba = [0.5, 0, 0, 1]
 
   length_range = mjcf.compiler.lengthrange
   length_range.inttotal = 50
