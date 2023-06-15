@@ -904,6 +904,7 @@
             <attribute name="inflate" type="float"/>
             <attribute name="material" type="reference"/>
             <attribute name="rgba" type="array" array_type="float" array_size="4"/>
+            <attribute name="group" type="int"/>
           </attributes>
           <children>
             <element name="bone" repeated="true">
