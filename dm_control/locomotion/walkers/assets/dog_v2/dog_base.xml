@@ -3,7 +3,7 @@
 
   <option timestep="0.005" noslip_iterations="4"/>
 
-  <size njmax="900" nconmax="900" nkey="1"/>
+  <size memory="100M"/>
 
   <visual>
     <global offwidth="1920" offheight="1080"/>
@@ -163,7 +163,10 @@
       <site group="2" rgba="0 0 1 1" />
     </default>
     <default class="marker">
-      <site group="3"/>
+      <site group="3" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01"/>
+    </default>
+    <default class="mocap_marker">
+      <site group="3" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
     </default>
   </default>
 

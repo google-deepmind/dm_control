@@ -1,9 +1,9 @@
 <mujoco model="dog">
   <compiler meshdir="../../../../suite/dog_assets" texturedir="../../../../suite/dog_assets"/>
 
-  <option timestep="0.005" integrator="implicitfast" cone="elliptic" solver="Newton" iterations="1000" noslip_iterations="15"/>
+  <option timestep="0.005" integrator="Euler" cone="pyramidal" noslip_iterations="3"/>
 
-  <size njmax="900" nconmax="300" nkey="1"/>
+  <size memory="100M"/>
 
   <visual>
     <global offwidth="1920" offheight="1080"/>
@@ -17,10 +17,10 @@
   <default>
     <joint limited="true" solreflimit="0.01 1" solimplimit="0.9 0.99 0.01" stiffness="0.1" armature="0.0001" damping="0.01"/>
     <geom friction="0.9" solref="0.01 1" solimp="0.95 0.99 0.001"/>
-    <tendon rgba="0.5 0 0 1"/>
+    <tendon width="0.005" rgba="0.5 0 0 1"/>
     <general ctrllimited="true" ctrlrange="-1 1" dyntype="filter" dynprm="0.05" gainprm="0.02"/>
     <default class="bone">
-      <geom type="mesh" contype="0" conaffinity="0" group="5" rgba="0.5 0.5 0.5 1" density="1100"/>
+      <geom type="mesh" contype="0" conaffinity="0" group="5" rgba="0.69 0.65 0.58 1" density="1100"/>
       <default class="light_bone">
         <geom density="300"/>
       </default>
@@ -163,7 +163,10 @@
       <site group="2" rgba="0 0 1 1"/>
     </default>
     <default class="marker">
-      <site group="3"/>
+      <site group="3" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01"/>
+    </default>
+    <default class="mocap_marker">
+      <site group="3" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
     </default>
   </default>
 
@@ -607,12 +610,7 @@
       <geom name="floor" type="plane" conaffinity="1" size="10 10 0.1" material="grid"/>
     </body>
     <body name="torso" pos="0.0404 0 0.4152">
-      <joint name="root_x" type="slide" axis="1 0 0" limited="false" stiffness="0" ref="0.0404" armature="0" damping="0.05" frictionloss="0"/>
-      <joint name="root_y" type="slide" axis="0 1 0" limited="false" stiffness="0" armature="0" damping="0.05" frictionloss="0"/>
-      <joint name="root_z" type="slide" axis="0 0 1" limited="false" stiffness="0" ref="0.4152" armature="0" damping="0.05" frictionloss="0"/>
-      <joint name="root_rotx" axis="1 0 0" limited="false" stiffness="0" armature="0" damping="0.05" frictionloss="0"/>
-      <joint name="root_roty" axis="0 1 0" limited="false" stiffness="0" armature="0" damping="0.05" frictionloss="0"/>
-      <joint name="root_rotz" axis="0 0 1" limited="false" stiffness="0" armature="0" damping="0.05" frictionloss="0"/>
+      <freejoint name="root"/>
       <light name="light" mode="trackcom" pos="0 0 3"/>
       <camera name="y-axis" mode="trackcom" pos="0 -1.5 0.8" xyaxes="1 0 0 0 0.6 1"/>
       <camera name="x-axis" mode="trackcom" pos="2 0 0.5" xyaxes="0 1 0 -0.3 0 1"/>
@@ -694,19 +692,19 @@
                                 <geom name="toe_L1_collision" class="foot_primitive" size="0.01 0.015" pos="0.035 0 -0.028" euler="90 0 0"/>
                                 <geom name="toe_L2_collision" class="foot_primitive" size="0.008 0.01" pos="0.045 0 -0.03" euler="90 0 0"/>
                                 <site name="sole_L" class="sensor" type="box" size="0.025 0.03 0.008" pos="0.026 0 -0.033"/>
-                                <site name="marker_toe_L_0" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0.055 0 0"/>
+                                <site name="marker_toe_L_0" class="marker" pos="0.055 0 0"/>
                               </body>
                             </body>
-                            <site name="marker_foot_L_0" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0 -0.02 0"/>
-                            <site name="marker_foot_L_1" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0 0.02 0"/>
-                            <site name="marker_foot_L_2" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0 -0.02 -0.1"/>
-                            <site name="marker_foot_L_3" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0 0.03 -0.1"/>
+                            <site name="marker_foot_L_0" class="marker" pos="0 -0.02 0"/>
+                            <site name="marker_foot_L_1" class="marker" pos="0 0.02 0"/>
+                            <site name="marker_foot_L_2" class="marker" pos="0 -0.02 -0.1"/>
+                            <site name="marker_foot_L_3" class="marker" pos="0 0.03 -0.1"/>
                           </body>
                           <geom name="lower_leg_L_collision" class="collision_primitive" size="0.02 0.1" pos="-0.09513 -1.177e-05 -0.06865" quat="0.8005 0.187 0.4209 0.3835"/>
-                          <site name="marker_lower_leg_L_0" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0.04 0 0"/>
-                          <site name="marker_lower_leg_L_1" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="-0.04 0.035 0"/>
+                          <site name="marker_lower_leg_L_0" class="marker" pos="0.04 0 0"/>
+                          <site name="marker_lower_leg_L_1" class="marker" pos="-0.04 0.035 0"/>
                         </body>
-                        <site name="marker_upper_leg_L_0" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="-0.03 0.04 0"/>
+                        <site name="marker_upper_leg_L_0" class="marker" pos="-0.03 0.04 0"/>
                       </body>
                       <body name="upper_leg_R" pos="-0.01811 -0.04724 -0.0126">
                         <geom name="Femoris_fabellae_R_2" class="bone" pos="0.3263 0.04724 -0.4636" mesh="Femoris_fabellae_R_2"/>
@@ -757,19 +755,19 @@
                                 <geom name="toe_R1_collision" class="foot_primitive" size="0.01 0.015" pos="0.035 0 -0.028" euler="90 0 0"/>
                                 <geom name="toe_R2_collision" class="foot_primitive" size="0.008 0.01" pos="0.045 0 -0.03" euler="90 0 0"/>
                                 <site name="sole_R" class="sensor" type="box" size="0.025 0.03 0.008" pos="0.026 0 -0.033"/>
-                                <site name="marker_toe_R_0" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0.055 0 0"/>
+                                <site name="marker_toe_R_0" class="marker" pos="0.055 0 0"/>
                               </body>
                             </body>
-                            <site name="marker_foot_R_0" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0 0.02 0"/>
-                            <site name="marker_foot_R_1" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0 -0.02 0"/>
-                            <site name="marker_foot_R_2" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0 0.02 -0.1"/>
-                            <site name="marker_foot_R_3" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0 -0.03 -0.1"/>
+                            <site name="marker_foot_R_0" class="marker" pos="0 0.02 0"/>
+                            <site name="marker_foot_R_1" class="marker" pos="0 -0.02 0"/>
+                            <site name="marker_foot_R_2" class="marker" pos="0 0.02 -0.1"/>
+                            <site name="marker_foot_R_3" class="marker" pos="0 -0.03 -0.1"/>
                           </body>
                           <geom name="lower_leg_R_collision" class="collision_primitive" size="0.02 0.1" pos="-0.09513 1.173e-05 -0.06865" quat="0.3835 0.4209 0.187 0.8005"/>
-                          <site name="marker_lower_leg_R_0" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0.04 0 0"/>
-                          <site name="marker_lower_leg_R_1" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="-0.04 -0.035 0"/>
+                          <site name="marker_lower_leg_R_0" class="marker" pos="0.04 0 0"/>
+                          <site name="marker_lower_leg_R_1" class="marker" pos="-0.04 -0.035 0"/>
                         </body>
-                        <site name="marker_upper_leg_R_0" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="-0.03 -0.04 0"/>
+                        <site name="marker_upper_leg_R_0" class="marker" pos="-0.03 -0.04 0"/>
                       </body>
                       <body name="Ca_1" pos="0.008246 0 0.04354">
                         <geom name="Ca_1" class="bone" pos="0.2999 0 -0.5197" mesh="Ca_1"/>
@@ -849,7 +847,7 @@
                                           </body>
                                           <joint name="Ca_10_bend" class="caudal_bend" pos="0.01207 -5.889e-06 0.01137" axis="0.6856 0 -0.728"/>
                                           <geom name="Ca_10_collision" class="collision_primitive" size="0.006059 0.01487 0.01658" pos="0 0 0" quat="-0.05502 0.3972 -0.02343 0.9158"/>
-                                          <site name="marker_Ca_10_0" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0 0 0.01"/>
+                                          <site name="marker_Ca_10_0" class="marker" pos="0 0 0.01"/>
                                         </body>
                                         <joint name="Ca_9_extend" class="caudal_extend" pos="0.009022 4.94e-06 0.008041" axis="0 1 0"/>
                                         <geom name="Ca_9_collision" class="collision_primitive" size="0.005861 0.01177 0.01208" pos="0 0 0" quat="0.7194 0.2402 0.298 0.5796"/>
@@ -878,8 +876,8 @@
                         <joint name="Ca_1_extend" class="caudal_extend" pos="0.01121 0 -0.002007" axis="0 1 0"/>
                         <geom name="Ca_1_collision" class="collision_primitive" size="0.01365 0.006455 0.01139" pos="0 0 0" quat="0 0.4196 0 0.9077"/>
                       </body>
-                      <site name="marker_pelvis_0" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0.04 -0.07 0.02"/>
-                      <site name="marker_pelvis_1" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0.04 0.07 0.02"/>
+                      <site name="marker_pelvis_0" class="marker" pos="0.04 -0.07 0.02"/>
+                      <site name="marker_pelvis_1" class="marker" pos="0.04 0.07 0.02"/>
                     </body>
                   </body>
                   <joint name="L_6_twist" class="lumbar_twist" axis="1 0 0"/>
@@ -989,10 +987,10 @@
                       <geom name="Premolars_Top_R_2_collision" class="tooth_primitive" type="ellipsoid" size="0.002204 0.005472 0.006079" pos="0.0633 -0.01715 -0.03957" quat="0.2914 0.529 0.6855 0.4065"/>
                       <inertial pos="-0.001192 0 0.001457" quat="0 0.8209 0 0.5711" mass="0.3662" diaginertia="0.0007721 0.0006887 0.0002918"/>
                       <geom name="MergedSkull" class="bone" pos="-0.3477 0 -0.691" mesh="MergedSkull"/>
-                      <site name="marker_skull_0" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0.01 0 0.04"/>
-                      <site name="marker_skull_1" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0 -0.05 0"/>
-                      <site name="marker_skull_2" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0 0.05 0"/>
-                      <site name="marker_skull_3" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="-0.1 0 0.02"/>
+                      <site name="marker_skull_0" class="marker" pos="0.01 0 0.04"/>
+                      <site name="marker_skull_1" class="marker" pos="0 -0.05 0"/>
+                      <site name="marker_skull_2" class="marker" pos="0 0.05 0"/>
+                      <site name="marker_skull_3" class="marker" pos="-0.1 0 0.02"/>
                     </body>
                   </body>
                   <joint name="C_2_twist" class="cervical_twist" pos="-0.004829 0 -0.02353" axis="0.201 0 0.9796"/>
@@ -1006,8 +1004,8 @@
             <joint name="C_5_bend" class="cervical_bend" pos="-0.007455 0 -0.01425" axis="-0.8861 0 0.4636"/>
           </body>
           <joint name="C_6_twist" class="cervical_twist" pos="-0.0139 0 -0.007136" axis="0.8896 0 0.4568"/>
-          <site name="marker_C_6_0" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0.05 -0.05 0"/>
-          <site name="marker_C_6_1" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0.05 0.05 0"/>
+          <site name="marker_C_6_0" class="marker" pos="0.05 -0.05 0"/>
+          <site name="marker_C_6_1" class="marker" pos="0.05 0.05 0"/>
         </body>
         <joint name="C_7_extend" class="cervical_extend" pos="-0.01571 0 -0.001623" axis="0 1 0"/>
         <joint name="C_7_bend" class="cervical_bend" pos="-0.01571 0 -0.001623" axis="-0.1027 0 0.9947"/>
@@ -1064,21 +1062,21 @@
                   <geom name="finger_L1_collision" class="foot_primitive" size="0.01 0.015" pos="0.032 0 -0.02" euler="90 0 0"/>
                   <geom name="finger_L2_collision" class="foot_primitive" size="0.008 0.01" pos="0.042 0 -0.022" euler="90 0 0"/>
                   <site name="palm_L" class="sensor" type="box" size="0.028 0.03 0.007" pos="0.02 0 -0.024"/>
-                  <site name="marker_finger_L_0" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0.065 0 0"/>
+                  <site name="marker_finger_L_0" class="marker" pos="0.065 0 0"/>
                 </body>
-                <site name="marker_hand_L_0" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0 -0.02 0"/>
-                <site name="marker_hand_L_1" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0 0.02 0"/>
-                <site name="marker_hand_L_2" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0.02 -0.02 -0.08"/>
-                <site name="marker_hand_L_3" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0.02 0.02 -0.08"/>
+                <site name="marker_hand_L_0" class="marker" pos="0 -0.02 0"/>
+                <site name="marker_hand_L_1" class="marker" pos="0 0.02 0"/>
+                <site name="marker_hand_L_2" class="marker" pos="0.02 -0.02 -0.08"/>
+                <site name="marker_hand_L_3" class="marker" pos="0.02 0.02 -0.08"/>
               </body>
             </body>
             <geom name="Radius_L_collision" class="collision_primitive" size="0.017 0.09" pos="-0.001656 -0.006968 -0.1081" quat="0.9802 -0.05682 0.01088 0.1893"/>
             <geom name="Ulna_L_collision" class="collision_primitive" size="0.015 0.06" pos="-0.01187 -0.0004415 -0.05165" quat="0.6993 -0.03224 -0.02206 0.7137"/>
-            <site name="marker_lower_arm_L_0" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0.025 0 0"/>
-            <site name="marker_lower_arm_L_1" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0.025 0 -0.1"/>
+            <site name="marker_lower_arm_L_0" class="marker" pos="0.025 0 0"/>
+            <site name="marker_lower_arm_L_1" class="marker" pos="0.025 0 -0.1"/>
           </body>
           <geom name="humerus_L_collision" class="collision_primitive" size="0.02 0.08" pos="-0.01803 0.00985 -0.07705" quat="0.5692 0.1782 0.08 0.7987"/>
-          <site name="marker_upper_arm_L_0" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0.04 0 0"/>
+          <site name="marker_upper_arm_L_0" class="marker" pos="0.04 0 0"/>
         </body>
         <geom name="Scapula_L_collision" class="collision_primitive" type="box" size="0.01758 0.03491 0.05749" pos="0.03882 0.03083 -0.06494" quat="0.7347 -0.1644 -0.2717 0.5995"/>
       </body>
@@ -1134,185 +1132,185 @@
                   <geom name="finger_R1_collision" class="foot_primitive" size="0.01 0.015" pos="0.032 0 -0.02" euler="90 0 0"/>
                   <geom name="finger_R2_collision" class="foot_primitive" size="0.008 0.01" pos="0.042 0 -0.022" euler="90 0 0"/>
                   <site name="palm_R" class="sensor" type="box" size="0.028 0.03 0.007" pos="0.02 0 -0.024"/>
-                  <site name="marker_finger_R_0" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0.065 0 0"/>
+                  <site name="marker_finger_R_0" class="marker" pos="0.065 0 0"/>
                 </body>
-                <site name="marker_hand_R_0" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0 0.02 0"/>
-                <site name="marker_hand_R_1" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0 -0.02 0"/>
-                <site name="marker_hand_R_2" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0.02 0.02 -0.08"/>
-                <site name="marker_hand_R_3" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0.02 -0.02 -0.08"/>
+                <site name="marker_hand_R_0" class="marker" pos="0 0.02 0"/>
+                <site name="marker_hand_R_1" class="marker" pos="0 -0.02 0"/>
+                <site name="marker_hand_R_2" class="marker" pos="0.02 0.02 -0.08"/>
+                <site name="marker_hand_R_3" class="marker" pos="0.02 -0.02 -0.08"/>
               </body>
             </body>
             <geom name="Ulna_R_collision" class="collision_primitive" size="0.015 0.06" pos="-0.01187 0.0004416 -0.05165" quat="0.7137 -0.02206 -0.03224 0.6993"/>
             <geom name="Radius_R_collision" class="collision_primitive" size="0.017 0.09" pos="-0.001656 0.006968 -0.1081" quat="0.9802 0.05682 0.01088 -0.1893"/>
-            <site name="marker_lower_arm_R_0" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0.025 0 0"/>
-            <site name="marker_lower_arm_R_1" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0.025 0 -0.1"/>
+            <site name="marker_lower_arm_R_0" class="marker" pos="0.025 0 0"/>
+            <site name="marker_lower_arm_R_1" class="marker" pos="0.025 0 -0.1"/>
           </body>
           <geom name="humerus_R_collision" class="collision_primitive" size="0.02 0.08" pos="-0.01803 -0.00985 -0.07705" quat="0.7987 0.08 0.1782 0.5692"/>
-          <site name="marker_upper_arm_R_0" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0.04 0 0"/>
+          <site name="marker_upper_arm_R_0" class="marker" pos="0.04 0 0"/>
         </body>
         <geom name="Scapula_R_collision" class="collision_primitive" type="box" size="0.01758 0.03491 0.05749" pos="0.03882 -0.03083 -0.06494" quat="0.5995 -0.2717 -0.1644 0.7347"/>
       </body>
       <inertial pos="0 0 0" quat="0.4552 0.5411 0.5411 0.4552" mass="2.676" diaginertia="0.02603 0.02333 0.01159"/>
       <geom name="Ribcage" class="bone" pos="-0.05279 -0.0003659 -0.4218" mesh="Ribcage"/>
-      <site name="marker_torso_0" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="-0.25 0 0.13"/>
-      <site name="marker_torso_1" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="-0.1 0 0.13"/>
-      <site name="marker_torso_2" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0.05 0 0.15"/>
-      <site name="marker_torso_3" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="-0.25 -0.06 -0.01"/>
-      <site name="marker_torso_4" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="-0.1 -0.08 -0.02"/>
-      <site name="marker_torso_5" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0.05 -0.09 -0.02"/>
-      <site name="marker_torso_6" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="-0.25 0.06 -0.01"/>
-      <site name="marker_torso_7" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="-0.1 0.08 -0.02"/>
-      <site name="marker_torso_8" class="marker" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01" pos="0.05 0.09 -0.02"/>
+      <site name="marker_torso_0" class="marker" pos="-0.25 0 0.13"/>
+      <site name="marker_torso_1" class="marker" pos="-0.1 0 0.13"/>
+      <site name="marker_torso_2" class="marker" pos="0.05 0 0.15"/>
+      <site name="marker_torso_3" class="marker" pos="-0.25 -0.06 -0.01"/>
+      <site name="marker_torso_4" class="marker" pos="-0.1 -0.08 -0.02"/>
+      <site name="marker_torso_5" class="marker" pos="0.05 -0.09 -0.02"/>
+      <site name="marker_torso_6" class="marker" pos="-0.25 0.06 -0.01"/>
+      <site name="marker_torso_7" class="marker" pos="-0.1 0.08 -0.02"/>
+      <site name="marker_torso_8" class="marker" pos="0.05 0.09 -0.02"/>
     </body>
     <body name="marker_0" mocap="true">
-      <site name="marker_0" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_0" class="mocap_marker"/>
     </body>
     <body name="marker_1" mocap="true">
-      <site name="marker_1" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_1" class="mocap_marker"/>
     </body>
     <body name="marker_2" mocap="true">
-      <site name="marker_2" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_2" class="mocap_marker"/>
     </body>
     <body name="marker_3" mocap="true">
-      <site name="marker_3" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_3" class="mocap_marker"/>
     </body>
     <body name="marker_4" mocap="true">
-      <site name="marker_4" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_4" class="mocap_marker"/>
     </body>
     <body name="marker_5" mocap="true">
-      <site name="marker_5" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_5" class="mocap_marker"/>
     </body>
     <body name="marker_6" mocap="true">
-      <site name="marker_6" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_6" class="mocap_marker"/>
     </body>
     <body name="marker_7" mocap="true">
-      <site name="marker_7" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_7" class="mocap_marker"/>
     </body>
     <body name="marker_8" mocap="true">
-      <site name="marker_8" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_8" class="mocap_marker"/>
     </body>
     <body name="marker_9" mocap="true">
-      <site name="marker_9" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_9" class="mocap_marker"/>
     </body>
     <body name="marker_10" mocap="true">
-      <site name="marker_10" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_10" class="mocap_marker"/>
     </body>
     <body name="marker_11" mocap="true">
-      <site name="marker_11" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_11" class="mocap_marker"/>
     </body>
     <body name="marker_12" mocap="true">
-      <site name="marker_12" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_12" class="mocap_marker"/>
     </body>
     <body name="marker_13" mocap="true">
-      <site name="marker_13" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_13" class="mocap_marker"/>
     </body>
     <body name="marker_14" mocap="true">
-      <site name="marker_14" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_14" class="mocap_marker"/>
     </body>
     <body name="marker_15" mocap="true">
-      <site name="marker_15" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_15" class="mocap_marker"/>
     </body>
     <body name="marker_16" mocap="true">
-      <site name="marker_16" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_16" class="mocap_marker"/>
     </body>
     <body name="marker_17" mocap="true">
-      <site name="marker_17" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_17" class="mocap_marker"/>
     </body>
     <body name="marker_18" mocap="true">
-      <site name="marker_18" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_18" class="mocap_marker"/>
     </body>
     <body name="marker_19" mocap="true">
-      <site name="marker_19" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_19" class="mocap_marker"/>
     </body>
     <body name="marker_20" mocap="true">
-      <site name="marker_20" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_20" class="mocap_marker"/>
     </body>
     <body name="marker_21" mocap="true">
-      <site name="marker_21" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_21" class="mocap_marker"/>
     </body>
     <body name="marker_22" mocap="true">
-      <site name="marker_22" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_22" class="mocap_marker"/>
     </body>
     <body name="marker_23" mocap="true">
-      <site name="marker_23" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_23" class="mocap_marker"/>
     </body>
     <body name="marker_24" mocap="true">
-      <site name="marker_24" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_24" class="mocap_marker"/>
     </body>
     <body name="marker_25" mocap="true">
-      <site name="marker_25" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_25" class="mocap_marker"/>
     </body>
     <body name="marker_26" mocap="true">
-      <site name="marker_26" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_26" class="mocap_marker"/>
     </body>
     <body name="marker_27" mocap="true">
-      <site name="marker_27" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_27" class="mocap_marker"/>
     </body>
     <body name="marker_28" mocap="true">
-      <site name="marker_28" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_28" class="mocap_marker"/>
     </body>
     <body name="marker_29" mocap="true">
-      <site name="marker_29" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_29" class="mocap_marker"/>
     </body>
     <body name="marker_30" mocap="true">
-      <site name="marker_30" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_30" class="mocap_marker"/>
     </body>
     <body name="marker_31" mocap="true">
-      <site name="marker_31" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_31" class="mocap_marker"/>
     </body>
     <body name="marker_32" mocap="true">
-      <site name="marker_32" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_32" class="mocap_marker"/>
     </body>
     <body name="marker_33" mocap="true">
-      <site name="marker_33" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_33" class="mocap_marker"/>
     </body>
     <body name="marker_34" mocap="true">
-      <site name="marker_34" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_34" class="mocap_marker"/>
     </body>
     <body name="marker_35" mocap="true">
-      <site name="marker_35" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_35" class="mocap_marker"/>
     </body>
     <body name="marker_36" mocap="true">
-      <site name="marker_36" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_36" class="mocap_marker"/>
     </body>
     <body name="marker_37" mocap="true">
-      <site name="marker_37" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_37" class="mocap_marker"/>
     </body>
     <body name="marker_38" mocap="true">
-      <site name="marker_38" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_38" class="mocap_marker"/>
     </body>
     <body name="marker_39" mocap="true">
-      <site name="marker_39" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_39" class="mocap_marker"/>
     </body>
     <body name="marker_40" mocap="true">
-      <site name="marker_40" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_40" class="mocap_marker"/>
     </body>
     <body name="marker_41" mocap="true">
-      <site name="marker_41" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_41" class="mocap_marker"/>
     </body>
     <body name="marker_42" mocap="true">
-      <site name="marker_42" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_42" class="mocap_marker"/>
     </body>
     <body name="marker_43" mocap="true">
-      <site name="marker_43" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_43" class="mocap_marker"/>
     </body>
     <body name="marker_44" mocap="true">
-      <site name="marker_44" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_44" class="mocap_marker"/>
     </body>
     <body name="marker_45" mocap="true">
-      <site name="marker_45" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_45" class="mocap_marker"/>
     </body>
     <body name="marker_46" mocap="true">
-      <site name="marker_46" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_46" class="mocap_marker"/>
     </body>
     <body name="marker_47" mocap="true">
-      <site name="marker_47" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_47" class="mocap_marker"/>
     </body>
     <body name="marker_48" mocap="true">
-      <site name="marker_48" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_48" class="mocap_marker"/>
     </body>
     <body name="marker_49" mocap="true">
-      <site name="marker_49" class="marker" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+      <site name="marker_49" class="mocap_marker"/>
     </body>
   </worldbody>
 

@@ -36,7 +36,7 @@ markers_per_body = {
 def add_markers(model):
   bodies = model.find_all('body')
 
-  TOT_MARKERS = 0
+  TOTAL_MARKERS = 0
   for body in bodies:
     for name, markers_pos in markers_per_body.items():
       if name in body.name and 'anchor' not in body.name:
@@ -45,15 +45,13 @@ def add_markers(model):
           if '_R' in body.name:
             pos[1] *= -1
           body.add("site", name='marker_' + body.name + '_' + str(marker_idx),
-                   rgba=[1, 0.5, 0, 0.5], size=[0.01, 0.01, 0.01], pos=pos,
-                   dclass="marker")
+                  pos=pos, dclass="marker")
 
           marker_idx += 1
-          TOT_MARKERS += 1
+          TOTAL_MARKERS += 1
 
   for i in range(50):
     marker_body = model.worldbody.add('body', name="marker_" + str(i), mocap=True)
-    marker_body.add('site', name="marker_" + str(i), rgba=[0, 1, 0, 0.5],
-                    size=[0.01, 0.01, 0.01], dclass="marker")
+    marker_body.add('site', name="marker_" + str(i), dclass="mocap_marker")
 
-  print("TOT_MARKERS:", TOT_MARKERS)
+  print("TOT_MARKERS:", TOTAL_MARKERS)

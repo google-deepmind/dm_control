@@ -28,7 +28,11 @@ def create(model, mesh_file, name_mesh, asset_dir, tex_coords=True, transform=Tr
 
   Args:
     model: model in which we want to add the skin.
-    skin_msh: a binary mesh format of the skin.
+    mesh_file: a binary mesh format of the skin.
+    name_mesh: the name of the skin to use in the xml
+    asset_dir: asset directory to load the .skn file
+    tex_coords: boolean to indicate if the mesh has texture coordinates.
+    transform: a boolean to rotate mesh orientation by 90 degrees along the z-axis.
   """
   print('Making Skin.')
   # Add skin mesh:
@@ -187,9 +191,6 @@ def create(model, mesh_file, name_mesh, asset_dir, tex_coords=True, transform=Tr
 
   # Convert skin into *.skn file according to
   # https://mujoco.readthedocs.io/en/latest/XMLreference.html#asset-skin
-  # import os
-  # dir_path = os.path.dirname(os.path.realpath(__file__))
-  # print(dir_path)
   f = open(asset_dir + '/skins/' + name_mesh + '.skn', 'w+b')
 
   nvert = skin.vertex.size // 3

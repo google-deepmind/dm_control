@@ -59,18 +59,11 @@ def add_motors(physics, model, lumbar_joints, cervical_joints, caudal_joints):
   for region in spinal_joints.values():
     all_spinal_joints.extend(region)
 
-  # root_joint = model.find('joint', 'root')
-  root_joints = []
-  root_joints.append(model.find('joint', 'root_x'))
-  root_joints.append(model.find('joint', 'root_y'))
-  root_joints.append(model.find('joint', 'root_z'))
-  root_joints.append(model.find('joint', 'root_rotx'))
-  root_joints.append(model.find('joint', 'root_roty'))
-  root_joints.append(model.find('joint', 'root_rotz'))
+  root_joint = model.find('joint', 'root')
   actuated_joints = [
     joint
     for joint in model.find_all('joint')
-    if joint not in all_spinal_joints and joint not in root_joints
+    if joint not in all_spinal_joints and joint is not root_joint
   ]
   for tendon in tendons:
     gain = 0.0

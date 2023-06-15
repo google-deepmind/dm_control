@@ -44,30 +44,6 @@ def add_wrapping_geoms(model):
     Ca_1.add('site', name='Ca_1_wrapping_forward', pos=[0, 0, -0.05], dclass='wrapping')
     Ca_1.add('site', name='Ca_1_wrapping_backward', pos=[0, 0, 0.05], dclass='wrapping')
 
-    # L_1 = model.find('body', 'L_1')
-    # L_1.add('geom', name='L_1_wrapping', dclass='wrapping',
-    #     pos=[0, 0, 0], size=[0.01, 0.02])
-    # L_1.add('site', name='L_1_wrapping_forward', pos=[0, 0, 0.04], dclass='wrapping')
-    # L_1.add('site', name='L_1_wrapping_backward', pos=[0, 0, -0.04], dclass='wrapping')
-
-    # L_3 = model.find('body', 'L_3')
-    # L_3.add('geom', name='L_3_wrapping', dclass='wrapping',
-    #     pos=[0, 0, 0], size=[0.01, 0.02])
-    # L_3.add('site', name='L_3_wrapping_forward', pos=[0, 0, 0.04], dclass='wrapping')
-    # L_3.add('site', name='L_3_wrapping_backward', pos=[0, 0, -0.04], dclass='wrapping')
-
-    # L_5 = model.find('body', 'L_5')
-    # L_5.add('geom', name='L_5_wrapping', dclass='wrapping',
-    #     pos=[0, 0, 0], size=[0.01, 0.02])
-    # L_5.add('site', name='L_5_wrapping_forward', pos=[0, 0, 0.04], dclass='wrapping')
-    # L_5.add('site', name='L_5_wrapping_backward', pos=[0, 0, -0.04], dclass='wrapping')
-
-    # L_7 = model.find('body', 'L_7')
-    # L_7.add('geom', name='L_7_wrapping', dclass='wrapping',
-    #     pos=[0, 0, 0], size=[0.01, 0.02])
-    # L_7.add('site', name='L_7_wrapping_forward', pos=[0, 0, 0.04], dclass='wrapping')
-    # L_7.add('site', name='L_7_wrapping_backward', pos=[0, 0, -0.04], dclass='wrapping')
-
     torso = model.find('body', 'torso')
     torso.add('site', name='C_7_wrapping_forward', pos=[0.19, 0, 0.055],
         dclass='wrapping')

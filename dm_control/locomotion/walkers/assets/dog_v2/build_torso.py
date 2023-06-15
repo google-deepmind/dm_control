@@ -54,19 +54,7 @@ def create_torso(
   sternum = [m for m in bones if 'Sternum' in m]
   torso_bones = thoracic_spine + ribs + sternum  # + ['Xiphoid_cartilage']
   torso = parent.add('body', name='torso')
-  # torso.add('freejoint', name='root')
-  torso.add('joint', name='root_x', limited=False, type="slide", ref=0.0404,
-            axis=[1, 0, 0], stiffness=0, damping=0.05, frictionloss=0, armature=0)
-  torso.add('joint', name='root_y', limited=False, type="slide", axis=[0, 1, 0],
-            stiffness=0, damping=0.05, frictionloss=0, armature=0)
-  torso.add('joint', name='root_z', limited=False, type="slide", ref=0.4152,
-            axis=[0, 0, 1], stiffness=0, damping=0.05, frictionloss=0, armature=0)
-  torso.add('joint', name='root_rotx', limited=False, axis=[1, 0, 0],
-            stiffness=0, damping=0.05, frictionloss=0, armature=0)
-  torso.add('joint', name='root_roty', limited=False, axis=[0, 1, 0],
-            stiffness=0, damping=0.05, frictionloss=0, armature=0)
-  torso.add('joint', name='root_rotz', limited=False, axis=[0, 0, 1],
-            stiffness=0, damping=0.05, frictionloss=0, armature=0)
+  torso.add('freejoint', name='root')
 
   torso.add('site', name='root', size=(0.01,), rgba=[0, 1, 0, 1])
   torso.add('light', name='light', mode='trackcom', pos=[0, 0, 3])

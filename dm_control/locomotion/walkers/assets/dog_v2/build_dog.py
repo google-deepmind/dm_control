@@ -379,10 +379,8 @@ def main(argv):
 
   model.option.timestep = 0.005
   model.option.integrator = "Euler"
-  model.option.iterations = 10
-  model.option.noslip_iterations = 0
+  model.option.noslip_iterations = 3
   model.option.cone = "pyramidal"
-  model.option.solver = "Newton"
 
   if add_markers:
     print('Add Markers')
