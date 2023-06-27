@@ -193,7 +193,7 @@ notebook: [Open In Google Colab](https://colab.research.google.com/github/deepmi
         'License :: OSI Approved :: Apache Software License',
     ],
     keywords='machine learning control physics MuJoCo AI',
-    python_requires='>=3.7',
+    python_requires='>=3.8',
     install_requires=[
         'absl-py>=0.7.0',
         'dm-env',
