@@ -19,6 +19,6 @@ pyopengl==3.1.7
 pyparsing==3.1.0
 requests==2.31.0
 scipy==1.7.3; python_version == '3.7'
-scipy==1.10.1; python_version >= '3.8'
+scipy==1.10.0; python_version >= '3.8'
 setuptools==68.0.0
 tqdm==4.65.0
