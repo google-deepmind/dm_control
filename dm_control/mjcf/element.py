@@ -28,7 +28,9 @@ from dm_control.mjcf import debugging
 from dm_control.mjcf import namescope
 from dm_control.mjcf import schema
 from dm_control.mujoco.wrapper import util
+from dm_control.utils import transformations as dm_trans
 from lxml import etree
+import mujoco._functions as mj_trans
 import numpy as np
 
 
@@ -980,7 +982,7 @@ class _AttachableElement(_ElementImpl):
   """
   __slots__ = []
 
-  def attach(self, attachment):
+  def attach(self, attachment, exclude_wrapper_body=False):
     """Attaches another MJCF model at this site.
 
     An empty <body> will be created as an attachment frame. All children of
@@ -1027,9 +1029,85 @@ class _AttachableElement(_ElementImpl):
              and isinstance(frame_siblings[index], _AttachmentFrame)):
         index += 1
     frame = _AttachmentFrame(frame_parent, self, attachment)
-    frame_siblings.insert(index, frame)
+    if exclude_wrapper_body:
+      self._set_relative_attachment_child_poses(frame, attachment.compiler.get_attributes().get('eulerseq'))
+      frame_siblings.extend(frame.all_children())
+    else:
+      frame_siblings.insert(index, frame)
     self.root._attach(attachment, exclude_worldbody=True)  # pylint: disable=protected-access
     return frame
+
+  def _set_relative_attachment_child_poses(self, attachment_frame, eulerseq=None):
+    self._set_relative_attachment_child_positions(attachment_frame)
+    self._set_relative_attachment_child_rotations(attachment_frame, eulerseq)
+
+  def _set_relative_attachment_child_positions(self, attachment_frame):
+    base_pos = self.get_attributes().get('pos')
+    if base_pos is None:
+      return
+
+    for child in attachment_frame.all_children():
+      if 'pos' in child.get_attributes():
+        new_pos = child.pos + base_pos
+      else:
+        new_pos = base_pos
+
+      try:
+        child.pos = new_pos
+      except AttributeError:
+        pass
+
+
+  def _set_relative_attachment_child_rotations(self, attachment_frame, eulerseq=None):
+    def mj_conversion_func(func, *args, **kwargs):
+      res = np.empty((4, 1))
+      func(*args, res, **kwargs)
+      return res
+
+    rot_converters = {
+      'quat': lambda x: x,
+      'axisangle': lambda x: mj_conversion_func(mj_trans.mju_axisAngle2Quat, x[:3], x[3]),
+      'euler': lambda x: dm_trans.euler_to_quat(x, ordering=eulerseq or 'XYZ'),
+      'xyaxes': None,
+      'zaxis': lambda x: mj_conversion_func(mj_trans.mju_quatZ2Vec, x),
+    }
+    rotations = list(rot_converters.keys())
+
+    base_rot_type, base_rot_value = self._get_element_rotation_type_and_value(self, rotations)
+
+    if base_rot_type is None:
+      return
+
+    for child in attachment_frame.all_children():
+        child_rot_type, child_rot_value = self._get_element_rotation_type_and_value(child, rotations)
+
+        if child_rot_type is None:
+            try:
+              child.set_attributes(**{base_rot_type: base_rot_value})
+            except AttributeError:
+              pass
+            continue
+
+        base_rot_quat = rot_converters[base_rot_type](base_rot_value)
+        child_rot_quat = rot_converters[child_rot_type](child_rot_value)
+
+        new_child_quat = dm_trans.quat_mul(base_rot_quat, child_rot_quat)
+
+        child.set_attributes(**{child_rot_type: None})
+        child.set_attributes(quat=new_child_quat)
+
+  def _get_element_rotation_type_and_value(self, element, rotations):
+    rot_types = [rot for rot in rotations if rot in element.get_attributes()]
+
+    if len(rot_types) == 0:
+      return None, None
+
+    if len(rot_types) > 1:
+      raise ValueError(f'Expected exactly 1 rotation type for element {element} out of {rot_types}. got {rot_types}')
+
+    rot_type = rot_types[0]
+
+    return rot_types[0], element.get_attributes()[rot_type]
 
 
 class _AttachmentFrame(_ElementImpl):
@@ -1228,8 +1306,8 @@ class RootElement(_ElementImpl):
       self.parent_model.namescope.rename('attachment_frame', old_name, new_name)
       self.parent_model.namescope.rename('attached_model', old_name, new_name)
 
-  def attach(self, other):
-    return self.worldbody.attach(other)
+  def attach(self, other, exclude_wrapper_body=False):
+    return self.worldbody.attach(other, exclude_wrapper_body)
 
   def detach(self):
     parent_model = self.parent_model
