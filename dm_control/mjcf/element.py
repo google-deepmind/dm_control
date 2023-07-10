@@ -1086,6 +1086,7 @@ class _AttachableElement(_ElementImpl):
       # if the child rotation is not defined, use base rotation as is
       if child_rot_type is None:
         self._maybe_set_attribute(child, base_rot_type, base_rot_value)
+        continue
 
       # convert base and child rotatiions to quaternions.
       base_rot_quat = self._apply_quat_convert(base_rot_type, base_rot_value, self.root)
