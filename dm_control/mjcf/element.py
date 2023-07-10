@@ -1114,22 +1114,42 @@ class _AttachableElement(_ElementImpl):
 
   @staticmethod
   def _get_element_rotation_type_and_value(element):
+    """Gets the rotation type and value of an element.
+
+      Args:
+        element: The element for which to get the rotation type and value.
+
+      Returns:
+        A tuple of the rotation type (see dm_control.utils.transformations.ROTATIIONS_3D) and value of the element.
+    """
+    # get the rotation type of the element
     rot_types = [rot for rot in dm_trans.ROTATIONS_3D if rot in element.get_attributes()]
 
+    # if no rotation type is defined, return None
     if len(rot_types) == 0:
       return None, None
 
+    # rotation types are mutually exclusive attributes. if more than 1 rotation type is defined, raise an error
     if len(rot_types) > 1:
       raise ValueError(f'Expected exactly 1 rotation type for element {element} out of {rot_types}. got {rot_types}')
 
+    # get the single existing rotation type and value
     rot_type = rot_types[0]
+    rot_value = element.get_attributes()[rot_type]
 
-    return rot_types[0], element.get_attributes()[rot_type]
+    return rot_type, rot_value
 
   @staticmethod
   def _apply_quat_convert(rot_type, rot_val, rotation_root):
-    if rot_type == 'euler':
-      eulerseq = rotation_root.root.compiler.get_attributes().get('eulerseq')
+    """Converts a rotation value to a quaternion.
+      Args:
+        rot_type: The rotation type (see dm_control.utils.transformations.ROTATIIONS_3D).
+        rot_val: The rotation value.
+        rotation_root: The root element of the model in which the rotation is defined. this is used to find the compiler
+                       containing the `eulerseq` attribute for "euler to quaterniion" conversion.
+    """
+    if rot_type == 'euler':  # euler rotatiion requires and additional eulerseq argument
+      eulerseq = rotation_root.root.compiler.get_attributes().get('eulerseq', 'xyz')
       quat = dm_trans.ROTATION_2QUAT_CONVERTER[rot_type](rot_val, eulerseq=eulerseq)
     else:
       quat = dm_trans.ROTATION_2QUAT_CONVERTER[rot_type](rot_val)
