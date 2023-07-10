@@ -354,23 +354,39 @@ def euler_to_rmat(euler_vec, ordering='ZXZ', full=False):
     The rotation matrix or homogenous transform corresponding to the given
     Euler rotation.
   """
+  # assert input value validity
+  assert 3 in euler_vec.shape[:2], 'Euler vector must have exactly 3 elements (ca be batch)'
+  assert len(ordering) == 3, 'Euler ordering must have exactly 3 elements'
+  assert all(o in 'xyzXYZ' for o in ordering), f'Invalid euler ordering'
 
-  # map from partial rotation orderings to rotation functions
-  rotmap = {'X': rotation_x_axis, 'Y': rotation_y_axis, 'Z': rotation_z_axis}
-  rotations = [rotmap[c] for c in ordering]
-
+  # convert to batch format if necessary
   euler_vec = np.atleast_2d(euler_vec)
 
-  rots = []
-  for i in range(len(rotations)):
-    rots.append(rotations[i](euler_vec[:, i], full))
+  # get rotation matrix for each axis
+  rx = rotation_x_axis(euler_vec[:, 0], full)
+  ry = rotation_y_axis(euler_vec[:, 1], full)
+  rz = rotation_z_axis(euler_vec[:, 2], full)
 
-  if rots[0].ndim == 3:
-    result = _batch_mm(_batch_mm(rots[0], rots[1]), rots[2])
-    return result.squeeze()
-  else:
-    return (rots[0].dot(rots[1])).dot(rots[2])
+  # map from partial rotation orderings to rotation functions
+  rot_func = _batch_mm if rx.ndim == 3 else np.dot  # handle batching if necessary
+  rotmap = {
+    # axis is changed after rotation
+    'x': lambda mat: rot_func(mat, rx),
+    'y': lambda mat: rot_func(mat, ry),
+    'z': lambda mat: rot_func(mat, rz),
 
+    # axis is fixed after rotation
+    'X': lambda mat: rot_func(rx, mat),
+    'Y': lambda mat: rot_func(ry, mat),
+    'Z': lambda mat: rot_func(rz, mat)
+  }
+
+  # start with identity matrix and apply rotations in order
+  rmat = np.eye(4) if full else np.eye(3)
+  for o in ordering:
+    rmat = rotmap[o](rmat)
+
+  return rmat
 
 def quat_conj(quat):
   """Return conjugate of quaternion.
