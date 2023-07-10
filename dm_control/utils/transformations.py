@@ -16,11 +16,76 @@
 
 
 from absl import logging
+import mujoco._functions as mj_transformations
 import numpy as np
 
 # Constants used to determine when a rotation is close to a pole.
 _POLE_LIMIT = (1.0 - 1e-6)
 _TOL = 1e-10
+
+
+def _pythonize_2quat_conversion(func):
+    """Pythonizes a MuJoCo rotation function.
+
+    Args:
+      func: A MuJoCo rotation function.
+      *args: Positional arguments to `func`.
+      **kwargs: Keyword arguments to `func`.
+
+    Returns:
+      An altered version of `func` that does not require a pre-allocated output
+    """
+    def pythonic_mju_2quat_conversion_func(*args, **kwargs):
+        """Pythonized version of `func`."""
+        out = np.zeros(4)
+        func(out, *args, **kwargs)
+        return out
+
+    return pythonic_mju_2quat_conversion_func
+
+
+ROTATION_2QUAT_CONVERTER = {
+  'quat': lambda quat: quat,
+  'axisangle': lambda axang: _pythonize_2quat_conversion(mj_transformations.mju_axisAngle2Quat)(axang[:3], axang[3]),
+  'euler': lambda euler, eulerseq: euler_to_quat(euler, ordering=eulerseq),
+  'xyaxes': lambda xyaxes, _xyaxes_to_quat: _xyaxes_to_quat(xyaxes),
+  'zaxis': lambda z: _pythonize_2quat_conversion(mj_transformations.mju_quatZ2Vec)(z),
+}
+
+ROTATIONS_3D = list(ROTATION_2QUAT_CONVERTER.keys())
+
+
+def _xyaxes_to_quat(xyaxes):
+  """Converts xyaxes to quaternion.
+
+  Args:
+    xyaxes: (np.ndarray) xyaxes with shape (..., 6).
+
+    Returns:
+      quaternion with shape (..., 4).
+
+  """
+  # separate x and y axes
+  x = xyaxes[..., :3]
+  y = xyaxes[..., 3:]
+
+  # get new y that is orthogonal to x
+  proj_y_on_x = np.dot(y, x) * x
+  y = y - proj_y_on_x
+
+  # normalize axes
+  x = x / np.linalg.norm(x, axis=-1, keepdims=True)
+  y = y / np.linalg.norm(y, axis=-1, keepdims=True)
+
+  # get z as cross product
+  # this already follows the right-hand rule and requires no further normalization
+  z = np.cross(x, y)
+
+  # get rotation matrix
+  m = np.stack([x, y, z], axis=-2)
+
+  # convert to quaternion
+  return mat_to_quat(m)
 
 
 def _clip_within_precision(number, low, high, precision=_TOL):

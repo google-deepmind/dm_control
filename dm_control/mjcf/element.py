@@ -30,7 +30,6 @@ from dm_control.mjcf import schema
 from dm_control.mujoco.wrapper import util
 from dm_control.utils import transformations as dm_trans
 from lxml import etree
-import mujoco._functions as mj_trans
 import numpy as np
 
 
@@ -1029,75 +1028,93 @@ class _AttachableElement(_ElementImpl):
              and isinstance(frame_siblings[index], _AttachmentFrame)):
         index += 1
     frame = _AttachmentFrame(frame_parent, self, attachment)
-    if exclude_wrapper_body:
-      self._set_relative_attachment_child_poses(frame, attachment.compiler.get_attributes().get('eulerseq'))
+    if exclude_wrapper_body:  # exlucde wrapper body from attachment. add children directly
+      self._set_relative_attachment_child_poses(frame)
       frame_siblings.extend(frame.all_children())
-    else:
+    else:  # use wrapper body to attach
       frame_siblings.insert(index, frame)
     self.root._attach(attachment, exclude_worldbody=True)  # pylint: disable=protected-access
     return frame
 
-  def _set_relative_attachment_child_poses(self, attachment_frame, eulerseq=None):
+  def _set_relative_attachment_child_poses(self, attachment_frame):
+    """Sets the poses of the children of the attachment frame relative to the attachment site.
+
+    Args:
+      attachment_frame: The attachment frame to which the children are attached.
+    """
+    # handle positions
     self._set_relative_attachment_child_positions(attachment_frame)
-    self._set_relative_attachment_child_rotations(attachment_frame, eulerseq)
+
+    # handle rotations
+    self._set_relative_attachment_child_rotations(attachment_frame)
 
   def _set_relative_attachment_child_positions(self, attachment_frame):
+    """Sets the position of the children of the attachment frame relative to the attachment site.
+
+      Args:
+        attachment_frame: The attachment frame to which the children are attached.
+    """
+    # get the attachment site base position
     base_pos = self.get_attributes().get('pos')
     if base_pos is None:
-      return
+      return  # no position to set. use child position as is (relative to parent)
 
+    # set the position of the children relative to the attachment site
     for child in attachment_frame.all_children():
-      if 'pos' in child.get_attributes():
-        new_pos = child.pos + base_pos
-      else:
-        new_pos = base_pos
+      child_pos = child.get_attributes().get('pos', 0)  # get child pos
+      new_pos = child_pos + base_pos  # shift by base pos
+      self._maybe_set_attribute(child, 'pos', new_pos)  # set new pos
 
-      try:
-        child.pos = new_pos
-      except AttributeError:
-        pass
+  def _set_relative_attachment_child_rotations(self, attachment_frame):
+    """Sets the rotation of the children of the attachment frame relative to the attachment site.
 
+      Args:
+        attachment_frame: The attachment frame to which the children are attached.
+    """
+    # get the attachment site base rotation
+    base_rot_type, base_rot_value = self._get_element_rotation_type_and_value(self)
 
-  def _set_relative_attachment_child_rotations(self, attachment_frame, eulerseq=None):
-    def mj_conversion_func(func, *args, **kwargs):
-      res = np.empty((4, 1))
-      func(*args, res, **kwargs)
-      return res
-
-    rot_converters = {
-      'quat': lambda x: x,
-      'axisangle': lambda x: mj_conversion_func(mj_trans.mju_axisAngle2Quat, x[:3], x[3]),
-      'euler': lambda x: dm_trans.euler_to_quat(x, ordering=eulerseq or 'XYZ'),
-      'xyaxes': None,
-      'zaxis': lambda x: mj_conversion_func(mj_trans.mju_quatZ2Vec, x),
-    }
-    rotations = list(rot_converters.keys())
-
-    base_rot_type, base_rot_value = self._get_element_rotation_type_and_value(self, rotations)
-
+    # if the base rotation is not defined, use child rotation as is (relative to parent)
     if base_rot_type is None:
       return
 
+    # set the rotation of the children relative to the attachment site
     for child in attachment_frame.all_children():
-        child_rot_type, child_rot_value = self._get_element_rotation_type_and_value(child, rotations)
+      # get the child rotation
+      child_rot_type, child_rot_value = self._get_element_rotation_type_and_value(child)
 
-        if child_rot_type is None:
-            try:
-              child.set_attributes(**{base_rot_type: base_rot_value})
-            except AttributeError:
-              pass
-            continue
+      # if the child rotation is not defined, use base rotation as is
+      if child_rot_type is None:
+        self._maybe_set_attribute(child, base_rot_type, base_rot_value)
 
-        base_rot_quat = rot_converters[base_rot_type](base_rot_value)
-        child_rot_quat = rot_converters[child_rot_type](child_rot_value)
+      # convert base and child rotatiions to quaternions.
+      base_rot_quat = self._apply_quat_convert(base_rot_type, base_rot_value, self.root)
+      child_rot_quat = self._apply_quat_convert(child_rot_type, child_rot_value, attachment_frame._attachment.root)
 
-        new_child_quat = dm_trans.quat_mul(base_rot_quat, child_rot_quat)
+      # compose the child rotation with the base rotation
+      new_child_quat = dm_trans.quat_mul(base_rot_quat, child_rot_quat)
 
-        child.set_attributes(**{child_rot_type: None})
-        child.set_attributes(quat=new_child_quat)
+      # set the new rotation on the child
+      # using quaternions prevents additional conversions when loaiding the model
+      child.set_attributes(**{child_rot_type: None})
+      child.set_attributes(quat=new_child_quat)
 
-  def _get_element_rotation_type_and_value(self, element, rotations):
-    rot_types = [rot for rot in rotations if rot in element.get_attributes()]
+  @staticmethod
+  def _maybe_set_attribute(element, attribute, value):
+    """Sets an attribute on an element if the attribute is compatible with the element.
+      Args:
+        element: The element for which to set the attribute.
+        attribute: The attribute to set.
+        value: The value to set the attribute to.
+    """
+    try:
+      element.set_attributes(**{attribute: value})
+    except AttributeError:
+      pass
+
+  @staticmethod
+  def _get_element_rotation_type_and_value(element):
+    rot_types = [rot for rot in dm_trans.ROTATIONS_3D if rot in element.get_attributes()]
 
     if len(rot_types) == 0:
       return None, None
@@ -1108,6 +1125,16 @@ class _AttachableElement(_ElementImpl):
     rot_type = rot_types[0]
 
     return rot_types[0], element.get_attributes()[rot_type]
+
+  @staticmethod
+  def _apply_quat_convert(rot_type, rot_val, rotation_root):
+    if rot_type == 'euler':
+      eulerseq = rotation_root.root.compiler.get_attributes().get('eulerseq')
+      quat = dm_trans.ROTATION_2QUAT_CONVERTER[rot_type](rot_val, eulerseq=eulerseq)
+    else:
+      quat = dm_trans.ROTATION_2QUAT_CONVERTER[rot_type](rot_val)
+
+    return quat
 
 
 class _AttachmentFrame(_ElementImpl):
