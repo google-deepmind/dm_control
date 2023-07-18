@@ -4,18 +4,19 @@ dm-tree==0.1.8
 glfw==1.12.0
 h5py==3.9.0
 labmaze==1.0.6
-lxml==4.9.2
-mock==5.0.2
+lxml==4.9.3
+mock==5.1.0
 mujoco==2.3.6
 nose==1.3.7
 nose-xunitmp==0.4.1
 numpy==1.24.3; python_version == '3.8'
-numpy==1.25.0; python_version >= '3.9'
-Pillow==9.5.0
+numpy==1.25.1; python_version >= '3.9'
+Pillow==10.0.0
 protobuf==3.19.4  # TensorFlow requires protobuf<3.20 (b/182876485)
 pyopengl==3.1.7
 pyparsing==3.1.0
 requests==2.31.0
-scipy==1.10.1
+scipy==1.10.1; python_version == '3.8'
+scipy==1.11.1; python_version >= '3.9'
 setuptools==68.0.0
 tqdm==4.65.0
