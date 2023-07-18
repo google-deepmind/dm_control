@@ -108,7 +108,7 @@ class Humanoid(cmu_humanoid.CMUHumanoidPositionControlled):
     GEOM = 1
     JERSEY = 2
 
-  def _build(self,
+  def _build(self,  # pytype: disable=signature-mismatch  # overriding-parameter-count-checks
              visual,
              marker_rgba,
              walker_id=None,

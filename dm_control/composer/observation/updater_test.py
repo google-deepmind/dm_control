@@ -54,6 +54,17 @@ class BoundedGeneric(observable.Generic):
                               maximum=self._bounds[1])
 
 
+class MyArraySpec(specs.Array):
+  pass
+
+
+class GenericObservableWithMyArraySpec(observable.Generic):
+  @property
+  def array_spec(self):
+    datum = np.array(self(None, None))
+    return MyArraySpec(shape=datum.shape, dtype=datum.dtype)
+
+
 class UpdaterTest(parameterized.TestCase):
 
   @parameterized.parameters(list, tuple)
@@ -162,6 +173,23 @@ class UpdaterTest(parameterized.TestCase):
     self.assertCorrectSpec(spec['repeated'], (5, 2), int, 'repeated')
     self.assertCorrectSpec(spec['matrix'], (4, 2, 3), int, 'matrix')
     self.assertCorrectSpec(spec['sqrt'], (3,), float, 'sqrt')
+
+  def testCustomSpecTypePassedThrough(self):
+    physics = fake_physics.FakePhysics()
+    physics.observables['two_twos'] = GenericObservableWithMyArraySpec(
+        lambda _: [2.0, 2.0], buffer_size=3
+    )
+
+    physics.observables['two_twos'].enabled = True
+
+    observation_updater = updater.Updater(physics.observables)
+    observation_updater.reset(physics=physics, random_state=None)
+
+    spec = observation_updater.observation_spec()
+    self.assertIsInstance(spec['two_twos'], MyArraySpec)
+    self.assertEqual(spec['two_twos'].shape, (3, 2))
+    self.assertEqual(spec['two_twos'].dtype, float)
+    self.assertEqual(spec['two_twos'].name, 'two_twos')
 
   @parameterized.parameters(True, False)
   def testObservation(self, pad_with_initial_value):

@@ -195,6 +195,16 @@ class Updater:
       out_dict = type(enabled_dict)()
       for name, enabled in enabled_dict.items():
 
+        if (enabled.observable.aggregator is None
+            and enabled.observable.array_spec is not None):
+          # If possible, keep the original array spec, just updating the name
+          # and modifying the dimension for buffering. Doing this allows for
+          # custom spec types to be exposed by the environment where possible.
+          out_dict[name] = enabled.observable.array_spec.replace(
+              name=name, shape=enabled.buffer.shape
+          )
+          continue
+
         if isinstance(enabled.observable.array_spec, specs.BoundedArray):
           bounds = (enabled.observable.array_spec.minimum,
                     enabled.observable.array_spec.maximum)

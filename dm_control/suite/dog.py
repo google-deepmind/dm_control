@@ -342,7 +342,7 @@ class Stand(base.Task):
 
   def get_reward(self, physics):
     """Returns the reward, product of reward factors."""
-    return np.product(self.get_reward_factors(physics))
+    return np.prod(self.get_reward_factors(physics))
 
 
 class Move(Stand):
