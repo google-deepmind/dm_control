@@ -89,6 +89,7 @@
             <attribute name="fwdinv" type="keyword" valid_values="disable enable"/>
             <attribute name="sensornoise" type="keyword" valid_values="disable enable"/>
             <attribute name="multiccd" type="keyword" valid_values="disable enable"/>
+            <attribute name="island" type="keyword" valid_values="disable enable"/>
           </attributes>
         </element>
       </children>
