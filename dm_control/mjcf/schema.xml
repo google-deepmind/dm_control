@@ -63,6 +63,8 @@
         <attribute name="solver" type="keyword" valid_values="PGS CG Newton"/>
         <attribute name="iterations" type="int" conflict_allowed="true" conflict_behavior="max"/>
         <attribute name="tolerance" type="float" conflict_allowed="true" conflict_behavior="min"/>
+        <attribute name="ls_iterations" type="int" conflict_allowed="true" conflict_behavior="max"/>
+        <attribute name="ls_tolerance" type="float" conflict_allowed="true" conflict_behavior="min"/>
         <attribute name="noslip_iterations" type="int" conflict_allowed="true" conflict_behavior="max"/>
         <attribute name="noslip_tolerance" type="float" conflict_allowed="true" conflict_behavior="min"/>
         <attribute name="mpr_iterations" type="int" conflict_allowed="true" conflict_behavior="max"/>
