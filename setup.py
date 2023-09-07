@@ -182,12 +182,12 @@ DeepMind's software stack for physics-based simulation and Reinforcement
 Learning environments, using MuJoCo physics.
 
 An **introductory tutorial** for this package is available as a Colaboratory
-notebook: [Open In Google Colab](https://colab.research.google.com/github/deepmind/dm_control/blob/main/tutorial.ipynb).
+notebook: [Open In Google Colab](https://colab.research.google.com/github/google-deepmind/dm_control/blob/main/tutorial.ipynb).
 """,
     long_description_content_type='text/markdown',
     author='DeepMind',
     author_email='mujoco@deepmind.com',
-    url='https://github.com/deepmind/dm_control',
+    url='https://github.com/google-deepmind/dm_control',
     license='Apache License 2.0',
     classifiers=[
         'License :: OSI Approved :: Apache Software License',

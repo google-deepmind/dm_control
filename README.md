@@ -1,11 +1,11 @@
-# `dm_control`: DeepMind Infrastructure for Physics-Based Simulation.
+# `dm_control`: Google DeepMind Infrastructure for Physics-Based Simulation.
 
-DeepMind's software stack for physics-based simulation and Reinforcement
+Google DeepMind's software stack for physics-based simulation and Reinforcement
 Learning environments, using MuJoCo physics.
 
 An **introductory tutorial** for this package is available as a Colaboratory
 notebook:
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/deepmind/dm_control/blob/main/tutorial.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/google-deepmind/dm_control/blob/main/tutorial.ipynb)
 
 ## Overview
 
@@ -84,7 +84,7 @@ at every single Git commit.
 
 If you want to install an unreleased version of `dm_control` directly from our
 repository, you can do so by running `pip install
-git+https://github.com/deepmind/dm_control.git`.
+git+https://github.com/google-deepmind/dm_control.git`.
 
 ## Rendering
 
@@ -126,7 +126,7 @@ setting the environment variable `MUJOCO_EGL_DEVICE_ID=` to the target GPU ID.
     `export DYLD_LIBRARY_PATH=$(brew --prefix)/lib:$DYLD_LIBRARY_PATH`.
 
 [EXT_platform_device]: https://www.khronos.org/registry/EGL/extensions/EXT/EGL_EXT_platform_device.txt
-[Releases page on the MuJoCo GitHub repository]: https://github.com/deepmind/mujoco/releases
+[Releases page on the MuJoCo GitHub repository]: https://github.com/google-deepmind/mujoco/releases
 [MuJoCo website]: https://mujoco.org/
 [publication]: https://doi.org/10.1016/j.simpa.2020.100022
 [`ctypes`]: https://docs.python.org/3/library/ctypes.html
