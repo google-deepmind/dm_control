@@ -57,7 +57,6 @@
         <attribute name="o_solref" type="array" array_type="float" array_size="2"/>
         <attribute name="o_solimp" type="array" array_type="float" array_size="5"/>
         <attribute name="integrator" type="keyword" valid_values="Euler RK4 implicit implicitfast"/>
-        <attribute name="collision" type="keyword" valid_values="all predefined dynamic"/>
         <attribute name="cone" type="keyword" valid_values="pyramidal elliptic"/>
         <attribute name="jacobian" type="keyword" valid_values="dense sparse auto"/>
         <attribute name="solver" type="keyword" valid_values="PGS CG Newton"/>
