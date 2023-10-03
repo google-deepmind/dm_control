@@ -385,6 +385,7 @@
         <geom name="wing_left_membrane" material="membrane" mass="0" pos="-0.0968 0.0432 -0.09" quat="-0.915 0 -0.403 0" mesh="wing_left_membrane"/>
         <geom name="wing_left_membrane_collision" class="collision-membrane" type="ellipsoid" size="0.00306 0.0551 0.114" pos="0.0263 -0.148 -0.0289" quat="-0.685 -0.634 0.265 -0.243"/>
         <geom name="wing_left_fluid" class="wing-fluid" size="0.0005 0.0551 0.114" pos="0.0263 -0.148 -0.0289" quat="-0.685 -0.634 0.265 -0.243"/>
+        <site name="wing_left"/>
         <geom name="wing_left_inertial" class="wing-inertial" size="0.0005 0.0551 0.114" pos="0.0263 -0.148 -0.0289" quat="-0.685 -0.634 0.265 -0.243"/>
       </body>
       <body name="wing_right" childclass="wing" pos="-0.00694 -0.0432 0.0091" quat="0 0.915 0 -0.403">
@@ -396,6 +397,7 @@
         <geom name="wing_right_membrane" material="membrane" mass="0" pos="0.0968 -0.0432 0.09" quat="-0.403 0 0.915 0" mesh="wing_right_membrane"/>
         <geom name="wing_right_membrane_collision" class="collision-membrane" type="ellipsoid" size="0.00306 0.0551 0.114" pos="-0.0263 0.148 0.0289" quat="0.243 0.265 0.634 -0.685"/>
         <geom name="wing_right_fluid" class="wing-fluid" size="0.0005 0.0551 0.114" pos="-0.0263 0.148 0.0289" quat="0.243 0.265 0.634 -0.685"/>
+        <site name="wing_right"/>
         <geom name="wing_right_inertial" class="wing-inertial" size="0.0005 0.0551 0.114" pos="-0.0263 0.148 0.0289" quat="0.243 0.265 0.634 -0.685"/>
       </body>
       <body name="abdomen" childclass="abdomen" pos="-0.0447 -0.000555 0.00428" quat="-0.704 -0.0859 -0.0853 -0.7">
@@ -907,6 +909,8 @@
     <force name="force_tarsus_T2_right" site="tarsus_T2_right"/>
     <force name="force_tarsus_T3_left" site="tarsus_T3_left"/>
     <force name="force_tarsus_T3_right" site="tarsus_T3_right"/>
+    <force name="force_wing_left" site="wing_left"/>
+    <force name="force_wing_right" site="wing_right"/>
     <touch name="touch_claw_T1_left" site="claw_T1_left"/>
     <touch name="touch_claw_T1_right" site="claw_T1_right"/>
     <touch name="touch_claw_T2_left" site="claw_T2_left"/>

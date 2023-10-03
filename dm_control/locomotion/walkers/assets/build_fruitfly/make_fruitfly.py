@@ -1020,6 +1020,7 @@ def main(argv: Sequence[str]):
   model.sensor.add('velocimeter', name='velocimeter', site='thorax')
   touch_sites = []
   force_sites = []
+  # Sites for leg sensors.
   for leg in legs:
     for body in leg.find_all('body'):
       if 'claw' in body.name:
@@ -1033,6 +1034,12 @@ def main(argv: Sequence[str]):
       if 'tarsus_' in body.name:
         site = body.insert('site', -1, name=body.name)
         force_sites.append(site)
+  # Sites for wing sensors.
+  for body in thorax.find_all('body'):
+    if 'wing' in body.name:
+      site = body.insert('site', -1, name=body.name)
+      force_sites.append(site)
+  # Add force and touch sensors.
   for site in force_sites:
     model.sensor.add('force', name='force_' + site.name, site=site)
   for site in touch_sites:

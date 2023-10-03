@@ -233,6 +233,10 @@ class FruitFly(legacy_base.Walker):
         if ('adhere' in actuator.name and
             any_substr_in_str(name_substr['legs'], actuator.name)):
           actuator.remove()
+      # Remove leg sensors.
+      for sensor in root.find_all('sensor'):
+        if any_substr_in_str(name_substr['legs'], sensor.name):
+          sensor.remove()
 
     # Maybe retract and disable wings.
     if not use_wings:
@@ -241,6 +245,10 @@ class FruitFly(legacy_base.Walker):
       for joint in wing_joints:
         root.find('actuator', joint.name).remove()
         self.observable_joints.remove(joint)
+      # Remove wing sensors.
+      for sensor in root.find_all('sensor'):
+        if any_substr_in_str(name_substr['wings'], sensor.name):
+          sensor.remove()
 
     # Maybe disable mouth.
     if not use_mouth:
