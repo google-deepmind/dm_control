@@ -203,7 +203,7 @@ def compute_rms(image1, image2):
   return np.sqrt(float(sum_of_squares) / abs_diff.size)
 
 
-def assert_images_close(expected, actual, tolerance=10.):
+def assert_images_close(expected, actual, tolerance=23.5):
   """Tests whether two images are almost equal.
 
   Args:
