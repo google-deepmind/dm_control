@@ -57,12 +57,13 @@
         <attribute name="o_solref" type="array" array_type="float" array_size="2"/>
         <attribute name="o_solimp" type="array" array_type="float" array_size="5"/>
         <attribute name="integrator" type="keyword" valid_values="Euler RK4 implicit implicitfast"/>
-        <attribute name="collision" type="keyword" valid_values="all predefined dynamic"/>
         <attribute name="cone" type="keyword" valid_values="pyramidal elliptic"/>
         <attribute name="jacobian" type="keyword" valid_values="dense sparse auto"/>
         <attribute name="solver" type="keyword" valid_values="PGS CG Newton"/>
         <attribute name="iterations" type="int" conflict_allowed="true" conflict_behavior="max"/>
         <attribute name="tolerance" type="float" conflict_allowed="true" conflict_behavior="min"/>
+        <attribute name="ls_iterations" type="int" conflict_allowed="true" conflict_behavior="max"/>
+        <attribute name="ls_tolerance" type="float" conflict_allowed="true" conflict_behavior="min"/>
         <attribute name="noslip_iterations" type="int" conflict_allowed="true" conflict_behavior="max"/>
         <attribute name="noslip_tolerance" type="float" conflict_allowed="true" conflict_behavior="min"/>
         <attribute name="mpr_iterations" type="int" conflict_allowed="true" conflict_behavior="max"/>
@@ -89,6 +90,7 @@
             <attribute name="fwdinv" type="keyword" valid_values="disable enable"/>
             <attribute name="sensornoise" type="keyword" valid_values="disable enable"/>
             <attribute name="multiccd" type="keyword" valid_values="disable enable"/>
+            <attribute name="island" type="keyword" valid_values="disable enable"/>
           </attributes>
         </element>
       </children>
@@ -247,12 +249,14 @@
             <attribute name="axis" type="array" array_type="float" array_size="3"/>
             <attribute name="springdamper" type="array" array_type="float" array_size="2"/>
             <attribute name="limited" type="keyword" valid_values="false true auto"/>
+            <attribute name="actuatorfrclimited" type="keyword" valid_values="false true auto"/>
             <attribute name="solreflimit" type="array" array_type="float" array_size="2"/>
             <attribute name="solimplimit" type="array" array_type="float" array_size="5"/>
             <attribute name="solreffriction" type="array" array_type="float" array_size="2"/>
             <attribute name="solimpfriction" type="array" array_type="float" array_size="5"/>
             <attribute name="stiffness" type="float"/>
             <attribute name="range" type="array" array_type="float" array_size="2"/>
+            <attribute name="actuatorfrcrange" type="array" array_type="float" array_size="2"/>
             <attribute name="margin" type="float"/>
             <attribute name="ref" type="float"/>
             <attribute name="springref" type="float"/>
@@ -326,6 +330,12 @@
             <attribute name="xyaxes" type="array" array_type="float" array_size="6"/>
             <attribute name="zaxis" type="array" array_type="float" array_size="3"/>
             <attribute name="euler" type="array" array_type="float" array_size="3"/>
+            <attribute name="resolution" type="array" array_type="int" array_size="2"/>
+            <attribute name="focal" type="array" array_type="float" array_size="2"/>
+            <attribute name="focalpixel" type="array" array_type="float" array_size="2"/>
+            <attribute name="principal" type="array" array_type="float" array_size="2"/>
+            <attribute name="principalpixel" type="array" array_type="float" array_size="2"/>
+            <attribute name="sensorsize" type="array" array_type="float" array_size="2"/>
             <attribute name="user" type="array" array_type="float"/>
           </attributes>
         </element>
@@ -394,12 +404,13 @@
             <attribute name="gear" type="array" array_type="float" array_size="6"/>
             <attribute name="cranklength" type="float"/>
             <attribute name="user" type="array" array_type="float"/>
-            <attribute name="dyntype" type="keyword" valid_values="none integrator filter muscle user"/>
+            <attribute name="dyntype" type="keyword" valid_values="none integrator filter filterexact muscle user"/>
             <attribute name="gaintype" type="keyword" valid_values="fixed affine muscle user"/>
             <attribute name="biastype" type="keyword" valid_values="none affine muscle user"/>
             <attribute name="dynprm" type="array" array_type="float" array_size="10"/>
             <attribute name="gainprm" type="array" array_type="float" array_size="10"/>
             <attribute name="biasprm" type="array" array_type="float" array_size="10"/>
+            <attribute name="actearly" type="keyword" valid_values="false true"/>
           </attributes>
         </element>
         <element name="motor">
@@ -547,12 +558,14 @@
                 <attribute name="axis" type="array" array_type="float" array_size="3"/>
                 <attribute name="springdamper" type="array" array_type="float" array_size="2"/>
                 <attribute name="limited" type="keyword" valid_values="false true"/>
+                <attribute name="actuatorfrclimited" type="keyword" valid_values="false true"/>
                 <attribute name="solreflimit" type="array" array_type="float" array_size="2"/>
                 <attribute name="solimplimit" type="array" array_type="float" array_size="5"/>
                 <attribute name="solreffriction" type="array" array_type="float" array_size="2"/>
                 <attribute name="solimpfriction" type="array" array_type="float" array_size="5"/>
                 <attribute name="stiffness" type="float"/>
                 <attribute name="range" type="array" array_type="float" array_size="2"/>
+                <attribute name="actuatorfrcrange" type="array" array_type="float" array_size="2"/>
                 <attribute name="margin" type="float"/>
                 <attribute name="ref" type="float"/>
                 <attribute name="springref" type="float"/>
@@ -625,6 +638,12 @@
                 <attribute name="xyaxes" type="array" array_type="float" array_size="6"/>
                 <attribute name="zaxis" type="array" array_type="float" array_size="3"/>
                 <attribute name="euler" type="array" array_type="float" array_size="3"/>
+                <attribute name="resolution" type="array" array_type="int" array_size="2"/>
+                <attribute name="focal" type="array" array_type="float" array_size="2"/>
+                <attribute name="focalpixel" type="array" array_type="float" array_size="2"/>
+                <attribute name="principal" type="array" array_type="float" array_size="2"/>
+                <attribute name="principalpixel" type="array" array_type="float" array_size="2"/>
+                <attribute name="sensorsize" type="array" array_type="float" array_size="2"/>
                 <attribute name="user" type="array" array_type="float"/>
               </attributes>
             </element>
@@ -690,12 +709,13 @@
                 <attribute name="cranklength" type="float"/>
                 <attribute name="user" type="array" array_type="float"/>
                 <attribute name="actdim" type="int"/>
-                <attribute name="dyntype" type="keyword" valid_values="none integrator filter muscle user"/>
+                <attribute name="dyntype" type="keyword" valid_values="none integrator filter filterexact muscle user"/>
                 <attribute name="gaintype" type="keyword" valid_values="fixed affine muscle user"/>
                 <attribute name="biastype" type="keyword" valid_values="none affine muscle user"/>
                 <attribute name="dynprm" type="array" array_type="float" array_size="10"/>
                 <attribute name="gainprm" type="array" array_type="float" array_size="10"/>
                 <attribute name="biasprm" type="array" array_type="float" array_size="10"/>
+                <attribute name="actearly" type="keyword" valid_values="false true"/>
               </attributes>
             </element>
             <element name="motor">
@@ -1007,6 +1027,12 @@
             <attribute name="xyaxes" type="array" array_type="float" array_size="6"/>
             <attribute name="zaxis" type="array" array_type="float" array_size="3"/>
             <attribute name="euler" type="array" array_type="float" array_size="3"/>
+            <attribute name="resolution" type="array" array_type="int" array_size="2"/>
+            <attribute name="focal" type="array" array_type="float" array_size="2"/>
+            <attribute name="focalpixel" type="array" array_type="float" array_size="2"/>
+            <attribute name="principal" type="array" array_type="float" array_size="2"/>
+            <attribute name="principalpixel" type="array" array_type="float" array_size="2"/>
+            <attribute name="sensorsize" type="array" array_type="float" array_size="2"/>
             <attribute name="user" type="array" array_type="float"/>
           </attributes>
         </element>
@@ -1287,6 +1313,12 @@
                 <attribute name="xyaxes" type="array" array_type="float" array_size="6"/>
                 <attribute name="zaxis" type="array" array_type="float" array_size="3"/>
                 <attribute name="euler" type="array" array_type="float" array_size="3"/>
+                <attribute name="resolution" type="array" array_type="int" array_size="2"/>
+                <attribute name="focal" type="array" array_type="float" array_size="2"/>
+                <attribute name="focalpixel" type="array" array_type="float" array_size="2"/>
+                <attribute name="principal" type="array" array_type="float" array_size="2"/>
+                <attribute name="principalpixel" type="array" array_type="float" array_size="2"/>
+                <attribute name="sensorsize" type="array" array_type="float" array_size="2"/>
                 <attribute name="user" type="array" array_type="float"/>
               </attributes>
             </element>
@@ -1602,12 +1634,13 @@
             <attribute name="cranksite" type="reference" reference_namespace="site"/>
             <attribute name="slidersite" type="reference" reference_namespace="site"/>
             <attribute name="user" type="array" array_type="float"/>
-            <attribute name="dyntype" type="keyword" valid_values="none integrator filter muscle user"/>
+            <attribute name="dyntype" type="keyword" valid_values="none integrator filter filterexact muscle user"/>
             <attribute name="gaintype" type="keyword" valid_values="fixed affine muscle user"/>
             <attribute name="biastype" type="keyword" valid_values="none affine muscle user"/>
             <attribute name="dynprm" type="array" array_type="float" array_size="10"/>
             <attribute name="gainprm" type="array" array_type="float" array_size="10"/>
             <attribute name="biasprm" type="array" array_type="float" array_size="10"/>
+            <attribute name="actearly" type="keyword" valid_values="false true"/>
           </attributes>
         </element>
         <element name="motor" repeated="true" namespace="actuator">
@@ -1961,6 +1994,15 @@
             <attribute name="cutoff" type="float"/>
             <attribute name="user" type="array" array_type="float"/>
             <attribute name="actuator" type="reference" required="true"/>
+          </attributes>
+        </element>
+        <element name="jointactuatorfrc" repeated="true" namespace="sensor">
+          <attributes>
+            <attribute name="name" type="identifier"/>
+            <attribute name="noise" type="float"/>
+            <attribute name="cutoff" type="float"/>
+            <attribute name="user" type="array" array_type="float"/>
+            <attribute name="joint" type="reference" required="true"/>
           </attributes>
         </element>
         <element name="ballquat" repeated="true" namespace="sensor">

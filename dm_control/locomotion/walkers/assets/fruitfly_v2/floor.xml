@@ -1,0 +1,16 @@
+<mujoco>
+
+  <asset>
+    <texture name="grid" type="2d" builtin="checker" rgb1=".1 .2 .3" rgb2=".2 .3 .4" width="300" height="300" mark="edge" markrgb=".2 .3 .4"/>
+    <material name="grid" texture="grid" texrepeat="1 1" texuniform="true" reflectance=".2"/>
+    <texture name="skybox" type="skybox" builtin="gradient" rgb1=".4 .6 .8" rgb2="0 0 0"
+           width="100" height="100"/>
+  </asset>
+
+  <include file="fruitfly.xml"/>
+
+  <worldbody>
+    <geom name="floor" type="plane" size="5 5 .1" material="grid" pos="0 0 -.132" solref="0.0002 1"/>
+  </worldbody>
+
+</mujoco>

@@ -1,0 +1,436 @@
+<mujoco model="MuJoCo Model">
+  <compiler angle="radian" autolimits="true"/>
+  <default/>
+  <asset>
+    <material name="body" shininess="0.6" rgba="0.673848 0.35007 0.142536 1"/>
+    <material name="red" shininess="0.691873" rgba="0.8 0.0279151 0.00154471 1"/>
+    <material name="ocelli" shininess="1" rgba="0.128239 0.0487802 0.0154468 1"/>
+    <material name="black" shininess="0.727208" rgba="0 0 0 1"/>
+    <material name="bristle-brown" shininess="0.90742" rgba="0 0 0 1"/>
+    <material name="lower" shininess="0.6" rgba="0.799103 0.610496 0.38643 1"/>
+    <material name="brown" shininess="0.6" rgba="0.201556 0.0781874 0.0262412 1"/>
+    <material name="membrane" specular="0.620141" shininess="0.90742" rgba="0.538735 0.686294 0.8 1"/>
+    <material name="base" shininess="0.6" rgba="0.507069 0.507069 0.507069 1"/>
+    <mesh name="head_body" file="head_body.msh"/>
+    <mesh name="head_red" file="head_red.msh"/>
+    <mesh name="head_ocelli" file="head_ocelli.msh"/>
+    <mesh name="head_black" file="head_black.msh"/>
+    <mesh name="haustellum_body" file="haustellum_body.msh"/>
+    <mesh name="haustellum_black" file="haustellum_black.msh"/>
+    <mesh name="rostrum_body" file="rostrum_body.msh"/>
+    <mesh name="rostrum_bristle-brown" file="rostrum_bristle-brown.msh"/>
+    <mesh name="labrum_left_lower" file="labrum_left_lower.msh"/>
+    <mesh name="wing_left_brown" file="wing_left_brown.msh"/>
+    <mesh name="wing_left_membrane" file="wing_left_membrane.msh"/>
+    <mesh name="antenna_left_body" file="antenna_left_body.msh"/>
+    <mesh name="antenna_left_black" file="antenna_left_black.msh"/>
+    <mesh name="haltere_left_body" file="haltere_left_body.msh"/>
+    <mesh name="labrum_right_lower" file="labrum_right_lower.msh"/>
+    <mesh name="wing_right_brown" file="wing_right_brown.msh"/>
+    <mesh name="wing_right_membrane" file="wing_right_membrane.msh"/>
+    <mesh name="antenna_right_body" file="antenna_right_body.msh"/>
+    <mesh name="antenna_right_black" file="antenna_right_black.msh"/>
+    <mesh name="haltere_right_body" file="haltere_right_body.msh"/>
+    <mesh name="thorax_body" file="thorax_body.msh"/>
+    <mesh name="thorax_black" file="thorax_black.msh"/>
+    <mesh name="abdomen_1_body" file="abdomen_1_body.msh"/>
+    <mesh name="abdomen_1_lower" file="abdomen_1_lower.msh"/>
+    <mesh name="abdomen_2_body" file="abdomen_2_body.msh"/>
+    <mesh name="abdomen_2_lower" file="abdomen_2_lower.msh"/>
+    <mesh name="abdomen_3_body" file="abdomen_3_body.msh"/>
+    <mesh name="abdomen_3_lower" file="abdomen_3_lower.msh"/>
+    <mesh name="abdomen_4_body" file="abdomen_4_body.msh"/>
+    <mesh name="abdomen_4_lower" file="abdomen_4_lower.msh"/>
+    <mesh name="abdomen_5_body" file="abdomen_5_body.msh"/>
+    <mesh name="abdomen_5_lower" file="abdomen_5_lower.msh"/>
+    <mesh name="abdomen_6_body" file="abdomen_6_body.msh"/>
+    <mesh name="abdomen_6_lower" file="abdomen_6_lower.msh"/>
+    <mesh name="abdomen_7_body" file="abdomen_7_body.msh"/>
+    <mesh name="abdomen_7_lower" file="abdomen_7_lower.msh"/>
+    <mesh name="abdomen_8_body" file="abdomen_8_body.msh"/>
+    <mesh name="tibia_T1_left_body" file="tibia_T1_left_body.msh"/>
+    <mesh name="tarsus_T1_1_left_body" file="tarsus_T1_1_left_body.msh"/>
+    <mesh name="tarsus_T1_2_left_body" file="tarsus_T1_2_left_body.msh"/>
+    <mesh name="tarsus_T1_3_left_body" file="tarsus_T1_3_left_body.msh"/>
+    <mesh name="tarsus_T1_4_left_body" file="tarsus_T1_4_left_body.msh"/>
+    <mesh name="tarsal_claw_T1_left_brown" file="tarsal_claw_T1_left_brown.msh"/>
+    <mesh name="tarsus_T2_2_left_body" file="tarsus_T2_2_left_body.msh"/>
+    <mesh name="tarsus_T2_3_left_body" file="tarsus_T2_3_left_body.msh"/>
+    <mesh name="tarsus_T2_4_left_body" file="tarsus_T2_4_left_body.msh"/>
+    <mesh name="tarsal_claw_T2_left_brown" file="tarsal_claw_T2_left_brown.msh"/>
+    <mesh name="tarsus_T2_1_left_body" file="tarsus_T2_1_left_body.msh"/>
+    <mesh name="tarsus_T3_2_left_body" file="tarsus_T3_2_left_body.msh"/>
+    <mesh name="tarsus_T3_3_left_body" file="tarsus_T3_3_left_body.msh"/>
+    <mesh name="tarsus_T3_4_left_body" file="tarsus_T3_4_left_body.msh"/>
+    <mesh name="tarsal_claw_T3_left_brown" file="tarsal_claw_T3_left_brown.msh"/>
+    <mesh name="tarsus_T3_1_left_body" file="tarsus_T3_1_left_body.msh"/>
+    <mesh name="tibia_T2_left_body" file="tibia_T2_left_body.msh"/>
+    <mesh name="tibia_T3_left_body" file="tibia_T3_left_body.msh"/>
+    <mesh name="femur_T1_left_body" file="femur_T1_left_body.msh"/>
+    <mesh name="femur_T2_left_body" file="femur_T2_left_body.msh"/>
+    <mesh name="femur_T3_left_body" file="femur_T3_left_body.msh"/>
+    <mesh name="femur_T1_right_body" file="femur_T1_right_body.msh"/>
+    <mesh name="tibia_T1_right_body" file="tibia_T1_right_body.msh"/>
+    <mesh name="tarsus_T1_1_right_body" file="tarsus_T1_1_right_body.msh"/>
+    <mesh name="tarsus_T1_2_right_body" file="tarsus_T1_2_right_body.msh"/>
+    <mesh name="tarsus_T1_3_right_body" file="tarsus_T1_3_right_body.msh"/>
+    <mesh name="tarsus_T1_4_right_body" file="tarsus_T1_4_right_body.msh"/>
+    <mesh name="tarsal_claw_T1_right_brown" file="tarsal_claw_T1_right_brown.msh"/>
+    <mesh name="femur_T2_right_body" file="femur_T2_right_body.msh"/>
+    <mesh name="tibia_T2_right_body" file="tibia_T2_right_body.msh"/>
+    <mesh name="tarsus_T2_1_right_body" file="tarsus_T2_1_right_body.msh"/>
+    <mesh name="tarsus_T2_2_right_body" file="tarsus_T2_2_right_body.msh"/>
+    <mesh name="tarsus_T2_3_right_body" file="tarsus_T2_3_right_body.msh"/>
+    <mesh name="tarsus_T2_4_right_body" file="tarsus_T2_4_right_body.msh"/>
+    <mesh name="tarsal_claw_T2_right_brown" file="tarsal_claw_T2_right_brown.msh"/>
+    <mesh name="femur_T3_right_body" file="femur_T3_right_body.msh"/>
+    <mesh name="tibia_T3_right_body" file="tibia_T3_right_body.msh"/>
+    <mesh name="tarsus_T3_1_right_body" file="tarsus_T3_1_right_body.msh"/>
+    <mesh name="tarsus_T3_2_right_body" file="tarsus_T3_2_right_body.msh"/>
+    <mesh name="tarsus_T3_3_right_body" file="tarsus_T3_3_right_body.msh"/>
+    <mesh name="tarsus_T3_4_right_body" file="tarsus_T3_4_right_body.msh"/>
+    <mesh name="tarsal_claw_T3_right_brown" file="tarsal_claw_T3_right_brown.msh"/>
+    <mesh name="coxa_T1_left_body" file="coxa_T1_left_body.msh"/>
+    <mesh name="coxa_T1_right_body" file="coxa_T1_right_body.msh"/>
+    <mesh name="coxa_T2_left_body" file="coxa_T2_left_body.msh"/>
+    <mesh name="coxa_T2_right_body" file="coxa_T2_right_body.msh"/>
+    <mesh name="coxa_T3_left_body" file="coxa_T3_left_body.msh"/>
+    <mesh name="coxa_T3_right_body" file="coxa_T3_right_body.msh"/>
+  </asset>
+  <worldbody>
+    <body name="Armature" pos="0 0 0" gravcomp="0">
+      <joint type="free"/>
+      <geom name="thorax_body" pos="-5.96236e-07 -2.90778e-08 -1.10067e-05" quat="1 2.52397e-07 1.11218e-08 2.46676e-07" type="mesh" material="body" mesh="thorax_body"/>
+      <geom name="thorax_black" pos="-5.96236e-07 -2.90778e-08 -1.10067e-05" quat="1 2.52397e-07 1.11218e-08 2.46676e-07" type="mesh" material="black" mesh="thorax_black"/>
+      <body name="head_Armature" pos="-0.646171 -3.81138e-06 1.20046" quat="0.701739 -0.0869603 -0.0869602 0.701739" gravcomp="0">
+        <joint name="rx_head_Armature" pos="0 0 0" axis="1 0 0" range="-0.788889 0.439823"/>
+        <joint name="ry_head_Armature" pos="0 0 0" axis="0 1 0" range="-3.14159 3.14159"/>
+        <joint name="rz_head_Armature" pos="0 0 0" axis="0 0 1" range="-0.785398 0.785398"/>
+        <geom name="head_body" pos="4.1082e-06 -0.333597 -1.32189" quat="0.701739 0.0869605 0.08696 -0.701739" type="mesh" material="body" mesh="head_body"/>
+        <geom name="head_red" pos="4.1082e-06 -0.333597 -1.32189" quat="0.701739 0.0869605 0.08696 -0.701739" type="mesh" material="red" mesh="head_red"/>
+        <geom name="head_ocelli" pos="4.1082e-06 -0.333597 -1.32189" quat="0.701739 0.0869605 0.08696 -0.701739" type="mesh" material="ocelli" mesh="head_ocelli"/>
+        <geom name="head_black" pos="4.1082e-06 -0.333597 -1.32189" quat="0.701739 0.0869605 0.08696 -0.701739" type="mesh" material="black" mesh="head_black"/>
+        <body name="rostrum_Armature" pos="5.41229e-08 0.367846 -0.235226" quat="2.20467e-07 -1.20811e-07 0.191981 -0.981399" gravcomp="0">
+          <joint name="rx_rostrum_Armature" pos="0 0 0" axis="1 0 0" range="-1.24267 0.18326"/>
+          <geom name="rostrum_body" pos="-3.99843e-06 1.05921 -0.742242" quat="0.705381 0.0493778 -0.0493776 0.705381" type="mesh" material="body" mesh="rostrum_body"/>
+          <geom name="rostrum_bristle-brown" pos="-3.99843e-06 1.05921 -0.742242" quat="0.705381 0.0493778 -0.0493776 0.705381" type="mesh" material="bristle-brown" mesh="rostrum_bristle-brown"/>
+          <body name="haustellum_Armature" pos="0 0.377172 -2.23529e-08" quat="2.32851e-07 -1.55582e-07 -0.346739 0.937962" gravcomp="0">
+            <joint name="rx_haustellum_Armature" pos="0 0 0" axis="1 0 0" range="-1.59349 0.476475"/>
+            <joint name="rz_haustellum_Armature" pos="0 0 0" axis="0 0 1" range="-0.0872665 0.0872665"/>
+            <geom name="haustellum_body" pos="4.23611e-06 -0.0352436 -1.0074" quat="0.678741 0.198269 0.198269 -0.678741" type="mesh" material="body" mesh="haustellum_body"/>
+            <geom name="haustellum_black" pos="4.23611e-06 -0.0352436 -1.0074" quat="0.678741 0.198269 0.198269 -0.678741" type="mesh" material="black" mesh="haustellum_black"/>
+            <body name="labrum_right_Armature" pos="0 0.208028 -2.98049e-08" quat="0.698855 0.00274014 0.641511 -0.31632" gravcomp="0">
+              <joint name="rx_labrum_right_Armature" pos="0 0 0" axis="1 0 0" range="-0.00523639 1.0472"/>
+              <geom name="labrum_right_lower" pos="1.01173 0.210407 -0.0785558" quat="0.816775 0.509405 -0.236002 -0.132994" type="mesh" material="lower" mesh="labrum_right_lower"/>
+            </body>
+            <body name="labrum_left_Armature" pos="0 0.208028 -2.98049e-08" quat="0.740864 -0.0141766 -0.590965 0.318873" gravcomp="0">
+              <joint name="rx_labrum_left_Armature" pos="0 0 0" axis="1 0 0" range="-0.00523599 1.0472"/>
+              <geom name="labrum_left_lower" pos="-0.992041 0.207131 -0.216776" quat="0.166443 -0.181377 0.494402 -0.833646" type="mesh" material="lower" mesh="labrum_left_lower"/>
+            </body>
+          </body>
+        </body>
+        <body name="antenna_left_Armature" pos="-0.0794621 0.377989 0.12857" quat="0.784565 -0.589584 -0.0127756 0.191535" gravcomp="0">
+          <joint name="rx_antenna_left_Armature" pos="0 0 0" axis="1 0 0" range="-0.174533 0.523599"/>
+          <joint name="ry_antenna_left_Armature" pos="0 0 0" axis="0 1 0" range="-0.0872665 0.0872665"/>
+          <joint name="rz_antenna_left_Armature" pos="0 0 0" axis="0 0 1" range="-0.436332 0.785398"/>
+          <geom name="antenna_left_body" pos="0.147539 1.16161 -1.11597" quat="0.363771 0.489651 0.474269 -0.634807" type="mesh" material="body" mesh="antenna_left_body"/>
+          <geom name="antenna_left_black" pos="0.147539 1.16161 -1.11597" quat="0.363771 0.489651 0.474269 -0.634807" type="mesh" material="black" mesh="antenna_left_black"/>
+        </body>
+        <body name="antenna_right_Armature" pos="0.0861487 0.380006 0.129319" quat="0.78123 -0.598147 0.0400426 -0.174059" gravcomp="0">
+          <joint name="rx_antenna_right_Armature" pos="0 0 0" axis="1 0 0" range="-0.174533 0.523599"/>
+          <joint name="ry_antenna_right_Armature" pos="0 0 0" axis="0 1 0" range="-0.0872665 0.0872665"/>
+          <joint name="rz_antenna_right_Armature" pos="0 0 0" axis="0 0 1" range="-0.785398 0.436332"/>
+          <geom name="antenna_right_body" pos="-0.0637767 1.19746 -1.08843" quat="0.62183 0.500643 0.474716 -0.370579" type="mesh" material="body" mesh="antenna_right_body"/>
+          <geom name="antenna_right_black" pos="-0.0637767 1.19746 -1.08843" quat="0.62183 0.500643 0.474716 -0.370579" type="mesh" material="black" mesh="antenna_right_black"/>
+        </body>
+      </body>
+      <body name="abdomen_1_Armature" pos="0.367417 0.00555467 1.27379" quat="0.699789 0.0852962 -0.0859183 -0.704016" gravcomp="0">
+        <joint name="rx_abdomen_1_Armature" pos="0 0 0" axis="1 0 0" range="-0.139626 0.0872665"/>
+        <joint name="rz_abdomen_1_Armature" pos="0 0 0" axis="0 0 1" range="-0.0872665 0.0872665"/>
+        <geom name="abdomen_1_body" pos="0.00758328 -0.662721 -1.1482" quat="0.699791 -0.0852781 0.0858996 0.704018" type="mesh" material="body" mesh="abdomen_1_body"/>
+        <geom name="abdomen_1_lower" pos="0.00758328 -0.662721 -1.1482" quat="0.699791 -0.0852781 0.0858996 0.704018" type="mesh" material="lower" mesh="abdomen_1_lower"/>
+        <body name="abdomen_2_Armature" pos="1.35333e-09 0.11931 3.53975e-09" quat="0.981479 -0.191566 -0.000269392 0.00143801" gravcomp="0">
+          <joint name="rx_abdomen_2_Armature" pos="0 0 0" axis="1 0 0" range="-0.174533 0.0872665"/>
+          <joint name="rz_abdomen_2_Armature" pos="0 0 0" axis="0 0 1" range="-0.0872665 0.0872665"/>
+          <geom name="abdomen_2_body" pos="0.00532031 -0.292859 -1.358" quat="0.704156 0.0506763 -0.0502516 0.70645" type="mesh" material="body" mesh="abdomen_2_body"/>
+          <geom name="abdomen_2_lower" pos="0.00532031 -0.292859 -1.358" quat="0.704156 0.0506763 -0.0502516 0.70645" type="mesh" material="lower" mesh="abdomen_2_lower"/>
+          <body name="abdomen_3_Armature" pos="3.49246e-10 0.212109 -1.6768e-08" quat="0.995861 -0.0908851 6.68992e-05 0.000525348" gravcomp="0">
+            <joint name="rx_abdomen_3_Armature" pos="0 0 0" axis="1 0 0" range="-0.20944 0.0872665"/>
+            <joint name="rz_abdomen_3_Armature" pos="0 0 0" axis="0 0 1" range="-0.0872665 0.0872665"/>
+            <geom name="abdomen_3_body" pos="0.00510859 -0.250825 -1.42697" quat="0.697004 0.114385 -0.114318 0.698593" type="mesh" material="body" mesh="abdomen_3_body"/>
+            <geom name="abdomen_3_lower" pos="0.00510859 -0.250825 -1.42697" quat="0.697004 0.114385 -0.114318 0.698593" type="mesh" material="lower" mesh="abdomen_3_lower"/>
+            <body name="abdomen_4_Armature" pos="1.28057e-09 0.312597 1.99433e-08" quat="0.999449 -0.0331839 0.000147406 -0.000229227" gravcomp="0">
+              <joint name="rx_abdomen_4_Armature" pos="0 0 0" axis="1 0 0" range="-0.261799 0.0872665"/>
+              <joint name="rz_abdomen_4_Armature" pos="0 0 0" axis="0 0 1" range="-0.0872665 0.0872665"/>
+              <geom name="abdomen_4_body" pos="0.0057708 -0.467575 -1.46118" quat="0.69265 0.137362 -0.137502 0.694594" type="mesh" material="body" mesh="abdomen_4_body"/>
+              <geom name="abdomen_4_lower" pos="0.0057708 -0.467575 -1.46118" quat="0.69265 0.137362 -0.137502 0.694594" type="mesh" material="lower" mesh="abdomen_4_lower"/>
+              <body name="abdomen_5_Armature" pos="9.02219e-10 0.261805 7.33821e-08" quat="0.999323 -0.0367989 -4.71558e-05 -0.000327346" gravcomp="0">
+                <joint name="rx_abdomen_5_Armature" pos="0 0 0" axis="1 0 0" range="-0.261799 0.0872665"/>
+                <joint name="rz_abdomen_5_Armature" pos="0 0 0" axis="0 0 1" range="-0.0872665 0.0872665"/>
+                <geom name="abdomen_5_body" pos="0.00607228 -0.619995 -1.51084" quat="0.686909 0.162821 -0.162876 0.689287" type="mesh" material="body" mesh="abdomen_5_body"/>
+                <geom name="abdomen_5_lower" pos="0.00607228 -0.619995 -1.51084" quat="0.686909 0.162821 -0.162876 0.689287" type="mesh" material="lower" mesh="abdomen_5_lower"/>
+                <body name="abdomen_6_Armature" pos="0 0.212885 -3.65746e-08" quat="0.997804 -0.0662406 0.00015616 -0.000350893" gravcomp="0">
+                  <joint name="rx_abdomen_6_Armature" pos="0 0 0" axis="1 0 0" range="-0.349066 0.0872665"/>
+                  <joint name="rz_abdomen_6_Armature" pos="0 0 0" axis="0 0 1" range="-0.0872665 0.0872665"/>
+                  <geom name="abdomen_6_body" pos="0.00707312 -0.625912 -1.60766" quat="0.674352 0.2079 -0.208214 0.677254" type="mesh" material="body" mesh="abdomen_6_body"/>
+                  <geom name="abdomen_6_lower" pos="0.00707312 -0.625912 -1.60766" quat="0.674352 0.2079 -0.208214 0.677254" type="mesh" material="lower" mesh="abdomen_6_lower"/>
+                  <body name="abdomen_7_Armature" pos="-4.65661e-10 0.182241 6.66346e-08" quat="0.994758 -0.102256 -1.79073e-06 -0.000187341" gravcomp="0">
+                    <joint name="rx_abdomen_7_Armature" pos="0 0 0" axis="1 0 0" range="-0.261799 0.0872665"/>
+                    <joint name="rz_abdomen_7_Armature" pos="0 0 0" axis="0 0 1" range="-0.0872665 0.0872665"/>
+                    <geom name="abdomen_8_body" pos="0.00730661 -0.464235 -1.73844" quat="0.649436 0.275797 -0.276325 0.652543" type="mesh" material="body" mesh="abdomen_8_body"/>
+                    <geom name="abdomen_7_body" pos="0.00730661 -0.464235 -1.73844" quat="0.649436 0.275797 -0.276325 0.652543" type="mesh" material="body" mesh="abdomen_7_body"/>
+                    <geom name="abdomen_7_lower" pos="0.00730661 -0.464235 -1.73844" quat="0.649436 0.275797 -0.276325 0.652543" type="mesh" material="lower" mesh="abdomen_7_lower"/>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+      <body name="coxa_T1_left_Armature" pos="-0.39634 -0.210747 0.958864" quat="-0.759521 0.417898 -0.208286 0.452886" gravcomp="0">
+        <joint name="rx_coxa_T1_left_Armature" pos="0 0 0" axis="1 0 0" range="-2.00001 1.22173"/>
+        <joint name="ry_coxa_T1_left_Armature" pos="0 0 0" axis="0 1 0" range="-0.5 0.5"/>
+        <joint name="rz_coxa_T1_left_Armature" pos="0 0 0" axis="0 0 1" range="-2.25001 1"/>
+        <geom name="coxa_T1_left_body" pos="-0.0418754 1.04395 -0.171325" quat="0.759522 0.417896 -0.208286 0.452886" type="mesh" material="body" mesh="coxa_T1_left_body"/>
+        <body name="femur_T1_left_Armature" pos="-3.72529e-09 0.436553 1.11759e-08" quat="0.116443 0.109793 0.22377 -0.961412" gravcomp="0">
+          <joint name="rx_femur_T1_left_Armature" pos="0 0 0" axis="1 0 0" range="-2.75401 0.299999"/>
+          <joint name="rz_femur_T1_left_Armature" pos="0 0 0" axis="0 0 1" range="-1.0664 1.34041"/>
+          <geom name="femur_T1_left_body" pos="-0.0213222 -0.472191 -0.420262" quat="0.347696 -0.0641738 -0.257274 -0.899333" type="mesh" material="body" mesh="femur_T1_left_body"/>
+          <body name="tibia_T1_left_Armature" pos="4.47035e-08 0.697058 0" quat="0.711671 -0.699206 -0.0332772 -0.059392" gravcomp="0">
+            <joint name="rx_tibia_T1_left_Armature" pos="0 0 0" axis="1 0 0" range="-1.48353 1.5708"/>
+            <joint name="rz_tibia_T1_left_Armature" pos="0 0 0" axis="0 0 1" range="-0.102975 0"/>
+            <geom name="tibia_T1_left_body" pos="-0.0315034 0.396057 -1.17744" quat="0.354292 0.182793 0.453483 -0.797131" type="mesh" material="body" mesh="tibia_T1_left_body"/>
+            <body name="tarsus_T1_1_left_Armature" pos="-2.98023e-08 0.510421 -5.96046e-08" quat="0.998093 -0.0389978 0.0473711 -0.00674104" gravcomp="0">
+              <joint name="rx_tarsus_T1_1_left_Armature" pos="0 0 0" axis="1 0 0" range="-1.5708 0"/>
+              <joint name="rz_tarsus_T1_1_left_Armature" pos="0 0 0" axis="0 0 1" range="-0.148353 0.148353"/>
+              <geom name="tarsus_T1_1_left_body" pos="0.0813241 -0.0219029 -1.1804" quat="0.373343 0.230965 0.468153 -0.766878" type="mesh" material="body" mesh="tarsus_T1_1_left_body"/>
+              <body name="tarsus_T1_2_left_Armature" pos="7.96281e-08 0.236157 -2.98023e-08" quat="0.999636 0.0203708 -0.0170818 -0.00451269" gravcomp="0">
+                <joint name="rx_tarsus_T1_2_left_Armature" pos="0 0 0" axis="1 0 0" range="-0.174533 0.349066"/>
+                <joint name="rz_tarsus_T1_2_left_Armature" pos="0 0 0" axis="0 0 1" range="-0.0872665 0.0872665"/>
+                <geom name="tarsus_T1_2_left_body" pos="0.0436857 -0.305415 -1.17105" quat="0.373375 0.208064 0.45978 -0.778397" type="mesh" material="body" mesh="tarsus_T1_2_left_body"/>
+                <body name="tarsus_T1_3_left_Armature" pos="-9.54606e-08 0.135885 2.98023e-08" quat="0.999767 -0.00871562 -0.00676693 0.0185631" gravcomp="0">
+                  <joint name="rx_tarsus_T1_3_left_Armature" pos="0 0 0" axis="1 0 0" range="-0.174533 0.349066"/>
+                  <joint name="rz_tarsus_T1_3_left_Armature" pos="0 0 0" axis="0 0 1" range="-0.0872665 0.0872665"/>
+                  <geom name="tarsus_T1_3_left_body" pos="0.0117527 -0.421844 -1.17895" quat="0.353914 0.214537 0.465121 -0.782548" type="mesh" material="body" mesh="tarsus_T1_3_left_body"/>
+                  <body name="tarsus_T1_4_left_Armature" pos="4.60423e-08 0.0909902 8.56817e-08" quat="0.99772 -0.0556038 0.0370596 -0.00943269" gravcomp="0">
+                    <joint name="rx_tarsus_T1_4_left_Armature" pos="0 0 0" axis="1 0 0" range="-0.174533 0.349066"/>
+                    <joint name="rz_tarsus_T1_4_left_Armature" pos="0 0 0" axis="0 0 1" range="-0.0872665 0.0872665"/>
+                    <geom name="tarsus_T1_4_left_body" pos="0.109432 -0.377767 -1.22409" quat="0.365797 0.25834 0.496481 -0.743613" type="mesh" material="body" mesh="tarsus_T1_4_left_body"/>
+                    <geom name="tarsal_claw_T1_left_brown" pos="0.109432 -0.377767 -1.22409" quat="0.365797 0.25834 0.496481 -0.743613" type="mesh" material="brown" mesh="tarsal_claw_T1_left_brown"/>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+      <body name="coxa_T1_right_Armature" pos="-0.396754 0.208078 0.958767" quat="0.443949 -0.204807 0.44581 -0.749812" gravcomp="0">
+        <joint name="rx_coxa_T1_right_Armature" pos="0 0 0" axis="1 0 0" range="-2.00001 1.22173"/>
+        <joint name="ry_coxa_T1_right_Armature" pos="0 0 0" axis="0 1 0" range="-0.5 0.5"/>
+        <joint name="rz_coxa_T1_right_Armature" pos="0 0 0" axis="0 0 1" range="-1.00007 2.25147"/>
+        <geom name="coxa_T1_right_body" pos="0.0544985 1.05037 -0.117065" quat="0.443949 0.204806 -0.44581 0.749812" type="mesh" material="body" mesh="coxa_T1_right_body"/>
+        <body name="femur_T1_right_Armature" pos="1.86265e-08 0.435674 -3.72529e-09" quat="0.106725 0.0810184 -0.238401 0.961879" gravcomp="0">
+          <joint name="rx_femur_T1_right_Armature" pos="0 0 0" axis="1 0 0" range="-2.75401 0.299999"/>
+          <joint name="rz_femur_T1_right_Armature" pos="0 0 0" axis="0 0 1" range="-1.34041 1.0664"/>
+          <geom name="femur_T1_right_body" pos="0.0257169 -0.492448 -0.389059" quat="0.891487 -0.264158 -0.0779867 -0.359709" type="mesh" material="body" mesh="femur_T1_right_body"/>
+          <body name="tibia_T1_right_Armature" pos="-1.11759e-08 0.698122 -5.96046e-08" quat="0.706485 -0.70566 0.0297284 0.0451643" gravcomp="0">
+            <joint name="rx_tibia_T1_right_Armature" pos="0 0 0" axis="1 0 0" range="-1.48353 1.5708"/>
+            <joint name="rz_tibia_T1_right_Armature" pos="0 0 0" axis="0 0 1" range="0 0.102975"/>
+            <geom name="tibia_T1_right_body" pos="0.0406833 0.384141 -1.19175" quat="0.797664 0.449632 0.184163 -0.357278" type="mesh" material="body" mesh="tibia_T1_right_body"/>
+            <body name="tarsus_T1_1_right_Armature" pos="-1.76951e-08 0.514695 -1.19209e-07" quat="0.994642 -0.0745481 -0.0703826 0.0132709" gravcomp="0">
+              <joint name="rx_tarsus_T1_1_right_Armature" pos="0 0 0" axis="1 0 0" range="-1.5708 0"/>
+              <joint name="rz_tarsus_T1_1_right_Armature" pos="0 0 0" axis="0 0 1" range="-0.148353 0.148353"/>
+              <geom name="tarsus_T1_1_right_body" pos="-0.129051 0.0492541 -1.19159" quat="0.742167 0.483985 0.259986 -0.383866" type="mesh" material="body" mesh="tarsus_T1_1_right_body"/>
+              <body name="tarsus_T1_2_right_Armature" pos="1.50874e-07 0.229807 8.9407e-08" quat="0.997753 0.0547227 -0.00600204 -0.0381767" gravcomp="0">
+                <joint name="rx_tarsus_T1_2_right_Armature" pos="0 0 0" axis="1 0 0" range="-0.174533 0.349066"/>
+                <joint name="rz_tarsus_T1_2_right_Armature" pos="0 0 0" axis="0 0 1" range="-0.0872665 0.0872665"/>
+                <geom name="tarsus_T1_2_right_body" pos="-0.124085 -0.319364 -1.16265" quat="0.780081 0.430053 0.261326 -0.371802" type="mesh" material="body" mesh="tarsus_T1_2_right_body"/>
+                <body name="tarsus_T1_3_right_Armature" pos="9.12696e-08 0.137505 -9.68575e-08" quat="0.999356 -0.0303548 0.0156012 -0.0111064" gravcomp="0">
+                  <joint name="rx_tarsus_T1_3_right_Armature" pos="0 0 0" axis="1 0 0" range="-0.174533 0.349066"/>
+                  <joint name="rz_tarsus_T1_3_right_Armature" pos="0 0 0" axis="0 0 1" range="-0.0872665 0.0872665"/>
+                  <geom name="tarsus_T1_3_right_body" pos="-0.0779484 -0.387616 -1.19145" quat="0.774732 0.456352 0.265049 -0.348257" type="mesh" material="body" mesh="tarsus_T1_3_right_body"/>
+                  <body name="tarsus_T1_4_right_Armature" pos="6.61239e-08 0.0901921 -1.75089e-07" quat="0.998705 -0.0454799 0.0214836 -0.00762746" gravcomp="0">
+                    <joint name="rx_tarsus_T1_4_right_Armature" pos="0 0 0" axis="1 0 0" range="-0.174533 0.349066"/>
+                    <joint name="rz_tarsus_T1_4_right_Armature" pos="0 0 0" axis="0 0 1" range="-0.0872665 0.0872665"/>
+                    <geom name="tarsus_T1_4_right_body" pos="-0.0193537 -0.36819 -1.23207" quat="0.761325 0.496455 0.267381 -0.320039" type="mesh" material="body" mesh="tarsus_T1_4_right_body"/>
+                    <geom name="tarsal_claw_T1_right_brown" pos="-0.0193537 -0.368191 -1.23207" quat="0.761325 0.496455 0.267381 -0.320039" type="mesh" material="brown" mesh="tarsal_claw_T1_right_brown"/>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+      <body name="coxa_T2_left_Armature" pos="0.0646473 -0.241236 0.805542" quat="-0.0141687 -0.149526 -0.919744 0.362646" gravcomp="0">
+        <joint name="rx_coxa_T2_left_Armature" pos="0 0 0" axis="1 0 0" range="-2.00001 1.22173"/>
+        <joint name="ry_coxa_T2_left_Armature" pos="0 0 0" axis="0 1 0" range="-0.5 0.5"/>
+        <joint name="rz_coxa_T2_left_Armature" pos="0 0 0" axis="0 0 1" range="-2.25001 1"/>
+        <geom name="coxa_T2_left_body" pos="0.233968 0.682452 0.436818" quat="0.0141778 -0.149531 -0.919767 0.362586" type="mesh" material="body" mesh="coxa_T2_left_body"/>
+        <body name="femur_T2_left_Armature" pos="5.58794e-09 0.281447 8.19564e-08" quat="0.126184 0.990003 -0.0236594 -0.0584171" gravcomp="0">
+          <joint name="rx_femur_T2_left_Armature" pos="0 0 0" axis="1 0 0" range="-2.75401 0.299999"/>
+          <joint name="rz_femur_T2_left_Armature" pos="0 0 0" axis="0 0 1" range="-1.0664 1.34041"/>
+          <geom name="femur_T2_left_body" pos="0.159496 -0.285008 -0.547433" quat="0.145671 -0.0294108 -0.234551 -0.960677" type="mesh" material="body" mesh="femur_T2_left_body"/>
+          <body name="tibia_T2_left_Armature" pos="-9.31323e-09 0.83006 -1.05239e-07" quat="0.747076 -0.664159 0.00764507 -0.0266841" gravcomp="0">
+            <joint name="rx_tibia_T2_left_Armature" pos="0 0 0" axis="1 0 0" range="-1.48353 1.5708"/>
+            <joint name="rz_tibia_T2_left_Armature" pos="0 0 0" axis="0 0 1" range="-0.102975 0"/>
+            <geom name="tibia_T2_left_body" pos="0.201881 0.418307 -1.16308" quat="0.152208 0.0883696 0.460859 -0.869846" type="mesh" material="body" mesh="tibia_T2_left_body"/>
+            <body name="tarsus_T2_1_left_Armature" pos="-4.23752e-08 0.668249 -3.35276e-08" quat="0.989225 0.140238 -0.0015915 0.0419963" gravcomp="0">
+              <joint name="rx_tarsus_T2_1_left_Armature" pos="0 0 0" axis="1 0 0" range="-1.5708 0"/>
+              <joint name="rz_tarsus_T2_1_left_Armature" pos="0 0 0" axis="0 0 1" range="-0.148353 0.148353"/>
+              <geom name="tarsus_T2_1_left_body" pos="0.163145 -0.578469 -1.04629" quat="0.125685 0.084054 0.330515 -0.93161" type="mesh" material="body" mesh="tarsus_T2_1_left_body"/>
+              <body name="tarsus_T2_2_left_Armature" pos="5.58794e-09 0.337278 1.22935e-07" quat="0.999956 0.0091962 0.000491494 0.00155764" gravcomp="0">
+                <joint name="rx_tarsus_T2_2_left_Armature" pos="0 0 0" axis="1 0 0" range="-0.174533 0.349066"/>
+                <joint name="rz_tarsus_T2_2_left_Armature" pos="0 0 0" axis="0 0 1" range="-0.0872665 0.0872665"/>
+                <geom name="tarsus_T2_2_left_body" pos="0.161276 -0.935255 -1.02919" quat="0.125158 0.0838733 0.321779 -0.934751" type="mesh" material="body" mesh="tarsus_T2_2_left_body"/>
+                <body name="tarsus_T2_3_left_Armature" pos="9.31323e-10 0.177981 1.71363e-07" quat="0.999557 0.00787903 0.028288 0.00493828" gravcomp="0">
+                  <joint name="rx_tarsus_T2_3_left_Armature" pos="0 0 0" axis="1 0 0" range="-0.174533 0.349066"/>
+                  <joint name="rz_tarsus_T2_3_left_Armature" pos="0 0 0" axis="0 0 1" range="-0.0872665 0.0872665"/>
+                  <geom name="tarsus_T2_3_left_body" pos="0.207646 -1.13102 -1.00111" quat="0.130248 0.110884 0.310337 -0.93511" type="mesh" material="body" mesh="tarsus_T2_3_left_body"/>
+                  <body name="tarsus_T2_4_left_Armature" pos="-1.86265e-08 0.0990999 -1.41561e-07" quat="0.992559 -0.0231336 0.118564 -0.0153301" gravcomp="0">
+                    <joint name="rx_tarsus_T2_4_left_Armature" pos="0 0 0" axis="1 0 0" range="-0.174533 0.349066"/>
+                    <joint name="rz_tarsus_T2_4_left_Armature" pos="0 0 0" axis="0 0 1" range="-0.0872665 0.0872665"/>
+                    <geom name="tarsus_T2_4_left_body" pos="0.480815 -1.1734 -0.974916" quat="0.177844 0.219186 0.315928 -0.905825" type="mesh" material="body" mesh="tarsus_T2_4_left_body"/>
+                    <geom name="tarsal_claw_T2_left_brown" pos="0.480815 -1.17341 -0.974916" quat="0.177844 0.219186 0.315928 -0.905825" type="mesh" material="brown" mesh="tarsal_claw_T2_left_brown"/>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+      <body name="coxa_T2_right_Armature" pos="0.0647636 0.239847 0.807091" quat="0.23188 -0.207074 0.318789 -0.895391" gravcomp="0">
+        <joint name="rx_coxa_T2_right_Armature" pos="0 0 0" axis="1 0 0" range="-2.00001 1.22173"/>
+        <joint name="ry_coxa_T2_right_Armature" pos="0 0 0" axis="0 1 0" range="-0.5 0.5"/>
+        <joint name="rz_coxa_T2_right_Armature" pos="0 0 0" axis="0 0 1" range="-1 2.25001"/>
+        <geom name="coxa_T2_right_body" pos="0.00347177 0.685129 -0.493681" quat="0.231863 0.207067 -0.318686 0.895434" type="mesh" material="body" mesh="coxa_T2_right_body"/>
+        <body name="femur_T2_right_Armature" pos="-4.77303e-08 0.28171 -2.42144e-08" quat="0.0560374 0.175491 -0.12188 0.975299" gravcomp="0">
+          <joint name="rx_femur_T2_right_Armature" pos="0 0 0" axis="1 0 0" range="-2.75401 0.299999"/>
+          <joint name="rz_femur_T2_right_Armature" pos="0 0 0" axis="0 0 1" range="-1.34041 1.0664"/>
+          <geom name="femur_T2_right_body" pos="-0.152142 -0.281849 -0.551267" quat="0.961471 -0.230835 -0.0344195 -0.145273" type="mesh" material="body" mesh="femur_T2_right_body"/>
+          <body name="tibia_T2_right_Armature" pos="2.58442e-08 0.840315 -7.91624e-08" quat="0.746269 -0.665556 0.00877774 0.00635208" gravcomp="0">
+            <joint name="rx_tibia_T2_right_Armature" pos="0 0 0" axis="1 0 0" range="-1.48353 1.5708"/>
+            <joint name="rz_tibia_T2_right_Armature" pos="0 0 0" axis="0 0 1" range="0 0.102974"/>
+            <geom name="tibia_T2_right_body" pos="-0.137751 0.422695 -1.17841" quat="0.869957 0.468645 0.0640187 -0.139459" type="mesh" material="body" mesh="tibia_T2_right_body"/>
+            <body name="tarsus_T2_1_right_Armature" pos="-3.72529e-08 0.665175 5.21541e-08" quat="0.989741 0.138864 0.0137774 -0.0306651" gravcomp="0">
+              <joint name="rx_tarsus_T2_1_right_Armature" pos="0 0 0" axis="1 0 0" range="-1.5708 0"/>
+              <joint name="rz_tarsus_T2_1_right_Armature" pos="0 0 0" axis="0 0 1" range="-0.148353 0.148353"/>
+              <geom name="tarsus_T2_1_right_body" pos="-0.0814772 -0.564485 -1.06824" quat="0.931268 0.34299 0.0463805 -0.113786" type="mesh" material="body" mesh="tarsus_T2_1_right_body"/>
+              <body name="tarsus_T2_2_right_Armature" pos="-1.12923e-08 0.333662 -1.37836e-07" quat="0.999411 0.0240856 0.0240529 -0.00435197" gravcomp="0">
+                <joint name="rx_tarsus_T2_2_right_Armature" pos="0 0 0" axis="1 0 0" range="-0.174533 0.349066"/>
+                <joint name="rz_tarsus_T2_2_right_Armature" pos="0 0 0" axis="0 0 1" range="-0.0872665 0.0872665"/>
+                <geom name="tarsus_T2_2_right_body" pos="-0.0229995 -0.948943 -1.02636" quat="0.940571 0.322955 0.0227168 -0.102519" type="mesh" material="body" mesh="tarsus_T2_2_right_body"/>
+                <body name="tarsus_T2_3_right_Armature" pos="2.51457e-08 0.17732 2.34693e-07" quat="0.999465 -0.00112937 -0.0326275 -0.00190571" gravcomp="0">
+                  <joint name="rx_tarsus_T2_3_right_Armature" pos="0 0 0" axis="1 0 0" range="-0.174533 0.349066"/>
+                  <joint name="rz_tarsus_T2_3_right_Armature" pos="0 0 0" axis="0 0 1" range="-0.0872665 0.0872665"/>
+                  <geom name="tarsus_T2_3_right_body" pos="-0.0856783 -1.12408 -1.02544" quat="0.939146 0.32049 0.0541297 -0.111178" type="mesh" material="body" mesh="tarsus_T2_3_right_body"/>
+                  <body name="tarsus_T2_4_right_Armature" pos="-5.50644e-08 0.0988161 -8.56817e-08" quat="0.993514 -0.0265992 0.11007 0.0103604" gravcomp="0">
+                    <joint name="rx_tarsus_T2_4_right_Armature" pos="0 0 0" axis="1 0 0" range="-0.174533 0.349066"/>
+                    <joint name="rz_tarsus_T2_4_right_Armature" pos="0 0 0" axis="0 0 1" range="-0.0872665 0.0872665"/>
+                    <geom name="tarsus_T2_4_right_body" pos="0.123258 -1.16674 -1.0853" quat="0.92933 0.356207 -0.0499535 -0.0834662" type="mesh" material="body" mesh="tarsus_T2_4_right_body"/>
+                    <geom name="tarsal_claw_T2_right_brown" pos="0.123258 -1.16674 -1.0853" quat="0.92933 0.356207 -0.0499535 -0.0834662" type="mesh" material="brown" mesh="tarsal_claw_T2_right_brown"/>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+      <body name="wing_left_Armature" pos="-0.00998638 -0.430577 1.32255" quat="0.00120368 -0.400197 0.000219103 -0.916428" gravcomp="0">
+        <joint name="rx_wing_left_Armature" pos="0 0 0" axis="1 0 0" range="-1 2"/>
+        <joint name="ry_wing_left_Armature" pos="0 0 0" axis="0 1 0" range="-1 1"/>
+        <joint name="rz_wing_left_Armature" pos="0 0 0" axis="0 0 1" range="-1.4 1.5"/>
+        <geom name="wing_left_brown" pos="-0.977916 -0.42875 -0.891358" quat="0.00120367 0.400197 -0.000219114 0.916428" type="mesh" material="brown" mesh="wing_left_brown"/>
+        <geom name="wing_left_membrane" pos="-0.977916 -0.42875 -0.891358" quat="0.00120367 0.400197 -0.000219114 0.916428" type="mesh" material="membrane" mesh="wing_left_membrane"/>
+      </body>
+      <body name="wing_right_Armature" pos="-0.00945216 0.433325 1.32144" quat="0.382683 -0.000784729 -0.923879 -0.000918884" gravcomp="0">
+        <joint name="rx_wing_right_Armature" pos="0 0 0" axis="1 0 0" range="-1 2"/>
+        <joint name="ry_wing_right_Armature" pos="0 0 0" axis="0 1 0" range="-1 1"/>
+        <joint name="rz_wing_right_Armature" pos="0 0 0" axis="0 0 1" range="-1.5 1.4"/>
+        <geom name="wing_right_brown" pos="-0.941416 -0.434753 0.926729" quat="0.382683 0.000784673 0.923879 0.000918924" type="mesh" material="brown" mesh="wing_right_brown"/>
+        <geom name="wing_right_membrane" pos="-0.941416 -0.434753 0.926729" quat="0.382683 0.000784673 0.923879 0.000918924" type="mesh" material="membrane" mesh="wing_right_membrane"/>
+      </body>
+      <body name="coxa_T3_left_Armature" pos="0.314497 -0.114749 0.761046" quat="0.0692315 -0.453676 -0.723358 0.515885" gravcomp="0">
+        <joint name="rx_coxa_T3_left_Armature" pos="0 0 0" axis="1 0 0" range="-2.00001 1.22173"/>
+        <joint name="ry_coxa_T3_left_Armature" pos="0 0 0" axis="0 1 0" range="-0.5 0.5"/>
+        <joint name="rz_coxa_T3_left_Armature" pos="0 0 0" axis="0 0 1" range="-2.25001 1"/>
+        <geom name="coxa_T3_left_body" pos="0.54555 0.4383 0.448953" quat="0.0692296 0.453676 0.723359 -0.515885" type="mesh" material="body" mesh="coxa_T3_left_body"/>
+        <body name="femur_T3_left_Armature" pos="2.23517e-08 0.162976 -2.98023e-08" quat="0.269961 0.636217 -0.611033 0.385989" gravcomp="0">
+          <joint name="rx_femur_T3_left_Armature" pos="0 0 0" axis="1 0 0" range="-2.75401 0.299999"/>
+          <joint name="rz_femur_T3_left_Armature" pos="0 0 0" axis="0 0 1" range="-1.0664 1.34041"/>
+          <geom name="femur_T3_left_body" pos="0.187536 -0.625012 -0.386232" quat="0.333804 -0.0424108 0.265741 0.903415" type="mesh" material="body" mesh="femur_T3_left_body"/>
+          <body name="tibia_T3_left_Armature" pos="7.45058e-09 0.779105 4.47035e-08" quat="0.685226 -0.71341 0.10607 0.101295" gravcomp="0">
+            <joint name="rx_tibia_T3_left_Armature" pos="0 0 0" axis="1 0 0" range="-1.48353 1.5708"/>
+            <joint name="rz_tibia_T3_left_Armature" pos="0 0 0" axis="0 0 1" range="-0.102974 0"/>
+            <geom name="tibia_T3_left_body" pos="0.309019 0.368837 -1.38721" quat="0.378687 0.140168 -0.493517 0.770318" type="mesh" material="body" mesh="tibia_T3_left_body"/>
+            <body name="tarsus_T3_1_left_Armature" pos="2.98023e-08 0.715145 8.9407e-08" quat="0.97353 0.217461 -0.0403469 0.0576435" gravcomp="0">
+              <joint name="rx_tarsus_T3_1_left_Armature" pos="0 0 0" axis="1 0 0" range="-1.5708 0"/>
+              <joint name="rz_tarsus_T3_1_left_Armature" pos="0 0 0" axis="0 0 1" range="-0.148353 0.148353"/>
+              <geom name="tarsus_T3_1_left_body" pos="0.129412 -0.932266 -1.11978" quat="0.46346 0.0567397 -0.30574 0.829764" type="mesh" material="body" mesh="tarsus_T3_1_left_body"/>
+              <body name="tarsus_T3_2_left_Armature" pos="-1.22935e-07 0.32967 -1.78814e-07" quat="0.990955 0.0472501 -0.125576 0.00234366" gravcomp="0">
+                <joint name="rx_tarsus_T3_2_left_Armature" pos="0 0 0" axis="1 0 0" range="-0.174533 0.349066"/>
+                <joint name="rz_tarsus_T3_2_left_Armature" pos="0 0 0" axis="0 0 1" range="-0.0872665 0.0872665"/>
+                <geom name="tarsus_T3_2_left_body" pos="-0.144491 -1.36264 -0.992705" quat="0.502286 0.137807 -0.205697 0.828497" type="mesh" material="body" mesh="tarsus_T3_2_left_body"/>
+                <body name="tarsus_T3_3_left_Armature" pos="2.6077e-08 0.197254 4.47035e-08" quat="0.998126 -0.0416704 -0.044782 -0.00177227" gravcomp="0">
+                  <joint name="rx_tarsus_T3_3_left_Armature" pos="0 0 0" axis="1 0 0" range="-0.174533 0.349066"/>
+                  <joint name="rz_tarsus_T3_3_left_Armature" pos="0 0 0" axis="0 0 1" range="-0.0872665 0.0872665"/>
+                  <geom name="tarsus_T3_3_left_body" pos="-0.2331 -1.47311 -1.10237" quat="0.503345 0.195944 -0.217093 0.813093" type="mesh" material="body" mesh="tarsus_T3_3_left_body"/>
+                  <body name="tarsus_T3_4_left_Armature" pos="7.12462e-08 0.111201 -1.82539e-07" quat="0.209339 -0.00986639 -0.976682 0.0466053" gravcomp="0">
+                    <joint name="rx_tarsus_T3_4_left_Armature" pos="0 0 0" axis="1 0 0" range="-0.174533 0.349066"/>
+                    <joint name="rz_tarsus_T3_4_left_Armature" pos="0 0 0" axis="0 0 1" range="-0.0872665 0.0872665"/>
+                    <geom name="tarsus_T3_4_left_body" pos="-0.298593 -1.47216 1.23418" quat="0.353359 0.830002 0.429007 -0.0467626" type="mesh" material="body" mesh="tarsus_T3_4_left_body"/>
+                    <geom name="tarsal_claw_T3_left_brown" pos="-0.298593 -1.47216 1.23418" quat="0.353359 0.830002 0.429007 -0.0467626" type="mesh" material="brown" mesh="tarsal_claw_T3_left_brown"/>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+      <body name="coxa_T3_right_Armature" pos="0.314556 0.116475 0.759828" quat="0.442313 -0.0583893 0.514303 -0.732423" gravcomp="0">
+        <joint name="rx_coxa_T3_right_Armature" pos="0 0 0" axis="1 0 0" range="-2.00001 1.22173"/>
+        <joint name="ry_coxa_T3_right_Armature" pos="0 0 0" axis="0 1 0" range="-0.499164 0.499164"/>
+        <joint name="rz_coxa_T3_right_Armature" pos="0 0 0" axis="0 0 1" range="-1 2.25001"/>
+        <geom name="coxa_T3_right_body" pos="0.552521 0.436045 -0.440977" quat="0.442323 0.058378 -0.514305 0.732416" type="mesh" material="body" mesh="coxa_T3_right_body"/>
+        <body name="femur_T3_right_Armature" pos="1.49012e-08 0.161821 -2.98023e-08" quat="0.598912 0.38473 -0.27883 0.644625" gravcomp="0">
+          <joint name="rx_femur_T3_right_Armature" pos="0 0 0" axis="1 0 0" range="-2.75401 0.299999"/>
+          <joint name="rz_femur_T3_right_Armature" pos="0 0 0" axis="0 0 1" range="-1.34041 1.0664"/>
+          <geom name="femur_T3_right_body" pos="-0.205664 -0.624712 -0.377325" quat="0.90291 -0.262503 0.0594464 0.33513" type="mesh" material="body" mesh="femur_T3_right_body"/>
+          <body name="tibia_T3_right_Armature" pos="-7.45058e-09 0.770255 -7.45058e-08" quat="0.688826 -0.712584 -0.0953652 -0.0929984" gravcomp="0">
+            <joint name="rx_tibia_T3_right_Armature" pos="0 0 0" axis="1 0 0" range="-1.48353 1.5708"/>
+            <joint name="rz_tibia_T3_right_Armature" pos="0 0 0" axis="0 0 1" range="0 0.102974"/>
+            <geom name="tibia_T3_right_body" pos="-0.308819 0.355234 -1.38168" quat="0.77217 0.489008 -0.136165 0.38221" type="mesh" material="body" mesh="tibia_T3_right_body"/>
+            <body name="tarsus_T3_1_right_Armature" pos="1.49012e-08 0.721406 0" quat="0.973416 0.216174 0.0619236 -0.0435404" gravcomp="0">
+              <joint name="rx_tarsus_T3_1_right_Armature" pos="0 0 0" axis="1 0 0" range="-1.5708 0"/>
+              <joint name="rz_tarsus_T3_1_right_Armature" pos="0 0 0" axis="0 0 1" range="-0.148353 0.148353"/>
+              <geom name="tarsus_T3_1_right_body" pos="-0.0914627 -0.939033 -1.11729" quat="0.832277 0.29135 -0.0764469 0.465387" type="mesh" material="body" mesh="tarsus_T3_1_right_body"/>
+              <body name="tarsus_T3_2_right_Armature" pos="-1.22935e-07 0.330944 1.93715e-07" quat="0.998733 0.0426336 0.0227796 -0.013961" gravcomp="0">
+                <joint name="rx_tarsus_T3_2_right_Armature" pos="0 0 0" axis="1 0 0" range="-0.174533 0.349066"/>
+                <joint name="rz_tarsus_T3_2_right_Armature" pos="0 0 0" axis="0 0 1" range="-0.0872665 0.0872665"/>
+                <geom name="tarsus_T3_2_right_body" pos="-0.00625214 -1.3621 -1.00708" quat="0.835421 0.245936 -0.0713883 0.486304" type="mesh" material="body" mesh="tarsus_T3_2_right_body"/>
+                <body name="tarsus_T3_3_right_Armature" pos="1.61584e-07 0.197666 -2.23517e-08" quat="0.98805 -0.0406286 0.148669 0.00197706" gravcomp="0">
+                  <joint name="rx_tarsus_T3_3_right_Armature" pos="0 0 0" axis="1 0 0" range="-0.174533 0.349066"/>
+                  <joint name="rz_tarsus_T3_3_right_Armature" pos="0 0 0" axis="0 0 1" range="-0.0872665 0.0872665"/>
+                  <geom name="tarsus_T3_3_right_body" pos="0.302766 -1.47428 -1.08716" quat="0.805804 0.204482 -0.214973 0.512497" type="mesh" material="body" mesh="tarsus_T3_3_right_body"/>
+                  <body name="tarsus_T3_4_right_Armature" pos="1.21072e-08 0.110484 4.84288e-08" quat="0.829905 -0.038817 0.555103 -0.0401438" gravcomp="0">
+                    <joint name="rx_tarsus_T3_4_right_Armature" pos="0 0 0" axis="1 0 0" range="-0.174533 0.349066"/>
+                    <joint name="rz_tarsus_T3_4_right_Armature" pos="0 0 0" axis="0 0 1" range="-0.0872665 0.0872665"/>
+                    <geom name="tarsus_T3_4_right_body" pos="1.28734 -1.44929 -0.165474" quat="0.520905 -0.0748866 -0.637396 0.562829" type="mesh" material="body" mesh="tarsus_T3_4_right_body"/>
+                    <geom name="tarsal_claw_T3_right_brown" pos="1.28734 -1.44929 -0.165474" quat="0.520905 -0.0748864 -0.637396 0.562829" type="mesh" material="brown" mesh="tarsal_claw_T3_right_brown"/>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+      <body name="haltere_right_Armature" pos="0.307287 0.247129 1.14438" quat="0.279755 -0.205852 -0.829142 -0.438048" gravcomp="0">
+        <joint name="rx_haltere_right_Armature" pos="0 0 0" axis="1 0 0" range="-0.174533 2.61799"/>
+        <geom name="haltere_right_body" pos="-0.52793 -1.01104 0.405237" quat="0.279755 0.205852 0.829142 0.438048" type="mesh" material="body" mesh="haltere_right_body"/>
+      </body>
+      <body name="haltere_left_Armature" pos="0.307275 -0.246962 1.14438" quat="-0.204474 0.290506 0.438507 0.825535" gravcomp="0">
+        <joint name="rx_haltere_left_Armature" pos="0 0 0" axis="1 0 0" range="-2.61799 0.174533"/>
+        <geom name="haltere_left_body" pos="-0.544861 -1.00595 -0.395267" quat="0.204474 0.290505 0.438507 0.825535" type="mesh" material="body" mesh="haltere_left_body"/>
+      </body>
+    </body>
+  </worldbody>
+</mujoco>

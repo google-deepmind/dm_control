@@ -93,7 +93,7 @@ def main(unused_argv):
 
   # These are commented in `mjdata.h` but have no macros in `mjxmacro.h`.
   hints_dict = codegen_util.UniqueOrderedDict({"buffer": ("nbuffer",),
-                                               "stack": ("nstack",)})
+                                               "stack": ("narena",)})
 
   parser = binding_generator.BindingGenerator(
       consts_dict=consts_dict, hints_dict=hints_dict)

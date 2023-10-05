@@ -1,0 +1,224 @@
+<mujoco model="fruitfly">
+  <option timestep="0.0001" gravity="0 0 -980.66" density="0.0012754" viscosity="0.000185" cone="elliptic" noslip_iterations="3"/>
+
+  <size njmax="300" nconmax="100" nkey="1"/>
+
+  <visual>
+    <global offwidth="3840" offheight="2160"/>
+    <quality shadowsize="8192" offsamples="24"/>
+    <headlight ambient="0.4 0.4 0.4" diffuse="0.8 0.8 0.8" specular="0.1 0.1 0.1"/>
+    <map stiffness="1e4" stiffnessrot="5e4" force="0.00002"/>
+    <scale jointwidth="0.01" framewidth="0.01"/>
+  </visual>
+
+  <statistic meansize=".02"/>
+
+  <default>
+    <geom friction="0.5" solref="0.0002 1" solimp="0.95 0.99 0.01"/>
+    <general ctrllimited="true"/>
+    <mesh scale="0.1 0.1 0.1"/>
+    <default class="body">
+      <joint limited="true" armature="1e-06" solreflimit=".001 1"/>
+      <geom type="mesh" contype="0" conaffinity="0" group="1" material="body" density="0.478"/>
+      <site group="3" size="0.01"/>
+      <default class="collision">
+        <geom type="capsule" contype="1" conaffinity="1" condim="1" group="4" material="blue" density="0.0"/>
+        <default class="adhesion-collision">
+          <geom friction="0.6" margin="0.0005" gap="0.0005" material="pink"/>
+          <site type="capsule"/>
+        </default>
+        <default class="collision-membrane">
+          <geom group="5"/>
+        </default>
+      </default>
+
+      <default class="adhesion">
+        <general dyntype="none" dynprm="1"/>
+        <default class="adhesion_claw">
+          <adhesion ctrlrange="0 1" gain="0.985" group="3"/>
+        </default>
+        <default class="adhesion_labrum">
+          <adhesion ctrlrange="0 1" gain="1" group="3"/>
+        </default>
+      </default>
+
+      <default class="head">
+        <geom density="0.575"/>
+        <joint stiffness="0.03" damping="0.001"/>
+        <general forcerange="-0.1 0.1" gainprm="0.1" biasprm="0 -0.1" biastype="affine"/>
+        <default class="labrum">
+          <general forcerange="-0.01 0.01" gainprm="0.01" biasprm="0 -0.01" biastype="affine"/>
+        </default>
+      </default>
+
+      <default class="antenna">
+        <joint damping="0.0003"/>
+        <general forcerange="-0.01 0.01" gainprm="0.01" biasprm="0 -0.01" biastype="affine"/>
+        <default class="antenna_extend">
+          <joint axis="1 0 0" range="-0.2 0.5"/>
+        </default>
+        <default class="antenna_twist">
+          <joint axis="0 1 0" range="-0.1 0.09"/>
+        </default>
+        <default class="antenna_abduct">
+          <joint axis="0 0 1" range="-0.4 0.8"/>
+        </default>
+      </default>
+
+      <default class="wing">
+        <joint damping="0.0005" stiffness="0.01"/>
+        <general ctrlrange="-1 1"/>
+        <default class="yaw">
+          <joint axis="0 0 1" range="-1.5 1.5" springref="1.5"/>
+          <general gainprm="3"/>
+        </default>
+        <default class="roll">
+          <joint axis="1 0 0" range="-1 1.5" springref="0.7"/>
+          <general gainprm="2"/>
+        </default>
+        <default class="pitch">
+          <joint axis="0 1 0" range="-1 2.5" springref="-1"/>
+          <general gainprm="1"/>
+        </default>
+        <default class="wing-inertial">
+          <geom type="box" mass="8e-06" rgba="0 0 0 0"/>
+        </default>
+        <default class="wing-fluid">
+          <geom type="ellipsoid" mass="0" group="3"/>
+        </default>
+      </default>
+
+      <default class="abdomen">
+        <geom density="0.445"/>
+        <general gainprm="0.1" biasprm="0 -0.1" biastype="affine"/>
+        <joint damping="0.01" stiffness="0.05" group="3"/>
+        <default class="abduct_abdomen">
+          <joint axis="0 0 1" range="-0.1 0.1"/>
+        </default>
+        <default class="extend_abdomen">
+          <joint axis="1 0 0" range="-0.15 0.1"/>
+        </default>
+      </default>
+
+      <default class="haltere">
+        <joint axis="1 0 0" springdamper="0.005 .1" range="-0.2 0.2"/>
+      </default>
+
+      <default class="leg">
+        <joint stiffness="0.01" damping="0.01"/>
+        <geom density="1.209"/>
+        <default class="coxa">
+          <general gainprm="0.8" biasprm="0 -0.8" biastype="affine"/>
+          <default class="twist_coxa_T1">
+            <joint axis="0 1 0" range="-0.8 0.8"/>
+            <general ctrlrange="-0.8 0.8"/>
+          </default>
+          <default class="abduct_coxa_T1">
+            <joint axis="0 0 1" range="-1 0.7"/>
+            <general ctrlrange="-1 0.7"/>
+          </default>
+          <default class="extend_coxa_T1">
+            <joint axis="1 0 0" range="-0.2 1.7" springref="0.05841"/>
+            <general ctrlrange="-0.2 1.7"/>
+          </default>
+          <default class="twist_coxa_T2">
+            <joint axis="0 1 0" range="-0.75 0.8" springref="-0.74159"/>
+            <general ctrlrange="-0.75 0.8"/>
+          </default>
+          <default class="abduct_coxa_T2">
+            <joint axis="0 0 1" range="-0.5 0.3" springref="-0.29159"/>
+            <general ctrlrange="-0.5 0.3"/>
+          </default>
+          <default class="extend_coxa_T2">
+            <joint axis="1 0 0" range="-0.2 0.9" springref="0.40841"/>
+            <general ctrlrange="-0.2 0.9"/>
+          </default>
+          <default class="twist_coxa_T3">
+            <joint axis="0 1 0" range="-0.15 0.8" springref="0.00841"/>
+            <general ctrlrange="-0.15 0.8"/>
+          </default>
+          <default class="abduct_coxa_T3">
+            <joint axis="0 0 1" range="-0.9 0.25"/>
+            <general ctrlrange="-0.9 0.25"/>
+          </default>
+          <default class="extend_coxa_T3">
+            <joint axis="1 0 0" range="-0.3 1.3" springref="0.15841"/>
+            <general ctrlrange="-0.3 1.3"/>
+          </default>
+        </default>
+        <default class="femur">
+          <general gainprm="0.8" biasprm="0 -0.8" biastype="affine"/>
+          <default class="twist_femur">
+            <joint axis="0 1 0" range="-1 1"/>
+            <general ctrlrange="-1 1"/>
+            <default class="twist_femur_T2">
+              <joint springref="0.60841"/>
+            </default>
+            <default class="twist_femur_T3">
+              <joint springref="0.55841"/>
+            </default>
+          </default>
+          <default class="extend_femur">
+            <joint axis="1 0 0" range="-0.15 2.0"/>
+            <general ctrlrange="-0.15 2.0"/>
+            <default class="extend_femur_T1">
+              <joint springref="-0.14159"/>
+            </default>
+            <default class="extend_femur_T2">
+              <joint springref="0.20841"/>
+            </default>
+          </default>
+          <default class="extend_femur_T3">
+            <joint axis="1 0 0" range="-0.7 1.5" springref="0.25841"/>
+            <general ctrlrange="-0.7 1.5"/>
+          </default>
+        </default>
+        <default class="tibia">
+          <joint damping="0.004"/>
+          <general gainprm="0.4" biasprm="0 -0.4" biastype="affine"/>
+          <default class="abduct_tibia">
+            <joint axis="0 0 1" range="-0.2 0.2"/>
+            <general ctrlrange="-0.2 0.2"/>
+          </default>
+          <default class="extend_tibia">
+            <joint axis="1 0 0" range="-1.35 1.3" springref="-1.29159"/>
+            <general ctrlrange="-1.35 1.3"/>
+            <default class="extend_tibia_T2">
+              <joint springref="-1.34159"/>
+            </default>
+            <default class="extend_tibia_T3">
+              <joint springref="-0.29159"/>
+            </default>
+          </default>
+        </default>
+        <default class="tarsus">
+          <joint axis="1 0 0"/>
+          <general gainprm="0.4" biasprm="0 -0.4" biastype="affine"/>
+          <default class="abduct_tarsus">
+            <joint axis="0 0 1" range="-0.2 0.2"/>
+            <general ctrlrange="-0.2 0.2"/>
+          </default>
+          <default class="extend_tarsus_T1">
+            <joint range="-0.7 1.2" springref="-0.24159"/>
+            <general ctrlrange="-0.7 1.2"/>
+          </default>
+          <default class="extend_tarsus_T2">
+            <joint range="-1 1.8" springref="0.60841"/>
+            <general ctrlrange="-1 1.8"/>
+          </default>
+          <default class="extend_tarsus_T3">
+            <joint range="-0.8 1.2" springref="0.25841"/>
+            <general ctrlrange="-0.8 1.2"/>
+          </default>
+          <default class="extend_tarsus">
+            <joint group="3" range="-0.36 0.36" damping="0.002" stiffness="0.1"/>
+            <general ctrlrange="-0.36 0.36"/>
+          </default>
+        </default>
+      </default>
+    </default>
+
+  </default>
+
+  <worldbody/>
+</mujoco>
