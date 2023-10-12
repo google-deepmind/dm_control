@@ -61,7 +61,7 @@ _GRID_POSITIONS = {
 
 Contexts = collections.namedtuple('Contexts', ['gl', 'mujoco'])
 Selected = collections.namedtuple(
-    'Selected', ['body', 'geom', 'skin', 'world_position'])
+    'Selected', ['body', 'geom', 'flex', 'skin', 'world_position'])
 NamedIndexStructs = collections.namedtuple(
     'NamedIndexStructs', ['model', 'data'])
 Pose = collections.namedtuple(
@@ -937,12 +937,14 @@ class Camera:
     cursor_x, cursor_y = cursor_position
     pos = np.empty(3, np.double)
     geom_id_arr = np.intc([-1])
+    flex_id_arr = np.intc([-1])
     skin_id_arr = np.intc([-1])
     body_id = mujoco.mjv_select(self._physics.model.ptr, self._physics.data.ptr,
                                 self._scene_option.ptr, aspect_ratio, cursor_x,
                                 cursor_y, self._scene.ptr, pos, geom_id_arr,
-                                skin_id_arr)
+                                flex_id_arr, skin_id_arr)
     [geom_id] = geom_id_arr
+    [flex_id] = flex_id_arr
     [skin_id] = skin_id_arr
 
     # Validate IDs
@@ -954,6 +956,10 @@ class Camera:
       assert 0 <= geom_id < self._physics.model.ngeom
     else:
       geom_id = None
+    if flex_id != -1:
+      assert 0 <= flex_id < self._physics.model.nflex
+    else:
+      flex_id = None
     if skin_id != -1:
       assert 0 <= skin_id < self._physics.model.nskin
     else:
@@ -963,7 +969,12 @@ class Camera:
       pos = None
 
     return Selected(
-        body=body_id, geom=geom_id, skin=skin_id, world_position=pos)
+        body=body_id,
+        geom=geom_id,
+        flex=flex_id,
+        skin=skin_id,
+        world_position=pos,
+    )
 
 
 class MovableCamera(Camera):

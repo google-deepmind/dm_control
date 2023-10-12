@@ -422,12 +422,25 @@ class RaycastsTest(absltest.TestCase):
 
   def test_raycast_mapping_geom_to_body_id(self):
     def build_mjv_select(mock_body_id, mock_geom_id, mock_position):
+
       def mock_select(
-          m, d, vopt, aspectratio, relx, rely, scn, selpnt, geomid, skinid):
-        del m, d, vopt, aspectratio, relx, rely, scn, skinid  # Unused.
+          m,
+          d,
+          vopt,
+          aspectratio,
+          relx,
+          rely,
+          scn,
+          selpnt,
+          geomid,
+          flexid,
+          skinid,
+      ):
+        del m, d, vopt, aspectratio, relx, rely, scn, flexid, skinid  # Unused.
         selpnt[:] = mock_position
         geomid[:] = mock_geom_id
         return mock_body_id
+
       return mock_select
 
     geom_id = 0
@@ -444,9 +457,11 @@ class RaycastsTest(absltest.TestCase):
       np.testing.assert_array_equal(hit_world_pos, world_pos)
 
   def test_raycast_hitting_empty_space(self):
+
     def mock_select(
-        m, d, vopt, aspectratio, relx, rely, scn, selpnt, geomid, skinid):
-      del (m, d, vopt, aspectratio, relx, rely, scn, selpnt, geomid,
+        m, d, vopt, aspectratio, relx, rely, scn, selpnt, geomid, flexid, skinid
+    ):
+      del (m, d, vopt, aspectratio, relx, rely, scn, selpnt, geomid, flexid,
            skinid)  # Unused.
       mock_body_id = -1  # Nothing selected.
       return mock_body_id
@@ -459,13 +474,26 @@ class RaycastsTest(absltest.TestCase):
 
   def test_raycast_maps_coordinates_to_viewport_space(self):
     def build_mjv_select(expected_aspect_ratio, expected_viewport_pos):
+
       def mock_select(
-          m, d, vopt, aspectratio, relx, rely, scn, selpnt, geomid, skinid):
-        del m, d, vopt, scn, selpnt, geomid, skinid  # Unused.
+          m,
+          d,
+          vopt,
+          aspectratio,
+          relx,
+          rely,
+          scn,
+          selpnt,
+          geomid,
+          flexid,
+          skinid,
+      ):
+        del m, d, vopt, scn, selpnt, geomid, flexid, skinid  # Unused.
         self.assertEqual(expected_aspect_ratio, aspectratio)
         np.testing.assert_array_equal(expected_viewport_pos, [relx, rely])
         mock_body_id = 0
         return mock_body_id
+
       return mock_select
 
     viewport_pos = [.5, .5]
