@@ -484,9 +484,9 @@ class PhysicsTest(parameterized.TestCase):
     second = physics.bind(entity2)
 
     # Initially both bodies should be 'simple' and 'sameframe'
-    self.assertEqual(first.simple, 2)
+    self.assertEqual(first.simple, 1)
     self.assertEqual(first.sameframe, 1)
-    self.assertEqual(second.simple, 2)
+    self.assertEqual(second.simple, 1)
     self.assertEqual(second.sameframe, 1)
 
     # Assigning to `ipos` should disable 'simple' and 'sameframe' only for that
@@ -495,7 +495,7 @@ class PhysicsTest(parameterized.TestCase):
     first.ipos = new_ipos
     self.assertEqual(first.simple, 0)
     self.assertEqual(first.sameframe, 0)
-    self.assertEqual(second.simple, 2)
+    self.assertEqual(second.simple, 1)
     self.assertEqual(second.sameframe, 1)
     # `xipos` should reflect the new position.
     np.testing.assert_array_equal(first.xipos, new_ipos)
@@ -518,9 +518,9 @@ class PhysicsTest(parameterized.TestCase):
     second = physics.bind(entity2)
 
     # Initially both bodies should be 'simple' and 'sameframe'
-    self.assertEqual(first.simple, 2)
+    self.assertEqual(first.simple, 1)
     self.assertEqual(first.sameframe, 1)
-    self.assertEqual(second.simple, 2)
+    self.assertEqual(second.simple, 1)
     self.assertEqual(second.sameframe, 1)
 
     # Assigning to `iquat` should disable 'simple' and 'sameframe' only for that
@@ -529,7 +529,7 @@ class PhysicsTest(parameterized.TestCase):
     first.iquat = new_iquat
     self.assertEqual(first.simple, 0)
     self.assertEqual(first.sameframe, 0)
-    self.assertEqual(second.simple, 2)
+    self.assertEqual(second.simple, 1)
     self.assertEqual(second.sameframe, 1)
     # `ximat` should reflect the new quaternion.
     np.testing.assert_allclose(first.ximat, self.quat2mat(new_iquat))
