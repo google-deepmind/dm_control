@@ -33,7 +33,7 @@ with mock.patch.dict('sys.modules', _MOCKED_MODULES):
 _EPSILON = 1e-7
 
 
-@mock.patch(base.__name__ + '.time')
+@mock.patch.object(base, 'time')
 class DoubleClickDetectorTest(absltest.TestCase):
 
   def setUp(self):

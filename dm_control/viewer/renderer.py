@@ -494,6 +494,7 @@ class SceneCamera:
     viewport_pos = viewport.screen_to_inverse_viewport(screen_pos)
     grab_world_pos = np.empty(3, dtype=np.double)
     selected_geom_id_arr = np.intc([-1])
+    selected_flex_id_arr = np.intc([-1])
     selected_skin_id_arr = np.intc([-1])
     selected_body_id = mujoco.mjv_select(
         self._model.ptr,
@@ -505,9 +506,14 @@ class SceneCamera:
         self._scene.ptr,
         grab_world_pos,
         selected_geom_id_arr,
+        selected_flex_id_arr,
         selected_skin_id_arr,
     )
-    del selected_geom_id_arr, selected_skin_id_arr  # Unused.
+    del (
+        selected_geom_id_arr,
+        selected_skin_id_arr,
+        selected_flex_id_arr,
+    )  # Unused.
     if selected_body_id < 0:
       selected_body_id = _INVALID_BODY_INDEX
       grab_world_pos = None
