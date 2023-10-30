@@ -579,5 +579,31 @@ class PhysicsTest(parameterized.TestCase):
         mjcf_physics._PICKLING_NOT_SUPPORTED.format(type=type(xpos_view))):
       pickle.dumps(xpos_view)
 
+  def test_plugins(self):
+    root = mjcf.RootElement()
+    root.extension.add('plugin', plugin='mujoco.elasticity.cable')
+
+    # Replicate example in mujoco/model/plugin/elasticity/cable.xml
+    composite = root.worldbody.add(
+        'composite',
+        type='cable',
+        curve='s',
+        count=[41, 1, 1],
+        size=[1, 0, 0],
+        offset=[-0.3, 0, 0.6],
+        initial='none',
+    )
+    plugin = composite.add('plugin', plugin='mujoco.elasticity.cable')
+    plugin.add('config', key='twist', value='1e7')
+    plugin.add('config', key='bend', value='4e6')
+    plugin.add('config', key='vmax', value='0.05')
+    composite.add('joint', kind='main', damping=0.015)
+    composite.geom.type = 'capsule'
+    composite.geom.size = [0.005, 0, 0]
+    composite.geom.rgba = [0.8, 0.2, 0.1, 1]
+    composite.geom.condim = 1
+
+    mjcf.Physics.from_mjcf_model(root)
+
 if __name__ == '__main__':
   absltest.main()
