@@ -917,7 +917,7 @@
           <children>
             <element name="plugin" repeated="true" namespace="mesh">
               <attributes>
-                <attribute name="name" type="identifier"/>
+                <attribute name="name" type="string"/>
                 <attribute name="plugin" type="string"/>
                 <attribute name="instance" type="reference" reference_namespace="plugin"/>
               </attributes>
@@ -1208,7 +1208,7 @@
           <children>
             <element name="plugin" repeated="true" namespace="body">
               <attributes>
-                <attribute name="name" type="identifier"/>
+                <attribute name="name" type="string"/>
                 <attribute name="plugin" type="string"/>
                 <attribute name="instance" type="reference" reference_namespace="plugin"/>
               </attributes>
@@ -1304,7 +1304,7 @@
               <children>
                 <element name="plugin" repeated="true" namespace="geom">
                   <attributes>
-                    <attribute name="name" type="identifier"/>
+                    <attribute name="name" type="string"/>
                     <attribute name="plugin" type="string"/>
                     <attribute name="instance" type="reference" reference_namespace="plugin"/>
                   </attributes>

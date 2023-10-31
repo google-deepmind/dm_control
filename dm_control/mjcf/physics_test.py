@@ -579,7 +579,7 @@ class PhysicsTest(parameterized.TestCase):
         mjcf_physics._PICKLING_NOT_SUPPORTED.format(type=type(xpos_view))):
       pickle.dumps(xpos_view)
 
-  def test_plugins(self):
+  def test_plugins_elasticity(self):
     root = mjcf.RootElement()
     root.extension.add('plugin', plugin='mujoco.elasticity.cable')
 
@@ -603,7 +603,27 @@ class PhysicsTest(parameterized.TestCase):
     composite.geom.rgba = [0.8, 0.2, 0.1, 1]
     composite.geom.condim = 1
 
-    mjcf.Physics.from_mjcf_model(root)
+    physics = mjcf.Physics.from_mjcf_model(root)
+    physics.step()
+
+  def test_plugins_sdf(self):
+    root = mjcf.RootElement()
+    extension = root.extension.add('plugin', plugin='mujoco.sdf.torus')
+    instance = extension.add('instance', name='torus')
+    instance.add('config', key='radius1', value='0.35')
+    instance.add('config', key='radius2', value='0.15')
+
+    # Replicate example in mujoco/model/plugin/elasticity/torus.xml
+    mesh = root.asset.add('mesh', name='torus')
+    mesh.add('plugin', instance='torus')
+
+    body = root.worldbody.add('body', pos=[-1, 0, 3.8])
+    body.add('freejoint')
+    geom = body.add('geom', type='sdf', mesh='torus', rgba=[.2, .2, .8, 1])
+    geom.add('plugin', instance='torus')
+
+    physics = mjcf.Physics.from_mjcf_model(root)
+    physics.step()
 
 if __name__ == '__main__':
   absltest.main()
