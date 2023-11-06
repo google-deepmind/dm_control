@@ -20,16 +20,15 @@ from dm_control.suite import common
 from dm_control.utils import io as resources
 from dm_control.utils import xml_tools
 
+from dm_control.utils.transformations import *
+
 import numpy as np
 
-from scipy.spatial.transform import Rotation as Rot
+from muscles import EXTENSORS_BACK, EXTENSORS_FRONT, FLEXORS_BACK, \
+  FLEXORS_FRONT, LATERAL, NECK, TAIL, TORSO
 
-
-from muscles import lateral, flexors_back, flexors_front, \
-    extensors_back, extensors_front
-
-muscle_legs = extensors_back + extensors_front + \
-    flexors_back + flexors_front
+MUSCLE_LEGS = EXTENSORS_BACK + EXTENSORS_FRONT + \
+              FLEXORS_BACK + FLEXORS_FRONT
 
 
 def array_to_string(array):
@@ -39,9 +38,9 @@ def array_to_string(array):
 def calculate_transformation(element):
     def get_rotation(element):
         if 'quat' in element.keys():
-            r = Rot.from_quat(element.get('quat'))
+            r = quat_to_mat(element.get('quat'))
         elif 'euler' in element.keys():
-            r = Rot.from_euler('xyz', element.get('euler'))
+            r = euler_to_rmat(ordering='XYZ', euler_vec=element.get('euler'))
         elif 'axisangle' in element.keys():
             raise NotImplementedError
         elif 'xyaxes' in element.keys():
@@ -49,8 +48,8 @@ def calculate_transformation(element):
         elif 'zaxis' in element.keys():
             raise NotImplementedError
         else:
-            r = Rot.identity()
-        return r.as_matrix()
+            r = np.eye(4)
+        return r
 
     # Calculate all transformation matrices from root until this element
     all_transformations = []
@@ -155,7 +154,7 @@ def slices2paths(mtu, slices, muscle_length):
             y_min = np.min(v[:, 1])
             y_max = np.max(v[:, 1])
 
-            if mtu in lateral:
+            if mtu in LATERAL:
                 test = [path.centroid,
                 np.array([path.centroid[0], path.centroid[1], z_min]),
                 np.array([path.centroid[0], path.centroid[1], z_max]),
@@ -186,7 +185,7 @@ def slices2paths(mtu, slices, muscle_length):
 
 
 def getClosestGeom(kd_tree, point, mjcf, mtu):
-    dist = 100000000000
+    dist = np.inf
     closest_geom_name = 0
     for bone, tree in kd_tree.items():
         dist_new, i = tree.query(np.array([point]), k=1)

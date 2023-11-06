@@ -341,7 +341,7 @@ def main(argv):
 
   if make_skin:
     create_skin.create(model=model, mesh_file=skin_msh, asset_dir=ASSET_DIR,
-                       name_mesh='dog_skin')
+                       mesh_name='dog_skin')
 
     # Add skin from .skn
     print('Adding Skin.')
@@ -364,7 +364,7 @@ def main(argv):
         muscle_msh = model.asset.add('mesh', name=filename[:-4],
                                      file=ASSET_DIR + '/muscles/' + filename)
         create_skin.create(model=model, asset_dir=ASSET_DIR,
-                           mesh_file=muscle_msh, name_mesh=filename[:-4],
+                           mesh_file=muscle_msh, mesh_name=filename[:-4],
                            tex_coords=False, transform=False)
 
         # Add skin from .skn
@@ -392,7 +392,8 @@ def main(argv):
     add_wrapping_geoms.add_wrapping_geoms(model)
     # Add muscles
     add_muscles.add_muscles(model, muscle_strength_scale,
-                            muscle_dynamics, ASSET_DIR, lengthrange_from_joints)
+                            muscle_dynamics, ASSET_DIR, 
+                            lengthrange_from_joints)
   else:
     actuated_joints = add_torque_actuators.add_motors(
       physics, model, lumbar_joints, cervical_joints, caudal_joints

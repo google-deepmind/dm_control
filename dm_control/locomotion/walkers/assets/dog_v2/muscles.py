@@ -1,4 +1,4 @@
-lateral = ['m_abdominis_Aponeurosis',
+LATERAL = ['m_abdominis_Aponeurosis',
          'm_depressor_caudae_brevis_L',
          'm_depressor_caudae_brevis_L2',
          'm_depressor_caudae_brevis_L2(2)',
@@ -41,7 +41,7 @@ lateral = ['m_abdominis_Aponeurosis',
          'm_tranversus_abdominis_L',
          'm_tranversus_abdominis_R']
 
-to_skip = ['m_orbicularis_oculi',
+TO_SKIP = ['m_orbicularis_oculi',
            'm_Skutulum_L',
            'm_temporalis_L',
            'm_zygomaticus_L',
@@ -83,7 +83,7 @@ to_skip = ['m_orbicularis_oculi',
            'm_flexor_digitorum_superficialis_L'
         ]
 
-flexors_back = [
+FLEXORS_BACK = [
             'm_flexor_digitorum_superficialis_L.001',
             'm_semitendinosus_L',
             'm_adductor_magnus_L',
@@ -108,7 +108,7 @@ flexors_back = [
             'm_flexor_digitorum_profundus_R(2)',
             ]
 
-flexors_front = ['m_teres_major_L',
+FLEXORS_FRONT = ['m_teres_major_L',
             'm_triceps_brachii_long_L(2)',
             'm_flexor_capri_radialis_L',
             'm_triceps_brachii_medial_L',
@@ -128,7 +128,7 @@ flexors_front = ['m_teres_major_L',
             'm_flexor_digitorum_profundus_R'
             ]
 
-extensors_back = [
+EXTENSORS_BACK = [
              'm_extensor_digitorum_longus_L',
              'm_tibialis_cranialis_L',
              'm_sartorius_L(2)',
@@ -153,7 +153,7 @@ extensors_back = [
              'm_pectineus_R',
              ]
 
-extensors_front = [
+EXTENSORS_FRONT = [
              'm_biceps_brachii_L',
              'm_deltoideus_acromialis_L',
              'm_extensor_digitorum_lat_L',
@@ -180,7 +180,7 @@ extensors_front = [
              'm_extensor_capri_radialis_R'
              ]
 
-neck = ['m_Ligament',
+NECK = ['m_Ligament',
         'm_longus_capitis_L',
         'm_splenius_L',
         'm_sternohyroideus_L',
@@ -203,7 +203,7 @@ neck = ['m_Ligament',
         'm_longissimus_cervicis_L',
         'm_rhomboideus_L']
 
-torso = ['m_longissimus_thoracis_L',
+TORSO = ['m_longissimus_thoracis_L',
          'm_longissimus_capitis_L',
          'm_longissimus_thoracis_R',
          'm_longissimus_lumborum_R',
@@ -220,7 +220,7 @@ torso = ['m_longissimus_thoracis_L',
          'm_psoas_minor_R',
          ]
 
-tail = ['m_levator_caudae_longus_R',
+TAIL = ['m_levator_caudae_longus_R',
         'm_levator_caudae_brevis_R2',
         'm_depressor_caudae_brevis_R2',
         'm_depressor_caudae_brevis_L2',

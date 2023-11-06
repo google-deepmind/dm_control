@@ -19,28 +19,28 @@ from os import listdir
 from os.path import isfile, join
 
 import numpy as np
-from scipy.spatial.transform import Rotation as Rot
+from dm_control.utils.transformations import *
 from pykdtree.kdtree import KDTree
 import trimesh
 import pyvista as pv
 from dm_control import mjcf as mjcf_module
 from dm_control.mujoco.wrapper import mjbindings
 
-from muscles import extensors_back, extensors_front, flexors_back, \
-  flexors_front, lateral, neck, tail, torso
+from muscles import EXTENSORS_BACK, EXTENSORS_FRONT, FLEXORS_BACK, \
+  FLEXORS_FRONT, LATERAL, NECK, TAIL, TORSO
 
 from utils import array_to_string, slices2paths
 
-muscle_legs = extensors_back + extensors_front + \
-              flexors_back + flexors_front
+MUSCLE_LEGS = EXTENSORS_BACK + EXTENSORS_FRONT + \
+              FLEXORS_BACK + FLEXORS_FRONT
 
-wrap_geoms_legs = ['shoulder_L_wrapping', 'elbow_L_wrapping',
+WRAP_GEOMS_LEGS = ('shoulder_L_wrapping', 'elbow_L_wrapping',
                    'wrist_L_wrapping', 'finger_L_wrapping', 'hip_L_wrapping',
                    'knee_L_wrapping', 'toe_L_wrapping',
 
                    'shoulder_R_wrapping', 'elbow_R_wrapping',
                    'wrist_R_wrapping', 'finger_R_wrapping', 'hip_R_wrapping',
-                   'knee_R_wrapping', 'toe_R_wrapping']
+                   'knee_R_wrapping', 'toe_R_wrapping')
 
 
 def getClosestGeom(kd_tree, point, mjcf, mtu):
@@ -57,14 +57,14 @@ def getClosestGeom(kd_tree, point, mjcf, mtu):
         closest_geom_body: The closest geometric body (as a Mujoco body object)
         to the target point.
   """
-  dist = 100000000000
+  dist = np.inf
   closest_geom_body = 0
   for bone, tree in kd_tree.items():
     dist_new, i = tree.query(np.array([point]), k=1)
     geom = mjcf.find("geom", bone)
     body = geom.parent
 
-    if mtu in muscle_legs:
+    if mtu in MUSCLE_LEGS:
       if body.name not in ["upper_leg_L",
                            "upper_leg_R", "lower_leg_L", "lower_leg_R",
                            "foot_L", "foot_R", "toe_L", "toe_R",
@@ -116,9 +116,9 @@ def calculate_transformation(element):
       pos = np.zeros(3)
 
     if element.quat is not None:
-      rot = Rot.from_quat(element.quat).as_matrix()
+      rot = quat_to_mat(element.get('quat'))
     else:
-      rot = Rot.identity().as_matrix()
+      rot = np.eye(3)
 
     all_transformations.append(
       np.vstack(
@@ -137,11 +137,35 @@ def calculate_transformation(element):
 
 def add_muscles(model, scale_multiplier, muscle_dynamics,
                 asset_dir, lengthrange_from_joints):
+  """
+    Add muscles to a Mujoco (MJCF) model.
+
+    This function adds muscles to a Mujoco model, 
+    creating MTUs (muscle-tendon units) and defining
+    their properties.
+
+    Args:
+        model (MJCFModel): The input Mujoco model to which muscles will be added.
+        scale_multiplier (float): A scaling factor for muscle forces (0 to disable anatomical scaling).
+        muscle_dynamics (str): Muscle dynamics model, either 'Millard', 'Sigmoid', or 'General'.
+        asset_dir (str): The directory path containing muscle and bone assets.
+        lengthrange_from_joints (bool): If True, compute length ranges from joint limits.
+
+    Returns:
+        None
+
+    Note:
+    - The function modifies the input `model` in place by adding muscles and related properties.
+    - The specific muscles added depend on the provided `muscle_dynamics` and other parameters.
+
+    Raises:
+        NameError: If an unsupported `muscle_dynamics` value is provided.
+    """
   physics = mjcf_module.Physics.from_mjcf_model(model)
 
   mjcf = model
 
-  muscle_meshes_path = asset_dir + '/muscles/'
+  muscle_meshes_path = join(asset_dir, 'muscles/')
   bones_path = asset_dir
 
   bones = [f for f in listdir(bones_path)
@@ -171,8 +195,8 @@ def add_muscles(model, scale_multiplier, muscle_dynamics,
 
   mjcf.option.timestep = 0.005
 
-  muscles = extensors_front + flexors_front + \
-            extensors_back + flexors_back + torso + neck + tail
+  muscles = EXTENSORS_FRONT + FLEXORS_FRONT + \
+            EXTENSORS_BACK + FLEXORS_BACK + TORSO + NECK + TAIL
 
   used_muscles = []
   volumes = []
@@ -184,7 +208,7 @@ def add_muscles(model, scale_multiplier, muscle_dynamics,
     pv_mesh = pv.read(muscle_meshes_path + mtu + '.stl')
     volumes.append(pv_mesh.volume)
     # check along which axis to slice
-    if mtu not in lateral:
+    if mtu not in LATERAL:
       plane_normal = [0, 0, -1]
       start = np.argmax(m.vertices[:, 2])
       end = np.argmin(m.vertices[:, 2])
@@ -213,9 +237,9 @@ def add_muscles(model, scale_multiplier, muscle_dynamics,
     used_muscles.append(mtu)
 
     # print("adding spatial", spatial.name)
-    if mtu in flexors_back or mtu in flexors_front:
+    if mtu in FLEXORS_BACK or mtu in FLEXORS_FRONT:
       spatial.dclass = "flexors"
-    elif mtu in extensors_back or mtu in extensors_front:
+    elif mtu in EXTENSORS_BACK or mtu in EXTENSORS_FRONT:
       spatial.dclass = "extensors"
 
     counter = 0  # used for site naming
@@ -229,9 +253,9 @@ def add_muscles(model, scale_multiplier, muscle_dynamics,
       # Add site to tendon
       min_dist = 0.05
       max_dist = 0.11
-      if mtu in tail:
+      if mtu in TAIL:
         max_dist = 0.05
-      elif mtu in neck:
+      elif mtu in NECK:
         min_dist = 0.11
         max_dist = 0.15
 
@@ -266,28 +290,28 @@ def add_muscles(model, scale_multiplier, muscle_dynamics,
         # check for wrapping geoms
         if idx != len(paths) - 1:
           geoms = physics.named.data.geom_xpos.axes.row.names
-          dist = 100000000000
+          dist = np.inf
           closest_g = None
           closest_geom_pos = None
           for g_name in geoms:
             if 'wrapping' in g_name:
               pos = physics.named.data.geom_xpos[g_name]
               new_dist = np.linalg.norm(pos - point)
-              if (mtu in lateral or mtu in neck) and \
-                  g_name not in wrap_geoms_legs and \
+              if (mtu in LATERAL or mtu in NECK) and \
+                  g_name not in WRAP_GEOMS_LEGS and \
                   pos[2] < point[2] and \
                   new_dist < dist:
                 closest_g = g_name
                 dist = new_dist
                 closest_geom_pos = pos
-              elif (mtu in flexors_back or
-                    mtu in flexors_front or
-                    mtu in extensors_front or
-                    mtu in extensors_back) and \
+              elif (mtu in FLEXORS_BACK or
+                    mtu in FLEXORS_FRONT or
+                    mtu in EXTENSORS_FRONT or
+                    mtu in EXTENSORS_BACK) and \
                   pos[2] < point[2] and \
                   dist > 0.01 and \
                   new_dist < dist and \
-                  g_name in wrap_geoms_legs:
+                  g_name in WRAP_GEOMS_LEGS:
                 # in the legs we are interested only in wrapping
                 # geometries that are lower than the site we
                 # are adding
@@ -296,15 +320,15 @@ def add_muscles(model, scale_multiplier, muscle_dynamics,
                 closest_geom_pos = pos
 
           if dist < 0.1:
-            if (mtu in flexors_back or mtu in flexors_front) \
+            if (mtu in FLEXORS_BACK or mtu in FLEXORS_FRONT) \
                   and closest_geom_pos[2] < point[2]:
               spatial.add('geom', geom=closest_g,
                           sidesite=closest_g + '_backward')
-            elif (mtu in extensors_back or mtu in extensors_front) \
+            elif (mtu in EXTENSORS_BACK or mtu in EXTENSORS_FRONT) \
                     and closest_geom_pos[2] < point[2]:
               spatial.add('geom', geom=closest_g,
                           sidesite=closest_g + '_forward')
-            elif mtu in neck:
+            elif mtu in NECK:
               pos1 = physics.named.data.site_xpos[closest_g + '_forward']
               d1 = np.linalg.norm(pos1 - point)
               pos2 = physics.named.data.site_xpos[closest_g + '_backward']
@@ -315,7 +339,7 @@ def add_muscles(model, scale_multiplier, muscle_dynamics,
               else:
                 spatial.add('geom', geom=closest_g,
                             sidesite=closest_g + '_backward')
-            elif mtu in torso and dist < 0.05:
+            elif mtu in TORSO and dist < 0.05:
               spatial.add('geom', geom=closest_g,
                           sidesite=closest_g + '_forward')
 
@@ -325,7 +349,7 @@ def add_muscles(model, scale_multiplier, muscle_dynamics,
                                  gaintype="muscle", biastype="muscle")
 
       prms = [0] * 10
-      prms[0] = 0.04
+      prms[0] = 0.01
       prms[1] = 0.04
       if muscle_dynamics == 'Millard':
         muscle.dynprm = prms

@@ -23,13 +23,13 @@ import numpy as np
 from scipy import spatial
 
 
-def create(model, mesh_file, name_mesh, asset_dir, tex_coords=True, transform=True):
+def create(model, mesh_file, mesh_name, asset_dir, tex_coords=True, transform=True):
   """Create and add skin in the dog model.
 
   Args:
     model: model in which we want to add the skin.
     mesh_file: a binary mesh format of the skin.
-    name_mesh: the name of the skin to use in the xml
+    mesh_name: the name of the skin to use in the xml
     asset_dir: asset directory to load the .skn file
     tex_coords: boolean to indicate if the mesh has texture coordinates.
     transform: a boolean to rotate mesh orientation by 90 degrees along the z-axis.
@@ -39,8 +39,8 @@ def create(model, mesh_file, name_mesh, asset_dir, tex_coords=True, transform=Tr
   if transform:
     skinmesh = model.worldbody.add(
       'geom',
-      name=name_mesh,
-      mesh=name_mesh,
+      name=mesh_name,
+      mesh=mesh_name,
       type='mesh',
       contype=0,
       conaffinity=0,
@@ -50,28 +50,28 @@ def create(model, mesh_file, name_mesh, asset_dir, tex_coords=True, transform=Tr
   else:
     skinmesh = model.worldbody.add(
       'geom',
-      name=name_mesh,
-      mesh=name_mesh,
+      name=mesh_name,
+      mesh=mesh_name,
       type='mesh',
       contype=0,
       conaffinity=0)
   physics = mjcf.Physics.from_mjcf_model(model)
 
   # Get skinmesh vertices in global coordinates
-  vertadr = physics.named.model.mesh_vertadr[name_mesh]
-  vertnum = physics.named.model.mesh_vertnum[name_mesh]
+  vertadr = physics.named.model.mesh_vertadr[mesh_name]
+  vertnum = physics.named.model.mesh_vertnum[mesh_name]
   skin_vertices = physics.model.mesh_vert[vertadr:vertadr + vertnum, :]
   skin_vertices = skin_vertices.dot(
-    physics.named.data.geom_xmat[name_mesh].reshape(3, 3).T)
-  skin_vertices += physics.named.data.geom_xpos[name_mesh]
+    physics.named.data.geom_xmat[mesh_name].reshape(3, 3).T)
+  skin_vertices += physics.named.data.geom_xpos[mesh_name]
   skin_normals = physics.model.mesh_normal[vertadr:vertadr + vertnum, :]
   skin_normals = skin_normals.dot(
-    physics.named.data.geom_xmat[name_mesh].reshape(3, 3).T)
-  skin_normals += physics.named.data.geom_xpos[name_mesh]
+    physics.named.data.geom_xmat[mesh_name].reshape(3, 3).T)
+  skin_normals += physics.named.data.geom_xpos[mesh_name]
 
   # Get skinmesh faces
-  faceadr = physics.named.model.mesh_faceadr[name_mesh]
-  facenum = physics.named.model.mesh_facenum[name_mesh]
+  faceadr = physics.named.model.mesh_faceadr[mesh_name]
+  facenum = physics.named.model.mesh_facenum[mesh_name]
   skin_faces = physics.model.mesh_face[faceadr:faceadr + facenum, :]
 
   # Make skin
@@ -191,7 +191,7 @@ def create(model, mesh_file, name_mesh, asset_dir, tex_coords=True, transform=Tr
 
   # Convert skin into *.skn file according to
   # https://mujoco.readthedocs.io/en/latest/XMLreference.html#asset-skin
-  f = open(asset_dir + '/skins/' + name_mesh + '.skn', 'w+b')
+  f = open(asset_dir + '/skins/' + mesh_name + '.skn', 'w+b')
 
   nvert = skin.vertex.size // 3
 
