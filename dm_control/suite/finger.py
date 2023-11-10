@@ -153,7 +153,7 @@ class Spin(base.Task):
 
   def get_reward(self, physics):
     """Returns a sparse reward."""
-    return float(physics.hinge_velocity() <= -_SPIN_VELOCITY)
+    return float(physics.hinge_velocity().item() <= -_SPIN_VELOCITY)
 
 
 class Turn(base.Task):
@@ -195,7 +195,7 @@ class Turn(base.Task):
     return obs
 
   def get_reward(self, physics):
-    return float(physics.dist_to_target() <= 0)
+    return float(physics.dist_to_target().item() <= 0)
 
 
 def _set_random_joint_angles(physics, random, max_attempts=1000):
