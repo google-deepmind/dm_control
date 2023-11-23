@@ -2114,9 +2114,13 @@
             <attribute name="group" type="int"/>
             <attribute name="ctrllimited" type="keyword" valid_values="false true auto"/>
             <attribute name="forcelimited" type="keyword" valid_values="false true auto"/>
+            <attribute name="actlimited" type="keyword" valid_values="false true auto"/>
             <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
             <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
+            <attribute name="actrange" type="array" array_type="float" array_size="2"/>
             <attribute name="lengthrange" type="array" array_type="float" array_size="2"/>
+            <attribute name="dyntype" type="keyword" valid_values="none integrator filter filterexact muscle user"/>
+            <attribute name="dynprm" type="array" array_type="float" array_size="10"/>
             <attribute name="gear" type="array" array_type="float" array_size="6"/>
             <attribute name="cranklength" type="float"/>
             <attribute name="joint" type="reference"/>
@@ -2126,6 +2130,7 @@
             <attribute name="cranksite" type="reference" reference_namespace="site"/>
             <attribute name="slidersite" type="reference" reference_namespace="site"/>
             <attribute name="user" type="array" array_type="float"/>
+            <attribute name="actearly" type="keyword" valid_values="false true"/>
           </attributes>
           <children>
             <element name="config" repeated="true">
