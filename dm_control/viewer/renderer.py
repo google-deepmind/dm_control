@@ -254,7 +254,7 @@ class Perturbation:
 
   def tick_move(self, viewport_offset):
     """Transforms object's location/rotation by the specified amount."""
-    if self._action:
+    if self._action and self._action != mujoco.mjtMouse.mjMOUSE_NONE:
       mujoco.mjv_movePerturb(self._model.ptr, self._data.ptr, self._action,
                              viewport_offset[0], viewport_offset[1],
                              self._scene.ptr, self._perturb.ptr)
