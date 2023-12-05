@@ -430,10 +430,10 @@ ensure that two models do not become subtly "incompatible". For example:
 
 ```python
 model_1 = mjcf.RootElement()
-model_1.compiler.angle = 'radians'
+model_1.compiler.angle = 'radian'
 
 model_2 = mjcf.RootElement()
-model_2.compiler.angle = 'degrees'
+model_2.compiler.angle = 'degree'
 
 model_1.attach(model_2)  # Error!
 ```
@@ -446,14 +446,14 @@ become problematic is:
 model_1 = mjcf.RootElement()
 
 model_2 = mjcf.RootElement()
-model_2.compiler.angle = 'degrees'
+model_2.compiler.angle = 'degree'
 
 model_1.attach(model_2)  # No error, but all angles in model_1 are now wrong!
 ```
 
 Here, `model_1` assumes MuJoCo's default angle unit of radians. Since it does
 not explicitly assign a value to `compiler.angle`, PyMJCF does not detect a
-conflict with `angle=degrees` in `model_2`. All angles in `model_1` are now
+conflict with `angle=degree` in `model_2`. All angles in `model_1` are now
 incorrectly interpreted as degrees.
 
 ### Elements outside of `<worldbody>`
