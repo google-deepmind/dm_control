@@ -439,6 +439,7 @@
             <attribute name="cranklength" type="float"/>
             <attribute name="user" type="array" array_type="float"/>
             <attribute name="kp" type="float"/>
+            <attribute name="kv" type="float"/>
           </attributes>
         </element>
         <element name="velocity">
@@ -466,6 +467,7 @@
             <attribute name="cranklength" type="float"/>
             <attribute name="user" type="array" array_type="float"/>
             <attribute name="kp" type="float"/>
+            <attribute name="kv" type="float"/>
           </attributes>
         </element>
         <element name="damper">
@@ -742,6 +744,7 @@
                 <attribute name="cranklength" type="float"/>
                 <attribute name="user" type="array" array_type="float"/>
                 <attribute name="kp" type="float"/>
+                <attribute name="kv" type="float"/>
               </attributes>
             </element>
             <element name="velocity">
@@ -767,6 +770,7 @@
                 <attribute name="cranklength" type="float"/>
                 <attribute name="user" type="array" array_type="float"/>
                 <attribute name="kp" type="float"/>
+                <attribute name="kv" type="float"/>
               </attributes>
             </element>
             <element name="damper">
@@ -1965,6 +1969,7 @@
             <attribute name="refsite" type="reference" reference_namespace="site"/>
             <attribute name="user" type="array" array_type="float"/>
             <attribute name="kp" type="float"/>
+            <attribute name="kv" type="float"/>
           </attributes>
         </element>
         <element name="velocity" repeated="true" namespace="actuator">
@@ -2012,6 +2017,7 @@
             <attribute name="refsite" type="reference" reference_namespace="site"/>
             <attribute name="user" type="array" array_type="float"/>
             <attribute name="kp" type="float"/>
+            <attribute name="kv" type="float"/>
           </attributes>
         </element>
         <element name="damper" repeated="true" namespace="actuator">
