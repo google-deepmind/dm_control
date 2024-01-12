@@ -608,6 +608,9 @@ class PhysicsTest(parameterized.TestCase):
 
   def test_plugins_sdf(self):
     root = mjcf.RootElement()
+    root.option.sdf_iterations = 10
+    root.option.sdf_initpoints = 40
+
     extension = root.extension.add('plugin', plugin='mujoco.sdf.torus')
     instance = extension.add('instance', name='torus')
     instance.add('config', key='radius1', value='0.35')
@@ -617,10 +620,16 @@ class PhysicsTest(parameterized.TestCase):
     mesh = root.asset.add('mesh', name='torus')
     mesh.add('plugin', instance='torus')
 
+    # Test we can add SDF geom to the worldbody.
+    worldbody_geom = root.worldbody.add(
+        'geom', type='sdf', mesh='torus', rgba=[.2, .2, .8, 1])
+    worldbody_geom.add('plugin', instance='torus')
+
+    # Test we can add SDF geom to a body.
     body = root.worldbody.add('body', pos=[-1, 0, 3.8])
     body.add('freejoint')
-    geom = body.add('geom', type='sdf', mesh='torus', rgba=[.2, .2, .8, 1])
-    geom.add('plugin', instance='torus')
+    body_geom = body.add('geom', type='sdf', mesh='torus', rgba=[.2, .2, .8, 1])
+    body_geom.add('plugin', instance='torus')
 
     physics = mjcf.Physics.from_mjcf_model(root)
     physics.step()
