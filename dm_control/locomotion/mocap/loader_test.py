@@ -20,9 +20,9 @@ from absl.testing import absltest
 from dm_control.locomotion.mocap import loader
 from dm_control.locomotion.mocap import mocap_pb2
 from dm_control.locomotion.mocap import trajectory
-
 from google.protobuf import descriptor
 from google.protobuf import text_format
+
 from dm_control.utils import io as resources
 
 TEXTPROTOS = [

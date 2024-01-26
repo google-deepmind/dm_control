@@ -53,6 +53,25 @@ class DummyTaskWithResetFailures(DummyTask):
       raise composer.EpisodeInitializationError()
 
 
+class DummyTaskWithRandomObservation(composer.NullTask):
+
+  def __init__(self):
+    null_entity = composer.ModelWrapperEntity(mjcf.RootElement())
+    super().__init__(null_entity)
+
+    self._observation = [0.0] * 1000
+
+  def initialize_episode(self, physics, random_state):
+    del physics
+    self._observation = random_state.randint(1000, size=1000)
+
+  @property
+  def task_observables(self):
+    random_int = observable.Generic(lambda physics: self._observation)
+    random_int.enabled = True
+    return {'random_int': random_int}
+
+
 class EnvironmentTest(parameterized.TestCase):
 
   def test_failed_resets(self):
@@ -95,6 +114,49 @@ class EnvironmentTest(parameterized.TestCase):
       obs = env.step([]).observation
       self.assertLen(obs, 1)
       np.testing.assert_array_equal(obs['time'], env.physics.time())
+
+  def test_dont_compile_mjcf_between_episodes(self):
+    class AfterCompileHook(object):
+
+      def __init__(self):
+        self.after_compile_call_count = 0
+
+      def __call__(self, physics, random_state):
+        del physics, random_state
+        self.after_compile_call_count += 1
+
+    after_compile_hook = AfterCompileHook()
+    task = DummyTask()
+    env = composer.Environment(task, recompile_mjcf_every_episode=False)
+    env.add_extra_hook('after_compile', after_compile_hook)
+    env.reset()
+    self.assertEqual(after_compile_hook.after_compile_call_count, 1)
+    for _ in range(4):
+      env.reset()
+      env.step([])
+
+    # Check the hook is not called.
+    self.assertEqual(after_compile_hook.after_compile_call_count, 1)
+
+  def test_fixed_initial_state(self):
+    task = DummyTaskWithRandomObservation()
+    fixed_env = composer.Environment(task, fixed_initial_state=True)
+    non_fixed_env = composer.Environment(task, fixed_initial_state=False)
+    fixed_obs = fixed_env.reset().observation['random_int']
+    non_fixed_obs = non_fixed_env.reset().observation['random_int']
+    for _ in range(3):
+      np.testing.assert_array_equal(
+          fixed_env.reset().observation['random_int'], fixed_obs
+      )
+      self.assertTrue(
+          np.any(
+              np.not_equal(
+                  np.asarray(non_fixed_obs),
+                  np.asarray(non_fixed_env.reset().observation['random_int']),
+              )
+          )
+      )
+
 
 if __name__ == '__main__':
   absltest.main()

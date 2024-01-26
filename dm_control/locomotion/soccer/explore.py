@@ -13,13 +13,13 @@
 # limitations under the License.
 # ============================================================================
 
-"""Interactive viewer for MuJoCo soccer enviornmnet."""
+"""Interactive viewer for MuJoCo soccer environment."""
 
 import functools
 from absl import app
 from absl import flags
-from dm_control import viewer
 from dm_control.locomotion import soccer
+from dm_control import viewer
 
 FLAGS = flags.FLAGS
 

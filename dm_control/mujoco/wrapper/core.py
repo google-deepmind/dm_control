@@ -18,6 +18,7 @@
 import contextlib
 import copy
 import ctypes
+from typing import Union
 import weakref
 
 from absl import logging
@@ -235,7 +236,7 @@ def _get_model_ptr_from_binary(binary_path=None, byte_string=None):
 class _MjModelMeta(type):
   """Metaclass which allows MjModel below to delegate to mujoco.MjModel."""
 
-  def __new__(cls, name, bases, dct):
+  def __new__(mcs, name, bases, dct):
     for attr in dir(mujoco.MjModel):
       if not attr.startswith("_"):
         if attr not in dct:
@@ -245,7 +246,7 @@ class _MjModelMeta(type):
               lambda self, value, attr=attr: setattr(self._model, attr, value))
           # pylint: enable=protected-access
           dct[attr] = property(fget, fset)
-    return super().__new__(cls, name, bases, dct)
+    return super().__new__(mcs, name, bases, dct)
 
 
 class MjModel(metaclass=_MjModelMeta):
@@ -426,7 +427,7 @@ class MjModel(metaclass=_MjModelMeta):
 class _MjDataMeta(type):
   """Metaclass which allows MjData below to delegate to mujoco.MjData."""
 
-  def __new__(cls, name, bases, dct):
+  def __new__(mcs, name, bases, dct):
     for attr in dir(mujoco.MjData):
       if not attr.startswith("_"):
         if attr not in dct:
@@ -435,7 +436,7 @@ class _MjDataMeta(type):
           fset = lambda self, value, attr=attr: setattr(self._data, attr, value)
           # pylint: enable=protected-access
           dct[attr] = property(fget, fset)
-    return super().__new__(cls, name, bases, dct)
+    return super().__new__(mcs, name, bases, dct)
 
 
 class MjData(metaclass=_MjDataMeta):
@@ -447,31 +448,35 @@ class MjData(metaclass=_MjDataMeta):
 
   _HAS_DYNAMIC_ATTRIBUTES = True
 
-  def __init__(self, model):
-    """Construct a new MjData instance.
+  def __init__(self, model_or_data: Union[MjModel, mujoco.MjData]):
+    """Constructs a new MjData instance.
 
     Args:
-      model: An MjModel instance.
+      model_or_data: dm_control.mujoco.wrapper.MjModel instance, or
+          mujoco.MjData.
     """
-    self._model = model
-    self._data = mujoco.MjData(model._model)
+    if isinstance(model_or_data, MjModel):
+      self._model = model_or_data
+      self._data = mujoco.MjData(model_or_data._model)
+    elif isinstance(model_or_data, mujoco.MjData):
+      self._data = model_or_data
+      self._model = MjModel(self._data.model)
 
   def __getstate__(self):
-    return (self._model, self._data)
+    return self._data
 
   def __setstate__(self, state):
-    self._model, self._data = state
+    self._data = state
+    self._model = MjModel(self._data.model)
 
   def __copy__(self):
     # This makes a shallow copy that shares the same parent MjModel instance.
     return self._make_copy(share_model=True)
 
   def _make_copy(self, share_model):
-    # TODO(nimrod): Avoid allocating a new MjData just to replace it.
-    new_obj = self.__class__(
-        self._model if share_model else copy.copy(self._model))
-    super(self.__class__, new_obj).__setattr__("_data", copy.copy(self._data))
-    return new_obj
+    if share_model:
+      return self.__class__(copy.copy(self._data))
+    return self.__class__(copy.deepcopy(self._data))
 
   def copy(self):
     """Returns a copy of this MjData instance with the same parent MjModel."""

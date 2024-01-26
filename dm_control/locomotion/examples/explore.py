@@ -17,8 +17,8 @@
 
 from absl import app
 
-from dm_control import viewer
 from dm_control.locomotion.examples import basic_cmu_2019
+from dm_control import viewer
 
 
 def main(unused_argv):

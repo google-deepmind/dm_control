@@ -237,6 +237,11 @@ class Perturbation:
     if action is None or grab_pos is None:
       return
 
+    body_pos = self._data.xpos[self._body_id]
+    body_mat = self._data.xmat[self._body_id].reshape(3, 3)
+    grab_local_pos = body_mat.T.dot(grab_pos - body_pos)
+    self._perturb.localpos[:] = grab_local_pos
+
     mujoco.mjv_initPerturb(self._model.ptr, self._data.ptr, self._scene.ptr,
                            self._perturb.ptr)
     self._action = action
@@ -247,14 +252,9 @@ class Perturbation:
     else:
       self._perturb.active = mujoco.mjtPertBit.mjPERT_ROTATE
 
-    body_pos = self._data.xpos[self._body_id]
-    body_mat = self._data.xmat[self._body_id].reshape(3, 3)
-    grab_local_pos = body_mat.T.dot(grab_pos - body_pos)
-    self._perturb.localpos[:] = grab_local_pos
-
   def tick_move(self, viewport_offset):
     """Transforms object's location/rotation by the specified amount."""
-    if self._action:
+    if self._action and self._action != mujoco.mjtMouse.mjMOUSE_NONE:
       mujoco.mjv_movePerturb(self._model.ptr, self._data.ptr, self._action,
                              viewport_offset[0], viewport_offset[1],
                              self._scene.ptr, self._perturb.ptr)
