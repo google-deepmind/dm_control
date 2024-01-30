@@ -217,7 +217,7 @@ notebook: [Open In Google Colab](https://colab.research.google.com/github/google
     tests_require=[
         'mock',
         'nose',
-        'pillow>=9.0.1',  # https://github.com/advisories/GHSA-8vj2-vxx3-667w
+        'pillow>=10.2.0',
     ],
     test_suite='nose.collector',
     packages=find_packages(),
