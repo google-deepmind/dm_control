@@ -13,7 +13,7 @@
 # limitations under the License.
 # ============================================================================
 
-"""Blender 3.3 plugin for exporting models to MuJoCo native format."""
+"""Blender 3.4 plugin for exporting models to MuJoCo native format."""
 
 import contextlib
 import os
@@ -29,7 +29,7 @@ from . import mujoco_scene
 
 bl_info = {
     'name': 'Export MuJoCo',
-    'author': 'Piotr Trochim',
+    'author': 'The dm_control authors',
     'version': (2, 0),
     'blender': (3, 3, 1),
     'location': 'File > Export > MuJoCo',
@@ -96,7 +96,7 @@ class ExportMjcf(bpy.types.Operator, ExportHelper):
       default=False,
   )
 
-  def _export_mjcf(self, context: bpy.types.Context) -> str:
+  def _export_mjcf(self, context: bpy.types.Context) -> None:
     """Converts a Blender scene to Mujoco XML format."""
     # Create a new XML document
     xml_doc = minidom.Document()
