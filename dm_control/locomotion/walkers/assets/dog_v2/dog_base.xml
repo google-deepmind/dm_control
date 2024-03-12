@@ -61,9 +61,9 @@
       </default>
     </default>
     <default class="cervical">
-      <joint group="3" pos="-0.7 0 0" stiffness="4.0" armature="0.01" damping="3.0"/>
+      <joint group="3" pos="-0.7 0 0" stiffness="5.0" armature="0.01" damping="5.0"/>
       <default class="cervical_extend">
-        <joint range="-17.5 61.25"/>
+        <joint range="-17.5 30"/>
         <general gainprm="20"/>
       </default>
       <default class="cervical_bend">

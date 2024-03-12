@@ -16,42 +16,61 @@
 """Add markers to the dog model, used for motion capture tracking."""
 
 MARKERS_PER_BODY = {
-  'torso': ((-0.25, 0, 0.13), (-0.1, 0, 0.13), (0.05, 0, 0.15),
-            (-0.25, -0.06, -0.01), (-0.1, -0.08, -0.02), (0.05, -0.09, -0.02),
-            (-0.25, 0.06, -0.01), (-0.1, 0.08, -0.02), (0.05, 0.09, -0.02)),
-  'C_6': ((0.05, -0.05, 0), (0.05, 0.05, 0)),
-  'upper_arm': ((0.04, 0, 0)),
-  'lower_arm': ((0.025, 0, 0), (0.025, 0, -0.1)),
-  'hand': ((0, -0.02, 0), (0, 0.02, 0), (0.02, -0.02, -0.08),
-           (0.02, 0.02, -0.08)),
-  'finger': ((0.065, 0, 0)),
-  'pelvis': ((0.04, -0.07, 0.02), (0.04, 0.07, 0.02)),
-  'upper_leg': ((-0.03, 0.04, 0)),
-  'lower_leg': ((0.04, 0, 0), (-0.04, 0.035, 0)),
-  'foot': ((0, -0.02, 0), (0, 0.02, 0), (0, -0.02, -0.1), (0, 0.03, -0.1)),
-  'toe': ((0.055, 0, 0)),
-  'Ca_10': ((0, 0, 0.01)),
-  'skull': ((0.01, 0, 0.04), (0, -0.05, 0), (0, 0.05, 0), (-0.1, 0, 0.02))}
+    "torso": (
+        (-0.25, 0, 0.13),
+        (-0.1, 0, 0.13),
+        (0.05, 0, 0.15),
+        (-0.25, -0.06, -0.01),
+        (-0.1, -0.08, -0.02),
+        (0.05, -0.09, -0.02),
+        (-0.25, 0.06, -0.01),
+        (-0.1, 0.08, -0.02),
+        (0.05, 0.09, -0.02),
+    ),
+    "C_6": ((0.05, -0.05, 0), (0.05, 0.05, 0)),
+    "upper_arm": ((0.04, 0, 0)),
+    "lower_arm": ((0.025, 0, 0), (0.025, 0, -0.1)),
+    "hand": ((0, -0.02, 0), (0, 0.02, 0), (0.02, -0.02, -0.08), (0.02, 0.02, -0.08)),
+    "finger": ((0.065, 0, 0)),
+    "pelvis": ((0.04, -0.07, 0.02), (0.04, 0.07, 0.02)),
+    "upper_leg": ((-0.03, 0.04, 0)),
+    "lower_leg": ((0.04, 0, 0), (-0.04, 0.035, 0)),
+    "foot": ((0, -0.02, 0), (0, 0.02, 0), (0, -0.02, -0.1), (0, 0.03, -0.1)),
+    "toe": ((0.055, 0, 0)),
+    "Ca_10": ((0, 0, 0.01)),
+    "skull": ((0.01, 0, 0.04), (0, -0.05, 0), (0, 0.05, 0), (-0.1, 0, 0.02)),
+}
+
 
 def add_markers(model):
-  bodies = model.find_all('body')
+    """Add markers to the given model.
 
-  TOTAL_MARKERS = 0
-  for body in bodies:
-    for name, markers_pos in markers_per_body.items():
-      if name in body.name and 'anchor' not in body.name:
-        marker_idx = 0
-        for pos in markers_pos:
-          if '_R' in body.name:
-            pos[1] *= -1
-          body.add("site", name='marker_' + body.name + '_' + str(marker_idx),
-                  pos=pos, dclass="marker")
+    Args:
+        model: The model to add markers to.
 
-          marker_idx += 1
-          TOTAL_MARKERS += 1
+    Returns:
+        None
+    """
+    bodies = model.find_all("body")
 
-  for i in range(50):
-    marker_body = model.worldbody.add('body', name="marker_" + str(i), mocap=True)
-    marker_body.add('site', name="marker_" + str(i), dclass="mocap_marker")
-  
-  print("TOTAL MARKERS ADDED:", TOTAL_MARKERS)
+    total_markers = 0
+    for body in bodies:
+        for name, markers_pos in MARKERS_PER_BODY.items():
+            if name in body.name and "anchor" not in body.name:
+                marker_idx = 0
+                for pos in markers_pos:
+                    if "_R" in body.name:
+                        pos[1] *= -1
+                    body.add(
+                        "site",
+                        name="marker_" + body.name + "_" + str(marker_idx),
+                        pos=pos,
+                        dclass="marker",
+                    )
+
+                    marker_idx += 1
+                    total_markers += 1
+
+    for i in range(total_markers):
+        marker_body = model.worldbody.add("body", name="marker_" + str(i), mocap=True)
+        marker_body.add("site", name="marker_" + str(i), dclass="mocap_marker")
