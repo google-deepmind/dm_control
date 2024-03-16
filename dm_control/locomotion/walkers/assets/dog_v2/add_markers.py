@@ -43,34 +43,35 @@ MARKERS_PER_BODY = {
 
 
 def add_markers(model):
-    """Add markers to the given model.
+  """Add markers to the given model.
 
-    Args:
-        model: The model to add markers to.
+  Args:
+      model: The model to add markers to.
 
-    Returns:
-        None
-    """
-    bodies = model.find_all("body")
+  Returns:
+      None
+  """
+  bodies = model.find_all("body")
 
-    total_markers = 0
-    for body in bodies:
-        for name, markers_pos in MARKERS_PER_BODY.items():
-            if name in body.name and "anchor" not in body.name:
-                marker_idx = 0
-                for pos in markers_pos:
-                    if "_R" in body.name:
-                        pos[1] *= -1
-                    body.add(
-                        "site",
-                        name="marker_" + body.name + "_" + str(marker_idx),
-                        pos=pos,
-                        dclass="marker",
-                    )
+  total_markers = 0
+  for body in bodies:
+    for name, markers_pos in MARKERS_PER_BODY.items():
+      if name in body.name and "anchor" not in body.name:
+        marker_idx = 0
+        for pos in markers_pos:
+          if "_R" in body.name:
+            pos[1] *= -1
+          body.add(
+              "site",
+              name="marker_" + body.name + "_" + str(marker_idx),
+              pos=pos,
+              dclass="marker",
+          )
 
-                    marker_idx += 1
-                    total_markers += 1
+          marker_idx += 1
+          total_markers += 1
 
-    for i in range(total_markers):
-        marker_body = model.worldbody.add("body", name="marker_" + str(i), mocap=True)
-        marker_body.add("site", name="marker_" + str(i), dclass="mocap_marker")
+  for i in range(total_markers):
+    marker_body = model.worldbody.add(
+        "body", name="marker_" + str(i), mocap=True)
+    marker_body.add("site", name="marker_" + str(i), dclass="mocap_marker")
