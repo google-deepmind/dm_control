@@ -512,7 +512,7 @@ class Physics(mujoco.Physics):
     super().forward()
     self._dirty = False
 
-  def bind(self, mjcf_elements):
+  def bind(self, mjcf_elements) -> Binding:
     """Creates a binding between this `Physics` instance and `mjcf.Element`s.
 
     The binding allows for easier interaction with the `Physics` data structures
@@ -609,7 +609,7 @@ class Physics(mujoco.Physics):
       ValueError: If `mjcf_elements` cannot be bound to this Physics.
     """
     if mjcf_elements is None:
-      return None
+      raise ValueError('mjcf_elements is None.')
 
     # To reduce overhead from processing MJCF elements and making new bindings,
     # we cache and reuse existing Binding objects. The cheapest version of
@@ -625,13 +625,11 @@ class Physics(mujoco.Physics):
       # `mjcf_elements` is not iterable.
       cache_key = mjcf_elements
 
-    needs_new_binding = False
     try:
-      binding = self._bindings[cache_key]
+      return self._bindings[cache_key]
     except KeyError:
       # This means `mjcf_elements` is hashable, so we use it as cache key.
       namespace, named_index = names_from_elements(mjcf_elements)
-      needs_new_binding = True
     except TypeError:
       # This means `mjcf_elements` is unhashable, fallback to caching by name.
       namespace, named_index = names_from_elements(mjcf_elements)
@@ -644,14 +642,12 @@ class Physics(mujoco.Physics):
         cache_key = (namespace, named_index)
 
       try:
-        binding = self._bindings[cache_key]
+        return self._bindings[cache_key]
       except KeyError:
-        needs_new_binding = True
+        pass
 
-    if needs_new_binding:
-      binding = Binding(weakref.proxy(self), namespace, named_index)
-      self._bindings[cache_key] = binding
-
+    binding = Binding(weakref.proxy(self), namespace, named_index)
+    self._bindings[cache_key] = binding
     return binding
 
 
