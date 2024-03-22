@@ -39,6 +39,11 @@ SKIN = 'skin'
 TENDON = 'tendon'
 WORLDBODY = 'worldbody'
 
+# Path namespaces.
+MESHDIR_NAMESPACE = 'mesh'
+TEXTUREDIR_NAMESPACE = 'texture'
+ASSETDIR_NAMESPACE = 'asset'
+
 MJDATA_TRIGGERS_DIRTY = [
     'qpos', 'qvel', 'act', 'ctrl', 'qfrc_applied', 'xfrc_applied']
 MJMODEL_DOESNT_TRIGGER_DIRTY = [
