@@ -90,7 +90,7 @@ class Physics(mujoco.Physics):
 
   def hinge_velocity(self):
     """Returns the velocity of the hinge joint."""
-    return self.named.data.sensordata['hinge_velocity']
+    return self.named.data.sensordata['hinge_velocity'][0]
 
   def tip_position(self):
     """Returns the (x,z) position of the tip relative to the hinge."""
