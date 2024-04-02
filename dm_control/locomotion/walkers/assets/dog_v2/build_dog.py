@@ -78,8 +78,8 @@ FLAGS = flags.FLAGS
 
 BASE_MODEL = "dog_base.xml"
 ASSET_RELPATH = "../../../../suite/dog_assets"
-ASSET_DIR = os.path.dirname(__file__) + "/" + ASSET_RELPATH
-print(ASSET_DIR)
+CURRENT_DIR = os.path.dirname(__file__)
+ASSET_DIR = CURRENT_DIR + "/" + ASSET_RELPATH
 
 
 def exclude_contacts(model):
@@ -187,7 +187,7 @@ def main(argv):
     lengthrange_from_joints = FLAGS["lengthrange_from_joints"].default
 
   print("Load base model.")
-  with open(BASE_MODEL, "r") as f:
+  with open(os.path.join(CURRENT_DIR, BASE_MODEL), "r") as f:
     model = mjcf.from_file(f)
 
   # Helper constants:
@@ -491,7 +491,7 @@ def main(argv):
 
   print("Add <compiler meshdir/>, for locally-loadable model")
   compiler = etree.Element(
-      "compiler", meshdir=ASSET_RELPATH, texturedir=ASSET_RELPATH
+      "compiler", meshdir=os.path.join(CURRENT_DIR, ASSET_RELPATH), texturedir=os.path.join(CURRENT_DIR, ASSET_RELPATH)
   )
   root.insert(0, compiler)
 
@@ -520,7 +520,7 @@ def main(argv):
     name = "dog_muscles_{}_{}.xml".format(
         muscle_strength_scale, muscle_dynamics)
 
-  f = open(name, "wb")
+  f = open(os.path.join(CURRENT_DIR, name), "wb")
   f.write(xml_string)
   f.close()
 
