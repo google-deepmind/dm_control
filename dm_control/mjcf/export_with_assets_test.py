@@ -27,6 +27,7 @@ FLAGS = flags.FLAGS
 
 _ASSETS_DIR = os.path.join(os.path.dirname(__file__), 'test_assets')
 _TEST_MODEL_WITH_ASSETS = os.path.join(_ASSETS_DIR, 'model_with_assets.xml')
+_TEST_MODEL_WITH_ASSETDIR = os.path.join(_ASSETS_DIR, 'model_with_assetdir.xml')
 _TEST_MODEL_WITHOUT_ASSETS = os.path.join(_ASSETS_DIR, 'lego_brick.xml')
 
 
@@ -42,6 +43,7 @@ class ExportWithAssetsTest(parameterized.TestCase):
 
   @parameterized.named_parameters(
       ('with_assets', _TEST_MODEL_WITH_ASSETS, 'mujoco_with_assets.xml'),
+      ('with_assetdir', _TEST_MODEL_WITH_ASSETDIR, 'mujoco_with_assetdir.xml'),
       ('without_assets', _TEST_MODEL_WITHOUT_ASSETS, 'mujoco.xml'),)
   def test_export_model(self, xml_path, out_xml_name):
     """Save processed MJCF model."""

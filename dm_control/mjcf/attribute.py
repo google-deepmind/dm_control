@@ -511,24 +511,41 @@ class File(_Attribute):
     _, basename = os.path.split(path)
     filename, extension = os.path.splitext(basename)
 
-    # Look in the dict of pre-loaded assets before checking the filesystem.
-    try:
+    assetdir = None
+    if self._parent.namescope.has_identifier(
+        constants.BASEPATH, constants.ASSETDIR_NAMESPACE
+    ):
+      assetdir = self._parent.namescope.get(
+          constants.BASEPATH, constants.ASSETDIR_NAMESPACE
+      )
+
+    if path in self._parent.namescope.assets:
+      # Look in the dict of pre-loaded assets before checking the filesystem.
       contents = self._parent.namescope.assets[path]
-    except KeyError:
+    else:
       # Construct the full path to the asset file, prefixed by the path to the
       # model directory, and by `meshdir` or `texturedir` if appropriate.
       path_parts = []
       if self._parent.namescope.model_dir:
         path_parts.append(self._parent.namescope.model_dir)
-      try:
-        base_path = self._parent.namescope.get(constants.BASEPATH,
-                                               self._path_namespace)
+
+      if self._parent.namescope.has_identifier(
+          constants.BASEPATH, self._path_namespace
+      ):
+        base_path = self._parent.namescope.get(
+            constants.BASEPATH, self._path_namespace
+        )
         path_parts.append(base_path)
-      except KeyError:
-        pass
+      elif (
+          self._path_namespace
+          in (constants.TEXTUREDIR_NAMESPACE, constants.MESHDIR_NAMESPACE)
+          and assetdir is not None
+      ):
+        path_parts.append(assetdir)
       path_parts.append(path)
       full_path = os.path.join(*path_parts)  # pylint: disable=no-value-for-parameter
       contents = resources.GetResource(full_path)
+
     if self._parent.tag == constants.SKIN:
       return SkinAsset(contents=contents, parent=self._parent,
                        extension=extension, prefix=filename)

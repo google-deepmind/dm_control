@@ -22,6 +22,7 @@ from dm_control.mjcf import constants
 from dm_control.mjcf import debugging
 from dm_control.mjcf import element
 from lxml import etree
+# Copybara placeholder for internal file handling dependency.
 from dm_control.utils import io as resources
 
 
@@ -213,7 +214,7 @@ def _parse_children(xml_element, mjcf_element, escape_separators=False):
         mjcf_child.set_attributes(**attributes)
     except:  # pylint: disable=bare-except
       err_type, err, traceback = sys.exc_info()
-      raise err_type(
+      raise err_type(  # pylint: disable=raise-missing-from
           f'Line {xml_child.sourceline}: error while parsing element '
           f'<{xml_child.tag}>: {err}').with_traceback(traceback)
     _parse_children(xml_child, mjcf_child, escape_separators)

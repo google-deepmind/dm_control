@@ -1,0 +1,19 @@
+<mujoco model="Textured cube and mesh">
+  <compiler assetdir="meshes" texturedir="textures"/>
+  <asset>
+    <mesh name="cube" file="cube.stl"/>
+    <mesh name="another_cube" file="more_meshes/cube.stl"/>
+    <mesh name="unused_asset_should_not_cause_problems" file="cube.stl"/>
+    <mesh name="cube_msh" file="cube.msh"/>
+    <texture name="texture" file="deepmind.png"/>
+    <material name="mat_texture" texture="texture"/>
+    <hfield name="hill" file="../textures/deepmind.png" size="0.5 0.5 0.5 0.1"/>
+  </asset>
+  <worldbody>
+    <light diffuse=".5 .5 .5" pos="0 0 3" dir="0 0 -1"/>
+    <geom type="mesh" mesh="cube" material="mat_texture"/>
+    <geom type="mesh" mesh="another_cube" material="mat_texture" pos="2.5 0. 0."/>
+    <geom type="mesh" mesh="cube_msh" material="mat_texture" pos="4. 0. 0."/>
+    <geom type="hfield" hfield="hill" pos="1.2 0. 0" rgba="0. 0.9 0. 1" size="40 40 0.1"/>
+  </worldbody>
+</mujoco>
