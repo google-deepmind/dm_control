@@ -1113,7 +1113,7 @@
             <attribute name="material" type="string"/>
             <attribute name="rgba" type="array" array_type="float" array_size="4"/>
             <attribute name="flatskin" type="int"/>
-            <attribute name="pos" type="array" array_type="int" array_size="3"/>
+            <attribute name="pos" type="array" array_type="float" array_size="3"/>
             <attribute name="quat" type="array" array_type="int" array_size="4"/>
             <attribute name="axisangle" type="array" array_type="float" array_size="4"/>
             <attribute name="xyaxis" type="array" array_type="float" array_size="6"/>
@@ -1499,7 +1499,7 @@
                 <attribute name="material" type="string"/>
                 <attribute name="rgba" type="array" array_type="float" array_size="4"/>
                 <attribute name="flatskin" type="int"/>
-                <attribute name="pos" type="array" array_type="int" array_size="3"/>
+                <attribute name="pos" type="array" array_type="float" array_size="3"/>
                 <attribute name="quat" type="array" array_type="int" array_size="4"/>
                 <attribute name="axisangle" type="array" array_type="float" array_size="4"/>
                 <attribute name="xyaxis" type="array" array_type="float" array_size="6"/>
