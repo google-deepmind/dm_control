@@ -1101,7 +1101,7 @@
             <attribute name="type" type="keyword" valid_values="grid box cylinder ellipsoid mesh gmsh direct"/>
             <attribute name="count" type="array" array_type="int" array_size="3"/>
             <attribute name="spacing" type="array" array_type="int" array_size="3"/>
-            <attribute name="scale" type="array" array_type="int" array_size="3"/>
+            <attribute name="scale" type="array" array_type="float" array_size="3"/>
             <attribute name="radius" type="float"/>
             <attribute name="rigid" type="int"/>
             <attribute name="mass" type="float"/>
@@ -1111,7 +1111,7 @@
             <attribute name="element" type="string"/>
             <attribute name="texcoord" type="string"/>
             <attribute name="material" type="string"/>
-            <attribute name="rgba" type="array" array_type="float" array_size="2"/>
+            <attribute name="rgba" type="array" array_type="float" array_size="4"/>
             <attribute name="flatskin" type="int"/>
             <attribute name="pos" type="array" array_type="int" array_size="3"/>
             <attribute name="quat" type="array" array_type="int" array_size="4"/>
@@ -1119,6 +1119,7 @@
             <attribute name="xyaxis" type="array" array_type="float" array_size="6"/>
             <attribute name="zaxis" type="array" array_type="float" array_size="3"/>
             <attribute name="euler" type="array" array_type="float" array_size="3"/>
+            <attribute name="dim" type="int" required="true"/>
           </attributes>
           <children>
             <element name="plugin" repeated="true" namespace="flexcomp">
@@ -1138,7 +1139,7 @@
             </element>
             <element name="edge" repeated="true">
               <attributes>
-                <attribute name="equality" type="int"/>
+                <attribute name="equality" type="string" valid_values="true false"/>
                 <attribute name="solref" type="array" array_type="float" array_size="2"/>
                 <attribute name="solimp" type="array" array_type="float" array_size="5"/>
                 <attribute name="stiffness" type="float"/>
@@ -1158,7 +1159,7 @@
                 <attribute name="margin" type="float"/>
                 <attribute name="gap" type="float"/>
                 <attribute name="internal" type="int"/>
-                <attribute name="selfcollide" type="int"/>
+                <attribute name="selfcollide" type="string" valid_values="none narrow bvh sap auto"/>
                 <attribute name="activelayers" type="int"/>
               </attributes>
             </element>
@@ -1486,7 +1487,7 @@
                 <attribute name="type" type="keyword" valid_values="grid box cylinder ellipsoid mesh gmsh direct"/>
                 <attribute name="count" type="array" array_type="int" array_size="3"/>
                 <attribute name="spacing" type="array" array_type="int" array_size="3"/>
-                <attribute name="scale" type="array" array_type="int" array_size="3"/>
+                <attribute name="scale" type="array" array_type="float" array_size="3"/>
                 <attribute name="radius" type="float"/>
                 <attribute name="rigid" type="int"/>
                 <attribute name="mass" type="float"/>
@@ -1496,7 +1497,7 @@
                 <attribute name="element" type="string"/>
                 <attribute name="texcoord" type="string"/>
                 <attribute name="material" type="string"/>
-                <attribute name="rgba" type="array" array_type="float" array_size="2"/>
+                <attribute name="rgba" type="array" array_type="float" array_size="4"/>
                 <attribute name="flatskin" type="int"/>
                 <attribute name="pos" type="array" array_type="int" array_size="3"/>
                 <attribute name="quat" type="array" array_type="int" array_size="4"/>
@@ -1523,7 +1524,7 @@
                 </element>
                 <element name="edge" repeated="true">
                   <attributes>
-                    <attribute name="equality" type="int"/>
+                    <attribute name="equality" type="string" valid_values="true false"/>
                     <attribute name="solref" type="array" array_type="float" array_size="2"/>
                     <attribute name="solimp" type="array" array_type="float" array_size="5"/>
                     <attribute name="stiffness" type="float"/>
@@ -1543,7 +1544,7 @@
                     <attribute name="margin" type="float"/>
                     <attribute name="gap" type="float"/>
                     <attribute name="internal" type="int"/>
-                    <attribute name="selfcollide" type="int"/>
+                    <attribute name="selfcollide" type="string" valid_values="none narrow bvh sap auto"/>
                     <attribute name="activelayers" type="int"/>
                   </attributes>
                 </element>
@@ -1690,7 +1691,7 @@
             <attribute name="dim" type="reference" required="true" reference_namespace="geom"/>
             <attribute name="radius" type="reference" required="true" reference_namespace="geom"/>
             <attribute name="material" type="int"/>
-            <attribute name="rgba" type="array" array_type="float" array_size="5"/>
+            <attribute name="rgba" type="array" array_type="float" array_size="4"/>
             <attribute name="flatskin" type="array" array_type="float" array_size="2"/>
             <attribute name="body" type="array" array_type="float" array_size="2"/>
             <attribute name="vertex" type="array" array_type="float" array_size="5"/>
@@ -1717,7 +1718,7 @@
                 <attribute name="margin" type="float"/>
                 <attribute name="gap" type="float"/>
                 <attribute name="internal" type="int"/>
-                <attribute name="selfcollide" type="int"/>
+                <attribute name="selfcollide" type="string" valid_values="none narrow bvh sap auto"/>
                 <attribute name="activelayers" type="int"/>
               </attributes>
             </element>
