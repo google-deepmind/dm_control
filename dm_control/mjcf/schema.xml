@@ -266,6 +266,7 @@
             <attribute name="damping" type="float"/>
             <attribute name="frictionloss" type="float"/>
             <attribute name="user" type="array" array_type="float"/>
+            <attribute name="actuatorgravcomp" type="keyword" valid_values="false true"/>
           </attributes>
         </element>
         <element name="geom">
@@ -577,6 +578,7 @@
                 <attribute name="damping" type="float"/>
                 <attribute name="frictionloss" type="float"/>
                 <attribute name="user" type="array" array_type="float"/>
+                <attribute name="actuatorgravcomp" type="keyword" valid_values="false true"/>
               </attributes>
             </element>
             <element name="geom">
