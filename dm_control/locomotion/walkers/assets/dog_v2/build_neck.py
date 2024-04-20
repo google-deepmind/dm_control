@@ -92,6 +92,30 @@ def create_neck(
   cervical_axis["bend"] = np.array((0.0, 0.0, 1.0))
   cervical_axis["twist"] = np.array((1.0, 0.0, 0))
 
+  neck_ranges = {
+      "C_7_extend": [-14.2, 35.4],
+      "C_7_bend": [-23.5, 23.5],
+      "C_7_twist": [-42.4, 42.4],
+      "C_6_extend": [-14.2, 35.4],
+      "C_6_bend": [-23.5, 23.5],
+      "C_6_twist": [-42.4, 42.4],
+      "C_5_extend": [-11.9, 11.2],
+      "C_5_bend": [-27.9, 27.9],
+      "C_5_twist": [-33, 33],
+      "C_4_extend": [-11.9, 11.2],
+      "C_4_bend": [-27.9, 27.9],
+      "C_4_twist": [-33, 33],
+      "C_3_extend": [-13.4, 18.3],
+      "C_3_bend": [-32, 32],
+      "C_3_twist": [-10.1, 10.1],
+      "C_2_extend": [-13.4, 18.3],
+      "C_2_bend": [-32, 32],
+      "C_2_twist": [-10.1, 10.1],
+      "C_1_extend": [-16.4, 12.9],
+      "C_1_bend": [-26, 26],
+      "C_1_twist": [-10.1, 10.1],
+  }
+
   num_dofs = 0
   cervical_joints = []
   cervical_joint_names = []
@@ -117,6 +141,7 @@ def create_neck(
           "joint",
           name=cervical_joint_names[-1],
           dclass="cervical_" + dof_name,
+          range=neck_ranges[cervical_joint_names[-1]],
           axis=cervical_axis[dof_name],
           pos=joint_pos.dot(joint_frame),
       )
