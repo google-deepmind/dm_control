@@ -564,7 +564,7 @@
                 <attribute name="axis" type="array" array_type="float" array_size="3"/>
                 <attribute name="springdamper" type="array" array_type="float" array_size="2"/>
                 <attribute name="limited" type="keyword" valid_values="false true"/>
-                <attribute name="actuatorfrclimited" type="keyword" valid_values="false true"/>
+                <attribute name="actuatorfrclimited" type="keyword" valid_values="false true auto"/>
                 <attribute name="solreflimit" type="array" array_type="float" array_size="2"/>
                 <attribute name="solimplimit" type="array" array_type="float" array_size="5"/>
                 <attribute name="solreffriction" type="array" array_type="float" array_size="2"/>
@@ -1352,6 +1352,8 @@
                 <attribute name="solimplimit" type="array" array_type="float" array_size="5"/>
                 <attribute name="solreffriction" type="array" array_type="float" array_size="2"/>
                 <attribute name="solimpfriction" type="array" array_type="float" array_size="5"/>
+                <attribute name="actuatorfrclimited" type="keyword" valid_values="false true auto"/>
+                <attribute name="actuatorfrcrange" type="array" array_type="float" array_size="2"/>
                 <attribute name="stiffness" type="float"/>
                 <attribute name="range" type="array" array_type="float" array_size="2"/>
                 <attribute name="margin" type="float"/>
