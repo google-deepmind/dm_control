@@ -215,7 +215,7 @@ def _attachment_frame_spec(is_world_attachment):
   body_spec = MUJOCO.children['worldbody'].children['body']
   # 'name' and 'childclass' attributes are excluded.
   for attrib_name in (
-      'mocap', 'pos', 'quat', 'axisangle', 'xyaxes', 'zaxis', 'euler'):
+      'mocap', 'pos', 'quat', 'axisangle', 'xyaxes', 'zaxis', 'euler', 'user'):
     frame_spec.attributes[attrib_name] = copy.deepcopy(
         body_spec.attributes[attrib_name])
 
