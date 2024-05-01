@@ -1103,10 +1103,10 @@
             <attribute name="name" type="identifier"/>
             <attribute name="type" type="keyword" valid_values="grid box cylinder ellipsoid mesh gmsh direct"/>
             <attribute name="count" type="array" array_type="int" array_size="3"/>
-            <attribute name="spacing" type="array" array_type="int" array_size="3"/>
+            <attribute name="spacing" type="array" array_type="float" array_size="3"/>
             <attribute name="scale" type="array" array_type="float" array_size="3"/>
             <attribute name="radius" type="float"/>
-            <attribute name="rigid" type="int"/>
+            <attribute name="rigid" type="string" valid_values="true false"/>
             <attribute name="mass" type="float"/>
             <attribute name="inertiabox" type="float"/>
             <attribute name="file" type="string"/>
@@ -1117,7 +1117,7 @@
             <attribute name="rgba" type="array" array_type="float" array_size="4"/>
             <attribute name="flatskin" type="int"/>
             <attribute name="pos" type="array" array_type="float" array_size="3"/>
-            <attribute name="quat" type="array" array_type="int" array_size="4"/>
+            <attribute name="quat" type="array" array_type="float" array_size="4"/>
             <attribute name="axisangle" type="array" array_type="float" array_size="4"/>
             <attribute name="xyaxis" type="array" array_type="float" array_size="6"/>
             <attribute name="zaxis" type="array" array_type="float" array_size="3"/>
@@ -1161,7 +1161,7 @@
                 <attribute name="solimp" type="array" array_type="float" array_size="5"/>
                 <attribute name="margin" type="float"/>
                 <attribute name="gap" type="float"/>
-                <attribute name="internal" type="int"/>
+                <attribute name="internal" type="string" valid_values="true false"/>
                 <attribute name="selfcollide" type="string" valid_values="none narrow bvh sap auto"/>
                 <attribute name="activelayers" type="int"/>
               </attributes>
@@ -1491,10 +1491,10 @@
                 <attribute name="name" type="identifier"/>
                 <attribute name="type" type="keyword" valid_values="grid box cylinder ellipsoid mesh gmsh direct"/>
                 <attribute name="count" type="array" array_type="int" array_size="3"/>
-                <attribute name="spacing" type="array" array_type="int" array_size="3"/>
+                <attribute name="spacing" type="array" array_type="float" array_size="3"/>
                 <attribute name="scale" type="array" array_type="float" array_size="3"/>
                 <attribute name="radius" type="float"/>
-                <attribute name="rigid" type="int"/>
+                <attribute name="rigid" type="string" valid_values="true false"/>
                 <attribute name="mass" type="float"/>
                 <attribute name="inertiabox" type="float"/>
                 <attribute name="file" type="string"/>
@@ -1505,11 +1505,12 @@
                 <attribute name="rgba" type="array" array_type="float" array_size="4"/>
                 <attribute name="flatskin" type="int"/>
                 <attribute name="pos" type="array" array_type="float" array_size="3"/>
-                <attribute name="quat" type="array" array_type="int" array_size="4"/>
+                <attribute name="quat" type="array" array_type="float" array_size="4"/>
                 <attribute name="axisangle" type="array" array_type="float" array_size="4"/>
                 <attribute name="xyaxis" type="array" array_type="float" array_size="6"/>
                 <attribute name="zaxis" type="array" array_type="float" array_size="3"/>
                 <attribute name="euler" type="array" array_type="float" array_size="3"/>
+                <attribute name="dim" type="int" required="true"/>
               </attributes>
               <children>
                 <element name="plugin" repeated="true" namespace="flexcomp">
@@ -1548,7 +1549,7 @@
                     <attribute name="solimp" type="array" array_type="float" array_size="5"/>
                     <attribute name="margin" type="float"/>
                     <attribute name="gap" type="float"/>
-                    <attribute name="internal" type="int"/>
+                    <attribute name="internal" type="string" valid_values="true false"/>
                     <attribute name="selfcollide" type="string" valid_values="none narrow bvh sap auto"/>
                     <attribute name="activelayers" type="int"/>
                   </attributes>
