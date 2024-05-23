@@ -199,12 +199,19 @@ def _parse_children(xml_element, mjcf_element, escape_separators=False):
       if escape_separators:
         attributes = {}
         for name, value in xml_child.attrib.items():
-          new_value = value.replace(
-              constants.PREFIX_SEPARATOR_ESCAPE,
-              constants.PREFIX_SEPARATOR_ESCAPE * 2)
-          new_value = new_value.replace(
-              constants.PREFIX_SEPARATOR, constants.PREFIX_SEPARATOR_ESCAPE)
-          attributes[name] = new_value
+          # skip flipping the slash for fields that may contain paths, like
+          # custom text and asset file.
+          if name in ['data', 'file', 'meshdir', 'assetdir', 'texturedir',
+                      'content_type', 'fileleft', 'fileright', 'fileback',
+                      'filefront', 'plugin', 'key', 'value']:
+            attributes[name] = value
+          else:
+            new_value = value.replace(
+                constants.PREFIX_SEPARATOR_ESCAPE,
+                constants.PREFIX_SEPARATOR_ESCAPE * 2)
+            new_value = new_value.replace(
+                constants.PREFIX_SEPARATOR, constants.PREFIX_SEPARATOR_ESCAPE)
+            attributes[name] = new_value
       else:
         attributes = dict(xml_child.attrib)
       if child_spec.repeated or child_spec.on_demand:

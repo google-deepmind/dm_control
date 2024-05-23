@@ -87,6 +87,7 @@
             <attribute name="actuation" type="keyword" valid_values="disable enable"/>
             <attribute name="refsafe" type="keyword" valid_values="disable enable"/>
             <attribute name="sensor" type="keyword" valid_values="disable enable"/>
+            <attribute name="eulerdamp" type="keyword" valid_values="disable enable"/>
             <attribute name="override" type="keyword" valid_values="disable enable"/>
             <attribute name="energy" type="keyword" valid_values="disable enable"/>
             <attribute name="fwdinv" type="keyword" valid_values="disable enable"/>
@@ -266,6 +267,7 @@
             <attribute name="damping" type="float"/>
             <attribute name="frictionloss" type="float"/>
             <attribute name="user" type="array" array_type="float"/>
+            <attribute name="actuatorgravcomp" type="keyword" valid_values="false true"/>
           </attributes>
         </element>
         <element name="geom">
@@ -442,6 +444,7 @@
             <attribute name="user" type="array" array_type="float"/>
             <attribute name="kp" type="float"/>
             <attribute name="kv" type="float"/>
+            <attribute name="timeconst" type="float"/>
           </attributes>
         </element>
         <element name="velocity">
@@ -562,7 +565,7 @@
                 <attribute name="axis" type="array" array_type="float" array_size="3"/>
                 <attribute name="springdamper" type="array" array_type="float" array_size="2"/>
                 <attribute name="limited" type="keyword" valid_values="false true"/>
-                <attribute name="actuatorfrclimited" type="keyword" valid_values="false true"/>
+                <attribute name="actuatorfrclimited" type="keyword" valid_values="false true auto"/>
                 <attribute name="solreflimit" type="array" array_type="float" array_size="2"/>
                 <attribute name="solimplimit" type="array" array_type="float" array_size="5"/>
                 <attribute name="solreffriction" type="array" array_type="float" array_size="2"/>
@@ -577,6 +580,7 @@
                 <attribute name="damping" type="float"/>
                 <attribute name="frictionloss" type="float"/>
                 <attribute name="user" type="array" array_type="float"/>
+                <attribute name="actuatorgravcomp" type="keyword" valid_values="false true"/>
               </attributes>
             </element>
             <element name="geom">
@@ -747,6 +751,7 @@
                 <attribute name="user" type="array" array_type="float"/>
                 <attribute name="kp" type="float"/>
                 <attribute name="kv" type="float"/>
+                <attribute name="timeconst" type="float"/>
               </attributes>
             </element>
             <element name="velocity">
@@ -1100,10 +1105,10 @@
             <attribute name="name" type="identifier"/>
             <attribute name="type" type="keyword" valid_values="grid box cylinder ellipsoid mesh gmsh direct"/>
             <attribute name="count" type="array" array_type="int" array_size="3"/>
-            <attribute name="spacing" type="array" array_type="int" array_size="3"/>
-            <attribute name="scale" type="array" array_type="int" array_size="3"/>
+            <attribute name="spacing" type="array" array_type="float" array_size="3"/>
+            <attribute name="scale" type="array" array_type="float" array_size="3"/>
             <attribute name="radius" type="float"/>
-            <attribute name="rigid" type="int"/>
+            <attribute name="rigid" type="string" valid_values="true false"/>
             <attribute name="mass" type="float"/>
             <attribute name="inertiabox" type="float"/>
             <attribute name="file" type="string"/>
@@ -1111,14 +1116,15 @@
             <attribute name="element" type="string"/>
             <attribute name="texcoord" type="string"/>
             <attribute name="material" type="string"/>
-            <attribute name="rgba" type="array" array_type="float" array_size="2"/>
+            <attribute name="rgba" type="array" array_type="float" array_size="4"/>
             <attribute name="flatskin" type="int"/>
-            <attribute name="pos" type="array" array_type="int" array_size="3"/>
-            <attribute name="quat" type="array" array_type="int" array_size="4"/>
+            <attribute name="pos" type="array" array_type="float" array_size="3"/>
+            <attribute name="quat" type="array" array_type="float" array_size="4"/>
             <attribute name="axisangle" type="array" array_type="float" array_size="4"/>
             <attribute name="xyaxis" type="array" array_type="float" array_size="6"/>
             <attribute name="zaxis" type="array" array_type="float" array_size="3"/>
             <attribute name="euler" type="array" array_type="float" array_size="3"/>
+            <attribute name="dim" type="int" required="true"/>
           </attributes>
           <children>
             <element name="plugin" repeated="true" namespace="flexcomp">
@@ -1138,7 +1144,7 @@
             </element>
             <element name="edge" repeated="true">
               <attributes>
-                <attribute name="equality" type="int"/>
+                <attribute name="equality" type="string" valid_values="true false"/>
                 <attribute name="solref" type="array" array_type="float" array_size="2"/>
                 <attribute name="solimp" type="array" array_type="float" array_size="5"/>
                 <attribute name="stiffness" type="float"/>
@@ -1157,8 +1163,8 @@
                 <attribute name="solimp" type="array" array_type="float" array_size="5"/>
                 <attribute name="margin" type="float"/>
                 <attribute name="gap" type="float"/>
-                <attribute name="internal" type="int"/>
-                <attribute name="selfcollide" type="int"/>
+                <attribute name="internal" type="string" valid_values="true false"/>
+                <attribute name="selfcollide" type="string" valid_values="none narrow bvh sap auto"/>
                 <attribute name="activelayers" type="int"/>
               </attributes>
             </element>
@@ -1304,6 +1310,7 @@
             <attribute name="zaxis" type="array" array_type="float" array_size="3"/>
             <attribute name="euler" type="array" array_type="float" array_size="3"/>
             <attribute name="gravcomp" type="float"/>
+            <attribute name="user" type="array" array_type="float"/>
           </attributes>
           <children>
             <element name="plugin" repeated="true" namespace="body">
@@ -1348,6 +1355,8 @@
                 <attribute name="solimplimit" type="array" array_type="float" array_size="5"/>
                 <attribute name="solreffriction" type="array" array_type="float" array_size="2"/>
                 <attribute name="solimpfriction" type="array" array_type="float" array_size="5"/>
+                <attribute name="actuatorfrclimited" type="keyword" valid_values="false true auto"/>
+                <attribute name="actuatorfrcrange" type="array" array_type="float" array_size="2"/>
                 <attribute name="stiffness" type="float"/>
                 <attribute name="range" type="array" array_type="float" array_size="2"/>
                 <attribute name="margin" type="float"/>
@@ -1485,10 +1494,10 @@
                 <attribute name="name" type="identifier"/>
                 <attribute name="type" type="keyword" valid_values="grid box cylinder ellipsoid mesh gmsh direct"/>
                 <attribute name="count" type="array" array_type="int" array_size="3"/>
-                <attribute name="spacing" type="array" array_type="int" array_size="3"/>
-                <attribute name="scale" type="array" array_type="int" array_size="3"/>
+                <attribute name="spacing" type="array" array_type="float" array_size="3"/>
+                <attribute name="scale" type="array" array_type="float" array_size="3"/>
                 <attribute name="radius" type="float"/>
-                <attribute name="rigid" type="int"/>
+                <attribute name="rigid" type="string" valid_values="true false"/>
                 <attribute name="mass" type="float"/>
                 <attribute name="inertiabox" type="float"/>
                 <attribute name="file" type="string"/>
@@ -1496,14 +1505,15 @@
                 <attribute name="element" type="string"/>
                 <attribute name="texcoord" type="string"/>
                 <attribute name="material" type="string"/>
-                <attribute name="rgba" type="array" array_type="float" array_size="2"/>
+                <attribute name="rgba" type="array" array_type="float" array_size="4"/>
                 <attribute name="flatskin" type="int"/>
-                <attribute name="pos" type="array" array_type="int" array_size="3"/>
-                <attribute name="quat" type="array" array_type="int" array_size="4"/>
+                <attribute name="pos" type="array" array_type="float" array_size="3"/>
+                <attribute name="quat" type="array" array_type="float" array_size="4"/>
                 <attribute name="axisangle" type="array" array_type="float" array_size="4"/>
                 <attribute name="xyaxis" type="array" array_type="float" array_size="6"/>
                 <attribute name="zaxis" type="array" array_type="float" array_size="3"/>
                 <attribute name="euler" type="array" array_type="float" array_size="3"/>
+                <attribute name="dim" type="int" required="true"/>
               </attributes>
               <children>
                 <element name="plugin" repeated="true" namespace="flexcomp">
@@ -1523,7 +1533,7 @@
                 </element>
                 <element name="edge" repeated="true">
                   <attributes>
-                    <attribute name="equality" type="int"/>
+                    <attribute name="equality" type="string" valid_values="true false"/>
                     <attribute name="solref" type="array" array_type="float" array_size="2"/>
                     <attribute name="solimp" type="array" array_type="float" array_size="5"/>
                     <attribute name="stiffness" type="float"/>
@@ -1542,8 +1552,8 @@
                     <attribute name="solimp" type="array" array_type="float" array_size="5"/>
                     <attribute name="margin" type="float"/>
                     <attribute name="gap" type="float"/>
-                    <attribute name="internal" type="int"/>
-                    <attribute name="selfcollide" type="int"/>
+                    <attribute name="internal" type="string" valid_values="true false"/>
+                    <attribute name="selfcollide" type="string" valid_values="none narrow bvh sap auto"/>
                     <attribute name="activelayers" type="int"/>
                   </attributes>
                 </element>
@@ -1690,7 +1700,7 @@
             <attribute name="dim" type="reference" required="true" reference_namespace="geom"/>
             <attribute name="radius" type="reference" required="true" reference_namespace="geom"/>
             <attribute name="material" type="int"/>
-            <attribute name="rgba" type="array" array_type="float" array_size="5"/>
+            <attribute name="rgba" type="array" array_type="float" array_size="4"/>
             <attribute name="flatskin" type="array" array_type="float" array_size="2"/>
             <attribute name="body" type="array" array_type="float" array_size="2"/>
             <attribute name="vertex" type="array" array_type="float" array_size="5"/>
@@ -1717,7 +1727,7 @@
                 <attribute name="margin" type="float"/>
                 <attribute name="gap" type="float"/>
                 <attribute name="internal" type="int"/>
-                <attribute name="selfcollide" type="int"/>
+                <attribute name="selfcollide" type="string" valid_values="none narrow bvh sap auto"/>
                 <attribute name="activelayers" type="int"/>
               </attributes>
             </element>
@@ -1989,6 +1999,7 @@
             <attribute name="user" type="array" array_type="float"/>
             <attribute name="kp" type="float"/>
             <attribute name="kv" type="float"/>
+            <attribute name="timeconst" type="float"/>
           </attributes>
         </element>
         <element name="velocity" repeated="true" namespace="actuator">
