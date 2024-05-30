@@ -1,5 +1,5 @@
 <mujoco model="dog">
-  <compiler meshdir="/Users/vittoriolabarbera/Documents/dm_control/dm_control/locomotion/walkers/assets/dog_v2/../../../../suite/dog_assets" texturedir="/Users/vittoriolabarbera/Documents/dm_control/dm_control/locomotion/walkers/assets/dog_v2/../../../../suite/dog_assets"/>
+  <compiler meshdir="../../../../suite/dog_assets" texturedir="../../../../suite/dog_assets"/>
 
   <option timestep="0.005" integrator="Euler" cone="pyramidal" noslip_iterations="3"/>
 
@@ -50,28 +50,28 @@
       <joint group="3" pos="0.012 0 0.01" armature="0.01" damping="3"/>
       <general gainprm="40"/>
       <default class="lumbar_extend">
-        <joint stiffness="30" range="-13 13"/>
+        <joint stiffness="30" range="-22.75 22.75"/>
         <general gainprm="60"/>
       </default>
       <default class="lumbar_bend">
-        <joint stiffness="45" range="-15 15"/>
+        <joint stiffness="45" range="-26.25 26.25"/>
       </default>
       <default class="lumbar_twist">
-        <joint stiffness="45" range="-10 10"/>
+        <joint stiffness="45" range="-23.33 23.33"/>
       </default>
     </default>
     <default class="cervical">
       <joint group="3" pos="-0.7 0 0" stiffness="5" armature="0.01" damping="5"/>
       <default class="cervical_extend">
-        <joint range="-30.62 52.5"/>
+        <joint range="-17.5 30"/>
         <general gainprm="20"/>
       </default>
       <default class="cervical_bend">
-        <joint range="-61.25 61.25"/>
+        <joint range="-35 35"/>
         <general gainprm="20"/>
       </default>
       <default class="cervical_twist">
-        <joint range="-54.44 54.44"/>
+        <joint range="-23.33 23.33"/>
         <general gainprm="14"/>
       </default>
     </default>
@@ -174,435 +174,172 @@
     <texture name="grid" type="2d" builtin="checker" rgb1="0.1 0.2 0.3" rgb2="0.2 0.3 0.4" mark="edge" markrgb="0.2 0.3 0.4" width="300" height="300"/>
     <texture name="skybox" type="skybox" builtin="gradient" rgb1="0.4 0.6 0.8" rgb2="0 0 0" mark="random" markrgb="1 1 1" width="800" height="4800"/>
     <material name="grid" texture="grid" texrepeat="1 1" texuniform="true" reflectance="0.2"/>
-    <mesh name="Fibula_R" file="BONEFibula_R.stl"/>
-    <mesh name="Tarsus_L_III" file="BONETarsus_L_III.stl"/>
-    <mesh name="Os_metacarpale_III_R" file="BONEOs_metacarpale_III_R.stl"/>
-    <mesh name="Phalanges_B_3_R_2" file="BONEPhalanges_B_3_R_2.stl"/>
-    <mesh name="Ca_2" file="BONECa_2.stl"/>
-    <mesh name="Phalanges_B_R_4" file="BONEPhalanges_B_R_4.stl"/>
-    <mesh name="Tibia_R" file="BONETibia_R.stl"/>
-    <mesh name="L_1" file="BONEL_1.stl"/>
-    <mesh name="Femoris_L" file="BONEFemoris_L.stl"/>
-    <mesh name="Phalanxpmxinutlis_digiti_IV_R" file="BONEPhalanxpmxinutlis_digiti_IV_R.stl"/>
-    <mesh name="Carpal_ulnar_L" file="BONECarpal_ulnar_L.stl"/>
-    <mesh name="Phalanx_media_digiti_II_L" file="BONEPhalanx_media_digiti_II_L.stl"/>
-    <mesh name="Carpal_I_L" file="BONECarpal_I_L.stl"/>
-    <mesh name="Ca_3" file="BONECa_3.stl"/>
-    <mesh name="Phalanges_B_3_R_3" file="BONEPhalanges_B_3_R_3.stl"/>
-    <mesh name="Femoris_fabellae_L_2" file="BONEFemoris_fabellae_L_2.stl"/>
-    <mesh name="Phalanges_B_2_R_4" file="BONEPhalanges_B_2_R_4.stl"/>
-    <mesh name="Ca_1" file="BONECa_1.stl"/>
-    <mesh name="Phalanges_B_3_R_1" file="BONEPhalanges_B_3_R_1.stl"/>
-    <mesh name="Os_metacarpale_IV_R" file="BONEOs_metacarpale_IV_R.stl"/>
-    <mesh name="L_2" file="BONEL_2.stl"/>
-    <mesh name="Patella_R" file="BONEPatella_R.stl"/>
-    <mesh name="Os_metacarpale_I_L" file="BONEOs_metacarpale_I_L.stl"/>
-    <mesh name="Tarsus_R_I" file="BONETarsus_R_I.stl"/>
-    <mesh name="Phalanx_distalis_digiti_II_R" file="BONEPhalanx_distalis_digiti_II_R.stl"/>
-    <mesh name="L_3" file="BONEL_3.stl"/>
-    <mesh name="Femoris_fabellae_L_1" file="BONEFemoris_fabellae_L_1.stl"/>
-    <mesh name="Phalanges_B_2_R_1" file="BONEPhalanges_B_2_R_1.stl"/>
-    <mesh name="Os_metacarpale_V_L" file="BONEOs_metacarpale_V_L.stl"/>
-    <mesh name="Tarsus_R_IV" file="BONETarsus_R_IV.stl"/>
-    <mesh name="Ca_4" file="BONECa_4.stl"/>
-    <mesh name="Phalanges_B_3_R_4" file="BONEPhalanges_B_3_R_4.stl"/>
-    <mesh name="L_7" file="BONEL_7.stl"/>
-    <mesh name="Phalanges_B_R_2" file="BONEPhalanges_B_R_2.stl"/>
-    <mesh name="Pelvis" file="BONEPelvis.stl"/>
-    <mesh name="Phalanx_distalis_digiti_IV_R" file="BONEPhalanx_distalis_digiti_IV_R.stl"/>
-    <mesh name="Radius_L" file="BONERadius_L.stl"/>
-    <mesh name="Os_metacarpale_II_R" file="BONEOs_metacarpale_II_R.stl"/>
-    <mesh name="Os_metacarpale_V_R.001" file="BONEOs_metacarpale_V_R.001.stl"/>
-    <mesh name="Phalanges_B_R_3" file="BONEPhalanges_B_R_3.stl"/>
+    <mesh name="Ca_19" file="BONECa_19.stl"/>
+    <mesh name="Ca_12" file="BONECa_12.stl"/>
+    <mesh name="Metatarsi_L_2" file="BONEMetatarsi_L_2.stl"/>
     <mesh name="L_6" file="BONEL_6.stl"/>
-    <mesh name="Ca_5" file="BONECa_5.stl"/>
-    <mesh name="Scapula_L" file="BONEScapula_L.stl"/>
-    <mesh name="Phalanges_B_2_R_2" file="BONEPhalanges_B_2_R_2.stl"/>
-    <mesh name="Ulna_R" file="BONEUlna_R.stl"/>
-    <mesh name="Carpal_L" file="BONECarpal_L.stl"/>
-    <mesh name="Ca_7" file="BONECa_7.stl"/>
-    <mesh name="Phalanges_B_R_1" file="BONEPhalanges_B_R_1.stl"/>
-    <mesh name="L_4" file="BONEL_4.stl"/>
-    <mesh name="Phalanx_media_digiti_III_L" file="BONEPhalanx_media_digiti_III_L.stl"/>
-    <mesh name="Carpal_Sesamoid_L" file="BONECarpal_Sesamoid_L.stl"/>
-    <mesh name="L_5" file="BONEL_5.stl"/>
-    <mesh name="Phalanxpmxinutlis_digiti_II_R" file="BONEPhalanxpmxinutlis_digiti_II_R.stl"/>
-    <mesh name="Ca_6" file="BONECa_6.stl"/>
-    <mesh name="Phalanx_media_digiti_IV_L" file="BONEPhalanx_media_digiti_IV_L.stl"/>
-    <mesh name="Phalanges_B_2_R_3" file="BONEPhalanges_B_2_R_3.stl"/>
-    <mesh name="Phalanges_B_L_3" file="BONEPhalanges_B_L_3.stl"/>
-    <mesh name="Carpal_II_R" file="BONECarpal_II_R.stl"/>
     <mesh name="Ca_17" file="BONECa_17.stl"/>
-    <mesh name="Xiphoid_cartilage" file="BONEXiphoid_cartilage.stl"/>
-    <mesh name="Ca_16" file="BONECa_16.stl"/>
-    <mesh name="Phalanges_B_3_L_4" file="BONEPhalanges_B_3_L_4.stl"/>
-    <mesh name="Phalanges_B_L_2" file="BONEPhalanges_B_L_2.stl"/>
-    <mesh name="Phalanges_B_2_L_1" file="BONEPhalanges_B_2_L_1.stl"/>
-    <mesh name="Carpal_III_L" file="BONECarpal_III_L.stl"/>
-    <mesh name="Phalanxpmxinutlis_digiti_V_L" file="BONEPhalanxpmxinutlis_digiti_V_L.stl"/>
-    <mesh name="Phalanges_B_2_L_3" file="BONEPhalanges_B_2_L_3.stl"/>
-    <mesh name="Phalanx_media_digiti_V_R" file="BONEPhalanx_media_digiti_V_R.stl"/>
-    <mesh name="Phalanx_distalis_digiti_I_L" file="BONEPhalanx_distalis_digiti_I_L.stl"/>
-    <mesh name="Carpal_accessory_L" file="BONECarpal_accessory_L.stl"/>
-    <mesh name="MergedSkull" file="BONEMergedSkull.stl"/>
-    <mesh name="Ca_14" file="BONECa_14.stl"/>
-    <mesh name="Os_metacarpale_V_L.001" file="BONEOs_metacarpale_V_L.001.stl"/>
-    <mesh name="Ca_15" file="BONECa_15.stl"/>
-    <mesh name="Phalanges_B_L_1" file="BONEPhalanges_B_L_1.stl"/>
-    <mesh name="Phalanges_B_2_L_2" file="BONEPhalanges_B_2_L_2.stl"/>
+    <mesh name="Os_metacarpale_II_R" file="BONEOs_metacarpale_II_R.stl"/>
+    <mesh name="Phalanges_B_R_2" file="BONEPhalanges_B_R_2.stl"/>
+    <mesh name="Phalanx_distalis_digiti_I_R" file="BONEPhalanx_distalis_digiti_I_R.stl"/>
+    <mesh name="Phalanx_media_digiti_III_R" file="BONEPhalanx_media_digiti_III_R.stl"/>
+    <mesh name="Tibia_R" file="BONETibia_R.stl"/>
+    <mesh name="C_3" file="BONEC_3.stl"/>
+    <mesh name="Phalanges_B_2_R_4" file="BONEPhalanges_B_2_R_4.stl"/>
+    <mesh name="Metatarsi_R_4" file="BONEMetatarsi_R_4.stl"/>
+    <mesh name="Os_metacarpale_I_L" file="BONEOs_metacarpale_I_L.stl"/>
+    <mesh name="Carpal_Sesamoid_L" file="BONECarpal_Sesamoid_L.stl"/>
     <mesh name="Femoris_fabellae_R_2" file="BONEFemoris_fabellae_R_2.stl"/>
-    <mesh name="Calcaneal_tuber_L" file="BONECalcaneal_tuber_L.stl"/>
-    <mesh name="Phalanges_B_3_L_3" file="BONEPhalanges_B_3_L_3.stl"/>
+    <mesh name="Ca_14" file="BONECa_14.stl"/>
     <mesh name="Tibial_tarsal_L" file="BONETibial_tarsal_L.stl"/>
-    <mesh name="Ca_11" file="BONECa_11.stl"/>
-    <mesh name="humerus_L" file="BONEhumerus_L.stl"/>
+    <mesh name="Phalanges_B_3_R_1" file="BONEPhalanges_B_3_R_1.stl"/>
+    <mesh name="Ulna_R" file="BONEUlna_R.stl"/>
+    <mesh name="Metatarsi_L_3" file="BONEMetatarsi_L_3.stl"/>
+    <mesh name="L_5" file="BONEL_5.stl"/>
+    <mesh name="Patella_L" file="BONEPatella_L.stl"/>
+    <mesh name="Tarsus_central_L" file="BONETarsus_central_L.stl"/>
+    <mesh name="Fibula_L" file="BONEFibula_L.stl"/>
+    <mesh name="Phalanxpmxinutlis_digiti_II_L" file="BONEPhalanxpmxinutlis_digiti_II_L.stl"/>
+    <mesh name="Tibial_tarsal_R" file="BONETibial_tarsal_R.stl"/>
+    <mesh name="Os_metacarpale_I_R" file="BONEOs_metacarpale_I_R.stl"/>
+    <mesh name="Carpal_IV_R" file="BONECarpal_IV_R.stl"/>
+    <mesh name="Phalanx_distalis_digiti_III_R" file="BONEPhalanx_distalis_digiti_III_R.stl"/>
+    <mesh name="Carpal_III_R" file="BONECarpal_III_R.stl"/>
+    <mesh name="Os_metacarpale_III_L" file="BONEOs_metacarpale_III_L.stl"/>
+    <mesh name="Jaw" file="BONEJaw.stl"/>
+    <mesh name="Os_metacarpale_V_R" file="BONEOs_metacarpale_V_R.stl"/>
+    <mesh name="Tarsus_R_III" file="BONETarsus_R_III.stl"/>
+    <mesh name="Phalanges_B_R_3" file="BONEPhalanges_B_R_3.stl"/>
+    <mesh name="Radius_R" file="BONERadius_R.stl"/>
+    <mesh name="Calcaneal_tuber_L" file="BONECalcaneal_tuber_L.stl"/>
+    <mesh name="Ca_21" file="BONECa_21.stl"/>
+    <mesh name="Phalanxpmxinutlis_digiti_IV_R" file="BONEPhalanxpmxinutlis_digiti_IV_R.stl"/>
+    <mesh name="Phalanges_B_3_R_2" file="BONEPhalanges_B_3_R_2.stl"/>
+    <mesh name="Os_metacarpale_III_R" file="BONEOs_metacarpale_III_R.stl"/>
+    <mesh name="Phalanx_media_digiti_V_R" file="BONEPhalanx_media_digiti_V_R.stl"/>
+    <mesh name="C_7" file="BONEC_7.stl"/>
+    <mesh name="Carpal_IV_L" file="BONECarpal_IV_L.stl"/>
+    <mesh name="Ca_18" file="BONECa_18.stl"/>
+    <mesh name="Tarsus_L_IV" file="BONETarsus_L_IV.stl"/>
+    <mesh name="Phalanges_B_2_R_1" file="BONEPhalanges_B_2_R_1.stl"/>
+    <mesh name="Phalanxpmxinutlis_digiti_V_R" file="BONEPhalanxpmxinutlis_digiti_V_R.stl"/>
+    <mesh name="Pelvis" file="BONEPelvis.stl"/>
+    <mesh name="Phalanxpmxinutlis_digiti_V_L" file="BONEPhalanxpmxinutlis_digiti_V_L.stl"/>
+    <mesh name="Phalanges_B_L_3" file="BONEPhalanges_B_L_3.stl"/>
+    <mesh name="Tibia_L" file="BONETibia_L.stl"/>
+    <mesh name="Os_metacarpale_IV_L" file="BONEOs_metacarpale_IV_L.stl"/>
+    <mesh name="C_2" file="BONEC_2.stl"/>
+    <mesh name="Phalanges_B_2_L_1" file="BONEPhalanges_B_2_L_1.stl"/>
+    <mesh name="Xiphoid_cartilage" file="BONEXiphoid_cartilage.stl"/>
+    <mesh name="Os_metacarpale_II_L" file="BONEOs_metacarpale_II_L.stl"/>
+    <mesh name="Sacrum" file="BONESacrum.stl"/>
+    <mesh name="L_3" file="BONEL_3.stl"/>
     <mesh name="Ca_10" file="BONECa_10.stl"/>
     <mesh name="Phalanx_distalis_digiti_III_L" file="BONEPhalanx_distalis_digiti_III_L.stl"/>
-    <mesh name="Phalanges_B_3_L_2" file="BONEPhalanges_B_3_L_2.stl"/>
-    <mesh name="Phalanx_distalis_digiti_V_L" file="BONEPhalanx_distalis_digiti_V_L.stl"/>
-    <mesh name="Phalanges_B_L_4" file="BONEPhalanges_B_L_4.stl"/>
-    <mesh name="Femoris_fabellae_R_1" file="BONEFemoris_fabellae_R_1.stl"/>
-    <mesh name="eye_R" file="BONEeye_R.stl"/>
-    <mesh name="Tarsus_R_III" file="BONETarsus_R_III.stl"/>
-    <mesh name="Tarsus_L_I" file="BONETarsus_L_I.stl"/>
-    <mesh name="Ca_12" file="BONECa_12.stl"/>
-    <mesh name="Tarsus_L_IV" file="BONETarsus_L_IV.stl"/>
-    <mesh name="Ca_13" file="BONECa_13.stl"/>
-    <mesh name="Carpal_IV_R" file="BONECarpal_IV_R.stl"/>
-    <mesh name="Phalanges_B_3_L_1" file="BONEPhalanges_B_3_L_1.stl"/>
-    <mesh name="Tarsus_central_L" file="BONETarsus_central_L.stl"/>
-    <mesh name="Phalanges_B_2_L_4" file="BONEPhalanges_B_2_L_4.stl"/>
-    <mesh name="Carpal_II_L" file="BONECarpal_II_L.stl"/>
+    <mesh name="Phalanxpmxinutlis_digiti_III_R" file="BONEPhalanxpmxinutlis_digiti_III_R.stl"/>
+    <mesh name="Tarsus_L_III" file="BONETarsus_L_III.stl"/>
+    <mesh name="Femoris_fabellae_L_2" file="BONEFemoris_fabellae_L_2.stl"/>
+    <mesh name="L_4" file="BONEL_4.stl"/>
+    <mesh name="Phalanx_distalis_digiti_I_L" file="BONEPhalanx_distalis_digiti_I_L.stl"/>
+    <mesh name="Phalanges_B_3_L_3" file="BONEPhalanges_B_3_L_3.stl"/>
+    <mesh name="Ca_9" file="BONECa_9.stl"/>
+    <mesh name="Os_metacarpale_IV_R" file="BONEOs_metacarpale_IV_R.stl"/>
+    <mesh name="Os_metacarpale_V_L.001" file="BONEOs_metacarpale_V_L.001.stl"/>
+    <mesh name="Phalanx_distalis_digiti_V_R" file="BONEPhalanx_distalis_digiti_V_R.stl"/>
+    <mesh name="Ca_15" file="BONECa_15.stl"/>
+    <mesh name="Fibula_R" file="BONEFibula_R.stl"/>
+    <mesh name="Tarsus_central_R" file="BONETarsus_central_R.stl"/>
+    <mesh name="eye_L" file="BONEeye_L.stl"/>
+    <mesh name="Metatarsi_R_1" file="BONEMetatarsi_R_1.stl"/>
     <mesh name="C_4" file="BONEC_4.stl"/>
-    <mesh name="Metatarsi_L_4" file="BONEMetatarsi_L_4.stl"/>
-    <mesh name="C_5" file="BONEC_5.stl"/>
-    <mesh name="Carpal_III_R" file="BONECarpal_III_R.stl"/>
-    <mesh name="Jaw" file="BONEJaw.stl"/>
-    <mesh name="Phalanxpmxinutlis_digiti_V_R" file="BONEPhalanxpmxinutlis_digiti_V_R.stl"/>
-    <mesh name="Phalanx_media_digiti_V_L" file="BONEPhalanx_media_digiti_V_L.stl"/>
-    <mesh name="C_7" file="BONEC_7.stl"/>
-    <mesh name="Carpal_accessory_R" file="BONECarpal_accessory_R.stl"/>
-    <mesh name="Phalanx_distalis_digiti_I_R" file="BONEPhalanx_distalis_digiti_I_R.stl"/>
-    <mesh name="Ca_21" file="BONECa_21.stl"/>
+    <mesh name="Phalanx_distalis_digiti_V_L" file="BONEPhalanx_distalis_digiti_V_L.stl"/>
+    <mesh name="Femoris_fabellae_R_1" file="BONEFemoris_fabellae_R_1.stl"/>
+    <mesh name="Ca_3" file="BONECa_3.stl"/>
+    <mesh name="Ca_16" file="BONECa_16.stl"/>
+    <mesh name="Ca_4" file="BONECa_4.stl"/>
+    <mesh name="Femoris_fabellae_L_1" file="BONEFemoris_fabellae_L_1.stl"/>
+    <mesh name="Metatarsi_R_2" file="BONEMetatarsi_R_2.stl"/>
+    <mesh name="Phalanges_B_L_4" file="BONEPhalanges_B_L_4.stl"/>
+    <mesh name="Phalanges_B_3_R_4" file="BONEPhalanges_B_3_R_4.stl"/>
+    <mesh name="Femoris_L" file="BONEFemoris_L.stl"/>
+    <mesh name="Phalanxpmxinutlis_digiti_II_R" file="BONEPhalanxpmxinutlis_digiti_II_R.stl"/>
+    <mesh name="Ca_6" file="BONECa_6.stl"/>
+    <mesh name="Carpal_II_L" file="BONECarpal_II_L.stl"/>
+    <mesh name="Phalanges_B_3_L_4" file="BONEPhalanges_B_3_L_4.stl"/>
+    <mesh name="Phalanx_media_digiti_II_R" file="BONEPhalanx_media_digiti_II_R.stl"/>
+    <mesh name="L_7" file="BONEL_7.stl"/>
+    <mesh name="MergedSkull" file="BONEMergedSkull.stl"/>
+    <mesh name="Phalanges_B_L_2" file="BONEPhalanges_B_L_2.stl"/>
+    <mesh name="Os_metacarpale_V_R.001" file="BONEOs_metacarpale_V_R.001.stl"/>
+    <mesh name="Carpal_accessory_L" file="BONECarpal_accessory_L.stl"/>
+    <mesh name="humerus_L" file="BONEhumerus_L.stl"/>
+    <mesh name="Ca_8" file="BONECa_8.stl"/>
+    <mesh name="Tarsus_R_I" file="BONETarsus_R_I.stl"/>
     <mesh name="Ca_20" file="BONECa_20.stl"/>
+    <mesh name="Phalanges_B_2_L_2" file="BONEPhalanges_B_2_L_2.stl"/>
+    <mesh name="C_5" file="BONEC_5.stl"/>
+    <mesh name="Metatarsi_L_4" file="BONEMetatarsi_L_4.stl"/>
+    <mesh name="Phalanges_B_3_L_2" file="BONEPhalanges_B_3_L_2.stl"/>
+    <mesh name="Ca_13" file="BONECa_13.stl"/>
+    <mesh name="Scapula_L" file="BONEScapula_L.stl"/>
     <mesh name="C_6" file="BONEC_6.stl"/>
     <mesh name="Calcaneal_tuber_R" file="BONECalcaneal_tuber_R.stl"/>
-    <mesh name="C_2" file="BONEC_2.stl"/>
-    <mesh name="Tibial_tarsal_R" file="BONETibial_tarsal_R.stl"/>
-    <mesh name="Ca_18" file="BONECa_18.stl"/>
-    <mesh name="Metatarsi_L_2" file="BONEMetatarsi_L_2.stl"/>
-    <mesh name="humerus_R" file="BONEhumerus_R.stl"/>
-    <mesh name="Metatarsi_L_3" file="BONEMetatarsi_L_3.stl"/>
-    <mesh name="Ca_19" file="BONECa_19.stl"/>
-    <mesh name="Phalanx_distalis_digiti_III_R" file="BONEPhalanx_distalis_digiti_III_R.stl"/>
-    <mesh name="C_3" file="BONEC_3.stl"/>
-    <mesh name="Phalanx_distalis_digiti_V_R" file="BONEPhalanx_distalis_digiti_V_R.stl"/>
-    <mesh name="Phalanxpmxinutlis_digiti_IV_L_" file="BONEPhalanxpmxinutlis_digiti_IV_L_.stl"/>
-    <mesh name="Sacrum" file="BONESacrum.stl"/>
-    <mesh name="eye_L" file="BONEeye_L.stl"/>
-    <mesh name="C_1" file="BONEC_1.stl"/>
-    <mesh name="Metatarsi_L_1" file="BONEMetatarsi_L_1.stl"/>
-    <mesh name="Tarsus_L_II" file="BONETarsus_L_II.stl"/>
-    <mesh name="Carpal_IV_L" file="BONECarpal_IV_L.stl"/>
-    <mesh name="Tarsus_central_R" file="BONETarsus_central_R.stl"/>
-    <mesh name="Ribcage" file="BONERibcage.stl"/>
-    <mesh name="Phalanxpmxinutlis_digiti_III_R" file="BONEPhalanxpmxinutlis_digiti_III_R.stl"/>
-    <mesh name="Fibula_L" file="BONEFibula_L.stl"/>
-    <mesh name="Os_metacarpale_III_L" file="BONEOs_metacarpale_III_L.stl"/>
-    <mesh name="Tibia_L" file="BONETibia_L.stl"/>
-    <mesh name="Femoris_R" file="BONEFemoris_R.stl"/>
-    <mesh name="Carpal_ulnar_R" file="BONECarpal_ulnar_R.stl"/>
-    <mesh name="Phalanx_media_digiti_II_R" file="BONEPhalanx_media_digiti_II_R.stl"/>
-    <mesh name="Carpal_I_R" file="BONECarpal_I_R.stl"/>
-    <mesh name="Metatarsi_R_3" file="BONEMetatarsi_R_3.stl"/>
-    <mesh name="Metatarsi_R_2" file="BONEMetatarsi_R_2.stl"/>
-    <mesh name="Ca_8" file="BONECa_8.stl"/>
-    <mesh name="Os_metacarpale_IV_L" file="BONEOs_metacarpale_IV_L.stl"/>
-    <mesh name="Patella_L" file="BONEPatella_L.stl"/>
-    <mesh name="Metatarsi_R_1" file="BONEMetatarsi_R_1.stl"/>
-    <mesh name="Os_metacarpale_I_R" file="BONEOs_metacarpale_I_R.stl"/>
-    <mesh name="Phalanx_distalis_digiti_II_L" file="BONEPhalanx_distalis_digiti_II_L.stl"/>
-    <mesh name="Ca_9" file="BONECa_9.stl"/>
-    <mesh name="Os_metacarpale_V_R" file="BONEOs_metacarpale_V_R.stl"/>
+    <mesh name="Patella_R" file="BONEPatella_R.stl"/>
+    <mesh name="Ca_7" file="BONECa_7.stl"/>
+    <mesh name="Phalanges_B_3_L_1" file="BONEPhalanges_B_3_L_1.stl"/>
+    <mesh name="Tarsus_R_IV" file="BONETarsus_R_IV.stl"/>
+    <mesh name="Phalanges_B_3_R_3" file="BONEPhalanges_B_3_R_3.stl"/>
+    <mesh name="Phalanges_B_2_L_3" file="BONEPhalanges_B_2_L_3.stl"/>
     <mesh name="Phalanx_distalis_digiti_IV_L" file="BONEPhalanx_distalis_digiti_IV_L.stl"/>
-    <mesh name="Radius_R" file="BONERadius_R.stl"/>
-    <mesh name="Metatarsi_R_4" file="BONEMetatarsi_R_4.stl"/>
-    <mesh name="Os_metacarpale_II_L" file="BONEOs_metacarpale_II_L.stl"/>
-    <mesh name="Tarsus_R_II" file="BONETarsus_R_II.stl"/>
-    <mesh name="Scapula_R" file="BONEScapula_R.stl"/>
+    <mesh name="Tarsus_L_I" file="BONETarsus_L_I.stl"/>
     <mesh name="Ulna_L" file="BONEUlna_L.stl"/>
-    <mesh name="Carpal_R" file="BONECarpal_R.stl"/>
-    <mesh name="Phalanx_media_digiti_III_R" file="BONEPhalanx_media_digiti_III_R.stl"/>
-    <mesh name="Phalanxpmxinutlis_digiti_III_L_" file="BONEPhalanxpmxinutlis_digiti_III_L_.stl"/>
+    <mesh name="eye_R" file="BONEeye_R.stl"/>
     <mesh name="Carpal_Sesamoid_R" file="BONECarpal_Sesamoid_R.stl"/>
-    <mesh name="Phalanxpmxinutlis_digiti_II_L" file="BONEPhalanxpmxinutlis_digiti_II_L.stl"/>
+    <mesh name="Radius_L" file="BONERadius_L.stl"/>
+    <mesh name="Ca_5" file="BONECa_5.stl"/>
+    <mesh name="Phalanx_media_digiti_IV_L" file="BONEPhalanx_media_digiti_IV_L.stl"/>
+    <mesh name="Carpal_ulnar_L" file="BONECarpal_ulnar_L.stl"/>
+    <mesh name="C_1" file="BONEC_1.stl"/>
+    <mesh name="Carpal_accessory_R" file="BONECarpal_accessory_R.stl"/>
+    <mesh name="Metatarsi_L_1" file="BONEMetatarsi_L_1.stl"/>
+    <mesh name="Carpal_ulnar_R" file="BONECarpal_ulnar_R.stl"/>
+    <mesh name="Ca_1" file="BONECa_1.stl"/>
+    <mesh name="Carpal_R" file="BONECarpal_R.stl"/>
     <mesh name="Phalanx_media_digiti_IV_R" file="BONEPhalanx_media_digiti_IV_R.stl"/>
+    <mesh name="Carpal_I_R" file="BONECarpal_I_R.stl"/>
+    <mesh name="Tarsus_R_II" file="BONETarsus_R_II.stl"/>
+    <mesh name="Phalanges_B_R_1" file="BONEPhalanges_B_R_1.stl"/>
+    <mesh name="L_2" file="BONEL_2.stl"/>
+    <mesh name="Phalanx_distalis_digiti_IV_R" file="BONEPhalanx_distalis_digiti_IV_R.stl"/>
+    <mesh name="Ca_11" file="BONECa_11.stl"/>
+    <mesh name="Metatarsi_R_3" file="BONEMetatarsi_R_3.stl"/>
+    <mesh name="Tarsus_L_II" file="BONETarsus_L_II.stl"/>
+    <mesh name="Carpal_L" file="BONECarpal_L.stl"/>
+    <mesh name="Femoris_R" file="BONEFemoris_R.stl"/>
+    <mesh name="Phalanges_B_L_1" file="BONEPhalanges_B_L_1.stl"/>
+    <mesh name="Phalanxpmxinutlis_digiti_IV_L_" file="BONEPhalanxpmxinutlis_digiti_IV_L_.stl"/>
+    <mesh name="Scapula_R" file="BONEScapula_R.stl"/>
+    <mesh name="Phalanges_B_R_4" file="BONEPhalanges_B_R_4.stl"/>
+    <mesh name="Phalanges_B_2_R_2" file="BONEPhalanges_B_2_R_2.stl"/>
+    <mesh name="Os_metacarpale_V_L" file="BONEOs_metacarpale_V_L.stl"/>
+    <mesh name="Ca_2" file="BONECa_2.stl"/>
+    <mesh name="Carpal_I_L" file="BONECarpal_I_L.stl"/>
+    <mesh name="Phalanx_media_digiti_II_L" file="BONEPhalanx_media_digiti_II_L.stl"/>
+    <mesh name="Phalanx_distalis_digiti_II_R" file="BONEPhalanx_distalis_digiti_II_R.stl"/>
+    <mesh name="Ribcage" file="BONERibcage.stl"/>
+    <mesh name="Carpal_II_R" file="BONECarpal_II_R.stl"/>
+    <mesh name="Phalanxpmxinutlis_digiti_III_L_" file="BONEPhalanxpmxinutlis_digiti_III_L_.stl"/>
+    <mesh name="Carpal_III_L" file="BONECarpal_III_L.stl"/>
+    <mesh name="humerus_R" file="BONEhumerus_R.stl"/>
+    <mesh name="Phalanx_distalis_digiti_II_L" file="BONEPhalanx_distalis_digiti_II_L.stl"/>
+    <mesh name="Phalanx_media_digiti_III_L" file="BONEPhalanx_media_digiti_III_L.stl"/>
+    <mesh name="Phalanges_B_2_R_3" file="BONEPhalanges_B_2_R_3.stl"/>
+    <mesh name="Phalanges_B_2_L_4" file="BONEPhalanges_B_2_L_4.stl"/>
+    <mesh name="L_1" file="BONEL_1.stl"/>
+    <mesh name="Phalanx_media_digiti_V_L" file="BONEPhalanx_media_digiti_V_L.stl"/>
     <texture name="skin" type="2d" file="skin_texture.png"/>
     <material name="skin" texture="skin"/>
     <skin name="skin" file="skins/dog_skin.skn" material="skin" group="0"/>
-    <material name="muscle" rgba="0.63 0.17 0.17 1"/>
-    <skin name="m_levator_caudae_brevis_R1" file="skins/m_levator_caudae_brevis_R1.skn" material="muscle" group="1"/>
-    <skin name="m_anconeus_L" file="skins/m_anconeus_L.skn" material="muscle" group="1"/>
-    <skin name="m_teres_major_L" file="skins/m_teres_major_L.skn" material="muscle" group="1"/>
-    <skin name="m_levator_caudae_longus_R" file="skins/m_levator_caudae_longus_R.skn" material="muscle" group="1"/>
-    <skin name="m_biceps_brachii_L" file="skins/m_biceps_brachii_L.skn" material="muscle" group="1"/>
-    <skin name="m_serratus_dorsalis_caudalis_R3" file="skins/m_serratus_dorsalis_caudalis_R3.skn" material="muscle" group="1"/>
-    <skin name="m_serratus_dorsalis_caudalis_R2" file="skins/m_serratus_dorsalis_caudalis_R2.skn" material="muscle" group="1"/>
-    <skin name="m_extensor_digitorum_longus_L" file="skins/m_extensor_digitorum_longus_L.skn" material="muscle" group="1"/>
-    <skin name="m_vastus_med_R" file="skins/m_vastus_med_R.skn" material="muscle" group="1"/>
-    <skin name="m_deltoideus_acromialis_L" file="skins/m_deltoideus_acromialis_L.skn" material="muscle" group="1"/>
-    <skin name="m_triceps_brachii_long_L(2)" file="skins/m_triceps_brachii_long_L(2).skn" material="muscle" group="1"/>
-    <skin name="m_psoas_minor_L" file="skins/m_psoas_minor_L.skn" material="muscle" group="1"/>
-    <skin name="m_flexor_digitorum_superficialis_L.001" file="skins/m_flexor_digitorum_superficialis_L.001.skn" material="muscle" group="1"/>
-    <skin name="m_supraspinatus_R" file="skins/m_supraspinatus_R.skn" material="muscle" group="1"/>
-    <skin name="m_thoracis_m_pectoralis_profundus" file="skins/m_thoracis_m_pectoralis_profundus.skn" material="muscle" group="1"/>
-    <skin name="m_longus_capitis_L" file="skins/m_longus_capitis_L.skn" material="muscle" group="1"/>
-    <skin name="m_biceps_femoris_R" file="skins/m_biceps_femoris_R.skn" material="muscle" group="1"/>
-    <skin name="m_popliteus_R" file="skins/m_popliteus_R.skn" material="muscle" group="1"/>
-    <skin name="m_levator_caudae_brevis_R2" file="skins/m_levator_caudae_brevis_R2.skn" material="muscle" group="1"/>
-    <skin name="m_splenius_L" file="skins/m_splenius_L.skn" material="muscle" group="1"/>
-    <skin name="m_semitendinosus_L" file="skins/m_semitendinosus_L.skn" material="muscle" group="1"/>
-    <skin name="m_geniohyoideus_L" file="skins/m_geniohyoideus_L.skn" material="muscle" group="1"/>
-    <skin name="m_intercostals_ext_R" file="skins/m_intercostals_ext_R.skn" material="muscle" group="1"/>
-    <skin name="m_abductor_cruris_R" file="skins/m_abductor_cruris_R.skn" material="muscle" group="1"/>
-    <skin name="m_coccygeus_R" file="skins/m_coccygeus_R.skn" material="muscle" group="1"/>
-    <skin name="m_sternohyroideus_L" file="skins/m_sternohyroideus_L.skn" material="muscle" group="1"/>
-    <skin name="m_flexor_capri_radialis_L" file="skins/m_flexor_capri_radialis_L.skn" material="muscle" group="1"/>
-    <skin name="m_longissimus_thoracis_L" file="skins/m_longissimus_thoracis_L.skn" material="muscle" group="1"/>
-    <skin name="m_deltoideus_scapularis_R" file="skins/m_deltoideus_scapularis_R.skn" material="muscle" group="1"/>
-    <skin name="m_serratus_dorsalis_caudalis_R1" file="skins/m_serratus_dorsalis_caudalis_R1.skn" material="muscle" group="1"/>
-    <skin name="m_flexor_digitorum_profundus_R(2)" file="skins/m_flexor_digitorum_profundus_R(2).skn" material="muscle" group="1"/>
-    <skin name="m_supinator_R" file="skins/m_supinator_R.skn" material="muscle" group="1"/>
-    <skin name="m_orbicularis_oris_L" file="skins/m_orbicularis_oris_L.skn" material="muscle" group="1"/>
-    <skin name="m_vastus_lat_L" file="skins/m_vastus_lat_L.skn" material="muscle" group="1"/>
-    <skin name="m_levator_labii_sup_L" file="skins/m_levator_labii_sup_L.skn" material="muscle" group="1"/>
-    <skin name="m_Ligament" file="skins/m_Ligament.skn" material="muscle" group="1"/>
-    <skin name="m_gemellus_R" file="skins/m_gemellus_R.skn" material="muscle" group="1"/>
-    <skin name="m_retractor_anguli_oculi_R" file="skins/m_retractor_anguli_oculi_R.skn" material="muscle" group="1"/>
-    <skin name="m_dorsi_scaleni_dors_R" file="skins/m_dorsi_scaleni_dors_R.skn" material="muscle" group="1"/>
-    <skin name="m_tibialis_caudalis_R" file="skins/m_tibialis_caudalis_R.skn" material="muscle" group="1"/>
-    <skin name="m_obliquus_capitis_caudalis_R" file="skins/m_obliquus_capitis_caudalis_R.skn" material="muscle" group="1"/>
-    <skin name="m_triceps_brachii_medial_L" file="skins/m_triceps_brachii_medial_L.skn" material="muscle" group="1"/>
-    <skin name="m_sternothyroideus_R" file="skins/m_sternothyroideus_R.skn" material="muscle" group="1"/>
-    <skin name="m_abductor_pollicis_longus_R" file="skins/m_abductor_pollicis_longus_R.skn" material="muscle" group="1"/>
-    <skin name="m_tibialis_cranialis_L" file="skins/m_tibialis_cranialis_L.skn" material="muscle" group="1"/>
-    <skin name="m_longissimus_cervicis_R" file="skins/m_longissimus_cervicis_R.skn" material="muscle" group="1"/>
-    <skin name="m_sartorius_L(2)" file="skins/m_sartorius_L(2).skn" material="muscle" group="1"/>
-    <skin name="m_depressor_caudae_brevis_R2" file="skins/m_depressor_caudae_brevis_R2.skn" material="muscle" group="1"/>
-    <skin name="m_pronator_quadratus_L" file="skins/m_pronator_quadratus_L.skn" material="muscle" group="1"/>
-    <skin name="m_gluteus_superficialis_major_R" file="skins/m_gluteus_superficialis_major_R.skn" material="muscle" group="1"/>
-    <skin name="m_vastus_intermedius_L" file="skins/m_vastus_intermedius_L.skn" material="muscle" group="1"/>
-    <skin name="m_flexor_digitorum_superficialis_L" file="skins/m_flexor_digitorum_superficialis_L.skn" material="muscle" group="1"/>
-    <skin name="m_Skutulum_L" file="skins/m_Skutulum_L.skn" material="muscle" group="1"/>
-    <skin name="m_buccinator_L" file="skins/m_buccinator_L.skn" material="muscle" group="1"/>
-    <skin name="m_brachialis_R" file="skins/m_brachialis_R.skn" material="muscle" group="1"/>
-    <skin name="m_rectus_capitis_lateralis_L" file="skins/m_rectus_capitis_lateralis_L.skn" material="muscle" group="1"/>
-    <skin name="m_caninus_R" file="skins/m_caninus_R.skn" material="muscle" group="1"/>
-    <skin name="m_rhomboideus_R" file="skins/m_rhomboideus_R.skn" material="muscle" group="1"/>
-    <skin name="m_peroneus_longus_L" file="skins/m_peroneus_longus_L.skn" material="muscle" group="1"/>
-    <skin name="m_extensor_digitorum_lateralis_R" file="skins/m_extensor_digitorum_lateralis_R.skn" material="muscle" group="1"/>
-    <skin name="m_longissimus_capitis_R(2)" file="skins/m_longissimus_capitis_R(2).skn" material="muscle" group="1"/>
-    <skin name="m_abdominis_Aponeurosis" file="skins/m_abdominis_Aponeurosis.skn" material="muscle" group="1"/>
-    <skin name="m_pronator_teres_L" file="skins/m_pronator_teres_L.skn" material="muscle" group="1"/>
-    <skin name="m_triceps_brachii_long_L" file="skins/m_triceps_brachii_long_L.skn" material="muscle" group="1"/>
-    <skin name="m_rectus_capitis_dorsalis_major_R" file="skins/m_rectus_capitis_dorsalis_major_R.skn" material="muscle" group="1"/>
-    <skin name="m_obliquus_int_abdominis_R" file="skins/m_obliquus_int_abdominis_R.skn" material="muscle" group="1"/>
-    <skin name="m_gastrocnemius_R" file="skins/m_gastrocnemius_R.skn" material="muscle" group="1"/>
-    <skin name="m_extensor_digitorum_lat_L" file="skins/m_extensor_digitorum_lat_L.skn" material="muscle" group="1"/>
-    <skin name="m_quadratus_femoris_R" file="skins/m_quadratus_femoris_R.skn" material="muscle" group="1"/>
-    <skin name="m_sartorius_R" file="skins/m_sartorius_R.skn" material="muscle" group="1"/>
-    <skin name="m_vastus_lat_ander_fascia_lata_L" file="skins/m_vastus_lat_ander_fascia_lata_L.skn" material="muscle" group="1"/>
-    <skin name="m_adductor_magnus_L" file="skins/m_adductor_magnus_L.skn" material="muscle" group="1"/>
-    <skin name="m_flexor_carpi_ulnaris_L" file="skins/m_flexor_carpi_ulnaris_L.skn" material="muscle" group="1"/>
-    <skin name="m_obliquus_ext_abdominis_R" file="skins/m_obliquus_ext_abdominis_R.skn" material="muscle" group="1"/>
-    <skin name="m_tricepsbrachii_lateral_R" file="skins/m_tricepsbrachii_lateral_R.skn" material="muscle" group="1"/>
-    <skin name="m_zygomaticus_R" file="skins/m_zygomaticus_R.skn" material="muscle" group="1"/>
-    <skin name="m_digastricus_L" file="skins/m_digastricus_L.skn" material="muscle" group="1"/>
-    <skin name="m_orbicularis_oculi" file="skins/m_orbicularis_oculi.skn" material="muscle" group="1"/>
-    <skin name="m_capsularis_R" file="skins/m_capsularis_R.skn" material="muscle" group="1"/>
-    <skin name="m_extensor_capri_ulnaris_L" file="skins/m_extensor_capri_ulnaris_L.skn" material="muscle" group="1"/>
-    <skin name="m_triceps_brachii_lateral_L" file="skins/m_triceps_brachii_lateral_L.skn" material="muscle" group="1"/>
-    <skin name="m_gluteus_profundus_minor_L" file="skins/m_gluteus_profundus_minor_L.skn" material="muscle" group="1"/>
-    <skin name="m_longissimus_capitis_L" file="skins/m_longissimus_capitis_L.skn" material="muscle" group="1"/>
-    <skin name="m_rectus_thoracis_R" file="skins/m_rectus_thoracis_R.skn" material="muscle" group="1"/>
-    <skin name="m_peroneus_brevis_R" file="skins/m_peroneus_brevis_R.skn" material="muscle" group="1"/>
-    <skin name="m_tranversus_abdominis_L" file="skins/m_tranversus_abdominis_L.skn" material="muscle" group="1"/>
-    <skin name="m_rectus_abdominis_R" file="skins/m_rectus_abdominis_R.skn" material="muscle" group="1"/>
-    <skin name="m_rectus_femoris_L" file="skins/m_rectus_femoris_L.skn" material="muscle" group="1"/>
-    <skin name="m_adductor_longus_R" file="skins/m_adductor_longus_R.skn" material="muscle" group="1"/>
-    <skin name="m_coracobrachialis_R" file="skins/m_coracobrachialis_R.skn" material="muscle" group="1"/>
-    <skin name="m_transverses_thoracis_R" file="skins/m_transverses_thoracis_R.skn" material="muscle" group="1"/>
-    <skin name="m_flexor_digitorum_profundus_L(2)" file="skins/m_flexor_digitorum_profundus_L(2).skn" material="muscle" group="1"/>
-    <skin name="m_biceps_femoris_tendon_L" file="skins/m_biceps_femoris_tendon_L.skn" material="muscle" group="1"/>
-    <skin name="m_serratus_dorsalis_cranialis_L" file="skins/m_serratus_dorsalis_cranialis_L.skn" material="muscle" group="1"/>
-    <skin name="m_sternocephalicus_L" file="skins/m_sternocephalicus_L.skn" material="muscle" group="1"/>
-    <skin name="m_rectus_capitis_ventr_L" file="skins/m_rectus_capitis_ventr_L.skn" material="muscle" group="1"/>
-    <skin name="m_rectus_capitis_dorsalis_minor_R" file="skins/m_rectus_capitis_dorsalis_minor_R.skn" material="muscle" group="1"/>
-    <skin name="m_gracilis_L" file="skins/m_gracilis_L.skn" material="muscle" group="1"/>
-    <skin name="m_iliacus_R" file="skins/m_iliacus_R.skn" material="muscle" group="1"/>
-    <skin name="m_latissimus_dors_L" file="skins/m_latissimus_dors_L.skn" material="muscle" group="1"/>
-    <skin name="m_flexor_digitorum_profundus_R" file="skins/m_flexor_digitorum_profundus_R.skn" material="muscle" group="1"/>
-    <skin name="m_triceps_brachii_long_R(2)" file="skins/m_triceps_brachii_long_R(2).skn" material="muscle" group="1"/>
-    <skin name="m_depressor_caudae_brevis_L2" file="skins/m_depressor_caudae_brevis_L2.skn" material="muscle" group="1"/>
-    <skin name="m_extensor_capri_radialis_R" file="skins/m_extensor_capri_radialis_R.skn" material="muscle" group="1"/>
-    <skin name="m_semimembranosus_R" file="skins/m_semimembranosus_R.skn" material="muscle" group="1"/>
-    <skin name="m_tensor_f.latae_R" file="skins/m_tensor_f.latae_R.skn" material="muscle" group="1"/>
-    <skin name="m_longissimus_lumborum_L" file="skins/m_longissimus_lumborum_L.skn" material="muscle" group="1"/>
-    <skin name="m_levator_caudae_brevis_L2" file="skins/m_levator_caudae_brevis_L2.skn" material="muscle" group="1"/>
-    <skin name="m_temporalis_L" file="skins/m_temporalis_L.skn" material="muscle" group="1"/>
-    <skin name="m_extensor_digitorum_communis_L" file="skins/m_extensor_digitorum_communis_L.skn" material="muscle" group="1"/>
-    <skin name="m_pectineus_R" file="skins/m_pectineus_R.skn" material="muscle" group="1"/>
-    <skin name="m_psoas_major_L" file="skins/m_psoas_major_L.skn" material="muscle" group="1"/>
-    <skin name="m_trapezius" file="skins/m_trapezius.skn" material="muscle" group="1"/>
-    <skin name="m_serratus_dorsalis_caudalis_L1" file="skins/m_serratus_dorsalis_caudalis_L1.skn" material="muscle" group="1"/>
-    <skin name="m_pterygoideus_med_R" file="skins/m_pterygoideus_med_R.skn" material="muscle" group="1"/>
-    <skin name="m_obturatorius_int_R" file="skins/m_obturatorius_int_R.skn" material="muscle" group="1"/>
-    <skin name="m_longissimus_capitis_L(2)" file="skins/m_longissimus_capitis_L(2).skn" material="muscle" group="1"/>
-    <skin name="m_masseter_R" file="skins/m_masseter_R.skn" material="muscle" group="1"/>
-    <skin name="m_levator_ani_R" file="skins/m_levator_ani_R.skn" material="muscle" group="1"/>
-    <skin name="m_teres_minor_L" file="skins/m_teres_minor_L.skn" material="muscle" group="1"/>
-    <skin name="m_dorsi_Fascia_thoracolumbar_" file="skins/m_dorsi_Fascia_thoracolumbar_.skn" material="muscle" group="1"/>
-    <skin name="m_Eye_L" file="skins/m_Eye_L.skn" material="muscle" group="1"/>
-    <skin name="m_levator_caudae_brevis_L1" file="skins/m_levator_caudae_brevis_L1.skn" material="muscle" group="1"/>
-    <skin name="m_gluteus_medius_R" file="skins/m_gluteus_medius_R.skn" material="muscle" group="1"/>
-    <skin name="m_omotransversarius_L" file="skins/m_omotransversarius_L.skn" material="muscle" group="1"/>
-    <skin name="m_serratus_dorsalis_caudalis_L3" file="skins/m_serratus_dorsalis_caudalis_L3.skn" material="muscle" group="1"/>
-    <skin name="m_depressor_caudae_brevis_L" file="skins/m_depressor_caudae_brevis_L.skn" material="muscle" group="1"/>
-    <skin name="m_subscapularis_L" file="skins/m_subscapularis_L.skn" material="muscle" group="1"/>
-    <skin name="m_intercostals_ext.L" file="skins/m_intercostals_ext.L.skn" material="muscle" group="1"/>
-    <skin name="m_tensor_f.antebrachii_L" file="skins/m_tensor_f.antebrachii_L.skn" material="muscle" group="1"/>
-    <skin name="m_serratus_dorsalis_caudalis_L2" file="skins/m_serratus_dorsalis_caudalis_L2.skn" material="muscle" group="1"/>
-    <skin name="m_pterygoideus_lat_L" file="skins/m_pterygoideus_lat_L.skn" material="muscle" group="1"/>
-    <skin name="m_infraspinatus_L" file="skins/m_infraspinatus_L.skn" material="muscle" group="1"/>
-    <skin name="m_obturatorius_ext_L" file="skins/m_obturatorius_ext_L.skn" material="muscle" group="1"/>
-    <skin name="m_obliquus_capitis_cranialis_R" file="skins/m_obliquus_capitis_cranialis_R.skn" material="muscle" group="1"/>
-    <skin name="m_thoracis_serratus_ventr_R" file="skins/m_thoracis_serratus_ventr_R.skn" material="muscle" group="1"/>
-    <skin name="m_triceps_brachii_accessory_L" file="skins/m_triceps_brachii_accessory_L.skn" material="muscle" group="1"/>
-    <skin name="m_levator_caudae_brevis_L" file="skins/m_levator_caudae_brevis_L.skn" material="muscle" group="1"/>
-    <skin name="m_sartorius_R(2)" file="skins/m_sartorius_R(2).skn" material="muscle" group="1"/>
-    <skin name="m_flexor_carpi_ulnaris_R" file="skins/m_flexor_carpi_ulnaris_R.skn" material="muscle" group="1"/>
-    <skin name="m_adductor_magnus_R" file="skins/m_adductor_magnus_R.skn" material="muscle" group="1"/>
-    <skin name="m_obliquus_ext_abdominis_L" file="skins/m_obliquus_ext_abdominis_L.skn" material="muscle" group="1"/>
-    <skin name="m_zygomaticus_L" file="skins/m_zygomaticus_L.skn" material="muscle" group="1"/>
-    <skin name="m_digastricus_R" file="skins/m_digastricus_R.skn" material="muscle" group="1"/>
-    <skin name="m_capsularis_L" file="skins/m_capsularis_L.skn" material="muscle" group="1"/>
-    <skin name="m_extensor_capri_ulnaris_R" file="skins/m_extensor_capri_ulnaris_R.skn" material="muscle" group="1"/>
-    <skin name="m_longissimus_capitis_R" file="skins/m_longissimus_capitis_R.skn" material="muscle" group="1"/>
-    <skin name="m_gluteus_profundus_minor_R" file="skins/m_gluteus_profundus_minor_R.skn" material="muscle" group="1"/>
-    <skin name="m_rectus_thoracis_L" file="skins/m_rectus_thoracis_L.skn" material="muscle" group="1"/>
-    <skin name="m_peroneus_brevis_L" file="skins/m_peroneus_brevis_L.skn" material="muscle" group="1"/>
-    <skin name="m_tranversus_abdominis_R" file="skins/m_tranversus_abdominis_R.skn" material="muscle" group="1"/>
-    <skin name="m_rectus_abdominis_L" file="skins/m_rectus_abdominis_L.skn" material="muscle" group="1"/>
-    <skin name="m_adductor_longus_L" file="skins/m_adductor_longus_L.skn" material="muscle" group="1"/>
-    <skin name="m_coracobrachialis_L" file="skins/m_coracobrachialis_L.skn" material="muscle" group="1"/>
-    <skin name="m_rectus_femoris_R" file="skins/m_rectus_femoris_R.skn" material="muscle" group="1"/>
-    <skin name="m_transverses_thoracis_L" file="skins/m_transverses_thoracis_L.skn" material="muscle" group="1"/>
-    <skin name="m_buccinator_R(2)" file="skins/m_buccinator_R(2).skn" material="muscle" group="1"/>
-    <skin name="m_biceps_femoris_tendon_R" file="skins/m_biceps_femoris_tendon_R.skn" material="muscle" group="1"/>
-    <skin name="m_obliquus_capitis_cranialis_R(2)" file="skins/m_obliquus_capitis_cranialis_R(2).skn" material="muscle" group="1"/>
-    <skin name="m_serratus_dorsalis_cranialis_R" file="skins/m_serratus_dorsalis_cranialis_R.skn" material="muscle" group="1"/>
-    <skin name="m_sternocephalicus_R" file="skins/m_sternocephalicus_R.skn" material="muscle" group="1"/>
-    <skin name="m_rectus_capitis_ventr_R" file="skins/m_rectus_capitis_ventr_R.skn" material="muscle" group="1"/>
-    <skin name="m_brachiocephalicus" file="skins/m_brachiocephalicus.skn" material="muscle" group="1"/>
-    <skin name="m_rectus_capitis_dorsalis_minor_L" file="skins/m_rectus_capitis_dorsalis_minor_L.skn" material="muscle" group="1"/>
-    <skin name="m_gracilis_R" file="skins/m_gracilis_R.skn" material="muscle" group="1"/>
-    <skin name="m_iliacus_L" file="skins/m_iliacus_L.skn" material="muscle" group="1"/>
-    <skin name="m_flexor_digitorum_profundus_L" file="skins/m_flexor_digitorum_profundus_L.skn" material="muscle" group="1"/>
-    <skin name="m_latissimus_dors_R" file="skins/m_latissimus_dors_R.skn" material="muscle" group="1"/>
-    <skin name="m_extensor_capri_radialis_L" file="skins/m_extensor_capri_radialis_L.skn" material="muscle" group="1"/>
-    <skin name="m_semimembranosus_L" file="skins/m_semimembranosus_L.skn" material="muscle" group="1"/>
-    <skin name="m_tensor_f.latae_L" file="skins/m_tensor_f.latae_L.skn" material="muscle" group="1"/>
-    <skin name="m_longissimus_lumborum_R" file="skins/m_longissimus_lumborum_R.skn" material="muscle" group="1"/>
-    <skin name="m_temporalis_R" file="skins/m_temporalis_R.skn" material="muscle" group="1"/>
-    <skin name="m_mylohyoideus" file="skins/m_mylohyoideus.skn" material="muscle" group="1"/>
-    <skin name="m_extensor_digitorum_communis_R" file="skins/m_extensor_digitorum_communis_R.skn" material="muscle" group="1"/>
-    <skin name="m_pectineus_L" file="skins/m_pectineus_L.skn" material="muscle" group="1"/>
-    <skin name="m_psoas_major_R" file="skins/m_psoas_major_R.skn" material="muscle" group="1"/>
-    <skin name="m_intercostals_int.L" file="skins/m_intercostals_int.L.skn" material="muscle" group="1"/>
-    <skin name="m_pterygoideus_med_L" file="skins/m_pterygoideus_med_L.skn" material="muscle" group="1"/>
-    <skin name="m_obturatorius_int_L" file="skins/m_obturatorius_int_L.skn" material="muscle" group="1"/>
-    <skin name="m_masseter_L" file="skins/m_masseter_L.skn" material="muscle" group="1"/>
-    <skin name="m_levator_ani_L" file="skins/m_levator_ani_L.skn" material="muscle" group="1"/>
-    <skin name="m_teres_minor_R" file="skins/m_teres_minor_R.skn" material="muscle" group="1"/>
-    <skin name="m_interscutularis" file="skins/m_interscutularis.skn" material="muscle" group="1"/>
-    <skin name="m_Eye_R" file="skins/m_Eye_R.skn" material="muscle" group="1"/>
-    <skin name="m_depressor_caudae_brevis_R2(2)" file="skins/m_depressor_caudae_brevis_R2(2).skn" material="muscle" group="1"/>
-    <skin name="m_gluteus_medius_L" file="skins/m_gluteus_medius_L.skn" material="muscle" group="1"/>
-    <skin name="m_omotransversarius_R" file="skins/m_omotransversarius_R.skn" material="muscle" group="1"/>
-    <skin name="m_depressor_caudae_brevis_R" file="skins/m_depressor_caudae_brevis_R.skn" material="muscle" group="1"/>
-    <skin name="m_subscapularis_R" file="skins/m_subscapularis_R.skn" material="muscle" group="1"/>
-    <skin name="m_tensor_f.antebrachii_R" file="skins/m_tensor_f.antebrachii_R.skn" material="muscle" group="1"/>
-    <skin name="m_pterygoideus_lat_R" file="skins/m_pterygoideus_lat_R.skn" material="muscle" group="1"/>
-    <skin name="m_infraspinatus_R" file="skins/m_infraspinatus_R.skn" material="muscle" group="1"/>
-    <skin name="m_obliquus_capitis_cranialis_L" file="skins/m_obliquus_capitis_cranialis_L.skn" material="muscle" group="1"/>
-    <skin name="m_obturatorius_ext_R" file="skins/m_obturatorius_ext_R.skn" material="muscle" group="1"/>
-    <skin name="m_levator_caudae_brevis_R" file="skins/m_levator_caudae_brevis_R.skn" material="muscle" group="1"/>
-    <skin name="m_thoracis_serratus_ventr_L" file="skins/m_thoracis_serratus_ventr_L.skn" material="muscle" group="1"/>
-    <skin name="m_triceps_brachii_accessory_R" file="skins/m_triceps_brachii_accessory_R.skn" material="muscle" group="1"/>
-    <skin name="m_pectorales_superficiales_1" file="skins/m_pectorales_superficiales_1.skn" material="muscle" group="1"/>
-    <skin name="m_anconeus_R" file="skins/m_anconeus_R.skn" material="muscle" group="1"/>
-    <skin name="m_intercostals_int_R" file="skins/m_intercostals_int_R.skn" material="muscle" group="1"/>
-    <skin name="m_teres_major_R" file="skins/m_teres_major_R.skn" material="muscle" group="1"/>
-    <skin name="m_biceps_brachii_R" file="skins/m_biceps_brachii_R.skn" material="muscle" group="1"/>
-    <skin name="m_levator_caudae_longus_L" file="skins/m_levator_caudae_longus_L.skn" material="muscle" group="1"/>
-    <skin name="m_obliquus_capitis_cranialis_L(2)" file="skins/m_obliquus_capitis_cranialis_L(2).skn" material="muscle" group="1"/>
-    <skin name="m_depressor_caudae_brevis_L2(2)" file="skins/m_depressor_caudae_brevis_L2(2).skn" material="muscle" group="1"/>
-    <skin name="m_extensor_digitorum_longus_R" file="skins/m_extensor_digitorum_longus_R.skn" material="muscle" group="1"/>
-    <skin name="m_vastus_med_L" file="skins/m_vastus_med_L.skn" material="muscle" group="1"/>
-    <skin name="m_deltoideus_acromialis_R" file="skins/m_deltoideus_acromialis_R.skn" material="muscle" group="1"/>
-    <skin name="m_psoas_minor_R" file="skins/m_psoas_minor_R.skn" material="muscle" group="1"/>
-    <skin name="m_supraspinatus_L" file="skins/m_supraspinatus_L.skn" material="muscle" group="1"/>
-    <skin name="m_longus_capitis_R" file="skins/m_longus_capitis_R.skn" material="muscle" group="1"/>
-    <skin name="m_biceps_femoris_L" file="skins/m_biceps_femoris_L.skn" material="muscle" group="1"/>
-    <skin name="m_popliteus_L" file="skins/m_popliteus_L.skn" material="muscle" group="1"/>
-    <skin name="m_semitendinosus_R" file="skins/m_semitendinosus_R.skn" material="muscle" group="1"/>
-    <skin name="m_geniohyoideus_R" file="skins/m_geniohyoideus_R.skn" material="muscle" group="1"/>
-    <skin name="m_splenius_R" file="skins/m_splenius_R.skn" material="muscle" group="1"/>
-    <skin name="m_pectorales_superficiales_2" file="skins/m_pectorales_superficiales_2.skn" material="muscle" group="1"/>
-    <skin name="m_coccygeus_L" file="skins/m_coccygeus_L.skn" material="muscle" group="1"/>
-    <skin name="m_abductor_cruris_L" file="skins/m_abductor_cruris_L.skn" material="muscle" group="1"/>
-    <skin name="m_sternohyroideus_R" file="skins/m_sternohyroideus_R.skn" material="muscle" group="1"/>
-    <skin name="m_flexor_capri_radialis_R" file="skins/m_flexor_capri_radialis_R.skn" material="muscle" group="1"/>
-    <skin name="m_Nose" file="skins/m_Nose.skn" material="muscle" group="1"/>
-    <skin name="m_longissimus_thoracis_R" file="skins/m_longissimus_thoracis_R.skn" material="muscle" group="1"/>
-    <skin name="m_deltoideus_scapularis_L" file="skins/m_deltoideus_scapularis_L.skn" material="muscle" group="1"/>
-    <skin name="m_orbicularis_oris_R" file="skins/m_orbicularis_oris_R.skn" material="muscle" group="1"/>
-    <skin name="m_supinator_L" file="skins/m_supinator_L.skn" material="muscle" group="1"/>
-    <skin name="m_vastus_lat_R" file="skins/m_vastus_lat_R.skn" material="muscle" group="1"/>
-    <skin name="m_levator_labii_sup_R" file="skins/m_levator_labii_sup_R.skn" material="muscle" group="1"/>
-    <skin name="m_buccinator_L(2)" file="skins/m_buccinator_L(2).skn" material="muscle" group="1"/>
-    <skin name="m_retractor_anguli_oculi_L" file="skins/m_retractor_anguli_oculi_L.skn" material="muscle" group="1"/>
-    <skin name="m_gemellus_L" file="skins/m_gemellus_L.skn" material="muscle" group="1"/>
-    <skin name="m_dorsi_scaleni_dors_L" file="skins/m_dorsi_scaleni_dors_L.skn" material="muscle" group="1"/>
-    <skin name="m_diaphragma" file="skins/m_diaphragma.skn" material="muscle" group="1"/>
-    <skin name="m_tibialis_caudalis_L" file="skins/m_tibialis_caudalis_L.skn" material="muscle" group="1"/>
-    <skin name="m_triceps_brachii_medial_R" file="skins/m_triceps_brachii_medial_R.skn" material="muscle" group="1"/>
-    <skin name="m_obliquus_capitis_caudalis_L" file="skins/m_obliquus_capitis_caudalis_L.skn" material="muscle" group="1"/>
-    <skin name="m_sternothyroideus_L" file="skins/m_sternothyroideus_L.skn" material="muscle" group="1"/>
-    <skin name="m_tibialis_cranialis_R" file="skins/m_tibialis_cranialis_R.skn" material="muscle" group="1"/>
-    <skin name="m_abductor_pollicis_longus_L" file="skins/m_abductor_pollicis_longus_L.skn" material="muscle" group="1"/>
-    <skin name="m_longissimus_cervicis_L" file="skins/m_longissimus_cervicis_L.skn" material="muscle" group="1"/>
-    <skin name="m_pronator_quadratus_R" file="skins/m_pronator_quadratus_R.skn" material="muscle" group="1"/>
-    <skin name="m_gluteus_superficialis_major_L" file="skins/m_gluteus_superficialis_major_L.skn" material="muscle" group="1"/>
-    <skin name="m_vastus_intermedius_R" file="skins/m_vastus_intermedius_R.skn" material="muscle" group="1"/>
-    <skin name="m_flexor_digitorum_superficialis_R" file="skins/m_flexor_digitorum_superficialis_R.skn" material="muscle" group="1"/>
-    <skin name="m_buccinator_R" file="skins/m_buccinator_R.skn" material="muscle" group="1"/>
-    <skin name="m_Skutulum_R" file="skins/m_Skutulum_R.skn" material="muscle" group="1"/>
-    <skin name="m_rectus_capitis_lateralis_R" file="skins/m_rectus_capitis_lateralis_R.skn" material="muscle" group="1"/>
-    <skin name="m_brachialis_L" file="skins/m_brachialis_L.skn" material="muscle" group="1"/>
-    <skin name="m_rhomboideus_L" file="skins/m_rhomboideus_L.skn" material="muscle" group="1"/>
-    <skin name="m_caninus_L" file="skins/m_caninus_L.skn" material="muscle" group="1"/>
-    <skin name="m_peroneus_longus_R" file="skins/m_peroneus_longus_R.skn" material="muscle" group="1"/>
-    <skin name="m_extensor_digitorum_lateralis_L" file="skins/m_extensor_digitorum_lateralis_L.skn" material="muscle" group="1"/>
-    <skin name="m_rectus_capitis_dorsalis_major_L" file="skins/m_rectus_capitis_dorsalis_major_L.skn" material="muscle" group="1"/>
-    <skin name="m_triceps_brachii_long_R" file="skins/m_triceps_brachii_long_R.skn" material="muscle" group="1"/>
-    <skin name="m_pronator_teres_R" file="skins/m_pronator_teres_R.skn" material="muscle" group="1"/>
-    <skin name="m_obliquus_int_abdominis_L" file="skins/m_obliquus_int_abdominis_L.skn" material="muscle" group="1"/>
-    <skin name="m_gastrocnemius_L" file="skins/m_gastrocnemius_L.skn" material="muscle" group="1"/>
-    <skin name="m_quadratus_femoris_L" file="skins/m_quadratus_femoris_L.skn" material="muscle" group="1"/>
-    <skin name="m_extensor_digitorum_lat_R" file="skins/m_extensor_digitorum_lat_R.skn" material="muscle" group="1"/>
-    <skin name="m_sartorius_L" file="skins/m_sartorius_L.skn" material="muscle" group="1"/>
-    <skin name="m_vastus_lat_ander_fascia_lata_R" file="skins/m_vastus_lat_ander_fascia_lata_R.skn" material="muscle" group="1"/>
   </asset>
 
   <worldbody>
@@ -638,16 +375,15 @@
                     <geom name="L_7_collision" class="nonself_collision_primitive" type="sphere" size="0.05" pos="0 0 -0.02"/>
                     <joint name="L_7_extend" class="lumbar_extend" axis="0 1 0"/>
                     <joint name="L_7_bend" class="lumbar_bend" axis="0 0 1"/>
-                    <joint name="L_7_twist" class="lumbar_twist" axis="1 0 0"/>
                     <body name="pelvis" pos="-0.08022 0 -0.0348">
                       <geom name="Sacrum" class="bone" pos="0.3082 0 -0.4762" mesh="Sacrum"/>
                       <geom name="Pelvis" class="bone" pos="0.3082 0 -0.4762" mesh="Pelvis"/>
                       <geom name="collision_pelvis_L" class="nonself_collision_primitive" size="0.05 0.05 0" pos="0.01 0.02 -0.01" euler="0 70 0"/>
                       <geom name="collision_pelvis_R" class="nonself_collision_primitive" size="0.05 0.05 0" pos="0.01 -0.02 -0.01" euler="0 70 0"/>
                       <body name="upper_leg_L" pos="-0.01811 0.04724 -0.0126">
-                        <geom name="Femoris_L" class="bone" pos="0.3263 -0.04724 -0.4636" mesh="Femoris_L"/>
                         <geom name="Femoris_fabellae_L_2" class="bone" pos="0.3263 -0.04724 -0.4636" mesh="Femoris_fabellae_L_2"/>
                         <geom name="Femoris_fabellae_L_1" class="bone" pos="0.3263 -0.04724 -0.4636" mesh="Femoris_fabellae_L_1"/>
+                        <geom name="Femoris_L" class="bone" pos="0.3263 -0.04724 -0.4636" mesh="Femoris_L"/>
                         <geom name="Patella_L" class="bone" pos="0.3263 -0.04724 -0.4636" mesh="Patella_L"/>
                         <joint name="hip_L_supinate" class="hip_supinate" axis="0 0 -1"/>
                         <joint name="hip_L_abduct" class="hip_abduct" axis="-1 0 0"/>
@@ -659,15 +395,15 @@
                           <geom name="Tibia_L" class="bone" pos="0.3493 -0.07834 -0.2966" mesh="Tibia_L"/>
                           <joint name="knee_L" class="knee" axis="0 -1 0"/>
                           <body name="foot_L" pos="-0.1791 -0.005642 -0.1382">
-                            <geom name="Tarsus_L_III" class="bone" pos="0.5285 -0.07269 -0.1583" mesh="Tarsus_L_III"/>
-                            <geom name="Calcaneal_tuber_L" class="bone" pos="0.5285 -0.07269 -0.1583" mesh="Calcaneal_tuber_L"/>
-                            <geom name="Tibial_tarsal_L" class="bone" pos="0.5285 -0.07269 -0.1583" mesh="Tibial_tarsal_L"/>
-                            <geom name="Tarsus_L_I" class="bone" pos="0.5285 -0.07269 -0.1583" mesh="Tarsus_L_I"/>
-                            <geom name="Tarsus_L_IV" class="bone" pos="0.5285 -0.07269 -0.1583" mesh="Tarsus_L_IV"/>
-                            <geom name="Tarsus_central_L" class="bone" pos="0.5285 -0.07269 -0.1583" mesh="Tarsus_central_L"/>
-                            <geom name="Metatarsi_L_4" class="bone" pos="0.5285 -0.07269 -0.1583" mesh="Metatarsi_L_4"/>
                             <geom name="Metatarsi_L_2" class="bone" pos="0.5285 -0.07269 -0.1583" mesh="Metatarsi_L_2"/>
+                            <geom name="Tibial_tarsal_L" class="bone" pos="0.5285 -0.07269 -0.1583" mesh="Tibial_tarsal_L"/>
                             <geom name="Metatarsi_L_3" class="bone" pos="0.5285 -0.07269 -0.1583" mesh="Metatarsi_L_3"/>
+                            <geom name="Tarsus_central_L" class="bone" pos="0.5285 -0.07269 -0.1583" mesh="Tarsus_central_L"/>
+                            <geom name="Calcaneal_tuber_L" class="bone" pos="0.5285 -0.07269 -0.1583" mesh="Calcaneal_tuber_L"/>
+                            <geom name="Tarsus_L_IV" class="bone" pos="0.5285 -0.07269 -0.1583" mesh="Tarsus_L_IV"/>
+                            <geom name="Tarsus_L_III" class="bone" pos="0.5285 -0.07269 -0.1583" mesh="Tarsus_L_III"/>
+                            <geom name="Metatarsi_L_4" class="bone" pos="0.5285 -0.07269 -0.1583" mesh="Metatarsi_L_4"/>
+                            <geom name="Tarsus_L_I" class="bone" pos="0.5285 -0.07269 -0.1583" mesh="Tarsus_L_I"/>
                             <geom name="Metatarsi_L_1" class="bone" pos="0.5285 -0.07269 -0.1583" mesh="Metatarsi_L_1"/>
                             <geom name="Tarsus_L_II" class="bone" pos="0.5285 -0.07269 -0.1583" mesh="Tarsus_L_II"/>
                             <joint name="ankle_L" class="ankle" axis="0 1 0"/>
@@ -677,16 +413,16 @@
                               <site name="foot_anchor_L" class="sensor"/>
                               <body name="toe_L">
                                 <geom name="Phalanges_B_L_3" class="bone" pos="0.5435 -0.08083 -0.03838" mesh="Phalanges_B_L_3"/>
+                                <geom name="Phalanges_B_2_L_1" class="bone" pos="0.5435 -0.08083 -0.03838" mesh="Phalanges_B_2_L_1"/>
+                                <geom name="Phalanges_B_3_L_3" class="visible_bone" pos="0.5435 -0.08083 -0.03838" mesh="Phalanges_B_3_L_3"/>
+                                <geom name="Phalanges_B_L_4" class="bone" pos="0.5435 -0.08083 -0.03838" mesh="Phalanges_B_L_4"/>
                                 <geom name="Phalanges_B_3_L_4" class="visible_bone" pos="0.5435 -0.08083 -0.03838" mesh="Phalanges_B_3_L_4"/>
                                 <geom name="Phalanges_B_L_2" class="bone" pos="0.5435 -0.08083 -0.03838" mesh="Phalanges_B_L_2"/>
-                                <geom name="Phalanges_B_2_L_1" class="bone" pos="0.5435 -0.08083 -0.03838" mesh="Phalanges_B_2_L_1"/>
+                                <geom name="Phalanges_B_2_L_2" class="bone" pos="0.5435 -0.08083 -0.03838" mesh="Phalanges_B_2_L_2"/>
+                                <geom name="Phalanges_B_3_L_2" class="visible_bone" pos="0.5435 -0.08083 -0.03838" mesh="Phalanges_B_3_L_2"/>
+                                <geom name="Phalanges_B_3_L_1" class="visible_bone" pos="0.5435 -0.08083 -0.03838" mesh="Phalanges_B_3_L_1"/>
                                 <geom name="Phalanges_B_2_L_3" class="bone" pos="0.5435 -0.08083 -0.03838" mesh="Phalanges_B_2_L_3"/>
                                 <geom name="Phalanges_B_L_1" class="bone" pos="0.5435 -0.08083 -0.03838" mesh="Phalanges_B_L_1"/>
-                                <geom name="Phalanges_B_2_L_2" class="bone" pos="0.5435 -0.08083 -0.03838" mesh="Phalanges_B_2_L_2"/>
-                                <geom name="Phalanges_B_3_L_3" class="visible_bone" pos="0.5435 -0.08083 -0.03838" mesh="Phalanges_B_3_L_3"/>
-                                <geom name="Phalanges_B_3_L_2" class="visible_bone" pos="0.5435 -0.08083 -0.03838" mesh="Phalanges_B_3_L_2"/>
-                                <geom name="Phalanges_B_L_4" class="bone" pos="0.5435 -0.08083 -0.03838" mesh="Phalanges_B_L_4"/>
-                                <geom name="Phalanges_B_3_L_1" class="visible_bone" pos="0.5435 -0.08083 -0.03838" mesh="Phalanges_B_3_L_1"/>
                                 <geom name="Phalanges_B_2_L_4" class="bone" pos="0.5435 -0.08083 -0.03838" mesh="Phalanges_B_2_L_4"/>
                                 <joint name="toe_L" class="toe" axis="0 1 0"/>
                                 <geom name="toe_L0_collision" class="foot_primitive" size="0.018 0.012" pos="0.015 0 -0.02" euler="90 0 0"/>
@@ -718,38 +454,38 @@
                         <geom name="upper_leg_R0_collision" class="collision_primitive" size="0.04 0.08" pos="-0.01 -0.02 -0.08" euler="-10 20 0"/>
                         <geom name="upper_leg_R1_collision" class="collision_primitive" size="0.04 0.04" pos="-0.03 0 -0.05" euler="-10 5 0"/>
                         <body name="lower_leg_R" pos="-0.02304 -0.0311 -0.167">
-                          <geom name="Fibula_R" class="bone" pos="0.3493 0.07834 -0.2966" mesh="Fibula_R"/>
                           <geom name="Tibia_R" class="bone" pos="0.3493 0.07834 -0.2966" mesh="Tibia_R"/>
+                          <geom name="Fibula_R" class="bone" pos="0.3493 0.07834 -0.2966" mesh="Fibula_R"/>
                           <joint name="knee_R" class="knee" axis="0 -1 0"/>
                           <body name="foot_R" pos="-0.1791 0.005642 -0.1382">
-                            <geom name="Tarsus_R_I" class="bone" pos="0.5285 0.07269 -0.1583" mesh="Tarsus_R_I"/>
-                            <geom name="Tarsus_R_IV" class="bone" pos="0.5285 0.07269 -0.1583" mesh="Tarsus_R_IV"/>
-                            <geom name="Tarsus_R_III" class="bone" pos="0.5285 0.07269 -0.1583" mesh="Tarsus_R_III"/>
-                            <geom name="Calcaneal_tuber_R" class="bone" pos="0.5285 0.07269 -0.1583" mesh="Calcaneal_tuber_R"/>
-                            <geom name="Tibial_tarsal_R" class="bone" pos="0.5285 0.07269 -0.1583" mesh="Tibial_tarsal_R"/>
-                            <geom name="Tarsus_central_R" class="bone" pos="0.5285 0.07269 -0.1583" mesh="Tarsus_central_R"/>
-                            <geom name="Metatarsi_R_3" class="bone" pos="0.5285 0.07269 -0.1583" mesh="Metatarsi_R_3"/>
-                            <geom name="Metatarsi_R_2" class="bone" pos="0.5285 0.07269 -0.1583" mesh="Metatarsi_R_2"/>
-                            <geom name="Metatarsi_R_1" class="bone" pos="0.5285 0.07269 -0.1583" mesh="Metatarsi_R_1"/>
                             <geom name="Metatarsi_R_4" class="bone" pos="0.5285 0.07269 -0.1583" mesh="Metatarsi_R_4"/>
+                            <geom name="Tibial_tarsal_R" class="bone" pos="0.5285 0.07269 -0.1583" mesh="Tibial_tarsal_R"/>
+                            <geom name="Tarsus_R_III" class="bone" pos="0.5285 0.07269 -0.1583" mesh="Tarsus_R_III"/>
+                            <geom name="Tarsus_central_R" class="bone" pos="0.5285 0.07269 -0.1583" mesh="Tarsus_central_R"/>
+                            <geom name="Metatarsi_R_1" class="bone" pos="0.5285 0.07269 -0.1583" mesh="Metatarsi_R_1"/>
+                            <geom name="Metatarsi_R_2" class="bone" pos="0.5285 0.07269 -0.1583" mesh="Metatarsi_R_2"/>
+                            <geom name="Tarsus_R_I" class="bone" pos="0.5285 0.07269 -0.1583" mesh="Tarsus_R_I"/>
+                            <geom name="Calcaneal_tuber_R" class="bone" pos="0.5285 0.07269 -0.1583" mesh="Calcaneal_tuber_R"/>
+                            <geom name="Tarsus_R_IV" class="bone" pos="0.5285 0.07269 -0.1583" mesh="Tarsus_R_IV"/>
                             <geom name="Tarsus_R_II" class="bone" pos="0.5285 0.07269 -0.1583" mesh="Tarsus_R_II"/>
+                            <geom name="Metatarsi_R_3" class="bone" pos="0.5285 0.07269 -0.1583" mesh="Metatarsi_R_3"/>
                             <joint name="ankle_R" class="ankle" axis="0 1 0"/>
                             <geom name="foot_R_collision" class="collision_primitive" size="0.015 0.07" pos="-0.01 -0.005 -0.05"/>
                             <body name="foot_anchor_R" pos="-0.01504 -0.008131 -0.1199">
                               <geom name="foot_anchor_R" class="foot_primitive" type="box" contype="0" conaffinity="0" size="0.005 0.005 0.005"/>
                               <site name="foot_anchor_R" class="sensor"/>
                               <body name="toe_R">
-                                <geom name="Phalanges_B_3_R_2" class="visible_bone" pos="0.5435 0.08083 -0.03838" mesh="Phalanges_B_3_R_2"/>
-                                <geom name="Phalanges_B_R_4" class="bone" pos="0.5435 0.08083 -0.03838" mesh="Phalanges_B_R_4"/>
-                                <geom name="Phalanges_B_3_R_3" class="visible_bone" pos="0.5435 0.08083 -0.03838" mesh="Phalanges_B_3_R_3"/>
+                                <geom name="Phalanges_B_R_2" class="bone" pos="0.5435 0.08083 -0.03838" mesh="Phalanges_B_R_2"/>
                                 <geom name="Phalanges_B_2_R_4" class="bone" pos="0.5435 0.08083 -0.03838" mesh="Phalanges_B_2_R_4"/>
                                 <geom name="Phalanges_B_3_R_1" class="visible_bone" pos="0.5435 0.08083 -0.03838" mesh="Phalanges_B_3_R_1"/>
+                                <geom name="Phalanges_B_R_3" class="bone" pos="0.5435 0.08083 -0.03838" mesh="Phalanges_B_R_3"/>
+                                <geom name="Phalanges_B_3_R_2" class="visible_bone" pos="0.5435 0.08083 -0.03838" mesh="Phalanges_B_3_R_2"/>
                                 <geom name="Phalanges_B_2_R_1" class="bone" pos="0.5435 0.08083 -0.03838" mesh="Phalanges_B_2_R_1"/>
                                 <geom name="Phalanges_B_3_R_4" class="visible_bone" pos="0.5435 0.08083 -0.03838" mesh="Phalanges_B_3_R_4"/>
-                                <geom name="Phalanges_B_R_2" class="bone" pos="0.5435 0.08083 -0.03838" mesh="Phalanges_B_R_2"/>
-                                <geom name="Phalanges_B_R_3" class="bone" pos="0.5435 0.08083 -0.03838" mesh="Phalanges_B_R_3"/>
-                                <geom name="Phalanges_B_2_R_2" class="bone" pos="0.5435 0.08083 -0.03838" mesh="Phalanges_B_2_R_2"/>
+                                <geom name="Phalanges_B_3_R_3" class="visible_bone" pos="0.5435 0.08083 -0.03838" mesh="Phalanges_B_3_R_3"/>
                                 <geom name="Phalanges_B_R_1" class="bone" pos="0.5435 0.08083 -0.03838" mesh="Phalanges_B_R_1"/>
+                                <geom name="Phalanges_B_R_4" class="bone" pos="0.5435 0.08083 -0.03838" mesh="Phalanges_B_R_4"/>
+                                <geom name="Phalanges_B_2_R_2" class="bone" pos="0.5435 0.08083 -0.03838" mesh="Phalanges_B_2_R_2"/>
                                 <geom name="Phalanges_B_2_R_3" class="bone" pos="0.5435 0.08083 -0.03838" mesh="Phalanges_B_2_R_3"/>
                                 <joint name="toe_R" class="toe" axis="0 1 0"/>
                                 <geom name="toe_R0_collision" class="foot_primitive" size="0.018 0.012" pos="0.015 0 -0.02" euler="90 0 0"/>
@@ -881,29 +617,20 @@
                       <site name="marker_pelvis_1" class="marker" pos="0.04 0.07 0.02"/>
                     </body>
                   </body>
-                  <joint name="L_6_extend" class="lumbar_extend" axis="0 1 0"/>
-                  <joint name="L_6_bend" class="lumbar_bend" axis="0 0 1"/>
                   <joint name="L_6_twist" class="lumbar_twist" axis="1 0 0"/>
                 </body>
                 <joint name="L_5_extend" class="lumbar_extend" axis="0 1 0"/>
                 <joint name="L_5_bend" class="lumbar_bend" axis="0 0 1"/>
-                <joint name="L_5_twist" class="lumbar_twist" axis="1 0 0"/>
               </body>
-              <joint name="L_4_extend" class="lumbar_extend" axis="0 1 0"/>
-              <joint name="L_4_bend" class="lumbar_bend" axis="0 0 1"/>
               <joint name="L_4_twist" class="lumbar_twist" axis="1 0 0"/>
             </body>
             <joint name="L_3_extend" class="lumbar_extend" axis="0 1 0"/>
             <joint name="L_3_bend" class="lumbar_bend" axis="0 0 1"/>
-            <joint name="L_3_twist" class="lumbar_twist" axis="1 0 0"/>
           </body>
-          <joint name="L_2_extend" class="lumbar_extend" axis="0 1 0"/>
-          <joint name="L_2_bend" class="lumbar_bend" axis="0 0 1"/>
           <joint name="L_2_twist" class="lumbar_twist" axis="1 0 0"/>
         </body>
         <joint name="L_1_extend" class="lumbar_extend" axis="0 1 0"/>
         <joint name="L_1_bend" class="lumbar_bend" axis="0 0 1"/>
-        <joint name="L_1_twist" class="lumbar_twist" axis="1 0 0"/>
       </body>
       <body name="C_7" pos="0.1458 0 0.08353">
         <geom name="C_7" class="light_bone" pos="-0.1837 0 -0.5021" mesh="C_7"/>
@@ -928,6 +655,7 @@
                     <geom name="C_1_collision" class="nonself_collision_primitive" type="sphere" size="0.034"/>
                     <joint name="C_1_extend" class="cervical_extend" pos="-0.01147 0 -0.01595" axis="0 1 0" range="-16.4 12.9"/>
                     <joint name="C_1_bend" class="cervical_bend" pos="-0.01147 0 -0.01595" axis="-0.8119 0 0.5837" range="-26 26"/>
+                    <joint name="C_1_twist" class="cervical_twist" pos="-0.01147 0 -0.01595" axis="0.5837 1.393e-06 0.8119" range="-10.1 10.1"/>
                     <body name="skull" pos="0.07792 0 0.01783">
                       <geom name="eye_L" class="visible_bone" rgba="1 1 1 1" pos="-0.341 0 -0.6945" mesh="eye_L"/>
                       <geom name="eye_R" class="visible_bone" rgba="1 1 1 1" pos="-0.341 0 -0.6945" mesh="eye_R"/>
@@ -950,51 +678,51 @@
                         <geom name="jaw3_collision" class="collision_primitive" type="box" size="0.015 0.013 0.003" pos="0.052 0 -0.035" euler="0 15 0"/>
                         <joint name="mandible" class="mandible" pos="-0.043 0 0.05" axis="0 1 0"/>
                         <site name="lower_bite" class="sensor" size="0.005" pos="0.063 0 0.005"/>
-                        <geom name="Premolars_Bottom_R_3_collision" class="tooth_primitive" type="ellipsoid" size="0.002063 0.005281 0.005983" pos="0.02897 -0.01613 -0.0198" quat="0.5464 0.3402 0.4081 0.6475"/>
+                        <geom name="Molars_Bottom_R_1_collision" class="tooth_primitive" type="ellipsoid" size="0.00288 0.008714 0.01042" pos="0.002785 -0.01936 -0.007411" quat="0.4388 0.5295 0.5875 0.4265"/>
                         <geom name="Premolars_Bottom_R_2_collision" class="tooth_primitive" type="ellipsoid" size="0.002052 0.005183 0.005716" pos="0.03953 -0.01408 -0.02416" quat="0.5056 0.3942 0.4748 0.6029"/>
-                        <geom name="Molars_Bottom_3L_collision" class="tooth_primitive" type="ellipsoid" size="0.001801 0.002691 0.00272" pos="-0.01458 0.021 0.007374" quat="0.5671 0.5671 0.4224 0.4224"/>
-                        <geom name="Premolars_Bottom_R_1_collision" class="tooth_primitive" type="ellipsoid" size="0.001284 0.002038 0.004378" pos="0.04749 -0.0128 -0.02757" quat="0.6503 0.215 0.08379 0.7238"/>
-                        <geom name="Premolars_Bottom_R_4_collision" class="tooth_primitive" type="ellipsoid" size="0.002223 0.006001 0.006939" pos="0.01772 -0.01819 -0.015" quat="0.5309 0.3756 0.4387 0.6201"/>
                         <geom name="Premolars_Bottom_L_4_collision" class="tooth_primitive" type="ellipsoid" size="0.002223 0.006001 0.006939" pos="0.01772 0.01819 -0.015" quat="0.6201 0.4387 0.3756 0.5309"/>
                         <geom name="Premolars_Bottom_L_2_collision" class="tooth_primitive" type="ellipsoid" size="0.002052 0.005183 0.005716" pos="0.03953 0.01408 -0.02416" quat="0.6029 0.4748 0.3942 0.5056"/>
-                        <geom name="Premolars_Bottom_L_3_collision" class="tooth_primitive" type="ellipsoid" size="0.002063 0.005281 0.005983" pos="0.02897 0.01613 -0.0198" quat="0.6475 0.4081 0.3402 0.5464"/>
-                        <geom name="Canine_Bottom_R_collision" class="tooth_primitive" type="ellipsoid" size="0.002328 0.002986 0.01131" pos="0.06044 -0.01277 -0.03027" quat="0.6661 0.3918 0.2004 0.6022"/>
-                        <geom name="Premolars_Bottom_L_1_collision" class="tooth_primitive" type="ellipsoid" size="0.001284 0.002038 0.004378" pos="0.04749 0.0128 -0.02757" quat="0.7238 0.08379 0.215 0.6503"/>
-                        <geom name="Incisors_Bottom_L_3_collision" class="tooth_primitive" type="ellipsoid" size="0.001485 0.001894 0.007572" pos="0.06678 0.009306 -0.0316" quat="0.7925 0.07161 0.4413 0.4149"/>
-                        <geom name="Incisors_Bottom_L_2_collision" class="tooth_primitive" type="ellipsoid" size="0.001254 0.001718 0.007304" pos="0.06876 0.00565 -0.03294" quat="-0.2463 0.4941 -0.04671 0.8325"/>
-                        <geom name="Incisors_Bottom_L_1_collision" class="tooth_primitive" type="ellipsoid" size="0.001279 0.001692 0.007546" pos="0.06955 0.002027 -0.03336" quat="-0.002788 0.5069 0.004741 0.862"/>
-                        <geom name="Molars_Bottom_R_1_collision" class="tooth_primitive" type="ellipsoid" size="0.00288 0.008714 0.01042" pos="0.002785 -0.01936 -0.007411" quat="0.4388 0.5295 0.5875 0.4265"/>
-                        <geom name="Canine_Bottom_L_collision" class="tooth_primitive" type="ellipsoid" size="0.002328 0.002986 0.01131" pos="0.06044 0.01277 -0.03027" quat="0.6022 0.2004 0.3918 0.6661"/>
-                        <geom name="Molars_Bottom_R_2_collision" class="tooth_primitive" type="ellipsoid" size="0.00265 0.003984 0.004844" pos="-0.01055 -0.0204 0.0009622" quat="0.5656 0.2739 0.3385 0.7003"/>
-                        <geom name="Molars_Bottom_R_3_collision" class="tooth_primitive" type="ellipsoid" size="0.001801 0.002691 0.00272" pos="-0.01458 -0.021 0.007374" quat="0.4224 0.4224 0.5671 0.5671"/>
-                        <geom name="Molars_Bottom_L_1_collision" class="tooth_primitive" type="ellipsoid" size="0.00288 0.008714 0.01042" pos="0.002785 0.01936 -0.007411" quat="0.4265 0.5875 0.5295 0.4388"/>
-                        <geom name="Molars_Bottom_L_2_collision" class="tooth_primitive" type="ellipsoid" size="0.00265 0.003984 0.004844" pos="-0.01055 0.0204 0.0009622" quat="0.7003 0.3385 0.2739 0.5656"/>
-                        <geom name="Incisors_Bottom_R_2_collision" class="tooth_primitive" type="ellipsoid" size="0.001254 0.001718 0.007304" pos="0.06876 -0.00565 -0.03294" quat="0.2463 0.4941 0.04671 0.8325"/>
                         <geom name="Incisors_Bottom_R_3_collision" class="tooth_primitive" type="ellipsoid" size="0.001485 0.001894 0.007572" pos="0.06678 -0.009306 -0.0316" quat="0.4149 0.4413 0.07161 0.7925"/>
                         <geom name="Incisors_Bottom_R_1_collision" class="tooth_primitive" type="ellipsoid" size="0.001279 0.001692 0.007546" pos="0.06955 -0.002027 -0.03336" quat="0.002788 0.5069 -0.004741 0.862"/>
+                        <geom name="Incisors_Bottom_L_2_collision" class="tooth_primitive" type="ellipsoid" size="0.001254 0.001718 0.007304" pos="0.06876 0.00565 -0.03294" quat="-0.2463 0.4941 -0.04671 0.8325"/>
+                        <geom name="Incisors_Bottom_L_3_collision" class="tooth_primitive" type="ellipsoid" size="0.001485 0.001894 0.007572" pos="0.06678 0.009306 -0.0316" quat="0.7925 0.07161 0.4413 0.4149"/>
+                        <geom name="Premolars_Bottom_L_1_collision" class="tooth_primitive" type="ellipsoid" size="0.001284 0.002038 0.004378" pos="0.04749 0.0128 -0.02757" quat="0.7238 0.08379 0.215 0.6503"/>
+                        <geom name="Molars_Bottom_R_3_collision" class="tooth_primitive" type="ellipsoid" size="0.001801 0.002691 0.00272" pos="-0.01458 -0.021 0.007374" quat="0.4224 0.4224 0.5671 0.5671"/>
+                        <geom name="Premolars_Bottom_R_1_collision" class="tooth_primitive" type="ellipsoid" size="0.001284 0.002038 0.004378" pos="0.04749 -0.0128 -0.02757" quat="0.6503 0.215 0.08379 0.7238"/>
+                        <geom name="Molars_Bottom_3L_collision" class="tooth_primitive" type="ellipsoid" size="0.001801 0.002691 0.00272" pos="-0.01458 0.021 0.007374" quat="0.5671 0.5671 0.4224 0.4224"/>
+                        <geom name="Molars_Bottom_L_2_collision" class="tooth_primitive" type="ellipsoid" size="0.00265 0.003984 0.004844" pos="-0.01055 0.0204 0.0009622" quat="0.7003 0.3385 0.2739 0.5656"/>
+                        <geom name="Premolars_Bottom_R_3_collision" class="tooth_primitive" type="ellipsoid" size="0.002063 0.005281 0.005983" pos="0.02897 -0.01613 -0.0198" quat="0.5464 0.3402 0.4081 0.6475"/>
+                        <geom name="Premolars_Bottom_L_3_collision" class="tooth_primitive" type="ellipsoid" size="0.002063 0.005281 0.005983" pos="0.02897 0.01613 -0.0198" quat="0.6475 0.4081 0.3402 0.5464"/>
+                        <geom name="Incisors_Bottom_L_1_collision" class="tooth_primitive" type="ellipsoid" size="0.001279 0.001692 0.007546" pos="0.06955 0.002027 -0.03336" quat="-0.002788 0.5069 0.004741 0.862"/>
+                        <geom name="Canine_Bottom_L_collision" class="tooth_primitive" type="ellipsoid" size="0.002328 0.002986 0.01131" pos="0.06044 0.01277 -0.03027" quat="0.6022 0.2004 0.3918 0.6661"/>
+                        <geom name="Incisors_Bottom_R_2_collision" class="tooth_primitive" type="ellipsoid" size="0.001254 0.001718 0.007304" pos="0.06876 -0.00565 -0.03294" quat="0.2463 0.4941 0.04671 0.8325"/>
+                        <geom name="Molars_Bottom_L_1_collision" class="tooth_primitive" type="ellipsoid" size="0.00288 0.008714 0.01042" pos="0.002785 0.01936 -0.007411" quat="0.4265 0.5875 0.5295 0.4388"/>
+                        <geom name="Premolars_Bottom_R_4_collision" class="tooth_primitive" type="ellipsoid" size="0.002223 0.006001 0.006939" pos="0.01772 -0.01819 -0.015" quat="0.5309 0.3756 0.4387 0.6201"/>
+                        <geom name="Canine_Bottom_R_collision" class="tooth_primitive" type="ellipsoid" size="0.002328 0.002986 0.01131" pos="0.06044 -0.01277 -0.03027" quat="0.6661 0.3918 0.2004 0.6022"/>
+                        <geom name="Molars_Bottom_R_2_collision" class="tooth_primitive" type="ellipsoid" size="0.00265 0.003984 0.004844" pos="-0.01055 -0.0204 0.0009622" quat="0.5656 0.2739 0.3385 0.7003"/>
                         <inertial pos="-0.001402 0 -0.002262" quat="0 0.8897 0 0.4566" mass="0.08282" diaginertia="0.0001313 0.0001146 3.607e-05"/>
                         <geom name="Jaw" class="bone" pos="-0.356 0 -0.6325" mesh="Jaw"/>
                       </body>
-                      <geom name="Molars_Top_1L_collision" class="tooth_primitive" type="ellipsoid" size="0.004616 0.006227 0.00653" pos="0.0197 0.02796 -0.04033" quat="-0.1696 0.7939 0.228 0.5375"/>
-                      <geom name="Canine_Top_L_collision" class="tooth_primitive" type="ellipsoid" size="0.00255 0.004356 0.01479" pos="0.08408 0.01464 -0.03788" quat="0.7247 -0.0126 -0.145 0.6735"/>
-                      <geom name="Premolars_Top_L_1_collision" class="tooth_primitive" type="ellipsoid" size="0.001716 0.002936 0.005556" pos="0.07323 0.01581 -0.03909" quat="0.7276 -0.01398 -0.1308 0.6732"/>
-                      <geom name="Premolars_Top_L_2_collision" class="tooth_primitive" type="ellipsoid" size="0.002204 0.005472 0.006079" pos="0.0633 0.01715 -0.03957" quat="0.4065 0.6855 0.529 0.2914"/>
-                      <geom name="Premolars_Top_L_3_collision" class="tooth_primitive" type="ellipsoid" size="0.002255 0.005977 0.006518" pos="0.05089 0.02105 -0.03949" quat="0.3489 0.7868 0.4704 0.1946"/>
-                      <geom name="Canine_Top_R_collision" class="tooth_primitive" type="ellipsoid" size="0.00255 0.004356 0.01479" pos="0.08408 -0.01464 -0.03788" quat="0.6735 -0.145 -0.0126 0.7247"/>
-                      <geom name="Molars_Top_2L_collision" class="tooth_primitive" type="ellipsoid" size="0.003681 0.004128 0.00467" pos="0.01075 0.0263 -0.03575" quat="0.7973 0.5314 0.2697 0.09594"/>
-                      <geom name="Incisors_Top_R_2_collision" class="tooth_primitive" type="ellipsoid" size="0.002026 0.002206 0.005704" pos="0.1001 -0.007781 -0.03812" quat="0.9774 -0.1136 -0.1769 -0.02056"/>
-                      <geom name="Molars_Top_R_2_collision" class="tooth_primitive" type="ellipsoid" size="0.003681 0.004128 0.00467" pos="0.01075 -0.0263 -0.03575" quat="0.5314 0.7973 -0.09594 -0.2697"/>
-                      <geom name="Incisors_Top_R_3_collision" class="tooth_primitive" type="ellipsoid" size="0.002374 0.002715 0.007059" pos="0.09564 -0.01222 -0.03872" quat="0.9289 -0.1742 0.005002 0.3266"/>
-                      <geom name="Incisors_Top_R_1_collision" class="tooth_primitive" type="ellipsoid" size="0.001775 0.002136 0.00544" pos="0.1016 -0.002792 -0.03825" quat="0.9779 -0.02384 -0.1986 0.06071"/>
-                      <geom name="Premolars_Top_L_4_collision" class="tooth_primitive" type="ellipsoid" size="0.00362 0.007657 0.01008" pos="0.03536 0.02589 -0.0405" quat="0.5461 0.5802 0.4361 0.4182"/>
-                      <geom name="Molars_Top_R_1_collision" class="tooth_primitive" type="ellipsoid" size="0.004616 0.006227 0.00653" pos="0.0197 -0.02796 -0.04033" quat="0.1696 0.7939 -0.228 0.5375"/>
-                      <geom name="Incisors_Top_L_3_collision" class="tooth_primitive" type="ellipsoid" size="0.002374 0.002715 0.007059" pos="0.09564 0.01222 -0.03872" quat="0.9289 0.1742 0.005002 -0.3266"/>
-                      <geom name="Premolars_Top_R_7_collision" class="tooth_primitive" type="ellipsoid" size="0.00362 0.007657 0.01008" pos="0.03536 -0.02589 -0.0405" quat="0.4182 0.4361 0.5802 0.5461"/>
-                      <geom name="Incisors_Top_L_2_collision" class="tooth_primitive" type="ellipsoid" size="0.002026 0.002206 0.005704" pos="0.1001 0.007781 -0.03812" quat="0.9774 0.1136 -0.1769 0.02056"/>
                       <geom name="Incisors_Top_L_1_collision" class="tooth_primitive" type="ellipsoid" size="0.001775 0.002136 0.00544" pos="0.1016 0.002792 -0.03825" quat="0.9779 0.02384 -0.1986 -0.06071"/>
-                      <geom name="Premolars_Top_R_1_collision" class="tooth_primitive" type="ellipsoid" size="0.001716 0.002936 0.005556" pos="0.07323 -0.01581 -0.03909" quat="0.6732 -0.1308 -0.01398 0.7276"/>
-                      <geom name="Premolars_Top_R_3_collision" class="tooth_primitive" type="ellipsoid" size="0.002255 0.005977 0.006518" pos="0.05089 -0.02105 -0.03949" quat="0.1946 0.4704 0.7868 0.3489"/>
+                      <geom name="Incisors_Top_R_1_collision" class="tooth_primitive" type="ellipsoid" size="0.001775 0.002136 0.00544" pos="0.1016 -0.002792 -0.03825" quat="0.9779 -0.02384 -0.1986 0.06071"/>
+                      <geom name="Canine_Top_L_collision" class="tooth_primitive" type="ellipsoid" size="0.00255 0.004356 0.01479" pos="0.08408 0.01464 -0.03788" quat="0.7247 -0.0126 -0.145 0.6735"/>
+                      <geom name="Premolars_Top_R_7_collision" class="tooth_primitive" type="ellipsoid" size="0.00362 0.007657 0.01008" pos="0.03536 -0.02589 -0.0405" quat="0.4182 0.4361 0.5802 0.5461"/>
+                      <geom name="Molars_Top_1L_collision" class="tooth_primitive" type="ellipsoid" size="0.004616 0.006227 0.00653" pos="0.0197 0.02796 -0.04033" quat="-0.1696 0.7939 0.228 0.5375"/>
+                      <geom name="Incisors_Top_R_2_collision" class="tooth_primitive" type="ellipsoid" size="0.002026 0.002206 0.005704" pos="0.1001 -0.007781 -0.03812" quat="0.9774 -0.1136 -0.1769 -0.02056"/>
+                      <geom name="Molars_Top_R_1_collision" class="tooth_primitive" type="ellipsoid" size="0.004616 0.006227 0.00653" pos="0.0197 -0.02796 -0.04033" quat="0.1696 0.7939 -0.228 0.5375"/>
+                      <geom name="Incisors_Top_R_3_collision" class="tooth_primitive" type="ellipsoid" size="0.002374 0.002715 0.007059" pos="0.09564 -0.01222 -0.03872" quat="0.9289 -0.1742 0.005002 0.3266"/>
+                      <geom name="Incisors_Top_L_2_collision" class="tooth_primitive" type="ellipsoid" size="0.002026 0.002206 0.005704" pos="0.1001 0.007781 -0.03812" quat="0.9774 0.1136 -0.1769 0.02056"/>
                       <geom name="Premolars_Top_R_2_collision" class="tooth_primitive" type="ellipsoid" size="0.002204 0.005472 0.006079" pos="0.0633 -0.01715 -0.03957" quat="0.2914 0.529 0.6855 0.4065"/>
+                      <geom name="Premolars_Top_R_1_collision" class="tooth_primitive" type="ellipsoid" size="0.001716 0.002936 0.005556" pos="0.07323 -0.01581 -0.03909" quat="0.6732 -0.1308 -0.01398 0.7276"/>
+                      <geom name="Canine_Top_R_collision" class="tooth_primitive" type="ellipsoid" size="0.00255 0.004356 0.01479" pos="0.08408 -0.01464 -0.03788" quat="0.6735 -0.145 -0.0126 0.7247"/>
+                      <geom name="Premolars_Top_L_4_collision" class="tooth_primitive" type="ellipsoid" size="0.00362 0.007657 0.01008" pos="0.03536 0.02589 -0.0405" quat="0.5461 0.5802 0.4361 0.4182"/>
+                      <geom name="Premolars_Top_L_1_collision" class="tooth_primitive" type="ellipsoid" size="0.001716 0.002936 0.005556" pos="0.07323 0.01581 -0.03909" quat="0.7276 -0.01398 -0.1308 0.6732"/>
+                      <geom name="Molars_Top_2L_collision" class="tooth_primitive" type="ellipsoid" size="0.003681 0.004128 0.00467" pos="0.01075 0.0263 -0.03575" quat="0.7973 0.5314 0.2697 0.09594"/>
+                      <geom name="Premolars_Top_L_2_collision" class="tooth_primitive" type="ellipsoid" size="0.002204 0.005472 0.006079" pos="0.0633 0.01715 -0.03957" quat="0.4065 0.6855 0.529 0.2914"/>
+                      <geom name="Molars_Top_R_2_collision" class="tooth_primitive" type="ellipsoid" size="0.003681 0.004128 0.00467" pos="0.01075 -0.0263 -0.03575" quat="0.5314 0.7973 -0.09594 -0.2697"/>
+                      <geom name="Incisors_Top_L_3_collision" class="tooth_primitive" type="ellipsoid" size="0.002374 0.002715 0.007059" pos="0.09564 0.01222 -0.03872" quat="0.9289 0.1742 0.005002 -0.3266"/>
+                      <geom name="Premolars_Top_L_3_collision" class="tooth_primitive" type="ellipsoid" size="0.002255 0.005977 0.006518" pos="0.05089 0.02105 -0.03949" quat="0.3489 0.7868 0.4704 0.1946"/>
+                      <geom name="Premolars_Top_R_3_collision" class="tooth_primitive" type="ellipsoid" size="0.002255 0.005977 0.006518" pos="0.05089 -0.02105 -0.03949" quat="0.1946 0.4704 0.7868 0.3489"/>
                       <inertial pos="-0.001013 0 0.001405" quat="0 0.8203 0 0.572" mass="0.4354" diaginertia="0.0008834 0.0007907 0.0003248"/>
                       <geom name="MergedSkull" class="bone" pos="-0.3477 0 -0.691" mesh="MergedSkull"/>
                       <site name="marker_skull_0" class="marker" pos="0.01 0 0.04"/>
@@ -1003,22 +731,31 @@
                       <site name="marker_skull_3" class="marker" pos="-0.1 0 0.02"/>
                     </body>
                   </body>
+                  <joint name="C_2_extend" class="cervical_extend" pos="-0.004829 0 -0.02353" axis="0 1 0" range="-13.4 18.3"/>
+                  <joint name="C_2_bend" class="cervical_bend" pos="-0.004829 0 -0.02353" axis="-0.9796 0 0.201" range="-32 32"/>
                   <joint name="C_2_twist" class="cervical_twist" pos="-0.004829 0 -0.02353" axis="0.201 0 0.9796" range="-10.1 10.1"/>
                 </body>
                 <joint name="C_3_extend" class="cervical_extend" pos="-0.002825 0 -0.0163" axis="0 1 0" range="-13.4 18.3"/>
                 <joint name="C_3_bend" class="cervical_bend" pos="-0.002825 0 -0.0163" axis="-0.9853 0 0.1708" range="-32 32"/>
+                <joint name="C_3_twist" class="cervical_twist" pos="-0.002825 0 -0.0163" axis="0.1708 0 0.9853" range="-10.1 10.1"/>
               </body>
+              <joint name="C_4_extend" class="cervical_extend" pos="-0.005062 0 -0.01598" axis="0 1 0" range="-11.9 11.2"/>
+              <joint name="C_4_bend" class="cervical_bend" pos="-0.005062 0 -0.01598" axis="-0.9533 0 0.3019" range="-27.9 27.9"/>
               <joint name="C_4_twist" class="cervical_twist" pos="-0.005062 0 -0.01598" axis="0.3019 0 0.9533" range="-33 33"/>
             </body>
             <joint name="C_5_extend" class="cervical_extend" pos="-0.007455 0 -0.01425" axis="0 1 0" range="-11.9 11.2"/>
             <joint name="C_5_bend" class="cervical_bend" pos="-0.007455 0 -0.01425" axis="-0.8861 0 0.4636" range="-27.9 27.9"/>
+            <joint name="C_5_twist" class="cervical_twist" pos="-0.007455 0 -0.01425" axis="0.4636 0 0.8861" range="-33 33"/>
           </body>
+          <joint name="C_6_extend" class="cervical_extend" pos="-0.0139 0 -0.007136" axis="0 1 0" range="-14.2 35.4"/>
+          <joint name="C_6_bend" class="cervical_bend" pos="-0.0139 0 -0.007136" axis="-0.4568 0 0.8896" range="-23.5 23.5"/>
           <joint name="C_6_twist" class="cervical_twist" pos="-0.0139 0 -0.007136" axis="0.8896 0 0.4568" range="-42.4 42.4"/>
           <site name="marker_C_6_0" class="marker" pos="0.05 -0.05 0"/>
           <site name="marker_C_6_1" class="marker" pos="0.05 0.05 0"/>
         </body>
         <joint name="C_7_extend" class="cervical_extend" pos="-0.01571 0 -0.001623" axis="0 1 0" range="-14.2 35.4"/>
         <joint name="C_7_bend" class="cervical_bend" pos="-0.01571 0 -0.001623" axis="-0.1027 0 0.9947" range="-23.5 23.5"/>
+        <joint name="C_7_twist" class="cervical_twist" pos="-0.01571 0 -0.001623" axis="0.9947 0 0.1027" range="-42.4 42.4"/>
       </body>
       <body name="scapula_L" pos="0.08 0.02 0.14">
         <geom name="Scapula_L" class="bone" pos="-0.1179 -0.02 -0.5586" mesh="Scapula_L"/>
@@ -1030,43 +767,43 @@
           <joint name="shoulder_L_supinate" class="shoulder_supinate" axis="-1 0 1"/>
           <joint name="shoulder_L_extend" class="shoulder_extend" axis="0 1 0"/>
           <body name="lower_arm_L" pos="-0.05 0.015 -0.145">
-            <geom name="Carpal_ulnar_L" class="bone" pos="-0.1429 -0.068 -0.2836" mesh="Carpal_ulnar_L"/>
-            <geom name="Radius_L" class="bone" pos="-0.1429 -0.068 -0.2836" mesh="Radius_L"/>
             <geom name="Carpal_accessory_L" class="bone" pos="-0.1429 -0.068 -0.2836" mesh="Carpal_accessory_L"/>
             <geom name="Ulna_L" class="bone" pos="-0.1429 -0.068 -0.2836" mesh="Ulna_L"/>
+            <geom name="Radius_L" class="bone" pos="-0.1429 -0.068 -0.2836" mesh="Radius_L"/>
+            <geom name="Carpal_ulnar_L" class="bone" pos="-0.1429 -0.068 -0.2836" mesh="Carpal_ulnar_L"/>
             <joint name="elbow_L" class="elbow" axis="0 1 0.2"/>
             <body name="hand_anchor_L" pos="0.003 -0.015 -0.19">
               <geom name="hand_anchor_L" class="foot_primitive" type="box" contype="0" conaffinity="0" size="0.005 0.005 0.005"/>
               <site name="hand_anchor_L" class="sensor"/>
               <body name="hand_L">
-                <geom name="Carpal_I_L" class="bone" pos="-0.1459 -0.053 -0.09359" mesh="Carpal_I_L"/>
                 <geom name="Os_metacarpale_I_L" class="bone" pos="-0.1459 -0.053 -0.09359" mesh="Os_metacarpale_I_L"/>
-                <geom name="Os_metacarpale_V_L" class="bone" pos="-0.1459 -0.053 -0.09359" mesh="Os_metacarpale_V_L"/>
-                <geom name="Carpal_L" class="bone" pos="-0.1459 -0.053 -0.09359" mesh="Carpal_L"/>
                 <geom name="Carpal_Sesamoid_L" class="bone" pos="-0.1459 -0.053 -0.09359" mesh="Carpal_Sesamoid_L"/>
-                <geom name="Carpal_III_L" class="bone" pos="-0.1459 -0.053 -0.09359" mesh="Carpal_III_L"/>
+                <geom name="Os_metacarpale_III_L" class="bone" pos="-0.1459 -0.053 -0.09359" mesh="Os_metacarpale_III_L"/>
+                <geom name="Carpal_IV_L" class="bone" pos="-0.1459 -0.053 -0.09359" mesh="Carpal_IV_L"/>
+                <geom name="Os_metacarpale_IV_L" class="bone" pos="-0.1459 -0.053 -0.09359" mesh="Os_metacarpale_IV_L"/>
+                <geom name="Os_metacarpale_II_L" class="bone" pos="-0.1459 -0.053 -0.09359" mesh="Os_metacarpale_II_L"/>
                 <geom name="Phalanx_distalis_digiti_I_L" class="bone" pos="-0.1459 -0.053 -0.09359" mesh="Phalanx_distalis_digiti_I_L"/>
                 <geom name="Os_metacarpale_V_L.001" class="bone" pos="-0.1459 -0.053 -0.09359" mesh="Os_metacarpale_V_L.001"/>
                 <geom name="Carpal_II_L" class="bone" pos="-0.1459 -0.053 -0.09359" mesh="Carpal_II_L"/>
-                <geom name="Carpal_IV_L" class="bone" pos="-0.1459 -0.053 -0.09359" mesh="Carpal_IV_L"/>
-                <geom name="Os_metacarpale_III_L" class="bone" pos="-0.1459 -0.053 -0.09359" mesh="Os_metacarpale_III_L"/>
-                <geom name="Os_metacarpale_IV_L" class="bone" pos="-0.1459 -0.053 -0.09359" mesh="Os_metacarpale_IV_L"/>
-                <geom name="Os_metacarpale_II_L" class="bone" pos="-0.1459 -0.053 -0.09359" mesh="Os_metacarpale_II_L"/>
+                <geom name="Carpal_L" class="bone" pos="-0.1459 -0.053 -0.09359" mesh="Carpal_L"/>
+                <geom name="Os_metacarpale_V_L" class="bone" pos="-0.1459 -0.053 -0.09359" mesh="Os_metacarpale_V_L"/>
+                <geom name="Carpal_I_L" class="bone" pos="-0.1459 -0.053 -0.09359" mesh="Carpal_I_L"/>
+                <geom name="Carpal_III_L" class="bone" pos="-0.1459 -0.053 -0.09359" mesh="Carpal_III_L"/>
                 <joint name="wrist_L" class="wrist" axis="0 -1 0"/>
                 <geom name="hand_L_collision" class="collision_primitive" type="box" size="0.03 0.016 0.012" pos="0.01 0 -0.04" euler="0 65 0"/>
                 <body name="finger_L" pos="0.02 0 -0.06">
-                  <geom name="Phalanx_media_digiti_II_L" class="bone" pos="-0.1659 -0.053 -0.03359" mesh="Phalanx_media_digiti_II_L"/>
-                  <geom name="Phalanx_media_digiti_III_L" class="bone" pos="-0.1659 -0.053 -0.03359" mesh="Phalanx_media_digiti_III_L"/>
-                  <geom name="Phalanx_media_digiti_IV_L" class="bone" pos="-0.1659 -0.053 -0.03359" mesh="Phalanx_media_digiti_IV_L"/>
+                  <geom name="Phalanxpmxinutlis_digiti_II_L" class="bone" pos="-0.1659 -0.053 -0.03359" mesh="Phalanxpmxinutlis_digiti_II_L"/>
                   <geom name="Phalanxpmxinutlis_digiti_V_L" class="bone" pos="-0.1659 -0.053 -0.03359" mesh="Phalanxpmxinutlis_digiti_V_L"/>
                   <geom name="Phalanx_distalis_digiti_III_L" class="visible_bone" pos="-0.1659 -0.053 -0.03359" mesh="Phalanx_distalis_digiti_III_L"/>
                   <geom name="Phalanx_distalis_digiti_V_L" class="visible_bone" pos="-0.1659 -0.053 -0.03359" mesh="Phalanx_distalis_digiti_V_L"/>
-                  <geom name="Phalanx_media_digiti_V_L" class="bone" pos="-0.1659 -0.053 -0.03359" mesh="Phalanx_media_digiti_V_L"/>
-                  <geom name="Phalanxpmxinutlis_digiti_IV_L_" class="bone" pos="-0.1659 -0.053 -0.03359" mesh="Phalanxpmxinutlis_digiti_IV_L_"/>
-                  <geom name="Phalanx_distalis_digiti_II_L" class="visible_bone" pos="-0.1659 -0.053 -0.03359" mesh="Phalanx_distalis_digiti_II_L"/>
                   <geom name="Phalanx_distalis_digiti_IV_L" class="visible_bone" pos="-0.1659 -0.053 -0.03359" mesh="Phalanx_distalis_digiti_IV_L"/>
+                  <geom name="Phalanx_media_digiti_IV_L" class="bone" pos="-0.1659 -0.053 -0.03359" mesh="Phalanx_media_digiti_IV_L"/>
+                  <geom name="Phalanxpmxinutlis_digiti_IV_L_" class="bone" pos="-0.1659 -0.053 -0.03359" mesh="Phalanxpmxinutlis_digiti_IV_L_"/>
+                  <geom name="Phalanx_media_digiti_II_L" class="bone" pos="-0.1659 -0.053 -0.03359" mesh="Phalanx_media_digiti_II_L"/>
                   <geom name="Phalanxpmxinutlis_digiti_III_L_" class="bone" pos="-0.1659 -0.053 -0.03359" mesh="Phalanxpmxinutlis_digiti_III_L_"/>
-                  <geom name="Phalanxpmxinutlis_digiti_II_L" class="bone" pos="-0.1659 -0.053 -0.03359" mesh="Phalanxpmxinutlis_digiti_II_L"/>
+                  <geom name="Phalanx_distalis_digiti_II_L" class="visible_bone" pos="-0.1659 -0.053 -0.03359" mesh="Phalanx_distalis_digiti_II_L"/>
+                  <geom name="Phalanx_media_digiti_III_L" class="bone" pos="-0.1659 -0.053 -0.03359" mesh="Phalanx_media_digiti_III_L"/>
+                  <geom name="Phalanx_media_digiti_V_L" class="bone" pos="-0.1659 -0.053 -0.03359" mesh="Phalanx_media_digiti_V_L"/>
                   <joint name="finger_L" class="finger" axis="0 1 0.2"/>
                   <geom name="finger_L0_collision" class="foot_primitive" size="0.018 0.012" pos="0.012 0 -0.012" euler="90 0 0"/>
                   <geom name="finger_L1_collision" class="foot_primitive" size="0.01 0.015" pos="0.032 0 -0.02" euler="90 0 0"/>
@@ -1080,8 +817,8 @@
                 <site name="marker_hand_L_3" class="marker" pos="0.02 0.02 -0.08"/>
               </body>
             </body>
-            <geom name="Radius_L_collision" class="collision_primitive" size="0.017 0.09" pos="0.0008281 -0.006968 -0.1114" quat="0.9802 -0.05682 0.01088 0.1893"/>
             <geom name="Ulna_L_collision" class="collision_primitive" size="0.015 0.06" pos="-0.00939 -0.0004415 -0.05501" quat="0.6993 -0.03224 -0.02206 0.7137"/>
+            <geom name="Radius_L_collision" class="collision_primitive" size="0.017 0.09" pos="0.0008281 -0.006968 -0.1114" quat="0.9802 -0.05682 0.01088 0.1893"/>
             <site name="marker_lower_arm_L_0" class="marker" pos="0.025 0 0"/>
             <site name="marker_lower_arm_L_1" class="marker" pos="0.025 0 -0.1"/>
           </body>
@@ -1101,42 +838,42 @@
           <joint name="shoulder_R_extend" class="shoulder_extend" axis="0 1 0"/>
           <body name="lower_arm_R" pos="-0.05 -0.015 -0.145">
             <geom name="Ulna_R" class="bone" pos="-0.1429 0.068 -0.2836" mesh="Ulna_R"/>
+            <geom name="Radius_R" class="bone" pos="-0.1429 0.068 -0.2836" mesh="Radius_R"/>
             <geom name="Carpal_accessory_R" class="bone" pos="-0.1429 0.068 -0.2836" mesh="Carpal_accessory_R"/>
             <geom name="Carpal_ulnar_R" class="bone" pos="-0.1429 0.068 -0.2836" mesh="Carpal_ulnar_R"/>
-            <geom name="Radius_R" class="bone" pos="-0.1429 0.068 -0.2836" mesh="Radius_R"/>
             <joint name="elbow_R" class="elbow" axis="0 1 -0.2"/>
             <body name="hand_anchor_R" pos="0.003 0.015 -0.19">
               <geom name="hand_anchor_R" class="foot_primitive" type="box" contype="0" conaffinity="0" size="0.005 0.005 0.005"/>
               <site name="hand_anchor_R" class="sensor"/>
               <body name="hand_R">
-                <geom name="Os_metacarpale_III_R" class="bone" pos="-0.1459 0.053 -0.09359" mesh="Os_metacarpale_III_R"/>
-                <geom name="Os_metacarpale_IV_R" class="bone" pos="-0.1459 0.053 -0.09359" mesh="Os_metacarpale_IV_R"/>
                 <geom name="Os_metacarpale_II_R" class="bone" pos="-0.1459 0.053 -0.09359" mesh="Os_metacarpale_II_R"/>
-                <geom name="Os_metacarpale_V_R.001" class="bone" pos="-0.1459 0.053 -0.09359" mesh="Os_metacarpale_V_R.001"/>
-                <geom name="Carpal_II_R" class="bone" pos="-0.1459 0.053 -0.09359" mesh="Carpal_II_R"/>
+                <geom name="Phalanx_distalis_digiti_I_R" class="bone" pos="-0.1459 0.053 -0.09359" mesh="Phalanx_distalis_digiti_I_R"/>
+                <geom name="Os_metacarpale_I_R" class="bone" pos="-0.1459 0.053 -0.09359" mesh="Os_metacarpale_I_R"/>
                 <geom name="Carpal_IV_R" class="bone" pos="-0.1459 0.053 -0.09359" mesh="Carpal_IV_R"/>
                 <geom name="Carpal_III_R" class="bone" pos="-0.1459 0.053 -0.09359" mesh="Carpal_III_R"/>
-                <geom name="Phalanx_distalis_digiti_I_R" class="bone" pos="-0.1459 0.053 -0.09359" mesh="Phalanx_distalis_digiti_I_R"/>
-                <geom name="Carpal_I_R" class="bone" pos="-0.1459 0.053 -0.09359" mesh="Carpal_I_R"/>
-                <geom name="Os_metacarpale_I_R" class="bone" pos="-0.1459 0.053 -0.09359" mesh="Os_metacarpale_I_R"/>
                 <geom name="Os_metacarpale_V_R" class="bone" pos="-0.1459 0.053 -0.09359" mesh="Os_metacarpale_V_R"/>
-                <geom name="Carpal_R" class="bone" pos="-0.1459 0.053 -0.09359" mesh="Carpal_R"/>
+                <geom name="Os_metacarpale_III_R" class="bone" pos="-0.1459 0.053 -0.09359" mesh="Os_metacarpale_III_R"/>
+                <geom name="Os_metacarpale_IV_R" class="bone" pos="-0.1459 0.053 -0.09359" mesh="Os_metacarpale_IV_R"/>
+                <geom name="Os_metacarpale_V_R.001" class="bone" pos="-0.1459 0.053 -0.09359" mesh="Os_metacarpale_V_R.001"/>
                 <geom name="Carpal_Sesamoid_R" class="bone" pos="-0.1459 0.053 -0.09359" mesh="Carpal_Sesamoid_R"/>
+                <geom name="Carpal_R" class="bone" pos="-0.1459 0.053 -0.09359" mesh="Carpal_R"/>
+                <geom name="Carpal_I_R" class="bone" pos="-0.1459 0.053 -0.09359" mesh="Carpal_I_R"/>
+                <geom name="Carpal_II_R" class="bone" pos="-0.1459 0.053 -0.09359" mesh="Carpal_II_R"/>
                 <joint name="wrist_R" class="wrist" axis="0 -1 0"/>
                 <geom name="hand_R_collision" class="collision_primitive" type="box" size="0.03 0.016 0.012" pos="0.01 0 -0.04" euler="0 65 0"/>
                 <body name="finger_R" pos="0.02 0 -0.06">
+                  <geom name="Phalanx_media_digiti_III_R" class="bone" pos="-0.1659 0.053 -0.03359" mesh="Phalanx_media_digiti_III_R"/>
+                  <geom name="Phalanx_distalis_digiti_III_R" class="visible_bone" pos="-0.1659 0.053 -0.03359" mesh="Phalanx_distalis_digiti_III_R"/>
                   <geom name="Phalanxpmxinutlis_digiti_IV_R" class="bone" pos="-0.1659 0.053 -0.03359" mesh="Phalanxpmxinutlis_digiti_IV_R"/>
-                  <geom name="Phalanx_distalis_digiti_II_R" class="visible_bone" pos="-0.1659 0.053 -0.03359" mesh="Phalanx_distalis_digiti_II_R"/>
-                  <geom name="Phalanx_distalis_digiti_IV_R" class="visible_bone" pos="-0.1659 0.053 -0.03359" mesh="Phalanx_distalis_digiti_IV_R"/>
-                  <geom name="Phalanxpmxinutlis_digiti_II_R" class="bone" pos="-0.1659 0.053 -0.03359" mesh="Phalanxpmxinutlis_digiti_II_R"/>
                   <geom name="Phalanx_media_digiti_V_R" class="bone" pos="-0.1659 0.053 -0.03359" mesh="Phalanx_media_digiti_V_R"/>
                   <geom name="Phalanxpmxinutlis_digiti_V_R" class="bone" pos="-0.1659 0.053 -0.03359" mesh="Phalanxpmxinutlis_digiti_V_R"/>
-                  <geom name="Phalanx_distalis_digiti_III_R" class="visible_bone" pos="-0.1659 0.053 -0.03359" mesh="Phalanx_distalis_digiti_III_R"/>
-                  <geom name="Phalanx_distalis_digiti_V_R" class="visible_bone" pos="-0.1659 0.053 -0.03359" mesh="Phalanx_distalis_digiti_V_R"/>
                   <geom name="Phalanxpmxinutlis_digiti_III_R" class="bone" pos="-0.1659 0.053 -0.03359" mesh="Phalanxpmxinutlis_digiti_III_R"/>
+                  <geom name="Phalanx_distalis_digiti_V_R" class="visible_bone" pos="-0.1659 0.053 -0.03359" mesh="Phalanx_distalis_digiti_V_R"/>
+                  <geom name="Phalanxpmxinutlis_digiti_II_R" class="bone" pos="-0.1659 0.053 -0.03359" mesh="Phalanxpmxinutlis_digiti_II_R"/>
                   <geom name="Phalanx_media_digiti_II_R" class="bone" pos="-0.1659 0.053 -0.03359" mesh="Phalanx_media_digiti_II_R"/>
-                  <geom name="Phalanx_media_digiti_III_R" class="bone" pos="-0.1659 0.053 -0.03359" mesh="Phalanx_media_digiti_III_R"/>
                   <geom name="Phalanx_media_digiti_IV_R" class="bone" pos="-0.1659 0.053 -0.03359" mesh="Phalanx_media_digiti_IV_R"/>
+                  <geom name="Phalanx_distalis_digiti_IV_R" class="visible_bone" pos="-0.1659 0.053 -0.03359" mesh="Phalanx_distalis_digiti_IV_R"/>
+                  <geom name="Phalanx_distalis_digiti_II_R" class="visible_bone" pos="-0.1659 0.053 -0.03359" mesh="Phalanx_distalis_digiti_II_R"/>
                   <joint name="finger_R" class="finger" axis="0 1 -0.2"/>
                   <geom name="finger_R0_collision" class="foot_primitive" size="0.018 0.012" pos="0.012 0 -0.012" euler="90 0 0"/>
                   <geom name="finger_R1_collision" class="foot_primitive" size="0.01 0.015" pos="0.032 0 -0.02" euler="90 0 0"/>
@@ -1360,47 +1097,47 @@
   <tendon>
     <fixed name="lumbar_extend" class="lumbar_extend">
       <joint joint="L_1_extend" coef="1.09"/>
-      <joint joint="L_2_extend" coef="1.06"/>
       <joint joint="L_3_extend" coef="1.029"/>
-      <joint joint="L_4_extend" coef="0.998"/>
-      <joint joint="L_5_extend" coef="0.9678"/>
-      <joint joint="L_6_extend" coef="0.9411"/>
-      <joint joint="L_7_extend" coef="0.9141"/>
+      <joint joint="L_5_extend" coef="0.9675"/>
+      <joint joint="L_7_extend" coef="0.9139"/>
     </fixed>
     <fixed name="lumbar_bend" class="lumbar_bend">
-      <joint joint="L_1_bend" coef="1.135"/>
-      <joint joint="L_2_bend" coef="1.092"/>
-      <joint joint="L_3_bend" coef="1.048"/>
-      <joint joint="L_4_bend" coef="1.002"/>
-      <joint joint="L_5_bend" coef="0.9546"/>
-      <joint joint="L_6_bend" coef="0.9093"/>
-      <joint joint="L_7_bend" coef="0.8587"/>
+      <joint joint="L_1_bend" coef="1.136"/>
+      <joint joint="L_3_bend" coef="1.049"/>
+      <joint joint="L_5_bend" coef="0.9554"/>
+      <joint joint="L_7_bend" coef="0.8594"/>
     </fixed>
     <fixed name="lumbar_twist" class="lumbar_twist">
-      <joint joint="L_1_twist" coef="0.9996"/>
       <joint joint="L_2_twist" coef="1.001"/>
-      <joint joint="L_3_twist" coef="1.001"/>
-      <joint joint="L_4_twist" coef="0.9996"/>
-      <joint joint="L_5_twist" coef="0.9987"/>
-      <joint joint="L_6_twist" coef="0.9993"/>
-      <joint joint="L_7_twist" coef="1.001"/>
+      <joint joint="L_4_twist" coef="0.9997"/>
+      <joint joint="L_6_twist" coef="0.9994"/>
     </fixed>
     <fixed name="cervical_extend" class="cervical_extend">
-      <joint joint="C_7_extend" coef="1.166"/>
-      <joint joint="C_5_extend" coef="1.066"/>
-      <joint joint="C_3_extend" coef="0.9291"/>
-      <joint joint="C_1_extend" coef="0.8394"/>
+      <joint joint="C_7_extend" coef="1.165"/>
+      <joint joint="C_6_extend" coef="1.125"/>
+      <joint joint="C_5_extend" coef="1.065"/>
+      <joint joint="C_4_extend" coef="0.9917"/>
+      <joint joint="C_3_extend" coef="0.9283"/>
+      <joint joint="C_2_extend" coef="0.8871"/>
+      <joint joint="C_1_extend" coef="0.8386"/>
     </fixed>
     <fixed name="cervical_bend" class="cervical_bend">
-      <joint joint="C_7_bend" coef="1.1"/>
-      <joint joint="C_5_bend" coef="1.118"/>
-      <joint joint="C_3_bend" coef="0.927"/>
-      <joint joint="C_1_bend" coef="0.8546"/>
+      <joint joint="C_7_bend" coef="1.094"/>
+      <joint joint="C_6_bend" coef="1.135"/>
+      <joint joint="C_5_bend" coef="1.112"/>
+      <joint joint="C_4_bend" coef="1.015"/>
+      <joint joint="C_3_bend" coef="0.9217"/>
+      <joint joint="C_2_bend" coef="0.8726"/>
+      <joint joint="C_1_bend" coef="0.8498"/>
     </fixed>
     <fixed name="cervical_twist" class="cervical_twist">
-      <joint joint="C_6_twist" coef="1.051"/>
-      <joint joint="C_4_twist" coef="0.9659"/>
-      <joint joint="C_2_twist" coef="0.9827"/>
+      <joint joint="C_7_twist" coef="1.189"/>
+      <joint joint="C_6_twist" coef="1.041"/>
+      <joint joint="C_5_twist" coef="0.9314"/>
+      <joint joint="C_4_twist" coef="0.9563"/>
+      <joint joint="C_3_twist" coef="0.979"/>
+      <joint joint="C_2_twist" coef="0.9729"/>
+      <joint joint="C_1_twist" coef="0.9303"/>
     </fixed>
     <fixed name="caudal_extend" class="caudal_extend">
       <joint joint="Ca_1_extend" coef="1.415"/>

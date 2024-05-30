@@ -491,7 +491,7 @@ def main(argv):
 
   print("Add <compiler meshdir/>, for locally-loadable model")
   compiler = etree.Element(
-      "compiler", meshdir=os.path.join(CURRENT_DIR, ASSET_RELPATH), texturedir=os.path.join(CURRENT_DIR, ASSET_RELPATH)
+      "compiler", meshdir=ASSET_RELPATH, texturedir=ASSET_RELPATH
   )
   root.insert(0, compiler)
 
