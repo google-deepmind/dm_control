@@ -444,6 +444,7 @@
             <attribute name="user" type="array" array_type="float"/>
             <attribute name="kp" type="float"/>
             <attribute name="kv" type="float"/>
+            <attribute name="dampratio" type="float"/>
             <attribute name="timeconst" type="float"/>
             <attribute name="inheritrange" type="float"/>
           </attributes>
@@ -474,6 +475,7 @@
             <attribute name="user" type="array" array_type="float"/>
             <attribute name="kp" type="float"/>
             <attribute name="kv" type="float"/>
+            <attribute name="dampratio" type="float"/>
             <attribute name="inheritrange" type="float"/>
           </attributes>
         </element>
@@ -753,6 +755,7 @@
                 <attribute name="user" type="array" array_type="float"/>
                 <attribute name="kp" type="float"/>
                 <attribute name="kv" type="float"/>
+                <attribute name="dampratio" type="float"/>
                 <attribute name="timeconst" type="float"/>
                 <attribute name="inheritrange" type="float"/>
               </attributes>
@@ -781,6 +784,7 @@
                 <attribute name="user" type="array" array_type="float"/>
                 <attribute name="kp" type="float"/>
                 <attribute name="kv" type="float"/>
+                <attribute name="dampratio" type="float"/>
                 <attribute name="inheritrange" type="float"/>
               </attributes>
             </element>
@@ -2003,6 +2007,7 @@
             <attribute name="user" type="array" array_type="float"/>
             <attribute name="kp" type="float"/>
             <attribute name="kv" type="float"/>
+            <attribute name="dampratio" type="float"/>
             <attribute name="timeconst" type="float"/>
             <attribute name="inheritrange" type="float"/>
           </attributes>
@@ -2053,6 +2058,7 @@
             <attribute name="user" type="array" array_type="float"/>
             <attribute name="kp" type="float"/>
             <attribute name="kv" type="float"/>
+            <attribute name="dampratio" type="float"/>
             <attribute name="inheritrange" type="float"/>
           </attributes>
         </element>
