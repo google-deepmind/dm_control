@@ -218,12 +218,7 @@ def add_muscles(
       bones_meshes[bone[4:-4]] = bone_mesh
 
   muscle = model.default.default["muscle"]
-
-  flexors = muscle.add("default", dclass="flexors")
-  flexors.tendon.rgba = [0.5, 0, 0, 1]
-
-  extensors = muscle.add("default", dclass="extensors")
-  extensors.tendon.rgba = [0.5, 0, 0, 1]
+  muscle.tendon.rgba = [0.5, 0, 0, 1]
 
   length_range = model.compiler.lengthrange
   length_range.inttotal = 5
@@ -276,19 +271,9 @@ def add_muscles(
     )
 
     paths = slices2paths(mtu, slices, muscle_length)
-    spatial = model.tendon.add("spatial", name=f"{mtu}_tendon")
+    spatial = model.tendon.add("spatial", name=f"{mtu}_tendon", dclass="muscle")
     spatials.append(spatial)
     used_muscles.append(mtu)
-    if (
-        mtu in muscles_constants.FLEXORS_BACK
-        or mtu in muscles_constants.FLEXORS_FRONT
-    ):
-      spatial.dclass = "flexors"
-    elif (
-        mtu in muscles_constants.EXTENSORS_BACK
-        or mtu in muscles_constants.EXTENSORS_FRONT
-    ):
-      spatial.dclass = "extensors"
 
     counter = 0  # used for site naming
     prev_body = None
@@ -447,14 +432,9 @@ def add_muscles(
           continue
 
       physics.forward()
-
       vector_min = np.minimum(vector_min, physics.data.ten_length[:])
       vector_max = np.maximum(vector_max, physics.data.ten_length[:])
-
       physics.reset()
-
-    # physics.named.model.actuator_lengthrange[:, 0] = vector_min
-    # physics.named.model.actuator_lengthrange[:, 1] = vector_max
 
   for tend_idx, spatial in enumerate(spatials):
     if muscle_dynamics in ["Millard", "Sigmoid"]:

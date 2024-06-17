@@ -47,9 +47,6 @@ def add_markers(model):
 
   Args:
       model: The model to add markers to.
-
-  Returns:
-      None
   """
   bodies = model.find_all("body")
 
@@ -71,7 +68,7 @@ def add_markers(model):
 
           marker_idx += 1
           total_markers += 1
-
+  
   for i in range(total_markers):
     marker_body = model.worldbody.add(
         "body", name="marker_" + str(i), mocap=True)

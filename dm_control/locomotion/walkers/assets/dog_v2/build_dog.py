@@ -73,6 +73,12 @@ flags.DEFINE_float(
     1,
     "Number of degrees of freedom vertebra in caudal spine.",
 )
+flags.DEFINE_boolean(
+    "composer",
+    False,
+    "Make slight adjustments to the model to make it compatible for the composer.",
+)
+
 
 FLAGS = flags.FLAGS
 
@@ -174,6 +180,7 @@ def main(argv):
     muscle_dynamics = FLAGS.muscle_dynamics
     add_markers = FLAGS.add_markers
     lengthrange_from_joints = FLAGS.lengthrange_from_joints
+    composer = FLAGS.composer
   else:
     lumbar_dofs_per_vert = FLAGS["lumbar_dofs_per_vertebra"].default
     cervical_dofs_per_vertebra = FLAGS["cervical_dofs_per_vertebra"].default
@@ -185,11 +192,25 @@ def main(argv):
     muscle_dynamics = FLAGS["muscle_dynamics"].default
     add_markers = FLAGS["add_markers"].default
     lengthrange_from_joints = FLAGS["lengthrange_from_joints"].default
+    composer = FLAGS["composer"].default
 
   print("Load base model.")
   with open(os.path.join(CURRENT_DIR, BASE_MODEL), "r") as f:
     model = mjcf.from_file(f)
 
+
+  if not composer:
+    floor = model.worldbody.add(
+          "body", name="floor", pos=(0, 0, 0)
+      )
+    floor.add(
+          "geom",
+          name="floor",
+          type="plane",
+          conaffinity=1,
+          size=[10, 10, 0.1],
+          material="grid"
+      )
   # Helper constants:
   side_sign = {
       "_L": np.array((1.0, -1.0, 1.0)),
@@ -253,6 +274,7 @@ def main(argv):
       lumbar_dofs_per_vert,
       side_sign,
       parent=model.worldbody,
+      composer=composer,
   )
 
   print("Neck, skull, jaw.")
@@ -344,7 +366,7 @@ def main(argv):
 
   if make_skin:
     create_skin.create(
-        model=model, mesh_file=skin_msh, asset_dir=ASSET_DIR, mesh_name="dog_skin"
+        model=model, mesh_file=skin_msh, asset_dir=ASSET_DIR, mesh_name="dog_skin", composer=composer
     )
 
     # Add skin from .skn
@@ -382,6 +404,7 @@ def main(argv):
             mesh_name=filename[:-4],
             tex_coords=False,
             transform=False,
+            composer=composer,
         )
 
         # Add skin from .skn
@@ -397,9 +420,9 @@ def main(argv):
         muscle_msh.remove()
 
   model.option.timestep = 0.005
-  model.option.integrator = "Euler"
+  model.option.integrator = "implicitfast"
   model.option.noslip_iterations = 3
-  model.option.cone = "pyramidal"
+  model.option.cone = "elliptic"
 
   if add_markers:
     print("Add Markers")
@@ -473,6 +496,10 @@ def main(argv):
           )
       )
 
+  if composer:
+    torso = model.find("body", "torso")
+    torso.pos = np.zeros(3)
+    
   print("Finalising and saving model.")
   xml_string = model.to_xml_string("float", precision=4, zero_threshold=1e-7)
   root = etree.XML(xml_string, etree.XMLParser(remove_blank_text=True))
@@ -513,11 +540,12 @@ def main(argv):
   newlines.append(b"")
   xml_string = b"\n".join(newlines)
 
+  name_prefix = "composer_" if composer else ""
   # Save to file.
   if not use_muscles:
-    name = "dog.xml"
+    name = name_prefix + "dog.xml"
   else:
-    name = "dog_muscles_{}_{}.xml".format(
+    name = name_prefix + "dog_muscles_{}_{}.xml".format(
         muscle_strength_scale, muscle_dynamics)
 
   f = open(os.path.join(CURRENT_DIR, name), "wb")

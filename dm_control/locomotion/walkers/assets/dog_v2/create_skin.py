@@ -24,7 +24,7 @@ from dm_control import mjcf
 from dm_control.mujoco.wrapper.mjbindings import enums
 
 
-def create(model, mesh_file, mesh_name, asset_dir, tex_coords=True, transform=True):
+def create(model, mesh_file, mesh_name, asset_dir, tex_coords=True, transform=True, composer=False):
   """Create and add skin in the dog model.
 
   Args:
@@ -34,6 +34,7 @@ def create(model, mesh_file, mesh_name, asset_dir, tex_coords=True, transform=Tr
     asset_dir: asset directory to load the .skn file
     tex_coords: boolean to indicate if the mesh has texture coordinates.
     transform: a boolean to rotate mesh orientation by 90 degrees along the z-axis.
+    composer: boolean to determine if a model used by the composer is being created.
   """
   # Add skin mesh:
   if transform:
@@ -132,7 +133,8 @@ def create(model, mesh_file, mesh_name, asset_dir, tex_coords=True, transform=Tr
   # Find smallest distance between
   # each skin vertex and vertices of all meshes in body i
   distance = np.ones((skin_vertices.shape[0], physics.model.nbody)) * 1e6
-  for i in range(2, physics.model.nbody):
+  start = 1 if composer else 2  # in composer mode we don't have the floor
+  for i in range(start, physics.model.nbody):
     geom_id = np.argwhere(physics.model.geom_bodyid == i).ravel()
     mesh_id = physics.model.geom_dataid[geom_id]
     body_verts = []
@@ -175,7 +177,7 @@ def create(model, mesh_file, mesh_name, asset_dir, tex_coords=True, transform=Tr
   weights[weights < threshold] = 0
   weights /= np.atleast_2d(np.sum(weights, axis=1)).T
 
-  for i in range(2, physics.model.nbody):
+  for i in range(start, physics.model.nbody):
     vertweight = weights[weights[:, i - 1] >= threshold, i - 1]
     vertid = np.argwhere(weights[:, i - 1] >= threshold).ravel()
     if vertid.any():

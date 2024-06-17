@@ -1,15 +1,15 @@
 <mujoco model="dog">
   <compiler meshdir="dog_assets/" texturedir="dog_assets/"/>
 
-  <option timestep="0.005" noslip_iterations="4"/>
+  <option timestep="0.005" integrator="Euler" cone="elliptic" noslip_iterations="3"/>
 
   <size memory="100M"/>
 
   <visual>
     <global offwidth="1920" offheight="1080"/>
     <headlight ambient="0.4 0.4 0.4" diffuse="0.8 0.8 0.8" specular="0.1 0.1 0.1"/>
-    <map znear="0.001"/>
-    <scale jointlength="8" jointwidth="0.5" framelength="2" framewidth="0.3"/>
+    <map znear="0.01"/>
+    <scale jointlength="8" jointwidth="0.01" framelength="0.3" framewidth="0.01"/>
   </visual>
 
   <statistic meansize="0.01" extent="1.0"/>
@@ -177,8 +177,8 @@
   </asset>
 
   <worldbody>
-    <body name="floor">
+    <!-- <body name="floor">
         <geom name="floor" type="plane" conaffinity="1" size="10 10 0.1" material="grid"/>
-    </body>
+    </body> -->
   </worldbody>
 </mujoco>

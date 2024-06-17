@@ -23,7 +23,7 @@ from dm_control import mjcf
 
 
 def create_torso(
-    model, bones, bone_position, lumbar_dofs_per_vertebra, side_sign, parent
+    model, bones, bone_position, lumbar_dofs_per_vertebra, side_sign, parent, composer
 ):
   """Add torso in the dog model.
 
@@ -36,7 +36,7 @@ def create_torso(
     side_sign: a dictionary with two axis representing the signs of
       translations.
     parent: parent object on which we should start attaching new components.
-
+    composer: boolean to determine if a model used by the composer is being created.
   Returns:
     The tuple `(pelvic_bones, lumbar_joints)`.
   """
@@ -55,7 +55,9 @@ def create_torso(
   sternum = [m for m in bones if "Sternum" in m]
   torso_bones = thoracic_spine + ribs + sternum  # + ['Xiphoid_cartilage']
   torso = parent.add("body", name="torso")
-  torso.add("freejoint", name="root")
+
+  if not composer:
+    torso.add("freejoint", name="root")
 
   torso.add("site", name="root", size=(0.01,), rgba=[0, 1, 0, 1])
   torso.add("light", name="light", mode="trackcom", pos=[0, 0, 3])
@@ -84,7 +86,6 @@ def create_torso(
   torso.pos = torso_pos
   for geom in torso_geoms:
     geom.pos = -torso_pos
-
   # Collision primitive for torso
   torso.add(
       "geom",

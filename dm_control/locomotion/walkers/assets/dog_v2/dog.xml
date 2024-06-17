@@ -1,15 +1,15 @@
 <mujoco model="dog">
   <compiler meshdir="../../../../suite/dog_assets" texturedir="../../../../suite/dog_assets"/>
 
-  <option timestep="0.005" integrator="Euler" cone="pyramidal" noslip_iterations="3"/>
+  <option timestep="0.005" integrator="implicitfast" cone="elliptic" noslip_iterations="3"/>
 
   <size memory="100M"/>
 
   <visual>
     <global offwidth="1920" offheight="1080"/>
     <headlight ambient="0.4 0.4 0.4" diffuse="0.8 0.8 0.8" specular="0.1 0.1 0.1"/>
-    <map znear="0.001"/>
-    <scale jointlength="8" jointwidth="0.5" framelength="2" framewidth="0.3"/>
+    <map znear="0.01"/>
+    <scale jointlength="8" jointwidth="0.01" framelength="0.3" framewidth="0.01"/>
   </visual>
 
   <statistic meansize="0.01" extent="1"/>
@@ -340,10 +340,273 @@
     <texture name="skin" type="2d" file="skin_texture.png"/>
     <material name="skin" texture="skin"/>
     <skin name="skin" file="skins/dog_skin.skn" material="skin" group="0"/>
+    <material name="muscle" rgba="0.63 0.17 0.17 1"/>
+    <skin name="m_biceps_brachii_R" file="skins/m_biceps_brachii_R.skn" material="muscle" group="1"/>
+    <skin name="m_obliquus_ext_abdominis_R" file="skins/m_obliquus_ext_abdominis_R.skn" material="muscle" group="1"/>
+    <skin name="m_obturatorius_ext_L" file="skins/m_obturatorius_ext_L.skn" material="muscle" group="1"/>
+    <skin name="m_geniohyoideus_R" file="skins/m_geniohyoideus_R.skn" material="muscle" group="1"/>
+    <skin name="m_sternothyroideus_L" file="skins/m_sternothyroideus_L.skn" material="muscle" group="1"/>
+    <skin name="m_pronator_quadratus_L" file="skins/m_pronator_quadratus_L.skn" material="muscle" group="1"/>
+    <skin name="m_gluteus_profundus_minor_R" file="skins/m_gluteus_profundus_minor_R.skn" material="muscle" group="1"/>
+    <skin name="m_gastrocnemius_L" file="skins/m_gastrocnemius_L.skn" material="muscle" group="1"/>
+    <skin name="m_obliquus_int_abdominis_L" file="skins/m_obliquus_int_abdominis_L.skn" material="muscle" group="1"/>
+    <skin name="m_vastus_med_R" file="skins/m_vastus_med_R.skn" material="muscle" group="1"/>
+    <skin name="m_obliquus_capitis_caudalis_L" file="skins/m_obliquus_capitis_caudalis_L.skn" material="muscle" group="1"/>
+    <skin name="m_pterygoideus_lat_L" file="skins/m_pterygoideus_lat_L.skn" material="muscle" group="1"/>
+    <skin name="m_popliteus_L" file="skins/m_popliteus_L.skn" material="muscle" group="1"/>
+    <skin name="m_thoracis_serratus_ventr_R" file="skins/m_thoracis_serratus_ventr_R.skn" material="muscle" group="1"/>
+    <skin name="m_buccinator_R" file="skins/m_buccinator_R.skn" material="muscle" group="1"/>
+    <skin name="m_brachiocephalicus" file="skins/m_brachiocephalicus.skn" material="muscle" group="1"/>
+    <skin name="m_extensor_digitorum_lat_L" file="skins/m_extensor_digitorum_lat_L.skn" material="muscle" group="1"/>
+    <skin name="m_omotransversarius_L" file="skins/m_omotransversarius_L.skn" material="muscle" group="1"/>
+    <skin name="m_levator_labii_sup_R" file="skins/m_levator_labii_sup_R.skn" material="muscle" group="1"/>
+    <skin name="m_psoas_minor_R" file="skins/m_psoas_minor_R.skn" material="muscle" group="1"/>
+    <skin name="m_rectus_thoracis_R" file="skins/m_rectus_thoracis_R.skn" material="muscle" group="1"/>
+    <skin name="m_semitendinosus_L" file="skins/m_semitendinosus_L.skn" material="muscle" group="1"/>
+    <skin name="m_teres_major_L" file="skins/m_teres_major_L.skn" material="muscle" group="1"/>
+    <skin name="m_tibialis_caudalis_R" file="skins/m_tibialis_caudalis_R.skn" material="muscle" group="1"/>
+    <skin name="m_vastus_intermedius_R" file="skins/m_vastus_intermedius_R.skn" material="muscle" group="1"/>
+    <skin name="m_sternocephalicus_L" file="skins/m_sternocephalicus_L.skn" material="muscle" group="1"/>
+    <skin name="m_anconeus_L" file="skins/m_anconeus_L.skn" material="muscle" group="1"/>
+    <skin name="m_mylohyoideus" file="skins/m_mylohyoideus.skn" material="muscle" group="1"/>
+    <skin name="m_sartorius_L" file="skins/m_sartorius_L.skn" material="muscle" group="1"/>
+    <skin name="m_peroneus_brevis_R" file="skins/m_peroneus_brevis_R.skn" material="muscle" group="1"/>
+    <skin name="m_gastrocnemius_R" file="skins/m_gastrocnemius_R.skn" material="muscle" group="1"/>
+    <skin name="m_rectus_femoris_L" file="skins/m_rectus_femoris_L.skn" material="muscle" group="1"/>
+    <skin name="m_flexor_carpi_ulnaris_L" file="skins/m_flexor_carpi_ulnaris_L.skn" material="muscle" group="1"/>
+    <skin name="m_serratus_dorsalis_caudalis_R1" file="skins/m_serratus_dorsalis_caudalis_R1.skn" material="muscle" group="1"/>
+    <skin name="m_gracilis_R" file="skins/m_gracilis_R.skn" material="muscle" group="1"/>
+    <skin name="m_teres_minor_R" file="skins/m_teres_minor_R.skn" material="muscle" group="1"/>
+    <skin name="m_depressor_caudae_brevis_R2" file="skins/m_depressor_caudae_brevis_R2.skn" material="muscle" group="1"/>
+    <skin name="m_capsularis_L" file="skins/m_capsularis_L.skn" material="muscle" group="1"/>
+    <skin name="m_latissimus_dors_R" file="skins/m_latissimus_dors_R.skn" material="muscle" group="1"/>
+    <skin name="m_biceps_femoris_L" file="skins/m_biceps_femoris_L.skn" material="muscle" group="1"/>
+    <skin name="m_dorsi_scaleni_dors_L" file="skins/m_dorsi_scaleni_dors_L.skn" material="muscle" group="1"/>
+    <skin name="m_latissimus_dors_L" file="skins/m_latissimus_dors_L.skn" material="muscle" group="1"/>
+    <skin name="m_pronator_teres_R" file="skins/m_pronator_teres_R.skn" material="muscle" group="1"/>
+    <skin name="m_gluteus_profundus_minor_L" file="skins/m_gluteus_profundus_minor_L.skn" material="muscle" group="1"/>
+    <skin name="m_pectineus_L" file="skins/m_pectineus_L.skn" material="muscle" group="1"/>
+    <skin name="m_vastus_lat_ander_fascia_lata_R" file="skins/m_vastus_lat_ander_fascia_lata_R.skn" material="muscle" group="1"/>
+    <skin name="m_coccygeus_R" file="skins/m_coccygeus_R.skn" material="muscle" group="1"/>
+    <skin name="m_splenius_L" file="skins/m_splenius_L.skn" material="muscle" group="1"/>
+    <skin name="m_teres_major_R" file="skins/m_teres_major_R.skn" material="muscle" group="1"/>
+    <skin name="m_rectus_capitis_dorsalis_minor_R" file="skins/m_rectus_capitis_dorsalis_minor_R.skn" material="muscle" group="1"/>
+    <skin name="m_extensor_capri_ulnaris_R" file="skins/m_extensor_capri_ulnaris_R.skn" material="muscle" group="1"/>
+    <skin name="m_obliquus_ext_abdominis_L" file="skins/m_obliquus_ext_abdominis_L.skn" material="muscle" group="1"/>
+    <skin name="m_obliquus_capitis_cranialis_L" file="skins/m_obliquus_capitis_cranialis_L.skn" material="muscle" group="1"/>
+    <skin name="m_serratus_dorsalis_caudalis_L3" file="skins/m_serratus_dorsalis_caudalis_L3.skn" material="muscle" group="1"/>
+    <skin name="m_longissimus_thoracis_L" file="skins/m_longissimus_thoracis_L.skn" material="muscle" group="1"/>
+    <skin name="m_orbicularis_oris_L" file="skins/m_orbicularis_oris_L.skn" material="muscle" group="1"/>
+    <skin name="m_longissimus_capitis_R(2)" file="skins/m_longissimus_capitis_R(2).skn" material="muscle" group="1"/>
+    <skin name="m_sartorius_R" file="skins/m_sartorius_R.skn" material="muscle" group="1"/>
+    <skin name="m_pectorales_superficiales_1" file="skins/m_pectorales_superficiales_1.skn" material="muscle" group="1"/>
+    <skin name="m_levator_caudae_brevis_L1" file="skins/m_levator_caudae_brevis_L1.skn" material="muscle" group="1"/>
+    <skin name="m_extensor_digitorum_longus_R" file="skins/m_extensor_digitorum_longus_R.skn" material="muscle" group="1"/>
+    <skin name="m_capsularis_R" file="skins/m_capsularis_R.skn" material="muscle" group="1"/>
+    <skin name="m_flexor_digitorum_superficialis_L" file="skins/m_flexor_digitorum_superficialis_L.skn" material="muscle" group="1"/>
+    <skin name="m_tensor_f.latae_L" file="skins/m_tensor_f.latae_L.skn" material="muscle" group="1"/>
+    <skin name="m_extensor_capri_radialis_L" file="skins/m_extensor_capri_radialis_L.skn" material="muscle" group="1"/>
+    <skin name="m_levator_caudae_brevis_L2" file="skins/m_levator_caudae_brevis_L2.skn" material="muscle" group="1"/>
+    <skin name="m_flexor_digitorum_profundus_R(2)" file="skins/m_flexor_digitorum_profundus_R(2).skn" material="muscle" group="1"/>
+    <skin name="m_buccinator_L" file="skins/m_buccinator_L.skn" material="muscle" group="1"/>
+    <skin name="m_rectus_capitis_lateralis_L" file="skins/m_rectus_capitis_lateralis_L.skn" material="muscle" group="1"/>
+    <skin name="m_pterygoideus_lat_R" file="skins/m_pterygoideus_lat_R.skn" material="muscle" group="1"/>
+    <skin name="m_extensor_digitorum_lat_R" file="skins/m_extensor_digitorum_lat_R.skn" material="muscle" group="1"/>
+    <skin name="m_intercostals_ext_R" file="skins/m_intercostals_ext_R.skn" material="muscle" group="1"/>
+    <skin name="m_infraspinatus_L" file="skins/m_infraspinatus_L.skn" material="muscle" group="1"/>
+    <skin name="m_gemellus_L" file="skins/m_gemellus_L.skn" material="muscle" group="1"/>
+    <skin name="m_longissimus_cervicis_L" file="skins/m_longissimus_cervicis_L.skn" material="muscle" group="1"/>
+    <skin name="m_abductor_cruris_R" file="skins/m_abductor_cruris_R.skn" material="muscle" group="1"/>
+    <skin name="m_triceps_brachii_accessory_L" file="skins/m_triceps_brachii_accessory_L.skn" material="muscle" group="1"/>
+    <skin name="m_supraspinatus_L" file="skins/m_supraspinatus_L.skn" material="muscle" group="1"/>
+    <skin name="m_intercostals_int.L" file="skins/m_intercostals_int.L.skn" material="muscle" group="1"/>
+    <skin name="m_triceps_brachii_accessory_R" file="skins/m_triceps_brachii_accessory_R.skn" material="muscle" group="1"/>
+    <skin name="m_levator_caudae_brevis_R1" file="skins/m_levator_caudae_brevis_R1.skn" material="muscle" group="1"/>
+    <skin name="m_levator_ani_R" file="skins/m_levator_ani_R.skn" material="muscle" group="1"/>
+    <skin name="m_biceps_femoris_tendon_R" file="skins/m_biceps_femoris_tendon_R.skn" material="muscle" group="1"/>
+    <skin name="m_longissimus_capitis_L" file="skins/m_longissimus_capitis_L.skn" material="muscle" group="1"/>
+    <skin name="m_serratus_dorsalis_cranialis_R" file="skins/m_serratus_dorsalis_cranialis_R.skn" material="muscle" group="1"/>
+    <skin name="m_iliacus_R" file="skins/m_iliacus_R.skn" material="muscle" group="1"/>
+    <skin name="m_deltoideus_acromialis_L" file="skins/m_deltoideus_acromialis_L.skn" material="muscle" group="1"/>
+    <skin name="m_dorsi_scaleni_dors_R" file="skins/m_dorsi_scaleni_dors_R.skn" material="muscle" group="1"/>
+    <skin name="m_sternocephalicus_R" file="skins/m_sternocephalicus_R.skn" material="muscle" group="1"/>
+    <skin name="m_triceps_brachii_long_R(2)" file="skins/m_triceps_brachii_long_R(2).skn" material="muscle" group="1"/>
+    <skin name="m_tranversus_abdominis_R" file="skins/m_tranversus_abdominis_R.skn" material="muscle" group="1"/>
+    <skin name="m_serratus_dorsalis_caudalis_L1" file="skins/m_serratus_dorsalis_caudalis_L1.skn" material="muscle" group="1"/>
+    <skin name="m_adductor_longus_R" file="skins/m_adductor_longus_R.skn" material="muscle" group="1"/>
+    <skin name="m_serratus_dorsalis_caudalis_R3" file="skins/m_serratus_dorsalis_caudalis_R3.skn" material="muscle" group="1"/>
+    <skin name="m_supinator_R" file="skins/m_supinator_R.skn" material="muscle" group="1"/>
+    <skin name="m_rectus_capitis_ventr_L" file="skins/m_rectus_capitis_ventr_L.skn" material="muscle" group="1"/>
+    <skin name="m_longissimus_thoracis_R" file="skins/m_longissimus_thoracis_R.skn" material="muscle" group="1"/>
+    <skin name="m_Nose" file="skins/m_Nose.skn" material="muscle" group="1"/>
+    <skin name="m_rectus_abdominis_R" file="skins/m_rectus_abdominis_R.skn" material="muscle" group="1"/>
+    <skin name="m_psoas_major_L" file="skins/m_psoas_major_L.skn" material="muscle" group="1"/>
+    <skin name="m_sternohyroideus_R" file="skins/m_sternohyroideus_R.skn" material="muscle" group="1"/>
+    <skin name="m_rectus_thoracis_L" file="skins/m_rectus_thoracis_L.skn" material="muscle" group="1"/>
+    <skin name="m_abdominis_Aponeurosis" file="skins/m_abdominis_Aponeurosis.skn" material="muscle" group="1"/>
+    <skin name="m_psoas_minor_L" file="skins/m_psoas_minor_L.skn" material="muscle" group="1"/>
+    <skin name="m_levator_caudae_brevis_R" file="skins/m_levator_caudae_brevis_R.skn" material="muscle" group="1"/>
+    <skin name="m_rectus_capitis_dorsalis_minor_L" file="skins/m_rectus_capitis_dorsalis_minor_L.skn" material="muscle" group="1"/>
+    <skin name="m_transverses_thoracis_R" file="skins/m_transverses_thoracis_R.skn" material="muscle" group="1"/>
+    <skin name="m_supinator_L" file="skins/m_supinator_L.skn" material="muscle" group="1"/>
+    <skin name="m_serratus_dorsalis_caudalis_L2" file="skins/m_serratus_dorsalis_caudalis_L2.skn" material="muscle" group="1"/>
+    <skin name="m_biceps_femoris_R" file="skins/m_biceps_femoris_R.skn" material="muscle" group="1"/>
+    <skin name="m_intercostals_ext.L" file="skins/m_intercostals_ext.L.skn" material="muscle" group="1"/>
+    <skin name="m_pterygoideus_med_R" file="skins/m_pterygoideus_med_R.skn" material="muscle" group="1"/>
+    <skin name="m_tensor_f.latae_R" file="skins/m_tensor_f.latae_R.skn" material="muscle" group="1"/>
+    <skin name="m_levator_ani_L" file="skins/m_levator_ani_L.skn" material="muscle" group="1"/>
+    <skin name="m_obturatorius_ext_R" file="skins/m_obturatorius_ext_R.skn" material="muscle" group="1"/>
+    <skin name="m_tibialis_caudalis_L" file="skins/m_tibialis_caudalis_L.skn" material="muscle" group="1"/>
+    <skin name="m_vastus_lat_L" file="skins/m_vastus_lat_L.skn" material="muscle" group="1"/>
+    <skin name="m_depressor_caudae_brevis_R2(2)" file="skins/m_depressor_caudae_brevis_R2(2).skn" material="muscle" group="1"/>
+    <skin name="m_pterygoideus_med_L" file="skins/m_pterygoideus_med_L.skn" material="muscle" group="1"/>
+    <skin name="m_zygomaticus_R" file="skins/m_zygomaticus_R.skn" material="muscle" group="1"/>
+    <skin name="m_rhomboideus_L" file="skins/m_rhomboideus_L.skn" material="muscle" group="1"/>
+    <skin name="m_orbicularis_oris_R" file="skins/m_orbicularis_oris_R.skn" material="muscle" group="1"/>
+    <skin name="m_levator_caudae_longus_L" file="skins/m_levator_caudae_longus_L.skn" material="muscle" group="1"/>
+    <skin name="m_flexor_digitorum_profundus_L(2)" file="skins/m_flexor_digitorum_profundus_L(2).skn" material="muscle" group="1"/>
+    <skin name="m_brachialis_R" file="skins/m_brachialis_R.skn" material="muscle" group="1"/>
+    <skin name="m_sartorius_L(2)" file="skins/m_sartorius_L(2).skn" material="muscle" group="1"/>
+    <skin name="m_adductor_longus_L" file="skins/m_adductor_longus_L.skn" material="muscle" group="1"/>
+    <skin name="m_caninus_L" file="skins/m_caninus_L.skn" material="muscle" group="1"/>
+    <skin name="m_transverses_thoracis_L" file="skins/m_transverses_thoracis_L.skn" material="muscle" group="1"/>
+    <skin name="m_tibialis_cranialis_R" file="skins/m_tibialis_cranialis_R.skn" material="muscle" group="1"/>
+    <skin name="m_depressor_caudae_brevis_L2" file="skins/m_depressor_caudae_brevis_L2.skn" material="muscle" group="1"/>
+    <skin name="m_thoracis_serratus_ventr_L" file="skins/m_thoracis_serratus_ventr_L.skn" material="muscle" group="1"/>
+    <skin name="m_coracobrachialis_R" file="skins/m_coracobrachialis_R.skn" material="muscle" group="1"/>
+    <skin name="m_iliacus_L" file="skins/m_iliacus_L.skn" material="muscle" group="1"/>
+    <skin name="m_longissimus_cervicis_R" file="skins/m_longissimus_cervicis_R.skn" material="muscle" group="1"/>
+    <skin name="m_obliquus_int_abdominis_R" file="skins/m_obliquus_int_abdominis_R.skn" material="muscle" group="1"/>
+    <skin name="m_caninus_R" file="skins/m_caninus_R.skn" material="muscle" group="1"/>
+    <skin name="m_buccinator_R(2)" file="skins/m_buccinator_R(2).skn" material="muscle" group="1"/>
+    <skin name="m_biceps_femoris_tendon_L" file="skins/m_biceps_femoris_tendon_L.skn" material="muscle" group="1"/>
+    <skin name="m_obliquus_capitis_cranialis_L(2)" file="skins/m_obliquus_capitis_cranialis_L(2).skn" material="muscle" group="1"/>
+    <skin name="m_flexor_capri_radialis_R" file="skins/m_flexor_capri_radialis_R.skn" material="muscle" group="1"/>
+    <skin name="m_retractor_anguli_oculi_L" file="skins/m_retractor_anguli_oculi_L.skn" material="muscle" group="1"/>
+    <skin name="m_supraspinatus_R" file="skins/m_supraspinatus_R.skn" material="muscle" group="1"/>
+    <skin name="m_longissimus_lumborum_R" file="skins/m_longissimus_lumborum_R.skn" material="muscle" group="1"/>
+    <skin name="m_abductor_cruris_L" file="skins/m_abductor_cruris_L.skn" material="muscle" group="1"/>
+    <skin name="m_masseter_R" file="skins/m_masseter_R.skn" material="muscle" group="1"/>
+    <skin name="m_gluteus_medius_L" file="skins/m_gluteus_medius_L.skn" material="muscle" group="1"/>
+    <skin name="m_adductor_magnus_L" file="skins/m_adductor_magnus_L.skn" material="muscle" group="1"/>
+    <skin name="m_buccinator_L(2)" file="skins/m_buccinator_L(2).skn" material="muscle" group="1"/>
+    <skin name="m_levator_caudae_brevis_R2" file="skins/m_levator_caudae_brevis_R2.skn" material="muscle" group="1"/>
+    <skin name="m_triceps_brachii_medial_R" file="skins/m_triceps_brachii_medial_R.skn" material="muscle" group="1"/>
+    <skin name="m_teres_minor_L" file="skins/m_teres_minor_L.skn" material="muscle" group="1"/>
+    <skin name="m_extensor_digitorum_communis_L" file="skins/m_extensor_digitorum_communis_L.skn" material="muscle" group="1"/>
+    <skin name="m_deltoideus_scapularis_L" file="skins/m_deltoideus_scapularis_L.skn" material="muscle" group="1"/>
+    <skin name="m_flexor_digitorum_superficialis_L.001" file="skins/m_flexor_digitorum_superficialis_L.001.skn" material="muscle" group="1"/>
+    <skin name="m_triceps_brachii_long_L(2)" file="skins/m_triceps_brachii_long_L(2).skn" material="muscle" group="1"/>
+    <skin name="m_obturatorius_int_L" file="skins/m_obturatorius_int_L.skn" material="muscle" group="1"/>
+    <skin name="m_levator_caudae_longus_R" file="skins/m_levator_caudae_longus_R.skn" material="muscle" group="1"/>
+    <skin name="m_longus_capitis_R" file="skins/m_longus_capitis_R.skn" material="muscle" group="1"/>
+    <skin name="m_flexor_digitorum_superficialis_R" file="skins/m_flexor_digitorum_superficialis_R.skn" material="muscle" group="1"/>
+    <skin name="m_semimembranosus_R" file="skins/m_semimembranosus_R.skn" material="muscle" group="1"/>
+    <skin name="m_tensor_f.antebrachii_L" file="skins/m_tensor_f.antebrachii_L.skn" material="muscle" group="1"/>
+    <skin name="m_semimembranosus_L" file="skins/m_semimembranosus_L.skn" material="muscle" group="1"/>
+    <skin name="m_abductor_pollicis_longus_R" file="skins/m_abductor_pollicis_longus_R.skn" material="muscle" group="1"/>
+    <skin name="m_Eye_L" file="skins/m_Eye_L.skn" material="muscle" group="1"/>
+    <skin name="m_interscutularis" file="skins/m_interscutularis.skn" material="muscle" group="1"/>
+    <skin name="m_anconeus_R" file="skins/m_anconeus_R.skn" material="muscle" group="1"/>
+    <skin name="m_orbicularis_oculi" file="skins/m_orbicularis_oculi.skn" material="muscle" group="1"/>
+    <skin name="m_sternothyroideus_R" file="skins/m_sternothyroideus_R.skn" material="muscle" group="1"/>
+    <skin name="m_geniohyoideus_L" file="skins/m_geniohyoideus_L.skn" material="muscle" group="1"/>
+    <skin name="m_temporalis_R" file="skins/m_temporalis_R.skn" material="muscle" group="1"/>
+    <skin name="m_serratus_dorsalis_caudalis_R2" file="skins/m_serratus_dorsalis_caudalis_R2.skn" material="muscle" group="1"/>
+    <skin name="m_levator_caudae_brevis_L" file="skins/m_levator_caudae_brevis_L.skn" material="muscle" group="1"/>
+    <skin name="m_semitendinosus_R" file="skins/m_semitendinosus_R.skn" material="muscle" group="1"/>
+    <skin name="m_gluteus_medius_R" file="skins/m_gluteus_medius_R.skn" material="muscle" group="1"/>
+    <skin name="m_peroneus_brevis_L" file="skins/m_peroneus_brevis_L.skn" material="muscle" group="1"/>
+    <skin name="m_psoas_major_R" file="skins/m_psoas_major_R.skn" material="muscle" group="1"/>
+    <skin name="m_Skutulum_L" file="skins/m_Skutulum_L.skn" material="muscle" group="1"/>
+    <skin name="m_tricepsbrachii_lateral_R" file="skins/m_tricepsbrachii_lateral_R.skn" material="muscle" group="1"/>
+    <skin name="m_rectus_capitis_dorsalis_major_L" file="skins/m_rectus_capitis_dorsalis_major_L.skn" material="muscle" group="1"/>
+    <skin name="m_flexor_digitorum_profundus_R" file="skins/m_flexor_digitorum_profundus_R.skn" material="muscle" group="1"/>
+    <skin name="m_retractor_anguli_oculi_R" file="skins/m_retractor_anguli_oculi_R.skn" material="muscle" group="1"/>
+    <skin name="m_tensor_f.antebrachii_R" file="skins/m_tensor_f.antebrachii_R.skn" material="muscle" group="1"/>
+    <skin name="m_rectus_capitis_lateralis_R" file="skins/m_rectus_capitis_lateralis_R.skn" material="muscle" group="1"/>
+    <skin name="m_trapezius" file="skins/m_trapezius.skn" material="muscle" group="1"/>
+    <skin name="m_adductor_magnus_R" file="skins/m_adductor_magnus_R.skn" material="muscle" group="1"/>
+    <skin name="m_temporalis_L" file="skins/m_temporalis_L.skn" material="muscle" group="1"/>
+    <skin name="m_infraspinatus_R" file="skins/m_infraspinatus_R.skn" material="muscle" group="1"/>
+    <skin name="m_deltoideus_scapularis_R" file="skins/m_deltoideus_scapularis_R.skn" material="muscle" group="1"/>
+    <skin name="m_pectorales_superficiales_2" file="skins/m_pectorales_superficiales_2.skn" material="muscle" group="1"/>
+    <skin name="m_Ligament" file="skins/m_Ligament.skn" material="muscle" group="1"/>
+    <skin name="m_vastus_lat_ander_fascia_lata_L" file="skins/m_vastus_lat_ander_fascia_lata_L.skn" material="muscle" group="1"/>
+    <skin name="m_quadratus_femoris_L" file="skins/m_quadratus_femoris_L.skn" material="muscle" group="1"/>
+    <skin name="m_digastricus_R" file="skins/m_digastricus_R.skn" material="muscle" group="1"/>
+    <skin name="m_triceps_brachii_lateral_L" file="skins/m_triceps_brachii_lateral_L.skn" material="muscle" group="1"/>
+    <skin name="m_coccygeus_L" file="skins/m_coccygeus_L.skn" material="muscle" group="1"/>
+    <skin name="m_pronator_teres_L" file="skins/m_pronator_teres_L.skn" material="muscle" group="1"/>
+    <skin name="m_subscapularis_L" file="skins/m_subscapularis_L.skn" material="muscle" group="1"/>
+    <skin name="m_flexor_carpi_ulnaris_R" file="skins/m_flexor_carpi_ulnaris_R.skn" material="muscle" group="1"/>
+    <skin name="m_intercostals_int_R" file="skins/m_intercostals_int_R.skn" material="muscle" group="1"/>
+    <skin name="m_longissimus_capitis_R" file="skins/m_longissimus_capitis_R.skn" material="muscle" group="1"/>
+    <skin name="m_splenius_R" file="skins/m_splenius_R.skn" material="muscle" group="1"/>
+    <skin name="m_Skutulum_R" file="skins/m_Skutulum_R.skn" material="muscle" group="1"/>
+    <skin name="m_rectus_capitis_dorsalis_major_R" file="skins/m_rectus_capitis_dorsalis_major_R.skn" material="muscle" group="1"/>
+    <skin name="m_flexor_capri_radialis_L" file="skins/m_flexor_capri_radialis_L.skn" material="muscle" group="1"/>
+    <skin name="m_digastricus_L" file="skins/m_digastricus_L.skn" material="muscle" group="1"/>
+    <skin name="m_biceps_brachii_L" file="skins/m_biceps_brachii_L.skn" material="muscle" group="1"/>
+    <skin name="m_extensor_digitorum_lateralis_L" file="skins/m_extensor_digitorum_lateralis_L.skn" material="muscle" group="1"/>
+    <skin name="m_gemellus_R" file="skins/m_gemellus_R.skn" material="muscle" group="1"/>
+    <skin name="m_tibialis_cranialis_L" file="skins/m_tibialis_cranialis_L.skn" material="muscle" group="1"/>
+    <skin name="m_depressor_caudae_brevis_L2(2)" file="skins/m_depressor_caudae_brevis_L2(2).skn" material="muscle" group="1"/>
+    <skin name="m_extensor_digitorum_longus_L" file="skins/m_extensor_digitorum_longus_L.skn" material="muscle" group="1"/>
+    <skin name="m_vastus_intermedius_L" file="skins/m_vastus_intermedius_L.skn" material="muscle" group="1"/>
+    <skin name="m_flexor_digitorum_profundus_L" file="skins/m_flexor_digitorum_profundus_L.skn" material="muscle" group="1"/>
+    <skin name="m_thoracis_m_pectoralis_profundus" file="skins/m_thoracis_m_pectoralis_profundus.skn" material="muscle" group="1"/>
+    <skin name="m_abductor_pollicis_longus_L" file="skins/m_abductor_pollicis_longus_L.skn" material="muscle" group="1"/>
+    <skin name="m_extensor_capri_radialis_R" file="skins/m_extensor_capri_radialis_R.skn" material="muscle" group="1"/>
+    <skin name="m_pronator_quadratus_R" file="skins/m_pronator_quadratus_R.skn" material="muscle" group="1"/>
+    <skin name="m_rectus_abdominis_L" file="skins/m_rectus_abdominis_L.skn" material="muscle" group="1"/>
+    <skin name="m_obturatorius_int_R" file="skins/m_obturatorius_int_R.skn" material="muscle" group="1"/>
+    <skin name="m_omotransversarius_R" file="skins/m_omotransversarius_R.skn" material="muscle" group="1"/>
+    <skin name="m_triceps_brachii_medial_L" file="skins/m_triceps_brachii_medial_L.skn" material="muscle" group="1"/>
+    <skin name="m_obliquus_capitis_caudalis_R" file="skins/m_obliquus_capitis_caudalis_R.skn" material="muscle" group="1"/>
+    <skin name="m_triceps_brachii_long_L" file="skins/m_triceps_brachii_long_L.skn" material="muscle" group="1"/>
+    <skin name="m_serratus_dorsalis_cranialis_L" file="skins/m_serratus_dorsalis_cranialis_L.skn" material="muscle" group="1"/>
+    <skin name="m_rectus_capitis_ventr_R" file="skins/m_rectus_capitis_ventr_R.skn" material="muscle" group="1"/>
+    <skin name="m_dorsi_Fascia_thoracolumbar_" file="skins/m_dorsi_Fascia_thoracolumbar_.skn" material="muscle" group="1"/>
+    <skin name="m_sartorius_R(2)" file="skins/m_sartorius_R(2).skn" material="muscle" group="1"/>
+    <skin name="m_zygomaticus_L" file="skins/m_zygomaticus_L.skn" material="muscle" group="1"/>
+    <skin name="m_vastus_med_L" file="skins/m_vastus_med_L.skn" material="muscle" group="1"/>
+    <skin name="m_extensor_digitorum_communis_R" file="skins/m_extensor_digitorum_communis_R.skn" material="muscle" group="1"/>
+    <skin name="m_peroneus_longus_L" file="skins/m_peroneus_longus_L.skn" material="muscle" group="1"/>
+    <skin name="m_sternohyroideus_L" file="skins/m_sternohyroideus_L.skn" material="muscle" group="1"/>
+    <skin name="m_masseter_L" file="skins/m_masseter_L.skn" material="muscle" group="1"/>
+    <skin name="m_rectus_femoris_R" file="skins/m_rectus_femoris_R.skn" material="muscle" group="1"/>
+    <skin name="m_tranversus_abdominis_L" file="skins/m_tranversus_abdominis_L.skn" material="muscle" group="1"/>
+    <skin name="m_subscapularis_R" file="skins/m_subscapularis_R.skn" material="muscle" group="1"/>
+    <skin name="m_popliteus_R" file="skins/m_popliteus_R.skn" material="muscle" group="1"/>
+    <skin name="m_pectineus_R" file="skins/m_pectineus_R.skn" material="muscle" group="1"/>
+    <skin name="m_coracobrachialis_L" file="skins/m_coracobrachialis_L.skn" material="muscle" group="1"/>
+    <skin name="m_gracilis_L" file="skins/m_gracilis_L.skn" material="muscle" group="1"/>
+    <skin name="m_depressor_caudae_brevis_R" file="skins/m_depressor_caudae_brevis_R.skn" material="muscle" group="1"/>
+    <skin name="m_levator_labii_sup_L" file="skins/m_levator_labii_sup_L.skn" material="muscle" group="1"/>
+    <skin name="m_obliquus_capitis_cranialis_R" file="skins/m_obliquus_capitis_cranialis_R.skn" material="muscle" group="1"/>
+    <skin name="m_extensor_capri_ulnaris_L" file="skins/m_extensor_capri_ulnaris_L.skn" material="muscle" group="1"/>
+    <skin name="m_rhomboideus_R" file="skins/m_rhomboideus_R.skn" material="muscle" group="1"/>
+    <skin name="m_longissimus_capitis_L(2)" file="skins/m_longissimus_capitis_L(2).skn" material="muscle" group="1"/>
+    <skin name="m_triceps_brachii_long_R" file="skins/m_triceps_brachii_long_R.skn" material="muscle" group="1"/>
+    <skin name="m_diaphragma" file="skins/m_diaphragma.skn" material="muscle" group="1"/>
+    <skin name="m_obliquus_capitis_cranialis_R(2)" file="skins/m_obliquus_capitis_cranialis_R(2).skn" material="muscle" group="1"/>
+    <skin name="m_gluteus_superficialis_major_R" file="skins/m_gluteus_superficialis_major_R.skn" material="muscle" group="1"/>
+    <skin name="m_deltoideus_acromialis_R" file="skins/m_deltoideus_acromialis_R.skn" material="muscle" group="1"/>
+    <skin name="m_vastus_lat_R" file="skins/m_vastus_lat_R.skn" material="muscle" group="1"/>
+    <skin name="m_depressor_caudae_brevis_L" file="skins/m_depressor_caudae_brevis_L.skn" material="muscle" group="1"/>
+    <skin name="m_brachialis_L" file="skins/m_brachialis_L.skn" material="muscle" group="1"/>
+    <skin name="m_Eye_R" file="skins/m_Eye_R.skn" material="muscle" group="1"/>
+    <skin name="m_peroneus_longus_R" file="skins/m_peroneus_longus_R.skn" material="muscle" group="1"/>
+    <skin name="m_gluteus_superficialis_major_L" file="skins/m_gluteus_superficialis_major_L.skn" material="muscle" group="1"/>
+    <skin name="m_longus_capitis_L" file="skins/m_longus_capitis_L.skn" material="muscle" group="1"/>
+    <skin name="m_extensor_digitorum_lateralis_R" file="skins/m_extensor_digitorum_lateralis_R.skn" material="muscle" group="1"/>
+    <skin name="m_longissimus_lumborum_L" file="skins/m_longissimus_lumborum_L.skn" material="muscle" group="1"/>
+    <skin name="m_quadratus_femoris_R" file="skins/m_quadratus_femoris_R.skn" material="muscle" group="1"/>
   </asset>
 
   <worldbody>
-    <body name="floor">
+    <body name="floor" pos="0 0 0">
       <geom name="floor" type="plane" conaffinity="1" size="10 10 0.1" material="grid"/>
     </body>
     <body name="torso" pos="0.03792 0 0.4186">
@@ -429,19 +692,11 @@
                                 <geom name="toe_L1_collision" class="foot_primitive" size="0.01 0.015" pos="0.035 0 -0.028" euler="90 0 0"/>
                                 <geom name="toe_L2_collision" class="foot_primitive" size="0.008 0.01" pos="0.045 0 -0.03" euler="90 0 0"/>
                                 <site name="sole_L" class="sensor" type="box" size="0.025 0.03 0.008" pos="0.026 0 -0.033"/>
-                                <site name="marker_toe_L_0" class="marker" pos="0.055 0 0"/>
                               </body>
                             </body>
-                            <site name="marker_foot_L_0" class="marker" pos="0 -0.02 0"/>
-                            <site name="marker_foot_L_1" class="marker" pos="0 0.02 0"/>
-                            <site name="marker_foot_L_2" class="marker" pos="0 -0.02 -0.1"/>
-                            <site name="marker_foot_L_3" class="marker" pos="0 0.03 -0.1"/>
                           </body>
                           <geom name="lower_leg_L_collision" class="collision_primitive" size="0.02 0.1" pos="-0.09531 0.000114 -0.06862" quat="0.8025 0.1849 0.4218 0.3793"/>
-                          <site name="marker_lower_leg_L_0" class="marker" pos="0.04 0 0"/>
-                          <site name="marker_lower_leg_L_1" class="marker" pos="-0.04 0.035 0"/>
                         </body>
-                        <site name="marker_upper_leg_L_0" class="marker" pos="-0.03 0.04 0"/>
                       </body>
                       <body name="upper_leg_R" pos="-0.01811 -0.04724 -0.0126">
                         <geom name="Femoris_fabellae_R_2" class="bone" pos="0.3263 0.04724 -0.4636" mesh="Femoris_fabellae_R_2"/>
@@ -492,19 +747,11 @@
                                 <geom name="toe_R1_collision" class="foot_primitive" size="0.01 0.015" pos="0.035 0 -0.028" euler="90 0 0"/>
                                 <geom name="toe_R2_collision" class="foot_primitive" size="0.008 0.01" pos="0.045 0 -0.03" euler="90 0 0"/>
                                 <site name="sole_R" class="sensor" type="box" size="0.025 0.03 0.008" pos="0.026 0 -0.033"/>
-                                <site name="marker_toe_R_0" class="marker" pos="0.055 0 0"/>
                               </body>
                             </body>
-                            <site name="marker_foot_R_0" class="marker" pos="0 0.02 0"/>
-                            <site name="marker_foot_R_1" class="marker" pos="0 -0.02 0"/>
-                            <site name="marker_foot_R_2" class="marker" pos="0 0.02 -0.1"/>
-                            <site name="marker_foot_R_3" class="marker" pos="0 -0.03 -0.1"/>
                           </body>
                           <geom name="lower_leg_R_collision" class="collision_primitive" size="0.02 0.1" pos="-0.09531 -0.000114 -0.06862" quat="0.3793 0.4218 0.1849 0.8025"/>
-                          <site name="marker_lower_leg_R_0" class="marker" pos="0.04 0 0"/>
-                          <site name="marker_lower_leg_R_1" class="marker" pos="-0.04 -0.035 0"/>
                         </body>
-                        <site name="marker_upper_leg_R_0" class="marker" pos="-0.03 -0.04 0"/>
                       </body>
                       <body name="Ca_1" pos="0.008246 0 0.04354">
                         <geom name="Ca_1" class="bone" pos="0.2999 0 -0.5197" mesh="Ca_1"/>
@@ -584,7 +831,6 @@
                                           </body>
                                           <joint name="Ca_10_bend" class="caudal_bend" pos="0.01207 -5.889e-06 0.01137" axis="0.6856 0 -0.728"/>
                                           <geom name="Ca_10_collision" class="collision_primitive" size="0.006059 0.01487 0.01658" pos="0 0 0" quat="-0.05502 0.3972 -0.02343 0.9158"/>
-                                          <site name="marker_Ca_10_0" class="marker" pos="0 0 0.01"/>
                                         </body>
                                         <joint name="Ca_9_extend" class="caudal_extend" pos="0.009022 4.94e-06 0.008041" axis="0 1 0"/>
                                         <geom name="Ca_9_collision" class="collision_primitive" size="0.005861 0.01177 0.01208" pos="0 0 0" quat="0.7194 0.2402 0.298 0.5796"/>
@@ -613,8 +859,6 @@
                         <joint name="Ca_1_extend" class="caudal_extend" pos="0.01121 0 -0.002007" axis="0 1 0"/>
                         <geom name="Ca_1_collision" class="collision_primitive" size="0.01365 0.006455 0.01139" pos="0 0 0" quat="0 0.4196 0 0.9077"/>
                       </body>
-                      <site name="marker_pelvis_0" class="marker" pos="0.04 -0.07 0.02"/>
-                      <site name="marker_pelvis_1" class="marker" pos="0.04 0.07 0.02"/>
                     </body>
                   </body>
                   <joint name="L_6_twist" class="lumbar_twist" axis="1 0 0"/>
@@ -725,10 +969,6 @@
                       <geom name="Premolars_Top_R_3_collision" class="tooth_primitive" type="ellipsoid" size="0.002255 0.005977 0.006518" pos="0.05089 -0.02105 -0.03949" quat="0.1946 0.4704 0.7868 0.3489"/>
                       <inertial pos="-0.001013 0 0.001405" quat="0 0.8203 0 0.572" mass="0.4354" diaginertia="0.0008834 0.0007907 0.0003248"/>
                       <geom name="MergedSkull" class="bone" pos="-0.3477 0 -0.691" mesh="MergedSkull"/>
-                      <site name="marker_skull_0" class="marker" pos="0.01 0 0.04"/>
-                      <site name="marker_skull_1" class="marker" pos="0 -0.05 0"/>
-                      <site name="marker_skull_2" class="marker" pos="0 0.05 0"/>
-                      <site name="marker_skull_3" class="marker" pos="-0.1 0 0.02"/>
                     </body>
                   </body>
                   <joint name="C_2_extend" class="cervical_extend" pos="-0.004829 0 -0.02353" axis="0 1 0" range="-13.4 18.3"/>
@@ -750,8 +990,6 @@
           <joint name="C_6_extend" class="cervical_extend" pos="-0.0139 0 -0.007136" axis="0 1 0" range="-14.2 35.4"/>
           <joint name="C_6_bend" class="cervical_bend" pos="-0.0139 0 -0.007136" axis="-0.4568 0 0.8896" range="-23.5 23.5"/>
           <joint name="C_6_twist" class="cervical_twist" pos="-0.0139 0 -0.007136" axis="0.8896 0 0.4568" range="-42.4 42.4"/>
-          <site name="marker_C_6_0" class="marker" pos="0.05 -0.05 0"/>
-          <site name="marker_C_6_1" class="marker" pos="0.05 0.05 0"/>
         </body>
         <joint name="C_7_extend" class="cervical_extend" pos="-0.01571 0 -0.001623" axis="0 1 0" range="-14.2 35.4"/>
         <joint name="C_7_bend" class="cervical_bend" pos="-0.01571 0 -0.001623" axis="-0.1027 0 0.9947" range="-23.5 23.5"/>
@@ -809,21 +1047,13 @@
                   <geom name="finger_L1_collision" class="foot_primitive" size="0.01 0.015" pos="0.032 0 -0.02" euler="90 0 0"/>
                   <geom name="finger_L2_collision" class="foot_primitive" size="0.008 0.01" pos="0.042 0 -0.022" euler="90 0 0"/>
                   <site name="palm_L" class="sensor" type="box" size="0.028 0.03 0.007" pos="0.02 0 -0.024"/>
-                  <site name="marker_finger_L_0" class="marker" pos="0.065 0 0"/>
                 </body>
-                <site name="marker_hand_L_0" class="marker" pos="0 -0.02 0"/>
-                <site name="marker_hand_L_1" class="marker" pos="0 0.02 0"/>
-                <site name="marker_hand_L_2" class="marker" pos="0.02 -0.02 -0.08"/>
-                <site name="marker_hand_L_3" class="marker" pos="0.02 0.02 -0.08"/>
               </body>
             </body>
             <geom name="Ulna_L_collision" class="collision_primitive" size="0.015 0.06" pos="-0.00939 -0.0004415 -0.05501" quat="0.6993 -0.03224 -0.02206 0.7137"/>
             <geom name="Radius_L_collision" class="collision_primitive" size="0.017 0.09" pos="0.0008281 -0.006968 -0.1114" quat="0.9802 -0.05682 0.01088 0.1893"/>
-            <site name="marker_lower_arm_L_0" class="marker" pos="0.025 0 0"/>
-            <site name="marker_lower_arm_L_1" class="marker" pos="0.025 0 -0.1"/>
           </body>
           <geom name="humerus_L_collision" class="collision_primitive" size="0.02 0.08" pos="-0.01554 0.00985 -0.08041" quat="0.5692 0.1782 0.08 0.7987"/>
-          <site name="marker_upper_arm_L_0" class="marker" pos="0.04 0 0"/>
         </body>
         <geom name="Scapula_L_collision" class="collision_primitive" type="box" size="0.01758 0.03491 0.05749" pos="0.0413 0.03083 -0.0683" quat="0.7347 -0.1644 -0.2717 0.5995"/>
       </body>
@@ -879,185 +1109,18 @@
                   <geom name="finger_R1_collision" class="foot_primitive" size="0.01 0.015" pos="0.032 0 -0.02" euler="90 0 0"/>
                   <geom name="finger_R2_collision" class="foot_primitive" size="0.008 0.01" pos="0.042 0 -0.022" euler="90 0 0"/>
                   <site name="palm_R" class="sensor" type="box" size="0.028 0.03 0.007" pos="0.02 0 -0.024"/>
-                  <site name="marker_finger_R_0" class="marker" pos="0.065 0 0"/>
                 </body>
-                <site name="marker_hand_R_0" class="marker" pos="0 0.02 0"/>
-                <site name="marker_hand_R_1" class="marker" pos="0 -0.02 0"/>
-                <site name="marker_hand_R_2" class="marker" pos="0.02 0.02 -0.08"/>
-                <site name="marker_hand_R_3" class="marker" pos="0.02 -0.02 -0.08"/>
               </body>
             </body>
             <geom name="Ulna_R_collision" class="collision_primitive" size="0.015 0.06" pos="-0.00939 0.0004416 -0.05501" quat="0.7137 -0.02206 -0.03224 0.6993"/>
             <geom name="Radius_R_collision" class="collision_primitive" size="0.017 0.09" pos="0.0008281 0.006968 -0.1114" quat="0.9802 0.05682 0.01088 -0.1893"/>
-            <site name="marker_lower_arm_R_0" class="marker" pos="0.025 0 0"/>
-            <site name="marker_lower_arm_R_1" class="marker" pos="0.025 0 -0.1"/>
           </body>
           <geom name="humerus_R_collision" class="collision_primitive" size="0.02 0.08" pos="-0.01554 -0.00985 -0.08041" quat="0.7987 0.08 0.1782 0.5692"/>
-          <site name="marker_upper_arm_R_0" class="marker" pos="0.04 0 0"/>
         </body>
         <geom name="Scapula_R_collision" class="collision_primitive" type="box" size="0.01758 0.03491 0.05749" pos="0.0413 -0.03083 -0.0683" quat="0.5995 -0.2717 -0.1644 0.7347"/>
       </body>
       <inertial pos="0 0 0" quat="0.4549 0.5414 0.5414 0.4549" mass="2.144" diaginertia="0.02167 0.01957 0.009093"/>
       <geom name="Ribcage" class="bone" pos="-0.05279 -0.0003659 -0.4218" mesh="Ribcage"/>
-      <site name="marker_torso_0" class="marker" pos="-0.25 0 0.13"/>
-      <site name="marker_torso_1" class="marker" pos="-0.1 0 0.13"/>
-      <site name="marker_torso_2" class="marker" pos="0.05 0 0.15"/>
-      <site name="marker_torso_3" class="marker" pos="-0.25 -0.06 -0.01"/>
-      <site name="marker_torso_4" class="marker" pos="-0.1 -0.08 -0.02"/>
-      <site name="marker_torso_5" class="marker" pos="0.05 -0.09 -0.02"/>
-      <site name="marker_torso_6" class="marker" pos="-0.25 0.06 -0.01"/>
-      <site name="marker_torso_7" class="marker" pos="-0.1 0.08 -0.02"/>
-      <site name="marker_torso_8" class="marker" pos="0.05 0.09 -0.02"/>
-    </body>
-    <body name="marker_0" mocap="true">
-      <site name="marker_0" class="mocap_marker"/>
-    </body>
-    <body name="marker_1" mocap="true">
-      <site name="marker_1" class="mocap_marker"/>
-    </body>
-    <body name="marker_2" mocap="true">
-      <site name="marker_2" class="mocap_marker"/>
-    </body>
-    <body name="marker_3" mocap="true">
-      <site name="marker_3" class="mocap_marker"/>
-    </body>
-    <body name="marker_4" mocap="true">
-      <site name="marker_4" class="mocap_marker"/>
-    </body>
-    <body name="marker_5" mocap="true">
-      <site name="marker_5" class="mocap_marker"/>
-    </body>
-    <body name="marker_6" mocap="true">
-      <site name="marker_6" class="mocap_marker"/>
-    </body>
-    <body name="marker_7" mocap="true">
-      <site name="marker_7" class="mocap_marker"/>
-    </body>
-    <body name="marker_8" mocap="true">
-      <site name="marker_8" class="mocap_marker"/>
-    </body>
-    <body name="marker_9" mocap="true">
-      <site name="marker_9" class="mocap_marker"/>
-    </body>
-    <body name="marker_10" mocap="true">
-      <site name="marker_10" class="mocap_marker"/>
-    </body>
-    <body name="marker_11" mocap="true">
-      <site name="marker_11" class="mocap_marker"/>
-    </body>
-    <body name="marker_12" mocap="true">
-      <site name="marker_12" class="mocap_marker"/>
-    </body>
-    <body name="marker_13" mocap="true">
-      <site name="marker_13" class="mocap_marker"/>
-    </body>
-    <body name="marker_14" mocap="true">
-      <site name="marker_14" class="mocap_marker"/>
-    </body>
-    <body name="marker_15" mocap="true">
-      <site name="marker_15" class="mocap_marker"/>
-    </body>
-    <body name="marker_16" mocap="true">
-      <site name="marker_16" class="mocap_marker"/>
-    </body>
-    <body name="marker_17" mocap="true">
-      <site name="marker_17" class="mocap_marker"/>
-    </body>
-    <body name="marker_18" mocap="true">
-      <site name="marker_18" class="mocap_marker"/>
-    </body>
-    <body name="marker_19" mocap="true">
-      <site name="marker_19" class="mocap_marker"/>
-    </body>
-    <body name="marker_20" mocap="true">
-      <site name="marker_20" class="mocap_marker"/>
-    </body>
-    <body name="marker_21" mocap="true">
-      <site name="marker_21" class="mocap_marker"/>
-    </body>
-    <body name="marker_22" mocap="true">
-      <site name="marker_22" class="mocap_marker"/>
-    </body>
-    <body name="marker_23" mocap="true">
-      <site name="marker_23" class="mocap_marker"/>
-    </body>
-    <body name="marker_24" mocap="true">
-      <site name="marker_24" class="mocap_marker"/>
-    </body>
-    <body name="marker_25" mocap="true">
-      <site name="marker_25" class="mocap_marker"/>
-    </body>
-    <body name="marker_26" mocap="true">
-      <site name="marker_26" class="mocap_marker"/>
-    </body>
-    <body name="marker_27" mocap="true">
-      <site name="marker_27" class="mocap_marker"/>
-    </body>
-    <body name="marker_28" mocap="true">
-      <site name="marker_28" class="mocap_marker"/>
-    </body>
-    <body name="marker_29" mocap="true">
-      <site name="marker_29" class="mocap_marker"/>
-    </body>
-    <body name="marker_30" mocap="true">
-      <site name="marker_30" class="mocap_marker"/>
-    </body>
-    <body name="marker_31" mocap="true">
-      <site name="marker_31" class="mocap_marker"/>
-    </body>
-    <body name="marker_32" mocap="true">
-      <site name="marker_32" class="mocap_marker"/>
-    </body>
-    <body name="marker_33" mocap="true">
-      <site name="marker_33" class="mocap_marker"/>
-    </body>
-    <body name="marker_34" mocap="true">
-      <site name="marker_34" class="mocap_marker"/>
-    </body>
-    <body name="marker_35" mocap="true">
-      <site name="marker_35" class="mocap_marker"/>
-    </body>
-    <body name="marker_36" mocap="true">
-      <site name="marker_36" class="mocap_marker"/>
-    </body>
-    <body name="marker_37" mocap="true">
-      <site name="marker_37" class="mocap_marker"/>
-    </body>
-    <body name="marker_38" mocap="true">
-      <site name="marker_38" class="mocap_marker"/>
-    </body>
-    <body name="marker_39" mocap="true">
-      <site name="marker_39" class="mocap_marker"/>
-    </body>
-    <body name="marker_40" mocap="true">
-      <site name="marker_40" class="mocap_marker"/>
-    </body>
-    <body name="marker_41" mocap="true">
-      <site name="marker_41" class="mocap_marker"/>
-    </body>
-    <body name="marker_42" mocap="true">
-      <site name="marker_42" class="mocap_marker"/>
-    </body>
-    <body name="marker_43" mocap="true">
-      <site name="marker_43" class="mocap_marker"/>
-    </body>
-    <body name="marker_44" mocap="true">
-      <site name="marker_44" class="mocap_marker"/>
-    </body>
-    <body name="marker_45" mocap="true">
-      <site name="marker_45" class="mocap_marker"/>
-    </body>
-    <body name="marker_46" mocap="true">
-      <site name="marker_46" class="mocap_marker"/>
-    </body>
-    <body name="marker_47" mocap="true">
-      <site name="marker_47" class="mocap_marker"/>
-    </body>
-    <body name="marker_48" mocap="true">
-      <site name="marker_48" class="mocap_marker"/>
-    </body>
-    <body name="marker_49" mocap="true">
-      <site name="marker_49" class="mocap_marker"/>
     </body>
   </worldbody>
 

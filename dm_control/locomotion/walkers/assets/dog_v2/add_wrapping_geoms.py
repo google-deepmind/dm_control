@@ -20,9 +20,6 @@ def add_wrapping_geoms(model):
 
   Args:
       model: The model to which the wrapping geometries and sites will be added.
-
-  Returns:
-      None
   """
   pelvis = model.find("body", "pelvis")
   pelvis.add(
