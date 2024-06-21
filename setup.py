@@ -132,9 +132,7 @@ class InstallCommand(install.install):
     _finalize_mjbindings_options(self)
 
   def run(self):
-    self.reinitialize_command('build_mjbindings',
-                              inplace=self.inplace,
-                              headers_dir=self.headers_dir)
+    self.reinitialize_command('build_mjbindings')
     self.run_command('build_mjbindings')
     install.install.run(self)
 
