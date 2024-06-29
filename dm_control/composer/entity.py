@@ -480,7 +480,8 @@ class Entity(metaclass=abc.ABCMeta):
       if position is not None:
         physics.bind(root_joint).qpos[:3] = position
       if quaternion is not None:
-        physics.bind(root_joint).qpos[3:] = quaternion
+        normalised_quaternion = quaternion / np.linalg.norm(quaternion)
+        physics.bind(root_joint).qpos[3:] = normalised_quaternion
     else:
       attachment_frame = mjcf.get_attachment_frame(self.mjcf_model)
       if attachment_frame is None:
