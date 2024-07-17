@@ -71,13 +71,16 @@ def _finalize_mjbindings_options(cmd_instance):
 
 class BuildMJBindingsCommand(setuptools.Command):
   """Runs `autowrap.py` to generate the low-level ctypes bindings for MuJoCo."""
+
   description = __doc__
   user_options = [
       # The format is (long option, short option, description).
-      ('headers-dir=', None,
-       'Path to directory containing MuJoCo headers.'),
-      ('inplace=', None,
-       'Place generated files in source directory rather than `build-lib`.'),
+      ('headers-dir=', None, 'Path to directory containing MuJoCo headers.'),
+      (
+          'inplace=',
+          None,
+          'Place generated files in source directory rather than `build-lib`.',
+      ),
   ]
   boolean_options = ['inplace']
 
@@ -99,7 +102,7 @@ class BuildMJBindingsCommand(setuptools.Command):
         sys.executable or 'python',
         AUTOWRAP_PATH,
         '--header_paths={}'.format(self.header_paths),
-        '--output_dir={}'.format(output_dir)
+        '--output_dir={}'.format(output_dir),
     ]
     self.announce('Running command: {}'.format(command), level=logging.DEBUG)
     try:
@@ -119,9 +122,11 @@ class InstallCommand(install.install):
   """Runs 'build_mjbindings' before installation."""
 
   user_options = (
-      install.install.user_options + BuildMJBindingsCommand.user_options)
+      install.install.user_options + BuildMJBindingsCommand.user_options
+  )
   boolean_options = (
-      install.install.boolean_options + BuildMJBindingsCommand.boolean_options)
+      install.install.boolean_options + BuildMJBindingsCommand.boolean_options
+  )
 
   def initialize_options(self):
     install.install.initialize_options(self)
@@ -169,9 +174,10 @@ def find_data_files(package_dir, patterns, excludes=()):
           paths.add(full_path)
   return list(paths)
 
+
 setup(
     name='dm_control',
-    version='1.0.20',
+    version='1.0.21',
     description='Continuous control environments and MuJoCo Python bindings.',
     long_description="""
 # `dm_control`: DeepMind Infrastructure for Physics-Based Simulation.
@@ -199,7 +205,7 @@ notebook: [Open In Google Colab](https://colab.research.google.com/github/google
         'glfw',
         'labmaze',
         'lxml',
-        'mujoco >= 3.1.6',
+        'mujoco >= 3.2.0',
         'numpy >= 1.9.0',
         'protobuf >= 3.19.4',  # TensorFlow requires protobuf<3.20 (b/182876485)
         'pyopengl >= 3.1.4',
@@ -220,17 +226,23 @@ notebook: [Open In Google Colab](https://colab.research.google.com/github/google
     test_suite='nose.collector',
     packages=find_packages(),
     package_data={
-        'dm_control':
-            find_data_files(
-                package_dir='dm_control',
-                patterns=[
-                    '*.amc', '*.msh', '*.png', '*.skn', '*.stl', '*.xml',
-                    '*.textproto', '*.h5'
-                ],
-                excludes=[
-                    '*/dog_assets/extras/*',
-                    '*/kinova/meshes/*',  # Exclude non-decimated meshes.
-                ]),
+        'dm_control': find_data_files(
+            package_dir='dm_control',
+            patterns=[
+                '*.amc',
+                '*.msh',
+                '*.png',
+                '*.skn',
+                '*.stl',
+                '*.xml',
+                '*.textproto',
+                '*.h5',
+            ],
+            excludes=[
+                '*/dog_assets/extras/*',
+                '*/kinova/meshes/*',  # Exclude non-decimated meshes.
+            ],
+        ),
     },
     cmdclass={
         'build_mjbindings': BuildMJBindingsCommand,
