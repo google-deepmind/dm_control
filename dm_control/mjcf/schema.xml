@@ -909,6 +909,53 @@
             <attribute name="hflip" type="keyword" valid_values="false true"/>
             <attribute name="vflip" type="keyword" valid_values="false true"/>
           </attributes>
+          <children>
+            <element name="rgb" repeated="false">
+              <attributes>
+                <attribute name="texture" type="reference" required="false" reference_namespace="texture"/>
+              </attributes>
+            </element>
+            <element name="normal" repeated="false">
+              <attributes>
+                <attribute name="texture" type="reference" required="false" reference_namespace="texture"/>
+              </attributes>
+            </element>
+            <element name="occlusion" repeated="false">
+              <attributes>
+                <attribute name="texture" type="reference" required="false" reference_namespace="texture"/>
+              </attributes>
+            </element>
+            <element name="roughness" repeated="false">
+              <attributes>
+                <attribute name="texture" type="reference" required="false" reference_namespace="texture"/>
+              </attributes>
+            </element>
+            <element name="metallic" repeated="false">
+              <attributes>
+                <attribute name="texture" type="reference" required="false" reference_namespace="texture"/>
+              </attributes>
+            </element>
+            <element name="opacity" repeated="false">
+              <attributes>
+                <attribute name="texture" type="reference" required="false" reference_namespace="texture"/>
+              </attributes>
+            </element>
+            <element name="emissive" repeated="false">
+              <attributes>
+                <attribute name="texture" type="reference" required="false" reference_namespace="texture"/>
+              </attributes>
+            </element>
+            <element name="orm" repeated="false">
+              <attributes>
+                <attribute name="texture" type="reference" required="false" reference_namespace="texture"/>
+              </attributes>
+            </element>
+            <element name="rgba" repeated="false">
+              <attributes>
+                <attribute name="texture" type="reference" required="false" reference_namespace="texture"/>
+              </attributes>
+            </element>
+          </children>
         </element>
         <element name="hfield" repeated="true">
           <attributes>
