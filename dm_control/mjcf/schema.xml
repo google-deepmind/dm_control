@@ -2620,6 +2620,42 @@
             </element>
           </children>
         </element>
+        <element name="fromto" repeated="true" namespace="sensor">
+          <attributes>
+            <attribute name="name" type="identifier"/>
+            <attribute name="noise" type="float"/>
+            <attribute name="user" type="array" array_type="float"/>
+            <attribute name="cutoff" type="float"/>
+            <attribute name="geom1" type="reference" required="true" reference_namespace="geom"/>
+            <attribute name="geom2" type="reference" required="true" reference_namespace="geom"/>
+            <attribute name="body1" type="reference" required="true" reference_namespace="body"/>
+            <attribute name="body2" type="reference" required="true" reference_namespace="body"/>
+          </attributes>
+        </element>
+        <element name="normal" repeated="true" namespace="sensor">
+          <attributes>
+            <attribute name="name" type="identifier"/>
+            <attribute name="noise" type="float"/>
+            <attribute name="user" type="array" array_type="float"/>
+            <attribute name="cutoff" type="float"/>
+            <attribute name="geom1" type="reference" required="true" reference_namespace="geom"/>
+            <attribute name="geom2" type="reference" required="true" reference_namespace="geom"/>
+            <attribute name="body1" type="reference" required="true" reference_namespace="body"/>
+            <attribute name="body2" type="reference" required="true" reference_namespace="body"/>
+          </attributes>
+        </element>
+        <element name="distance" repeated="true" namespace="sensor">
+          <attributes>
+            <attribute name="name" type="identifier"/>
+            <attribute name="noise" type="float"/>
+            <attribute name="user" type="array" array_type="float"/>
+            <attribute name="cutoff" type="float"/>
+            <attribute name="geom1" type="reference" required="true" reference_namespace="geom"/>
+            <attribute name="geom2" type="reference" required="true" reference_namespace="geom"/>
+            <attribute name="body1" type="reference" required="true" reference_namespace="body"/>
+            <attribute name="body2" type="reference" required="true" reference_namespace="body"/>
+          </attributes>
+        </element>
       </children>
     </element>
     <element name="keyframe">
