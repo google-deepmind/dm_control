@@ -66,8 +66,8 @@
         <attribute name="ls_tolerance" type="float" conflict_allowed="true" conflict_behavior="min"/>
         <attribute name="noslip_iterations" type="int" conflict_allowed="true" conflict_behavior="max"/>
         <attribute name="noslip_tolerance" type="float" conflict_allowed="true" conflict_behavior="min"/>
-        <attribute name="mpr_iterations" type="int" conflict_allowed="true" conflict_behavior="max"/>
-        <attribute name="mpr_tolerance" type="float" conflict_allowed="true" conflict_behavior="min"/>
+        <attribute name="ccd_iterations" type="int" conflict_allowed="true" conflict_behavior="max"/>
+        <attribute name="ccd_tolerance" type="float" conflict_allowed="true" conflict_behavior="min"/>
         <attribute name="sdf_iterations" type="int" conflict_allowed="true" conflict_behavior="max"/>
         <attribute name="sdf_initpoints" type="int" conflict_allowed="true" conflict_behavior="max"/>
       </attributes>
