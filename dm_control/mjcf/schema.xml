@@ -1849,9 +1849,11 @@
             <attribute name="active" type="keyword" valid_values="false true"/>
             <attribute name="solref" type="array" array_type="float" array_size="2"/>
             <attribute name="solimp" type="array" array_type="float" array_size="5"/>
-            <attribute name="body1" type="reference" required="true" reference_namespace="body"/>
+            <attribute name="body1" type="reference" reference_namespace="body"/>
             <attribute name="body2" type="reference" reference_namespace="body"/>
-            <attribute name="anchor" type="array" required="true" array_type="float" array_size="3"/>
+            <attribute name="anchor" type="array" array_type="float" array_size="3"/>
+            <attribute name="site1" type="reference" reference_namespace="site"/>
+            <attribute name="site2" type="reference" reference_namespace="site"/>
           </attributes>
         </element>
         <element name="weld" repeated="true" namespace="equality">
