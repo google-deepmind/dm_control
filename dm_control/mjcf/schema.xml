@@ -25,6 +25,7 @@
         <attribute name="inertiafromgeom" type="keyword" valid_values="false true auto"/>
         <attribute name="inertiagrouprange" type="array" array_type="int" array_size="2"/>
         <attribute name="exactmeshinertia" type="keyword" valid_values="false true"/>
+        <attribute name="alignfree" type="keyword" valid_values="false true"/>
       </attributes>
       <children>
         <element name="lengthrange">
@@ -1422,6 +1423,7 @@
               <attributes>
                 <attribute name="name" type="identifier"/>
                 <attribute name="group" type="int"/>
+                <attribute name="align" type="keyword" valid_values="false true auto"/>
               </attributes>
             </element>
             <element name="geom" repeated="true">
