@@ -43,6 +43,9 @@ def export_with_assets_as_zip(mjcf_model, out_dir, model_name=None,
       quantities.
     zero_threshold: (optional) When outputting XML, floating point quantities
       whose absolute value falls below this threshold will be treated as zero.
+
+  Returns:
+    The full path to the .zip file.
   """
 
   if model_name is None:
@@ -57,6 +60,8 @@ def export_with_assets_as_zip(mjcf_model, out_dir, model_name=None,
 
   if not os.path.exists(out_dir):
     os.makedirs(out_dir)
-  with zipfile.ZipFile(os.path.join(out_dir, zip_name), 'w') as zip_file:
+  file_name = os.path.join(out_dir, zip_name)
+  with zipfile.ZipFile(file_name, 'w') as zip_file:
     for filename, contents in files_to_zip.items():
       zip_file.writestr(os.path.join(model_name, filename), contents)
+  return file_name

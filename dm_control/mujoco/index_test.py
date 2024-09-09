@@ -52,6 +52,12 @@ FIELD_REPR = {
              '4 mocap2 [ 12        13        14      ]'),
 }
 
+# A test below accesses all attributes of np.ndarray, but accessing some of them
+# triggers an exception under numpy>=2.0.
+_DEPRECATED_NDARRAY_ATTRIBUTES = {
+    'itemset', 'newbyteorder', 'ptp'
+}
+
 
 class MujocoIndexTest(parameterized.TestCase):
 
@@ -291,6 +297,7 @@ class MujocoIndexTest(parameterized.TestCase):
       (name, name) for name in dir(np.ndarray)
       if not name.startswith('_')  # Exclude 'private' attributes
       and name not in ('ctypes', 'flat')  # Can't compare via identity/equality
+      and name not in _DEPRECATED_NDARRAY_ATTRIBUTES
   ])
   # pylint: enable=undefined-variable
   def testFieldIndexerDelegatesNDArrayAttributes(self, name):

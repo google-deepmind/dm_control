@@ -355,7 +355,7 @@ class RegularNamedAxis(Axis):
 
     elif isinstance(key_item, (list, np.ndarray)):
       # Cast lists to numpy arrays.
-      key_item = np.array(key_item, copy=False)
+      key_item = np.asarray(key_item)
       original_shape = key_item.shape
 
       # We assume that either all or none of the items in the array are strings

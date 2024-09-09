@@ -118,7 +118,7 @@ class InverseKinematicsTest(parameterized.TestCase):
       xmat = physics.named.data.site_xmat[_SITE_NAME]
       quat = np.empty_like(target_quat)
       mjlib.mju_mat2Quat(quat, xmat)
-      quat /= quat.ptp()  # Normalize xquat so that its max-min range is 1
+      quat /= np.ptp(quat)  # Normalize xquat so that its max-min range is 1
       np.testing.assert_array_almost_equal(quat, target_quat)
 
   def testNamedJointsWithMultipleDOFs(self):

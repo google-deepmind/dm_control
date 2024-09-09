@@ -22,9 +22,8 @@ from dm_control.composer import variation
 from dm_control.locomotion.mocap import mocap_pb2
 from dm_control.locomotion.mocap import trajectory
 from dm_control.utils import transformations as tr
-import numpy as np
-
 from google.protobuf import descriptor
+import numpy as np
 
 
 class TrajectoryLoader(metaclass=abc.ABCMeta):

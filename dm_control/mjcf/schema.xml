@@ -25,6 +25,7 @@
         <attribute name="inertiafromgeom" type="keyword" valid_values="false true auto"/>
         <attribute name="inertiagrouprange" type="array" array_type="int" array_size="2"/>
         <attribute name="exactmeshinertia" type="keyword" valid_values="false true"/>
+        <attribute name="alignfree" type="keyword" valid_values="false true"/>
       </attributes>
       <children>
         <element name="lengthrange">
@@ -66,8 +67,10 @@
         <attribute name="ls_tolerance" type="float" conflict_allowed="true" conflict_behavior="min"/>
         <attribute name="noslip_iterations" type="int" conflict_allowed="true" conflict_behavior="max"/>
         <attribute name="noslip_tolerance" type="float" conflict_allowed="true" conflict_behavior="min"/>
-        <attribute name="mpr_iterations" type="int" conflict_allowed="true" conflict_behavior="max"/>
-        <attribute name="mpr_tolerance" type="float" conflict_allowed="true" conflict_behavior="min"/>
+        <attribute name="ccd_iterations" type="int" conflict_allowed="true" conflict_behavior="max"/>
+        <attribute name="ccd_tolerance" type="float" conflict_allowed="true" conflict_behavior="min"/>
+        <attribute name="sdf_iterations" type="int" conflict_allowed="true" conflict_behavior="max"/>
+        <attribute name="sdf_initpoints" type="int" conflict_allowed="true" conflict_behavior="max"/>
       </attributes>
       <children>
         <element name="flag">
@@ -85,6 +88,7 @@
             <attribute name="actuation" type="keyword" valid_values="disable enable"/>
             <attribute name="refsafe" type="keyword" valid_values="disable enable"/>
             <attribute name="sensor" type="keyword" valid_values="disable enable"/>
+            <attribute name="eulerdamp" type="keyword" valid_values="disable enable"/>
             <attribute name="override" type="keyword" valid_values="disable enable"/>
             <attribute name="energy" type="keyword" valid_values="disable enable"/>
             <attribute name="fwdinv" type="keyword" valid_values="disable enable"/>
@@ -264,6 +268,7 @@
             <attribute name="damping" type="float"/>
             <attribute name="frictionloss" type="float"/>
             <attribute name="user" type="array" array_type="float"/>
+            <attribute name="actuatorgravcomp" type="keyword" valid_values="false true"/>
           </attributes>
         </element>
         <element name="geom">
@@ -439,6 +444,10 @@
             <attribute name="cranklength" type="float"/>
             <attribute name="user" type="array" array_type="float"/>
             <attribute name="kp" type="float"/>
+            <attribute name="kv" type="float"/>
+            <attribute name="dampratio" type="float"/>
+            <attribute name="timeconst" type="float"/>
+            <attribute name="inheritrange" type="float"/>
           </attributes>
         </element>
         <element name="velocity">
@@ -466,6 +475,9 @@
             <attribute name="cranklength" type="float"/>
             <attribute name="user" type="array" array_type="float"/>
             <attribute name="kp" type="float"/>
+            <attribute name="kv" type="float"/>
+            <attribute name="dampratio" type="float"/>
+            <attribute name="inheritrange" type="float"/>
           </attributes>
         </element>
         <element name="damper">
@@ -558,7 +570,7 @@
                 <attribute name="axis" type="array" array_type="float" array_size="3"/>
                 <attribute name="springdamper" type="array" array_type="float" array_size="2"/>
                 <attribute name="limited" type="keyword" valid_values="false true"/>
-                <attribute name="actuatorfrclimited" type="keyword" valid_values="false true"/>
+                <attribute name="actuatorfrclimited" type="keyword" valid_values="false true auto"/>
                 <attribute name="solreflimit" type="array" array_type="float" array_size="2"/>
                 <attribute name="solimplimit" type="array" array_type="float" array_size="5"/>
                 <attribute name="solreffriction" type="array" array_type="float" array_size="2"/>
@@ -573,6 +585,7 @@
                 <attribute name="damping" type="float"/>
                 <attribute name="frictionloss" type="float"/>
                 <attribute name="user" type="array" array_type="float"/>
+                <attribute name="actuatorgravcomp" type="keyword" valid_values="false true"/>
               </attributes>
             </element>
             <element name="geom">
@@ -742,6 +755,10 @@
                 <attribute name="cranklength" type="float"/>
                 <attribute name="user" type="array" array_type="float"/>
                 <attribute name="kp" type="float"/>
+                <attribute name="kv" type="float"/>
+                <attribute name="dampratio" type="float"/>
+                <attribute name="timeconst" type="float"/>
+                <attribute name="inheritrange" type="float"/>
               </attributes>
             </element>
             <element name="velocity">
@@ -767,6 +784,9 @@
                 <attribute name="cranklength" type="float"/>
                 <attribute name="user" type="array" array_type="float"/>
                 <attribute name="kp" type="float"/>
+                <attribute name="kv" type="float"/>
+                <attribute name="dampratio" type="float"/>
+                <attribute name="inheritrange" type="float"/>
               </attributes>
             </element>
             <element name="damper">
@@ -890,6 +910,53 @@
             <attribute name="hflip" type="keyword" valid_values="false true"/>
             <attribute name="vflip" type="keyword" valid_values="false true"/>
           </attributes>
+          <children>
+            <element name="rgb" repeated="false">
+              <attributes>
+                <attribute name="texture" type="reference" required="false" reference_namespace="texture"/>
+              </attributes>
+            </element>
+            <element name="normal" repeated="false">
+              <attributes>
+                <attribute name="texture" type="reference" required="false" reference_namespace="texture"/>
+              </attributes>
+            </element>
+            <element name="occlusion" repeated="false">
+              <attributes>
+                <attribute name="texture" type="reference" required="false" reference_namespace="texture"/>
+              </attributes>
+            </element>
+            <element name="roughness" repeated="false">
+              <attributes>
+                <attribute name="texture" type="reference" required="false" reference_namespace="texture"/>
+              </attributes>
+            </element>
+            <element name="metallic" repeated="false">
+              <attributes>
+                <attribute name="texture" type="reference" required="false" reference_namespace="texture"/>
+              </attributes>
+            </element>
+            <element name="opacity" repeated="false">
+              <attributes>
+                <attribute name="texture" type="reference" required="false" reference_namespace="texture"/>
+              </attributes>
+            </element>
+            <element name="emissive" repeated="false">
+              <attributes>
+                <attribute name="texture" type="reference" required="false" reference_namespace="texture"/>
+              </attributes>
+            </element>
+            <element name="orm" repeated="false">
+              <attributes>
+                <attribute name="texture" type="reference" required="false" reference_namespace="texture"/>
+              </attributes>
+            </element>
+            <element name="rgba" repeated="false">
+              <attributes>
+                <attribute name="texture" type="reference" required="false" reference_namespace="texture"/>
+              </attributes>
+            </element>
+          </children>
         </element>
         <element name="hfield" repeated="true">
           <attributes>
@@ -917,7 +984,6 @@
           <children>
             <element name="plugin" repeated="true" namespace="mesh">
               <attributes>
-                <attribute name="name" type="identifier"/>
                 <attribute name="plugin" type="string"/>
                 <attribute name="instance" type="reference" reference_namespace="plugin"/>
               </attributes>
@@ -1010,6 +1076,22 @@
             <attribute name="fluidcoef" type="array" array_type="float" array_size="5"/>
             <attribute name="user" type="array" array_type="float"/>
           </attributes>
+          <children>
+            <element name="plugin" repeated="true" namespace="geom">
+              <attributes>
+                <attribute name="plugin" type="string"/>
+                <attribute name="instance" type="reference" reference_namespace="plugin"/>
+              </attributes>
+              <children>
+                <element name="config" repeated="true">
+                  <attributes>
+                    <attribute name="key" type="string"/>
+                    <attribute name="value" type="string"/>
+                  </attributes>
+                </element>
+              </children>
+            </element>
+          </children>
         </element>
         <element name="site" repeated="true">
           <attributes>
@@ -1072,11 +1154,88 @@
             <attribute name="specular" type="array" array_type="float" array_size="3"/>
           </attributes>
         </element>
+        <element name="flexcomp" repeated="true">
+          <attributes>
+            <attribute name="name" type="identifier"/>
+            <attribute name="type" type="keyword" valid_values="grid box cylinder ellipsoid mesh gmsh direct"/>
+            <attribute name="count" type="array" array_type="int" array_size="3"/>
+            <attribute name="spacing" type="array" array_type="float" array_size="3"/>
+            <attribute name="scale" type="array" array_type="float" array_size="3"/>
+            <attribute name="radius" type="float"/>
+            <attribute name="rigid" type="string" valid_values="true false"/>
+            <attribute name="mass" type="float"/>
+            <attribute name="inertiabox" type="float"/>
+            <attribute name="file" type="string"/>
+            <attribute name="point" type="string"/>
+            <attribute name="element" type="string"/>
+            <attribute name="texcoord" type="string"/>
+            <attribute name="material" type="string"/>
+            <attribute name="rgba" type="array" array_type="float" array_size="4"/>
+            <attribute name="flatskin" type="int"/>
+            <attribute name="pos" type="array" array_type="float" array_size="3"/>
+            <attribute name="quat" type="array" array_type="float" array_size="4"/>
+            <attribute name="axisangle" type="array" array_type="float" array_size="4"/>
+            <attribute name="xyaxis" type="array" array_type="float" array_size="6"/>
+            <attribute name="zaxis" type="array" array_type="float" array_size="3"/>
+            <attribute name="euler" type="array" array_type="float" array_size="3"/>
+            <attribute name="dim" type="int" required="true"/>
+          </attributes>
+          <children>
+            <element name="plugin" repeated="true" namespace="flexcomp">
+              <attributes>
+                <attribute name="plugin" type="string"/>
+                <attribute name="instance" type="reference" reference_namespace="plugin"/>
+              </attributes>
+              <children>
+                <element name="config" repeated="true">
+                  <attributes>
+                    <attribute name="key" type="string"/>
+                    <attribute name="value" type="string"/>
+                  </attributes>
+                </element>
+              </children>
+            </element>
+            <element name="edge" repeated="true">
+              <attributes>
+                <attribute name="equality" type="string" valid_values="true false"/>
+                <attribute name="solref" type="array" array_type="float" array_size="2"/>
+                <attribute name="solimp" type="array" array_type="float" array_size="5"/>
+                <attribute name="stiffness" type="float"/>
+                <attribute name="damping" type="float"/>
+              </attributes>
+            </element>
+            <element name="contact" repeated="true">
+              <attributes>
+                <attribute name="contype" type="int"/>
+                <attribute name="conaffinity" type="int"/>
+                <attribute name="condim" type="int"/>
+                <attribute name="priority" type="int"/>
+                <attribute name="friction" type="array" array_type="float" array_size="3"/>
+                <attribute name="solmix" type="float"/>
+                <attribute name="solref" type="array" array_type="float" array_size="2"/>
+                <attribute name="solimp" type="array" array_type="float" array_size="5"/>
+                <attribute name="margin" type="float"/>
+                <attribute name="gap" type="float"/>
+                <attribute name="internal" type="string" valid_values="true false"/>
+                <attribute name="selfcollide" type="string" valid_values="none narrow bvh sap auto"/>
+                <attribute name="activelayers" type="int"/>
+              </attributes>
+            </element>
+            <element name="pin" repeated="true">
+              <attributes>
+                <attribute name="id" type="string"/>
+                <attribute name="range" type="string"/>
+                <attribute name="grid" type="string"/>
+                <attribute name="gridrange" type="string"/>
+              </attributes>
+            </element>
+          </children>
+        </element>
         <element name="composite" repeated="true">
           <attributes>
             <attribute name="prefix" type="identifier"/>
             <attribute name="type" type="keyword" valid_values="particle grid cable rope loop cloth box cylinder ellipsoid" required="true"/>
-            <attribute name="count" type="array" array_type="int" array_size="3" required="true"/>
+            <attribute name="count" type="array" array_type="int" array_size="3"/>
             <attribute name="spacing" type="float" required="false"/>
             <attribute name="offset" type="array" array_type="float" array_size="3"/>
             <attribute name="flatinertia" type="float"/>
@@ -1091,7 +1250,6 @@
           <children>
             <element name="plugin" repeated="true" namespace="composite">
               <attributes>
-                <attribute name="name" type="string"/>
                 <attribute name="plugin" type="string"/>
                 <attribute name="instance" type="reference" reference_namespace="plugin"/>
               </attributes>
@@ -1204,11 +1362,11 @@
             <attribute name="zaxis" type="array" array_type="float" array_size="3"/>
             <attribute name="euler" type="array" array_type="float" array_size="3"/>
             <attribute name="gravcomp" type="float"/>
+            <attribute name="user" type="array" array_type="float"/>
           </attributes>
           <children>
             <element name="plugin" repeated="true" namespace="body">
               <attributes>
-                <attribute name="name" type="identifier"/>
                 <attribute name="plugin" type="string"/>
                 <attribute name="instance" type="reference" reference_namespace="plugin"/>
               </attributes>
@@ -1248,6 +1406,8 @@
                 <attribute name="solimplimit" type="array" array_type="float" array_size="5"/>
                 <attribute name="solreffriction" type="array" array_type="float" array_size="2"/>
                 <attribute name="solimpfriction" type="array" array_type="float" array_size="5"/>
+                <attribute name="actuatorfrclimited" type="keyword" valid_values="false true auto"/>
+                <attribute name="actuatorfrcrange" type="array" array_type="float" array_size="2"/>
                 <attribute name="stiffness" type="float"/>
                 <attribute name="range" type="array" array_type="float" array_size="2"/>
                 <attribute name="margin" type="float"/>
@@ -1263,6 +1423,7 @@
               <attributes>
                 <attribute name="name" type="identifier"/>
                 <attribute name="group" type="int"/>
+                <attribute name="align" type="keyword" valid_values="false true auto"/>
               </attributes>
             </element>
             <element name="geom" repeated="true">
@@ -1304,7 +1465,6 @@
               <children>
                 <element name="plugin" repeated="true" namespace="geom">
                   <attributes>
-                    <attribute name="name" type="identifier"/>
                     <attribute name="plugin" type="string"/>
                     <attribute name="instance" type="reference" reference_namespace="plugin"/>
                   </attributes>
@@ -1380,11 +1540,88 @@
                 <attribute name="specular" type="array" array_type="float" array_size="3"/>
               </attributes>
             </element>
+            <element name="flexcomp" repeated="true">
+              <attributes>
+                <attribute name="name" type="identifier"/>
+                <attribute name="type" type="keyword" valid_values="grid box cylinder ellipsoid mesh gmsh direct"/>
+                <attribute name="count" type="array" array_type="int" array_size="3"/>
+                <attribute name="spacing" type="array" array_type="float" array_size="3"/>
+                <attribute name="scale" type="array" array_type="float" array_size="3"/>
+                <attribute name="radius" type="float"/>
+                <attribute name="rigid" type="string" valid_values="true false"/>
+                <attribute name="mass" type="float"/>
+                <attribute name="inertiabox" type="float"/>
+                <attribute name="file" type="string"/>
+                <attribute name="point" type="string"/>
+                <attribute name="element" type="string"/>
+                <attribute name="texcoord" type="string"/>
+                <attribute name="material" type="string"/>
+                <attribute name="rgba" type="array" array_type="float" array_size="4"/>
+                <attribute name="flatskin" type="int"/>
+                <attribute name="pos" type="array" array_type="float" array_size="3"/>
+                <attribute name="quat" type="array" array_type="float" array_size="4"/>
+                <attribute name="axisangle" type="array" array_type="float" array_size="4"/>
+                <attribute name="xyaxis" type="array" array_type="float" array_size="6"/>
+                <attribute name="zaxis" type="array" array_type="float" array_size="3"/>
+                <attribute name="euler" type="array" array_type="float" array_size="3"/>
+                <attribute name="dim" type="int" required="true"/>
+              </attributes>
+              <children>
+                <element name="plugin" repeated="true" namespace="flexcomp">
+                  <attributes>
+                    <attribute name="plugin" type="string"/>
+                    <attribute name="instance" type="reference" reference_namespace="plugin"/>
+                  </attributes>
+                  <children>
+                    <element name="config" repeated="true">
+                      <attributes>
+                        <attribute name="key" type="string"/>
+                        <attribute name="value" type="string"/>
+                      </attributes>
+                    </element>
+                  </children>
+                </element>
+                <element name="edge" repeated="true">
+                  <attributes>
+                    <attribute name="equality" type="string" valid_values="true false"/>
+                    <attribute name="solref" type="array" array_type="float" array_size="2"/>
+                    <attribute name="solimp" type="array" array_type="float" array_size="5"/>
+                    <attribute name="stiffness" type="float"/>
+                    <attribute name="damping" type="float"/>
+                  </attributes>
+                </element>
+                <element name="contact" repeated="true">
+                  <attributes>
+                    <attribute name="contype" type="int"/>
+                    <attribute name="conaffinity" type="int"/>
+                    <attribute name="condim" type="int"/>
+                    <attribute name="priority" type="int"/>
+                    <attribute name="friction" type="array" array_type="float" array_size="3"/>
+                    <attribute name="solmix" type="float"/>
+                    <attribute name="solref" type="array" array_type="float" array_size="2"/>
+                    <attribute name="solimp" type="array" array_type="float" array_size="5"/>
+                    <attribute name="margin" type="float"/>
+                    <attribute name="gap" type="float"/>
+                    <attribute name="internal" type="string" valid_values="true false"/>
+                    <attribute name="selfcollide" type="string" valid_values="none narrow bvh sap auto"/>
+                    <attribute name="activelayers" type="int"/>
+                  </attributes>
+                </element>
+                <element name="pin" repeated="true">
+                  <attributes>
+                    <attribute name="id" type="string"/>
+                    <attribute name="range" type="string"/>
+                    <attribute name="grid" type="string"/>
+                    <attribute name="gridrange" type="string"/>
+                  </attributes>
+                </element>
+              </children>
+            </element>
             <element name="composite" repeated="true">
               <attributes>
                 <attribute name="prefix" type="identifier"/>
                 <attribute name="type" type="keyword" valid_values="particle grid cable rope loop cloth box cylinder ellipsoid" required="true"/>
-                <attribute name="count" type="array" array_type="int" array_size="3" required="true"/>
+                <attribute name="count" type="array" array_type="int" array_size="3"/>
                 <attribute name="spacing" type="float" required="false"/>
                 <attribute name="offset" type="array" array_type="float" array_size="3"/>
                 <attribute name="flatinertia" type="float"/>
@@ -1399,7 +1636,6 @@
               <children>
                 <element name="plugin" repeated="true" namespace="composite">
                   <attributes>
-                    <attribute name="name" type="string"/>
                     <attribute name="plugin" type="string"/>
                     <attribute name="instance" type="reference" reference_namespace="plugin"/>
                   </attributes>
@@ -1504,6 +1740,74 @@
         </element>
       </children>
     </element>
+    <element name="deformable">
+      <children>
+        <element name="flex" repeated="true" namespace="deformable">
+          <attributes>
+            <attribute name="name" type="identifier"/>
+            <attribute name="group" type="reference" reference_namespace="default"/>
+            <attribute name="dim" type="reference" required="true" reference_namespace="geom"/>
+            <attribute name="radius" type="reference" required="true" reference_namespace="geom"/>
+            <attribute name="material" type="int"/>
+            <attribute name="rgba" type="array" array_type="float" array_size="4"/>
+            <attribute name="flatskin" type="array" array_type="float" array_size="2"/>
+            <attribute name="body" type="array" array_type="float" array_size="2"/>
+            <attribute name="vertex" type="array" array_type="float" array_size="5"/>
+            <attribute name="element" type="float"/>
+            <attribute name="texcoord" type="float"/>
+          </attributes>
+          <children>
+            <element name="edge" repeated="true">
+              <attributes>
+                <attribute name="stiffness" type="float"/>
+                <attribute name="damping" type="float"/>
+              </attributes>
+            </element>
+            <element name="contact" repeated="true">
+              <attributes>
+                <attribute name="contype" type="int"/>
+                <attribute name="conaffinity" type="int"/>
+                <attribute name="condim" type="int"/>
+                <attribute name="priority" type="int"/>
+                <attribute name="friction" type="array" array_type="float" array_size="3"/>
+                <attribute name="solmix" type="float"/>
+                <attribute name="solref" type="array" array_type="float" array_size="2"/>
+                <attribute name="solimp" type="array" array_type="float" array_size="5"/>
+                <attribute name="margin" type="float"/>
+                <attribute name="gap" type="float"/>
+                <attribute name="internal" type="int"/>
+                <attribute name="selfcollide" type="string" valid_values="none narrow bvh sap auto"/>
+                <attribute name="activelayers" type="int"/>
+              </attributes>
+            </element>
+          </children>
+        </element>
+        <element name="skin" repeated="true" namespace="deformable">
+          <attributes>
+            <attribute name="name" type="identifier"/>
+            <attribute name="file" type="file" path_namespace="mesh"/>
+            <attribute name="vertex" type="array" array_type="float"/>
+            <attribute name="texcoord" type="array" array_type="float"/>
+            <attribute name="face" type="array" array_type="int"/>
+            <attribute name="inflate" type="float"/>
+            <attribute name="material" type="reference"/>
+            <attribute name="rgba" type="array" array_type="float" array_size="4"/>
+            <attribute name="group" type="int"/>
+          </attributes>
+          <children>
+            <element name="bone" repeated="true">
+              <attributes>
+                <attribute name="body" type="reference" required="true"/>
+                <attribute name="bindpos" type="array" array_type="float" array_size="3" required="true"/>
+                <attribute name="bindquat" type="array" array_type="float" array_size="4" required="true"/>
+                <attribute name="vertid" type="array" array_type="int" required="true"/>
+                <attribute name="vertweight" type="array" array_type="float" required="true"/>
+              </attributes>
+            </element>
+          </children>
+        </element>
+      </children>
+    </element>
     <element name="contact">
       <children>
         <element name="pair" repeated="true" namespace="contact">
@@ -1539,9 +1843,11 @@
             <attribute name="active" type="keyword" valid_values="false true"/>
             <attribute name="solref" type="array" array_type="float" array_size="2"/>
             <attribute name="solimp" type="array" array_type="float" array_size="5"/>
-            <attribute name="body1" type="reference" required="true" reference_namespace="body"/>
+            <attribute name="body1" type="reference" reference_namespace="body"/>
             <attribute name="body2" type="reference" reference_namespace="body"/>
-            <attribute name="anchor" type="array" required="true" array_type="float" array_size="3"/>
+            <attribute name="anchor" type="array" array_type="float" array_size="3"/>
+            <attribute name="site1" type="reference" reference_namespace="site"/>
+            <attribute name="site2" type="reference" reference_namespace="site"/>
           </attributes>
         </element>
         <element name="weld" repeated="true" namespace="equality">
@@ -1582,16 +1888,14 @@
             <attribute name="polycoef" type="array" array_type="float" array_size="5"/>
           </attributes>
         </element>
-        <element name="distance" repeated="true" namespace="equality">
+        <element name="flex" repeated="true" namespace="equality">
           <attributes>
             <attribute name="name" type="identifier"/>
             <attribute name="class" type="reference" reference_namespace="default"/>
             <attribute name="active" type="keyword" valid_values="false true"/>
             <attribute name="solref" type="array" array_type="float" array_size="2"/>
             <attribute name="solimp" type="array" array_type="float" array_size="5"/>
-            <attribute name="geom1" type="reference" required="true" reference_namespace="geom"/>
-            <attribute name="geom2" type="reference" required="true" reference_namespace="geom"/>
-            <attribute name="distance" type="float"/>
+            <attribute name="flex" type="string"/>
           </attributes>
         </element>
       </children>
@@ -1745,6 +2049,10 @@
             <attribute name="refsite" type="reference" reference_namespace="site"/>
             <attribute name="user" type="array" array_type="float"/>
             <attribute name="kp" type="float"/>
+            <attribute name="kv" type="float"/>
+            <attribute name="dampratio" type="float"/>
+            <attribute name="timeconst" type="float"/>
+            <attribute name="inheritrange" type="float"/>
           </attributes>
         </element>
         <element name="velocity" repeated="true" namespace="actuator">
@@ -1792,6 +2100,9 @@
             <attribute name="refsite" type="reference" reference_namespace="site"/>
             <attribute name="user" type="array" array_type="float"/>
             <attribute name="kp" type="float"/>
+            <attribute name="kv" type="float"/>
+            <attribute name="dampratio" type="float"/>
+            <attribute name="inheritrange" type="float"/>
           </attributes>
         </element>
         <element name="damper" repeated="true" namespace="actuator">
@@ -1894,9 +2205,14 @@
             <attribute name="group" type="int"/>
             <attribute name="ctrllimited" type="keyword" valid_values="false true auto"/>
             <attribute name="forcelimited" type="keyword" valid_values="false true auto"/>
+            <attribute name="actlimited" type="keyword" valid_values="false true auto"/>
             <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
             <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
+            <attribute name="actrange" type="array" array_type="float" array_size="2"/>
             <attribute name="lengthrange" type="array" array_type="float" array_size="2"/>
+            <attribute name="actdim" type="int"/>
+            <attribute name="dyntype" type="keyword" valid_values="none integrator filter filterexact muscle user"/>
+            <attribute name="dynprm" type="array" array_type="float" array_size="10"/>
             <attribute name="gear" type="array" array_type="float" array_size="6"/>
             <attribute name="cranklength" type="float"/>
             <attribute name="joint" type="reference"/>
@@ -1906,6 +2222,7 @@
             <attribute name="cranksite" type="reference" reference_namespace="site"/>
             <attribute name="slidersite" type="reference" reference_namespace="site"/>
             <attribute name="user" type="array" array_type="float"/>
+            <attribute name="actearly" type="keyword" valid_values="false true"/>
           </attributes>
           <children>
             <element name="config" repeated="true">
@@ -2298,6 +2615,42 @@
               </attributes>
             </element>
           </children>
+        </element>
+        <element name="fromto" repeated="true" namespace="sensor">
+          <attributes>
+            <attribute name="name" type="identifier"/>
+            <attribute name="noise" type="float"/>
+            <attribute name="user" type="array" array_type="float"/>
+            <attribute name="cutoff" type="float" required="true"/>
+            <attribute name="geom1" type="reference" reference_namespace="geom"/>
+            <attribute name="geom2" type="reference" reference_namespace="geom"/>
+            <attribute name="body1" type="reference" reference_namespace="body"/>
+            <attribute name="body2" type="reference" reference_namespace="body"/>
+          </attributes>
+        </element>
+        <element name="normal" repeated="true" namespace="sensor">
+          <attributes>
+            <attribute name="name" type="identifier"/>
+            <attribute name="noise" type="float"/>
+            <attribute name="user" type="array" array_type="float"/>
+            <attribute name="cutoff" type="float" required="true"/>
+            <attribute name="geom1" type="reference" reference_namespace="geom"/>
+            <attribute name="geom2" type="reference" reference_namespace="geom"/>
+            <attribute name="body1" type="reference" reference_namespace="body"/>
+            <attribute name="body2" type="reference" reference_namespace="body"/>
+          </attributes>
+        </element>
+        <element name="distance" repeated="true" namespace="sensor">
+          <attributes>
+            <attribute name="name" type="identifier"/>
+            <attribute name="noise" type="float"/>
+            <attribute name="user" type="array" array_type="float"/>
+            <attribute name="cutoff" type="float" required="true"/>
+            <attribute name="geom1" type="reference" reference_namespace="geom"/>
+            <attribute name="geom2" type="reference" reference_namespace="geom"/>
+            <attribute name="body1" type="reference" reference_namespace="body"/>
+            <attribute name="body2" type="reference" reference_namespace="body"/>
+          </attributes>
         </element>
       </children>
     </element>

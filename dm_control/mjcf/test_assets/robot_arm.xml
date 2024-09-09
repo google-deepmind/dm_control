@@ -141,6 +141,8 @@
     <torque name="wristtorque" site='wristsite'/>
     <force name="baseforce" site='basesite'/>
     <torque name="basetorque" site='basesite'/>
+    <distance body1="b_finger_3" body2="b_finger_2" cutoff="0.1"/>
+    <distance geom1="finger_knuckle_3" geom2="finger_knuckle_2" cutoff="0.1"/>
   </sensor>
 
   <actuator>

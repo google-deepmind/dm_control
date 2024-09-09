@@ -39,6 +39,11 @@ SKIN = 'skin'
 TENDON = 'tendon'
 WORLDBODY = 'worldbody'
 
+# Path namespaces.
+MESHDIR_NAMESPACE = 'mesh'
+TEXTUREDIR_NAMESPACE = 'texture'
+ASSETDIR_NAMESPACE = 'asset'
+
 MJDATA_TRIGGERS_DIRTY = [
     'qpos', 'qvel', 'act', 'ctrl', 'qfrc_applied', 'xfrc_applied']
 MJMODEL_DOESNT_TRIGGER_DIRTY = [
@@ -63,9 +68,7 @@ MJMODEL_DISABLE_ON_WRITE = {
     'body_iquat': ('simple', 'sameframe'),
 }
 
-# This is the actual upper limit on VFS filename length, despite what it says
-# in the header file (100) or the error message (99).
-MAX_VFS_FILENAME_LENGTH = 98
+MAX_VFS_FILENAME_LENGTH = 998
 
 # The prefix used in the schema to denote reference_namespace that are defined
 # via another attribute.

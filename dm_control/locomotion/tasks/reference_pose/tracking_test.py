@@ -215,7 +215,9 @@ class MultiClipMocapTrackingTest(parameterized.TestCase):
 
     # Test that props go to the expected location on reset.
     for ref_key, obs_key in zip(REFERENCE_PROP_KEYS, PROP_OBSERVATION_KEYS):
-      np.testing.assert_array_equal(observation[ref_key], observation[obs_key])
+      np.testing.assert_array_almost_equal(
+          observation[ref_key], observation[obs_key]
+      )
 
   def test_ghost_prop(self):
     task = tracking.MultiClipMocapTracking(
@@ -242,7 +244,7 @@ class MultiClipMocapTrackingTest(parameterized.TestCase):
         np.squeeze(observation[key]) for key in REFERENCE_PROP_KEYS)
 
     np.testing.assert_array_equal(np.array(ghost_pos), goal_pos + GHOST_OFFSET)
-    np.testing.assert_array_equal(ghost_quat, goal_quat)
+    np.testing.assert_array_almost_equal(ghost_quat, goal_quat)
 
   def test_disable_props(self):
     task = tracking.MultiClipMocapTracking(

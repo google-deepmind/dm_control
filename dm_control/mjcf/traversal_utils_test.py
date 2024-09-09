@@ -155,6 +155,7 @@ class TraversalUtilsTest(absltest.TestCase):
     self.assert_same_attributes(position, dict(
         joint=joint,
         kp=0.1,
+        kv=0.2,
         forcelimited='true',
         forcerange=[-2, 3]))
 

@@ -160,8 +160,10 @@ def _parse_attribute(attribute_xml):
   else:
     try:
       attribute_callable = _SCALAR_TYPE_MAP[attribute_type]
-    except KeyError:
-      raise ValueError('Invalid attribute type: {}'.format(attribute_type))
+    except KeyError as exc:
+      raise ValueError(
+          'Invalid attribute type: {}'.format(attribute_type)
+      ) from exc
 
   return AttributeSpec(
       name=name, type=attribute_callable, required=required,
@@ -215,7 +217,7 @@ def _attachment_frame_spec(is_world_attachment):
   body_spec = MUJOCO.children['worldbody'].children['body']
   # 'name' and 'childclass' attributes are excluded.
   for attrib_name in (
-      'mocap', 'pos', 'quat', 'axisangle', 'xyaxes', 'zaxis', 'euler'):
+      'mocap', 'pos', 'quat', 'axisangle', 'xyaxes', 'zaxis', 'euler', 'user'):
     frame_spec.attributes[attrib_name] = copy.deepcopy(
         body_spec.attributes[attrib_name])
 
@@ -258,4 +260,3 @@ def override_schema(schema_xml_path):
   MUJOCO = parse_schema(schema_xml_path)
   FINDABLE_NAMESPACES = frozenset(
       collect_namespaces(MUJOCO).union(_ADDITIONAL_FINDABLE_NAMESPACES))
-

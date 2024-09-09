@@ -21,6 +21,8 @@ from dm_control import mjcf
 def rescale_subtree(body, position_factor, size_factor):
   """Recursively rescales an entire subtree of an MJCF model."""
   for child in body.all_children():
+    if child.tag == 'sensor':
+      continue
     if getattr(child, 'fromto', None) is not None:
       new_pos = position_factor * 0.5 * (child.fromto[3:] + child.fromto[:3])
       new_size = size_factor * 0.5 * (child.fromto[3:] - child.fromto[:3])
