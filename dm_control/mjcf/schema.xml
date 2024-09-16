@@ -1862,6 +1862,8 @@
             <attribute name="body2" type="reference" reference_namespace="body"/>
             <attribute name="relpose" type="array" array_type="float" array_size="7"/>
             <attribute name="anchor" type="array" array_type="float" array_size="3"/>
+            <attribute name="site1" type="reference" reference_namespace="site"/>
+            <attribute name="site2" type="reference" reference_namespace="site"/>
             <attribute name="torquescale" type="float"/>
           </attributes>
         </element>
