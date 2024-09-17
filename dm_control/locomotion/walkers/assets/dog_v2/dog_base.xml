@@ -171,8 +171,8 @@
   </default>
 
   <asset>
-    <texture name="grid" type="2d" builtin="checker" rgb1="0.1 0.2 0.3" rgb2="0.2 0.3 0.4" mark="edge" markrgb="0.2 0.3 0.4" width="300" height="300"/>
-    <texture type="skybox" name="skybox" builtin="gradient" mark="random" rgb1="0.4 0.6 0.8" rgb2="0 0 0" markrgb="1 1 1" width="800" height="800"/>
+    <texture name="grid" type="2d" builtin="checker" rgb1="0.1 0.2 0.3" rgb2="0.2 0.3 0.4" mark="edge" markrgb="0.2 0.3 0.4" width="50" height="50"/>
+    <texture type="skybox" name="skybox" builtin="gradient" rgb1="0.4 0.6 0.8" rgb2="0 0 0" width="50" height="50"/>
     <material name="grid" texture="grid" texrepeat="1 1" texuniform="true" reflectance="0.2"/>
   </asset>
 
