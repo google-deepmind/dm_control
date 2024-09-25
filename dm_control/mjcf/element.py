@@ -1114,7 +1114,7 @@ class _AttachmentFrameChild(_ElementImpl):
              *,
              precision=constants.XML_DEFAULT_PRECISION,
              zero_threshold=0,
-             filename_with_hash=filename_with_hash):
+             filename_with_hash=True):
     xml_element = (super().to_xml(prefix_root, debug_context,
                                   precision=precision,
                                   zero_threshold=zero_threshold,
@@ -1159,7 +1159,7 @@ class _DefaultElement(_ElementImpl):
              *,
              precision=constants.XML_DEFAULT_PRECISION,
              zero_threshold=0,
-             filename_with_hash=filename_with_hash):
+             filename_with_hash=True):
     prefix_root = prefix_root or self.namescope
     xml_element = (super().to_xml(prefix_root, debug_context,
                                   precision=precision,
@@ -1188,7 +1188,7 @@ class _ActuatorElement(_ElementImpl):
                        *,
                        precision=constants.XML_DEFAULT_PRECISION,
                        zero_threshold=0,
-                       filename_with_hash=filename_with_hash):
+                       filename_with_hash=True):
     debug_comments = {}
     for child in self.all_children():
       child_xml = child.to_xml(prefix_root, debug_context,
