@@ -776,7 +776,7 @@ class _ElementImpl(base.Element):
                             precision=precision, zero_threshold=zero_threshold,
                             filename_with_hash=filename_with_hash)
     self._children_to_xml(xml_element, prefix_root, debug_context,
-                          precision=precision, zero_threshold=zero_threshold)
+                          precision=precision, zero_threshold=zero_threshold,
                           filename_with_hash=filename_with_hash)
     return xml_element
 
