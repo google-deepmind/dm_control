@@ -766,6 +766,8 @@ class _ElementImpl(base.Element):
         quantities.
       zero_threshold: (optional) When outputting XML, floating point quantities
         whose absolute value falls below this threshold will be treated as zero.
+      filename_with_hash: (optional) A boolean, whether to append a hash string
+        to the name of a file when it is registered in MuJoCo's VFS.
 
     Returns:
       An etree._Element object.
