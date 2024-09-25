@@ -1081,7 +1081,7 @@ class _AttachmentFrame(_ElementImpl):
              *,
              precision=constants.XML_DEFAULT_PRECISION,
              zero_threshold=0,
-             filename_with_hash=filename_with_hash):
+             filename_with_hash=True):
     xml_element = (super().to_xml(prefix_root, debug_context,
                                   precision=precision,
                                   zero_threshold=zero_threshold,
