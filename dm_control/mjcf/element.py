@@ -751,7 +751,7 @@ class _ElementImpl(base.Element):
   def to_xml(self, prefix_root=None, debug_context=None,
              *,
              precision=constants.XML_DEFAULT_PRECISION,
-             zero_threshold=0):
+             zero_threshold=0, filename_with_hash=True):
     """Generates an etree._Element corresponding to this MJCF element.
 
     Args:
@@ -773,18 +773,21 @@ class _ElementImpl(base.Element):
     prefix_root = prefix_root or self.namescope
     xml_element = etree.Element(self._spec.name)
     self._attributes_to_xml(xml_element, prefix_root, debug_context,
-                            precision=precision, zero_threshold=zero_threshold)
+                            precision=precision, zero_threshold=zero_threshold,
+                            filename_with_hash=filename_with_hash)
     self._children_to_xml(xml_element, prefix_root, debug_context,
                           precision=precision, zero_threshold=zero_threshold)
+                          filename_with_hash=filename_with_hash)
     return xml_element
 
   def _attributes_to_xml(self, xml_element, prefix_root, debug_context=None,
-                         *, precision, zero_threshold):
+                         *, precision, zero_threshold, filename_with_hash):
     del debug_context  # Unused.
     for attribute_name, attribute in self._attributes.items():
       attribute_value = attribute.to_xml_string(prefix_root,
                                                 precision=precision,
-                                                zero_threshold=zero_threshold)
+                                                zero_threshold=zero_threshold,
+                                                filename_with_hash=filename_with_hash)
       if attribute_name == self._spec.identifier and attribute_value is None:
         xml_element.set(attribute_name, self.full_identifier)
       elif attribute_value is None:
@@ -793,11 +796,12 @@ class _ElementImpl(base.Element):
         xml_element.set(attribute_name, attribute_value)
 
   def _children_to_xml(self, xml_element, prefix_root, debug_context=None,
-                       *, precision, zero_threshold):
+                       *, precision, zero_threshold, filename_with_hash):
     for child in self.all_children():
       child_xml = child.to_xml(prefix_root, debug_context,
                                precision=precision,
-                               zero_threshold=zero_threshold)
+                               zero_threshold=zero_threshold,
+                               filename_with_hash=filename_with_hash)
       if (child_xml.attrib or len(child_xml)  # pylint: disable=g-explicit-length-test
           or child.spec.repeated or child.spec.on_demand):
         xml_element.append(child_xml)
@@ -811,7 +815,7 @@ class _ElementImpl(base.Element):
                     self_only=False, pretty_print=True, debug_context=None,
                     *,
                     precision=constants.XML_DEFAULT_PRECISION,
-                    zero_threshold=0):
+                    zero_threshold=0, filename_with_hash=True):
     """Generates an XML string corresponding to this MJCF element.
 
     Args:
@@ -830,13 +834,16 @@ class _ElementImpl(base.Element):
         quantities.
       zero_threshold: (optional) When outputting XML, floating point quantities
         whose absolute value falls below this threshold will be treated as zero.
+      filename_with_hash: (optional) A boolean, whether to append a hash string
+        to the name of a file when it is registered in MuJoCo's VFS.
 
     Returns:
       A string.
     """
     xml_element = self.to_xml(prefix_root, debug_context,
                               precision=precision,
-                              zero_threshold=zero_threshold)
+                              zero_threshold=zero_threshold,
+                              filename_with_hash=filename_with_hash)
     if self_only and len(xml_element) > 0:  # pylint: disable=g-explicit-length-test
       etree.strip_elements(xml_element, '*')
       xml_element.text = '...'
@@ -1073,10 +1080,12 @@ class _AttachmentFrame(_ElementImpl):
   def to_xml(self, prefix_root=None, debug_context=None,
              *,
              precision=constants.XML_DEFAULT_PRECISION,
-             zero_threshold=0):
+             zero_threshold=0,
+             filename_with_hash=filename_with_hash):
     xml_element = (super().to_xml(prefix_root, debug_context,
                                   precision=precision,
-                                  zero_threshold=zero_threshold))
+                                  zero_threshold=zero_threshold,
+                                  filename_with_hash=filename_with_hash))
     xml_element.set('name', self.prefixed_identifier(prefix_root))
     return xml_element
 
@@ -1104,10 +1113,12 @@ class _AttachmentFrameChild(_ElementImpl):
   def to_xml(self, prefix_root=None, debug_context=None,
              *,
              precision=constants.XML_DEFAULT_PRECISION,
-             zero_threshold=0):
+             zero_threshold=0,
+             filename_with_hash=filename_with_hash):
     xml_element = (super().to_xml(prefix_root, debug_context,
                                   precision=precision,
-                                  zero_threshold=zero_threshold))
+                                  zero_threshold=zero_threshold,
+                                  filename_with_hash=filename_with_hash))
     if self.spec.namespace is not None:
       if self.name:
         name = (self._parent.prefixed_identifier(prefix_root) +
@@ -1147,18 +1158,21 @@ class _DefaultElement(_ElementImpl):
   def to_xml(self, prefix_root=None, debug_context=None,
              *,
              precision=constants.XML_DEFAULT_PRECISION,
-             zero_threshold=0):
+             zero_threshold=0,
+             filename_with_hash=filename_with_hash):
     prefix_root = prefix_root or self.namescope
     xml_element = (super().to_xml(prefix_root, debug_context,
                                   precision=precision,
-                                  zero_threshold=zero_threshold))
+                                  zero_threshold=zero_threshold,
+                                  filename_with_hash=filename_with_hash))
     if isinstance(self._parent, RootElement):
       root_default = etree.Element(self._spec.name)
       root_default.append(xml_element)
       for attachment in self._attachments.values():
         attachment_xml = attachment.to_xml(prefix_root, debug_context,
                                            precision=precision,
-                                           zero_threshold=zero_threshold)
+                                           zero_threshold=zero_threshold,
+                                           filename_with_hash=filename_with_hash)
         for attachment_child_xml in attachment_xml:
           root_default.append(attachment_child_xml)
       xml_element = root_default
@@ -1173,12 +1187,14 @@ class _ActuatorElement(_ElementImpl):
   def _children_to_xml(self, xml_element, prefix_root, debug_context=None,
                        *,
                        precision=constants.XML_DEFAULT_PRECISION,
-                       zero_threshold=0):
+                       zero_threshold=0,
+                       filename_with_hash=filename_with_hash):
     debug_comments = {}
     for child in self.all_children():
       child_xml = child.to_xml(prefix_root, debug_context,
                                precision=precision,
-                               zero_threshold=zero_threshold)
+                               zero_threshold=zero_threshold,
+                               filename_with_hash=filename_with_hash)
       if debugging.debug_mode() and debug_context:
         debug_comment = debug_context.register_element_for_debugging(child)
         debug_comments[child_xml] = debug_comment

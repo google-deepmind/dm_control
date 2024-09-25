@@ -424,7 +424,7 @@ class BaseAsset:
   def __eq__(self, other):
     return self.get_vfs_filename() == other.get_vfs_filename()
 
-  def get_vfs_filename(self):
+  def get_vfs_filename(self, filename_with_hash=True):
     """Returns the name of the asset file as registered in MuJoCo's VFS."""
     # Hash the contents of the asset to get a unique identifier.
     hash_string = hashlib.sha1(util.to_binary_string(self.contents)).hexdigest()
@@ -435,7 +435,10 @@ class BaseAsset:
       if raw_length > constants.MAX_VFS_FILENAME_LENGTH:
         trim_amount = raw_length - constants.MAX_VFS_FILENAME_LENGTH
         prefix = prefix[:-trim_amount]
-      filename = '-'.join([prefix, hash_string])
+      if filename_with_hash:
+        filename = '-'.join([prefix, hash_string])
+      else:
+        filename = prefix
     else:
       filename = hash_string
 
@@ -568,6 +571,7 @@ class File(_Attribute):
     """Returns the asset filename as it will appear in the generated XML."""
     del prefix_root  # Unused
     if self._value is not None:
-      return self._value.get_vfs_filename()
+      filename_with_hash = kwargs.get("filename_with_hash", True)
+      return self._value.get_vfs_filename(filename_with_hash)
     else:
       return None
