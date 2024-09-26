@@ -231,6 +231,7 @@
         <element name="mesh">
           <attributes>
             <attribute name="scale" type="array" array_type="float" array_size="3"/>
+            <attribute name="maxhullvert" type="int"/>
           </attributes>
         </element>
         <element name="material">
@@ -548,6 +549,7 @@
             <element name="mesh">
               <attributes>
                 <attribute name="scale" type="array" array_type="float" array_size="3"/>
+                <attribute name="maxhullvert" type="int"/>
               </attributes>
             </element>
             <element name="material">
@@ -980,6 +982,7 @@
             <attribute name="face" type="array" array_type="int"/>
             <attribute name="refpos" type="array" array_type="float" array_size="3"/>
             <attribute name="refquat" type="array" array_type="float" array_size="4"/>
+            <attribute name="maxhullvert" type="int"/>
           </attributes>
           <children>
             <element name="plugin" repeated="true" namespace="mesh">
