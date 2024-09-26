@@ -88,13 +88,16 @@
             <attribute name="actuation" type="keyword" valid_values="disable enable"/>
             <attribute name="refsafe" type="keyword" valid_values="disable enable"/>
             <attribute name="sensor" type="keyword" valid_values="disable enable"/>
+            <attribute name="midphase" type="keyword" valid_values="disable enable"/>
             <attribute name="eulerdamp" type="keyword" valid_values="disable enable"/>
+            <attribute name="autoreset" type="keyword" valid_values="disable enable"/>
             <attribute name="override" type="keyword" valid_values="disable enable"/>
             <attribute name="energy" type="keyword" valid_values="disable enable"/>
             <attribute name="fwdinv" type="keyword" valid_values="disable enable"/>
-            <attribute name="sensornoise" type="keyword" valid_values="disable enable"/>
+            <attribute name="invdiscrete" type="keyword" valid_values="disable enable"/>
             <attribute name="multiccd" type="keyword" valid_values="disable enable"/>
             <attribute name="island" type="keyword" valid_values="disable enable"/>
+            <attribute name="nativeccd" type="keyword" valid_values="disable enable"/>
           </attributes>
         </element>
       </children>
