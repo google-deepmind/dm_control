@@ -1210,6 +1210,14 @@
                 <attribute name="damping" type="float"/>
               </attributes>
             </element>
+            <element name="elasticity" repeated="true">
+              <attributes>
+                <attribute name="young" type="float"/>
+                <attribute name="poisson" type="float"/>
+                <attribute name="thickness" type="float"/>
+                <attribute name="damping" type="float"/>
+              </attributes>
+            </element>
             <element name="contact" repeated="true">
               <attributes>
                 <attribute name="contype" type="int"/>
@@ -1248,7 +1256,6 @@
             <attribute name="solrefsmooth" type="array" array_type="float" array_size="2"/>
             <attribute name="solimpsmooth" type="array" array_type="float" array_size="5"/>
             <attribute name="vertex" type="string"/>
-            <attribute name="face" type="string"/>
             <attribute name="initial" type="string"/>
             <attribute name="curve" type="string"/>
             <attribute name="size" type="array" array_type="float" array_size="3"/>
@@ -1597,6 +1604,14 @@
                     <attribute name="damping" type="float"/>
                   </attributes>
                 </element>
+                <element name="elasticity" repeated="true">
+                  <attributes>
+                    <attribute name="young" type="float"/>
+                    <attribute name="poisson" type="float"/>
+                    <attribute name="thickness" type="float"/>
+                    <attribute name="damping" type="float"/>
+                  </attributes>
+                </element>
                 <element name="contact" repeated="true">
                   <attributes>
                     <attribute name="contype" type="int"/>
@@ -1635,7 +1650,6 @@
                 <attribute name="solrefsmooth" type="array" array_type="float" array_size="2"/>
                 <attribute name="solimpsmooth" type="array" array_type="float" array_size="5"/>
                 <attribute name="vertex" type="string"/>
-                <attribute name="face" type="string"/>
                 <attribute name="initial" type="string"/>
                 <attribute name="curve" type="string"/>
                 <attribute name="size" type="array" array_type="float" array_size="3"/>
