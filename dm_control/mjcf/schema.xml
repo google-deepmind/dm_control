@@ -88,13 +88,16 @@
             <attribute name="actuation" type="keyword" valid_values="disable enable"/>
             <attribute name="refsafe" type="keyword" valid_values="disable enable"/>
             <attribute name="sensor" type="keyword" valid_values="disable enable"/>
+            <attribute name="midphase" type="keyword" valid_values="disable enable"/>
             <attribute name="eulerdamp" type="keyword" valid_values="disable enable"/>
+            <attribute name="autoreset" type="keyword" valid_values="disable enable"/>
             <attribute name="override" type="keyword" valid_values="disable enable"/>
             <attribute name="energy" type="keyword" valid_values="disable enable"/>
             <attribute name="fwdinv" type="keyword" valid_values="disable enable"/>
-            <attribute name="sensornoise" type="keyword" valid_values="disable enable"/>
+            <attribute name="invdiscrete" type="keyword" valid_values="disable enable"/>
             <attribute name="multiccd" type="keyword" valid_values="disable enable"/>
             <attribute name="island" type="keyword" valid_values="disable enable"/>
+            <attribute name="nativeccd" type="keyword" valid_values="disable enable"/>
           </attributes>
         </element>
       </children>
@@ -231,6 +234,7 @@
         <element name="mesh">
           <attributes>
             <attribute name="scale" type="array" array_type="float" array_size="3"/>
+            <attribute name="maxhullvert" type="int"/>
           </attributes>
         </element>
         <element name="material">
@@ -548,6 +552,7 @@
             <element name="mesh">
               <attributes>
                 <attribute name="scale" type="array" array_type="float" array_size="3"/>
+                <attribute name="maxhullvert" type="int"/>
               </attributes>
             </element>
             <element name="material">
@@ -980,6 +985,7 @@
             <attribute name="face" type="array" array_type="int"/>
             <attribute name="refpos" type="array" array_type="float" array_size="3"/>
             <attribute name="refquat" type="array" array_type="float" array_size="4"/>
+            <attribute name="maxhullvert" type="int"/>
           </attributes>
           <children>
             <element name="plugin" repeated="true" namespace="mesh">
@@ -1204,6 +1210,14 @@
                 <attribute name="damping" type="float"/>
               </attributes>
             </element>
+            <element name="elasticity" repeated="true">
+              <attributes>
+                <attribute name="young" type="float"/>
+                <attribute name="poisson" type="float"/>
+                <attribute name="thickness" type="float"/>
+                <attribute name="damping" type="float"/>
+              </attributes>
+            </element>
             <element name="contact" repeated="true">
               <attributes>
                 <attribute name="contype" type="int"/>
@@ -1242,7 +1256,6 @@
             <attribute name="solrefsmooth" type="array" array_type="float" array_size="2"/>
             <attribute name="solimpsmooth" type="array" array_type="float" array_size="5"/>
             <attribute name="vertex" type="string"/>
-            <attribute name="face" type="string"/>
             <attribute name="initial" type="string"/>
             <attribute name="curve" type="string"/>
             <attribute name="size" type="array" array_type="float" array_size="3"/>
@@ -1417,6 +1430,7 @@
                 <attribute name="damping" type="float"/>
                 <attribute name="frictionloss" type="float"/>
                 <attribute name="user" type="array" array_type="float"/>
+                <attribute name="actuatorgravcomp" type="keyword" valid_values="false true"/>
               </attributes>
             </element>
             <element name="freejoint" on_demand="true" namespace="joint">
@@ -1590,6 +1604,14 @@
                     <attribute name="damping" type="float"/>
                   </attributes>
                 </element>
+                <element name="elasticity" repeated="true">
+                  <attributes>
+                    <attribute name="young" type="float"/>
+                    <attribute name="poisson" type="float"/>
+                    <attribute name="thickness" type="float"/>
+                    <attribute name="damping" type="float"/>
+                  </attributes>
+                </element>
                 <element name="contact" repeated="true">
                   <attributes>
                     <attribute name="contype" type="int"/>
@@ -1628,7 +1650,6 @@
                 <attribute name="solrefsmooth" type="array" array_type="float" array_size="2"/>
                 <attribute name="solimpsmooth" type="array" array_type="float" array_size="5"/>
                 <attribute name="vertex" type="string"/>
-                <attribute name="face" type="string"/>
                 <attribute name="initial" type="string"/>
                 <attribute name="curve" type="string"/>
                 <attribute name="size" type="array" array_type="float" array_size="3"/>
@@ -1861,6 +1882,8 @@
             <attribute name="body2" type="reference" reference_namespace="body"/>
             <attribute name="relpose" type="array" array_type="float" array_size="7"/>
             <attribute name="anchor" type="array" array_type="float" array_size="3"/>
+            <attribute name="site1" type="reference" reference_namespace="site"/>
+            <attribute name="site2" type="reference" reference_namespace="site"/>
             <attribute name="torquescale" type="float"/>
           </attributes>
         </element>

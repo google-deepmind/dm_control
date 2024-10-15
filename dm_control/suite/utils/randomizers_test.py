@@ -13,7 +13,6 @@
 # limitations under the License.
 # ============================================================================
 
-"""Tests for randomizers.py."""
 
 from absl.testing import absltest
 from absl.testing import parameterized
@@ -34,7 +33,7 @@ class RandomizeUnlimitedJointsTest(parameterized.TestCase):
   def test_single_joint_of_each_type(self):
     physics = mujoco.Physics.from_xml_string("""<mujoco>
           <default>
-            <joint range="0 90" />
+            <joint range="0 90" armature="1"/>
           </default>
           <worldbody>
             <body>
