@@ -410,7 +410,15 @@ def add_muscles(
     print("Added tendon {}".format(spatial.name))
 
   physics = mjcf_module.Physics.from_mjcf_model(model)
-  # compute length ranges
+  # Compute length ranges:
+  # This computation of lenght ranges differs from the computation
+  # provided in MuJoCo. MuJoCo contracts the muscles
+  # individually, and records it's minimum and maximum length. However this
+  # method relies on the assumption that the muscles dynamics and parameters
+  # are perfectly set up. This is not the case, so the method below is used.
+  # This method randomly samples the joint limits and records the minimum and
+  # maximum length of the muscles. Sampling is necessary because some muscles
+  # cross multiple joints (Biarticular muscles). 
   if lengthrange_from_joints:
     vector_min = np.ones(physics.model.ntendon) * np.inf
     vector_max = np.ones(physics.model.ntendon) * -np.inf

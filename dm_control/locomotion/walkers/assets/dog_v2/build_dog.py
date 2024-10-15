@@ -223,6 +223,7 @@ def main(argv):
   texturedir = ASSET_DIR
   model.compiler.texturedir = texturedir
   bones = []
+  skin_msh = None
   for dirpath, _, filenames in resources.WalkResources(meshdir):
     prefix = "extras/" if "extras" in dirpath else ""
     for filename in filenames:
@@ -358,7 +359,7 @@ def main(argv):
   print("Excluding contacts.")
   exclude_contacts(model)
 
-  if make_skin:
+  if make_skin and skin_msh is not None:
     dog_v2.create_skin(model=model, mesh_file=skin_msh,
                        asset_dir=ASSET_DIR, mesh_name="dog_skin", composer=composer)
 
@@ -473,7 +474,6 @@ def main(argv):
         )
     )
     for i, j in enumerate(actuated_joints):
-      dmp = physics.bind(j).damping[0]
       mass_eff = physics.bind(j).M0[0]
       dmp = physics.bind(j).damping[0]
       stf = physics.bind(joint_acts[i]).gainprm[0]
@@ -537,9 +537,12 @@ def main(argv):
   # Save to file.
   if not use_muscles:
     name = name_prefix + "dog.xml"
+  elif muscle_strength_scale < 0:
+    name = name_prefix + "dog_muscles_{}.xml".format(muscle_dynamics)
   else:
     name = name_prefix + "dog_muscles_{}_{}.xml".format(
-        muscle_strength_scale, muscle_dynamics)
+        muscle_strength_scale, muscle_dynamics
+    )
 
   f = open(os.path.join(output_dir, name), "wb")
   f.write(xml_string)
