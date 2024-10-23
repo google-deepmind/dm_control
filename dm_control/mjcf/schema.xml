@@ -24,7 +24,6 @@
         <attribute name="fusestatic" type="keyword" valid_values="false true"/>
         <attribute name="inertiafromgeom" type="keyword" valid_values="false true auto"/>
         <attribute name="inertiagrouprange" type="array" array_type="int" array_size="2"/>
-        <attribute name="exactmeshinertia" type="keyword" valid_values="false true"/>
         <attribute name="alignfree" type="keyword" valid_values="false true"/>
       </attributes>
       <children>
@@ -235,6 +234,7 @@
           <attributes>
             <attribute name="scale" type="array" array_type="float" array_size="3"/>
             <attribute name="maxhullvert" type="int"/>
+            <attribute name="exactmeshinertia" type="keyword" valid_values="legacy convex exact"/>
           </attributes>
         </element>
         <element name="material">
@@ -553,6 +553,7 @@
               <attributes>
                 <attribute name="scale" type="array" array_type="float" array_size="3"/>
                 <attribute name="maxhullvert" type="int"/>
+                <attribute name="exactmeshinertia" type="keyword" valid_values="legacy convex exact"/>
               </attributes>
             </element>
             <element name="material">
@@ -986,6 +987,7 @@
             <attribute name="refpos" type="array" array_type="float" array_size="3"/>
             <attribute name="refquat" type="array" array_type="float" array_size="4"/>
             <attribute name="maxhullvert" type="int"/>
+            <attribute name="exactmeshinertia" type="keyword" valid_values="legacy convex exact"/>
           </attributes>
           <children>
             <element name="plugin" repeated="true" namespace="mesh">
