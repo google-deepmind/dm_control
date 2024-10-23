@@ -234,7 +234,7 @@
           <attributes>
             <attribute name="scale" type="array" array_type="float" array_size="3"/>
             <attribute name="maxhullvert" type="int"/>
-            <attribute name="exactmeshinertia" type="keyword" valid_values="legacy convex exact"/>
+            <attribute name="inertia" type="keyword" valid_values="legacy convex exact"/>
           </attributes>
         </element>
         <element name="material">
@@ -553,7 +553,7 @@
               <attributes>
                 <attribute name="scale" type="array" array_type="float" array_size="3"/>
                 <attribute name="maxhullvert" type="int"/>
-                <attribute name="exactmeshinertia" type="keyword" valid_values="legacy convex exact"/>
+                <attribute name="inertia" type="keyword" valid_values="legacy convex exact"/>
               </attributes>
             </element>
             <element name="material">
@@ -987,7 +987,7 @@
             <attribute name="refpos" type="array" array_type="float" array_size="3"/>
             <attribute name="refquat" type="array" array_type="float" array_size="4"/>
             <attribute name="maxhullvert" type="int"/>
-            <attribute name="exactmeshinertia" type="keyword" valid_values="legacy convex exact"/>
+            <attribute name="inertia" type="keyword" valid_values="legacy convex exact"/>
           </attributes>
           <children>
             <element name="plugin" repeated="true" namespace="mesh">
