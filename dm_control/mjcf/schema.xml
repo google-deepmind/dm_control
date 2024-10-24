@@ -160,8 +160,8 @@
             <attribute name="alpha" type="float"/>
             <attribute name="fogstart" type="float"/>
             <attribute name="fogend" type="float"/>
-            <attribute name="znear" type="float"/>
-            <attribute name="zfar" type="float"/>
+            <attribute name="znear" type="float" conflict_allowed="true" conflict_behavior="min"/>
+            <attribute name="zfar" type="float" conflict_allowed="true" conflict_behavior="max"/>
             <attribute name="haze" type="float"/>
             <attribute name="shadowclip" type="float"/>
             <attribute name="shadowscale" type="float"/>
