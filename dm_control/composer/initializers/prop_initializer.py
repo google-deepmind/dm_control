@@ -237,19 +237,23 @@ class PropPlacer(composer.Initializer):
 
         # Step physics and check prop states.
         original_time = physics.data.time
-        props_isolator = utils.JointStaticIsolator(physics, self._prop_joints)
-        prop_joints_mj = physics.bind(self._prop_joints)
-        while physics.data.time - original_time < self._max_settle_physics_time:
-          with props_isolator:
-            physics.step()
-          max_qvel = np.max(np.abs(prop_joints_mj.qvel))
-          max_qacc = np.max(np.abs(prop_joints_mj.qacc))
-          if (max_qvel < self._max_qvel_tol) and (
-              max_qacc < self._max_qacc_tol) and (
-                  physics.data.time - original_time
-                  ) > self._min_settle_physics_time:
-            return True
-        physics.data.time = original_time
+        try:
+          props_isolator = utils.JointStaticIsolator(physics, self._prop_joints)
+          prop_joints_mj = physics.bind(self._prop_joints)
+          while (
+              physics.data.time - original_time < self._max_settle_physics_time
+          ):
+            with props_isolator:
+              physics.step()
+            max_qvel = np.max(np.abs(prop_joints_mj.qvel))
+            max_qacc = np.max(np.abs(prop_joints_mj.qacc))
+            if (max_qvel < self._max_qvel_tol) and (
+                max_qacc < self._max_qacc_tol) and (
+                    physics.data.time - original_time
+                    ) > self._min_settle_physics_time:
+              return True
+        finally:
+          physics.data.time = original_time
 
       if self._raise_exception_on_settle_failure:
         raise RuntimeError(
