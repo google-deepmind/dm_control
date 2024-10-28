@@ -317,7 +317,9 @@ class Reference(_Attribute):
       return self._reference_namespace
 
   def _assign(self, value):
-    if not isinstance(value, (base.Element, str)):
+    if not isinstance(value, (base.Element, str)) and not (
+        isinstance(value, np.ndarray) and value.dtype.kind == 'U'
+    ):
       raise ValueError(
           'Expect a string or `mjcf.Element` value: got {}'.format(value))
     elif not value:
@@ -330,6 +332,8 @@ class Reference(_Attribute):
           raise ValueError(_INVALID_REFERENCE_TYPE.format(
               valid_type=self.reference_namespace,
               actual_type=value_namespace))
+      elif isinstance(value, np.ndarray):
+        value = value.item()
       self._value = value
 
   def _before_clear(self):
