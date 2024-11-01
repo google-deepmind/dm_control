@@ -60,7 +60,7 @@ def solve(env):
       (dt * j + np.hstack((np.zeros((n, n)), np.eye(n))), j))
 
   # Control transition matrix b.
-  b = env.physics.data.actuator_moment.T
+  b = np.vstack((np.eye(m), np.zeros((n - m, m))))
   bc = np.linalg.solve(mass, b)
   b = dt * np.vstack((dt * bc, bc))
 
