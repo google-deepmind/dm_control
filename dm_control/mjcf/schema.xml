@@ -1210,7 +1210,7 @@
         <element name="composite" repeated="true">
           <attributes>
             <attribute name="prefix" type="identifier"/>
-            <attribute name="type" type="keyword" valid_values="particle grid cable rope loop cloth box cylinder ellipsoid" required="true"/>
+            <attribute name="type" type="keyword" valid_values="particle grid cable rope loop cloth" required="true"/>
             <attribute name="count" type="array" array_type="int" array_size="3"/>
             <attribute name="spacing" type="float" required="false"/>
             <attribute name="offset" type="array" array_type="float" array_size="3"/>
@@ -1604,7 +1604,7 @@
             <element name="composite" repeated="true">
               <attributes>
                 <attribute name="prefix" type="identifier"/>
-                <attribute name="type" type="keyword" valid_values="particle grid cable rope loop cloth box cylinder ellipsoid" required="true"/>
+                <attribute name="type" type="keyword" valid_values="particle grid cable rope loop cloth" required="true"/>
                 <attribute name="count" type="array" array_type="int" array_size="3"/>
                 <attribute name="spacing" type="float" required="false"/>
                 <attribute name="offset" type="array" array_type="float" array_size="3"/>
