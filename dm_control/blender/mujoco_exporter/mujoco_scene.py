@@ -74,7 +74,7 @@ def light_builder(
   el.setAttribute('pos', vec_to_mjcf(transform.pos))
   el.setAttribute('dir', vec_to_mjcf(transform.rot @ _OZ))
   el.setAttribute('directional', directional)
-  el.setAttribute('castshadow', bool_to_mjcf(light.use_shadow))
+  el.setAttribute('castshadow', bool_to_mjcf(light.use_shadow))  # pytype: disable=wrong-arg-types
   el.setAttribute('diffuse', color_to_mjcf(light.color))
   el.setAttribute('attenuation', attenuation)
   return el

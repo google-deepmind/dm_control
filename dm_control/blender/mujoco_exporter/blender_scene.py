@@ -122,7 +122,7 @@ class ObjectRef:
 
   @property
   def is_armature(self) -> bool:
-    return (
+    return (  # pytype: disable=bad-return-type
         self.native_obj
         and self.native_obj.type == _ARMATURE
         and not self.native_bone
@@ -138,19 +138,19 @@ class ObjectRef:
 
   @property
   def is_mesh(self) -> bool:
-    return self.native_obj and self.native_obj.type == _MESH
+    return self.native_obj and self.native_obj.type == _MESH  # pytype: disable=bad-return-type
 
   @property
   def is_light(self) -> bool:
-    return self.native_obj and self.native_obj.type == _LIGHT
+    return self.native_obj and self.native_obj.type == _LIGHT  # pytype: disable=bad-return-type
 
   @property
   def is_camera(self) -> bool:
-    return self.native_obj and self.native_obj.type == _CAMERA
+    return self.native_obj and self.native_obj.type == _CAMERA  # pytype: disable=bad-return-type
 
   @property
   def is_empty(self) -> bool:
-    return self.native_obj and self.native_obj.type == _EMPTY
+    return self.native_obj and self.native_obj.type == _EMPTY  # pytype: disable=bad-return-type
 
   @property
   def name(self) -> str:
