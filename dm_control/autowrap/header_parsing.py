@@ -95,7 +95,7 @@ def _nested_ifn_else(ifn_, pred, else_, endif, match_if_true, match_if_false):
 # ------------------------------------------------------------------------------
 (LPAREN, RPAREN, LBRACK, RBRACK, LBRACE, RBRACE, SEMI, COMMA, EQUAL, FSLASH,
  BSLASH) = list(map(pp.Suppress, "()[]{};,=/\\"))
-X = (pp.Keyword("X") | pp.Keyword("XMJV")).suppress()
+X = (pp.Keyword("X") | pp.Keyword("XMJV") | pp.Keyword("XNV")).suppress()
 EOL = pp.LineEnd().suppress()
 
 # Comments, continuation.
