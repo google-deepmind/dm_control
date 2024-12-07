@@ -19,9 +19,8 @@ from os import listdir
 from os.path import isfile, join
 
 import numpy as np
-import pyvista as pv
 import trimesh
-from pykdtree.kdtree import KDTree
+from scipy.spatial import KDTree
 from tqdm import tqdm
 from utils import array_to_string, slices2paths
 
@@ -245,8 +244,8 @@ def add_muscles(
   for mtu in muscles:
     # Load stl file of site
     m = trimesh.load_mesh(muscle_meshes_path + mtu + ".stl")
-    pv_mesh = pv.read(muscle_meshes_path + mtu + ".stl")
-    volumes.append(pv_mesh.volume)
+
+    volumes.append(m.volume)
     # check along which axis to slice
     if mtu not in muscles_constants.LATERAL:
       plane_normal = [0, 0, -1]
@@ -418,7 +417,7 @@ def add_muscles(
   # are perfectly set up. This is not the case, so the method below is used.
   # This method randomly samples the joint limits and records the minimum and
   # maximum length of the muscles. Sampling is necessary because some muscles
-  # cross multiple joints (Biarticular muscles). 
+  # cross multiple joints (Biarticular muscles).
   if lengthrange_from_joints:
     vector_min = np.ones(physics.model.ntendon) * np.inf
     vector_max = np.ones(physics.model.ntendon) * -np.inf
