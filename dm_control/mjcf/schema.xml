@@ -2294,6 +2294,16 @@
             <attribute name="site" type="reference" required="true"/>
           </attributes>
         </element>
+        <element name="camprojection" repeated="true" namespace="sensor">
+          <attributes>
+            <attribute name="name" type="identifier"/>
+            <attribute name="noise" type="float"/>
+            <attribute name="cutoff" type="float"/>
+            <attribute name="user" type="array" array_type="float"/>
+            <attribute name="site" type="reference" required="true"/>
+            <attribute name="camera" type="reference" required="true"/>
+          </attributes>
+        </element>
         <element name="jointpos" repeated="true" namespace="sensor">
           <attributes>
             <attribute name="name" type="identifier"/>
