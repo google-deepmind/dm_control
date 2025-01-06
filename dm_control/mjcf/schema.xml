@@ -1146,6 +1146,7 @@
             <attribute name="xyaxis" type="array" array_type="float" array_size="6"/>
             <attribute name="zaxis" type="array" array_type="float" array_size="3"/>
             <attribute name="euler" type="array" array_type="float" array_size="3"/>
+            <attribute name="origin" type="array" array_type="float" array_size="3"/>
             <attribute name="dim" type="int" required="true"/>
           </attributes>
           <children>
@@ -1540,6 +1541,7 @@
                 <attribute name="xyaxis" type="array" array_type="float" array_size="6"/>
                 <attribute name="zaxis" type="array" array_type="float" array_size="3"/>
                 <attribute name="euler" type="array" array_type="float" array_size="3"/>
+                <attribute name="origin" type="array" array_type="float" array_size="3"/>
                 <attribute name="dim" type="int" required="true"/>
               </attributes>
               <children>
