@@ -417,7 +417,8 @@ class Physics(_control.Physics):
     with self._contexts_lock:
       if self._contexts:
         self._free_rendering_contexts()
-    del self._data
+    if hasattr(self, '_data'):
+      del self._data
 
   @classmethod
   def from_model(cls, model):
