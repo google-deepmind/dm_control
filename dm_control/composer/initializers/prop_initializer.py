@@ -88,7 +88,7 @@ class PropPlacer(composer.Initializer):
         velocities are less than this threshold.
       max_attempts_per_prop: The maximum number of rejection sampling attempts
         per prop. If a non-colliding pose cannot be found before this limit is
-        reached, a `RuntimeError` will be raised.
+        reached, an `EpisodeInitializationError` will be raised.
       settle_physics: (optional) If True, the physics simulation will be
         advanced for a few steps to allow the prop positions to settle.
       min_settle_physics_time: (optional) When `settle_physics` is True, lower
@@ -170,8 +170,9 @@ class PropPlacer(composer.Initializer):
         subsequently).
 
     Raises:
-      RuntimeError: If `ignore_collisions == False` and a non-colliding prop
-        pose could not be found within `max_attempts_per_prop`.
+      EpisodeInitializationError: If `ignore_collisions == False` and a
+        non-colliding prop pose could not be found within
+        `max_attempts_per_prop`.
     """
     if ignore_contacts_with_entities is None:
       ignore_contacts_with_entities = []
@@ -222,9 +223,12 @@ class PropPlacer(composer.Initializer):
             break
 
         if not success:
-          raise RuntimeError(_REJECTION_SAMPLING_FAILED.format(
-              model_name=prop.mjcf_model.model,
-              max_attempts=self._max_attempts_per_prop))
+          raise composer.EpisodeInitializationError(
+              _REJECTION_SAMPLING_FAILED.format(
+                  model_name=prop.mjcf_model.model,
+                  max_attempts=self._max_attempts_per_prop,
+              )
+          )
 
       for prop in ignore_contacts_with_entities:
         self._restore_contact_parameters(physics, prop, cached_contact_params)
@@ -256,7 +260,7 @@ class PropPlacer(composer.Initializer):
           physics.data.time = original_time
 
       if self._raise_exception_on_settle_failure:
-        raise RuntimeError(
+        raise composer.EpisodeInitializationError(
             _SETTLING_PHYSICS_FAILED.format(
                 max_attempts=self._max_settle_physics_attempts,
                 max_time=self._max_settle_physics_time,

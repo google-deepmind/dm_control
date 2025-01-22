@@ -109,7 +109,9 @@ class PropPlacerTest(parameterized.TestCase):
     expected_message = prop_initializer._REJECTION_SAMPLING_FAILED.format(
         model_name=spheres[1].mjcf_model.model,  # Props are placed in order.
         max_attempts=max_attempts_per_prop)
-    with self.assertRaisesWithLiteralMatch(RuntimeError, expected_message):
+    with self.assertRaisesWithLiteralMatch(
+        composer.EpisodeInitializationError, expected_message
+    ):
       prop_placer(physics, random_state=np.random.RandomState(0))
 
   def test_ignore_contacts_with_entities(self):
@@ -141,7 +143,9 @@ class PropPlacerTest(parameterized.TestCase):
     prop_placer_init(physics, random_state=np.random.RandomState(0))
     expected_message = prop_initializer._REJECTION_SAMPLING_FAILED.format(
         model_name=spheres[0].mjcf_model.model, max_attempts=1)
-    with self.assertRaisesWithLiteralMatch(RuntimeError, expected_message):
+    with self.assertRaisesWithLiteralMatch(
+        composer.EpisodeInitializationError, expected_message
+    ):
       prop_placer_seq[0](physics, random_state=np.random.RandomState(0))
 
     # Placing the first sphere should succeed if we ignore contacts involving
