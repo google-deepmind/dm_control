@@ -13,8 +13,6 @@
 # limitations under the License.
 # ============================================================================
 
-"""Tests for dm_control.locomotion.tasks.transformations."""
-
 import itertools
 
 from absl.testing import absltest
@@ -260,6 +258,35 @@ class TransformationsTest(parameterized.TestCase):
     return np.array(
         (np.cos(t2) * r2, np.sin(t1) * r1, np.cos(t1) * r1, np.sin(t2) * r2),
         dtype=np.float64)
+
+  def test_axisangle_to_quat(self):
+    axisangle = np.array([0.1, 0.2, 0.3])
+    quat = transformations.axisangle_to_quat(axisangle)
+    np.testing.assert_allclose(
+        quat, [0.982551, 0.0497088, 0.0994177, 0.1491265], atol=1e-6
+    )
+
+  def test_axisangle_to_quat_zero(self):
+    axisangle = np.array([0, 0, 0])
+    quat = transformations.axisangle_to_quat(axisangle)
+    np.testing.assert_allclose(quat, [1, 0, 0, 0])
+
+  def test_axisangle_to_quat_zero_tol(self):
+    axisangle = np.array([0, 0, 1e-2])
+    quat = transformations.axisangle_to_quat(axisangle, tol=1e-1)
+    np.testing.assert_allclose(quat, [1, 0, 0, 0])
+
+  def test_axisangle_to_quat_batched(self):
+    axisangle = np.stack([np.array([0.1, 0.2, 0.3]), np.array([0.4, 0.5, 0.6])])
+    quat = transformations.axisangle_to_quat(axisangle)
+    np.testing.assert_allclose(
+        quat,
+        [
+            [0.982551, 0.0497088, 0.0994177, 0.1491265],
+            [0.9052841, 0.1936448, 0.242056, 0.2904672],
+        ],
+        atol=1e-6,
+    )
 
 
 if __name__ == '__main__':
