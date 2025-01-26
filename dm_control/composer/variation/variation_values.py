@@ -25,7 +25,7 @@ def evaluate(structure, *args, **kwargs):
     structure: An arbitrarily nested structure of callables or constant values.
       By "structures", we mean lists, tuples, namedtuples, or dicts.
     *args: Positional arguments passed to each callable in `structure`.
-    **kwargs: Keyword arguments passed to each callable in `structure.
+    **kwargs: Keyword arguments passed to each callable in `structure`.
 
   Returns:
     The same nested structure, with each callable replaced by the value returned
