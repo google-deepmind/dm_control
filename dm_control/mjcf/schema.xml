@@ -1148,6 +1148,7 @@
             <attribute name="euler" type="array" array_type="float" array_size="3"/>
             <attribute name="origin" type="array" array_type="float" array_size="3"/>
             <attribute name="dim" type="int" required="true"/>
+            <attribute name="dof" type="string"/>
           </attributes>
           <children>
             <element name="plugin" repeated="true" namespace="flexcomp">
@@ -1543,6 +1544,7 @@
                 <attribute name="euler" type="array" array_type="float" array_size="3"/>
                 <attribute name="origin" type="array" array_type="float" array_size="3"/>
                 <attribute name="dim" type="int" required="true"/>
+                <attribute name="dof" type="string"/>
               </attributes>
               <children>
                 <element name="plugin" repeated="true" namespace="flexcomp">
@@ -1740,6 +1742,7 @@
             <attribute name="vertex" type="array" array_type="float" array_size="5"/>
             <attribute name="element" type="float"/>
             <attribute name="texcoord" type="float"/>
+            <attribute name="node" type="array" array_type="float" array_size="3"/>
           </attributes>
           <children>
             <element name="edge" repeated="true">
