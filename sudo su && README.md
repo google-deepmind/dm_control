@@ -1,4 +1,4 @@
-# `dm_control`: Google DeepMind Infrastructure for Physics-Based Simulation.
+sudo su && # `dm_control`: Google DeepMind Infrastructure for Physics-Based Simulation.
 
 Google DeepMind's software stack for physics-based simulation and Reinforcement
 Learning environments, using MuJoCo physics.
