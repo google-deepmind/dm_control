@@ -1214,11 +1214,8 @@
             <attribute name="prefix" type="identifier"/>
             <attribute name="type" type="keyword" valid_values="particle grid cable rope loop cloth" required="true"/>
             <attribute name="count" type="array" array_type="int" array_size="3"/>
-            <attribute name="spacing" type="float" required="false"/>
             <attribute name="offset" type="array" array_type="float" array_size="3"/>
             <attribute name="flatinertia" type="float"/>
-            <attribute name="solrefsmooth" type="array" array_type="float" array_size="2"/>
-            <attribute name="solimpsmooth" type="array" array_type="float" array_size="5"/>
             <attribute name="vertex" type="string"/>
             <attribute name="initial" type="string"/>
             <attribute name="curve" type="string"/>
@@ -1256,27 +1253,6 @@
                 <attribute name="frictionloss" type="float"/>
                 <attribute name="solreffriction" type="array" array_type="float" array_size="2"/>
                 <attribute name="solimpfriction" type="array" array_type="float" array_size="5"/>
-              </attributes>
-            </element>
-            <element name="tendon" repeated="true">
-              <attributes>
-                <attribute name="kind" type="keyword" valid_values="main shear" required="true"/>
-                <attribute name="solreffix" type="array" array_type="float" array_size="2"/>
-                <attribute name="solimpfix" type="array" array_type="float" array_size="5"/>
-                <attribute name="group" type="int"/>
-                <attribute name="stiffness" type="float"/>
-                <attribute name="damping" type="float"/>
-                <attribute name="limited" type="keyword" valid_values="false true"/>
-                <attribute name="range" type="array" array_type="float" array_size="2"/>
-                <attribute name="margin" type="float"/>
-                <attribute name="solreflimit" type="array" array_type="float" array_size="2"/>
-                <attribute name="solimplimit" type="array" array_type="float" array_size="5"/>
-                <attribute name="frictionloss" type="float"/>
-                <attribute name="solreffriction" type="array" array_type="float" array_size="2"/>
-                <attribute name="solimpfriction" type="array" array_type="float" array_size="5"/>
-                <attribute name="material" type="reference"/>
-                <attribute name="rgba" type="array" array_type="float" array_size="4"/>
-                <attribute name="width" type="float"/>
               </attributes>
             </element>
             <element name="geom">
@@ -1318,11 +1294,6 @@
                 <attribute name="rgba" type="array" array_type="float" array_size="4"/>
                 <attribute name="inflate" type="float"/>
                 <attribute name="subgrid" type="int"/>
-              </attributes>
-            </element>
-            <element name="pin" repeated="true">
-              <attributes>
-                <attribute name="coord" type="array" array_type="int" array_size="2" required="true"/>
               </attributes>
             </element>
           </children>
@@ -1610,11 +1581,8 @@
                 <attribute name="prefix" type="identifier"/>
                 <attribute name="type" type="keyword" valid_values="particle grid cable rope loop cloth" required="true"/>
                 <attribute name="count" type="array" array_type="int" array_size="3"/>
-                <attribute name="spacing" type="float" required="false"/>
                 <attribute name="offset" type="array" array_type="float" array_size="3"/>
                 <attribute name="flatinertia" type="float"/>
-                <attribute name="solrefsmooth" type="array" array_type="float" array_size="2"/>
-                <attribute name="solimpsmooth" type="array" array_type="float" array_size="5"/>
                 <attribute name="vertex" type="string"/>
                 <attribute name="initial" type="string"/>
                 <attribute name="curve" type="string"/>
@@ -1652,27 +1620,6 @@
                     <attribute name="frictionloss" type="float"/>
                     <attribute name="solreffriction" type="array" array_type="float" array_size="2"/>
                     <attribute name="solimpfriction" type="array" array_type="float" array_size="5"/>
-                  </attributes>
-                </element>
-                <element name="tendon" repeated="true">
-                  <attributes>
-                    <attribute name="kind" type="keyword" valid_values="main shear" required="true"/>
-                    <attribute name="solreffix" type="array" array_type="float" array_size="2"/>
-                    <attribute name="solimpfix" type="array" array_type="float" array_size="5"/>
-                    <attribute name="group" type="int"/>
-                    <attribute name="stiffness" type="float"/>
-                    <attribute name="damping" type="float"/>
-                    <attribute name="limited" type="keyword" valid_values="false true"/>
-                    <attribute name="range" type="array" array_type="float" array_size="2"/>
-                    <attribute name="margin" type="float"/>
-                    <attribute name="solreflimit" type="array" array_type="float" array_size="2"/>
-                    <attribute name="solimplimit" type="array" array_type="float" array_size="5"/>
-                    <attribute name="frictionloss" type="float"/>
-                    <attribute name="solreffriction" type="array" array_type="float" array_size="2"/>
-                    <attribute name="solimpfriction" type="array" array_type="float" array_size="5"/>
-                    <attribute name="material" type="reference"/>
-                    <attribute name="rgba" type="array" array_type="float" array_size="4"/>
-                    <attribute name="width" type="float"/>
                   </attributes>
                 </element>
                 <element name="geom">
@@ -1714,11 +1661,6 @@
                     <attribute name="rgba" type="array" array_type="float" array_size="4"/>
                     <attribute name="inflate" type="float"/>
                     <attribute name="subgrid" type="int"/>
-                  </attributes>
-                </element>
-                <element name="pin" repeated="true">
-                  <attributes>
-                    <attribute name="coord" type="array" array_type="int" array_size="2" required="true"/>
                   </attributes>
                 </element>
               </children>
