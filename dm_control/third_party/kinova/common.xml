@@ -1,4 +1,7 @@
 <mujoco>
+  <option>
+    <flag nativeccd="disable"/>
+  </option>
   <asset>
     <material name="dark_gray" rgba="0.1 0.1 0.1 1"/>
     <material name="light_gray" rgba="0.7 0.7 0.7 1"/>

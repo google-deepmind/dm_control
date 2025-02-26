@@ -1,4 +1,7 @@
 <mujoco model='duplo2x4'>
+  <option>
+    <flag nativeccd="disable"/>
+  </option>
 
   <default>
     <site type='sphere' size='0.001' group='5' rgba='1 0 0 0.3'/>
