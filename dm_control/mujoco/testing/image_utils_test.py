@@ -13,8 +13,6 @@
 # limitations under the License.
 # ============================================================================
 
-"""Tests for image_utils."""
-
 import os
 
 from absl.testing import absltest
