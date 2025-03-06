@@ -1137,7 +1137,7 @@
             <attribute name="point" type="string"/>
             <attribute name="element" type="string"/>
             <attribute name="texcoord" type="string"/>
-            <attribute name="facetexcoord" type="string"/>
+            <attribute name="elemtexcoord" type="string"/>
             <attribute name="material" type="string"/>
             <attribute name="rgba" type="array" array_type="float" array_size="4"/>
             <attribute name="flatskin" type="int"/>
@@ -1504,7 +1504,7 @@
                 <attribute name="point" type="string"/>
                 <attribute name="element" type="string"/>
                 <attribute name="texcoord" type="string"/>
-                <attribute name="facetexcoord" type="string"/>
+                <attribute name="elemtexcoord" type="string"/>
                 <attribute name="material" type="string"/>
                 <attribute name="rgba" type="array" array_type="float" array_size="4"/>
                 <attribute name="flatskin" type="int"/>
@@ -1684,7 +1684,7 @@
             <attribute name="vertex" type="array" array_type="float" array_size="5"/>
             <attribute name="element" type="float"/>
             <attribute name="texcoord" type="float"/>
-            <attribute name="facetexcoord" type="float"/>
+            <attribute name="elemtexcoord" type="float"/>
             <attribute name="node" type="array" array_type="float" array_size="3"/>
           </attributes>
           <children>
