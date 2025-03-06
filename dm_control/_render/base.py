@@ -35,6 +35,8 @@ import weakref
 
 from absl import logging
 from dm_control._render import executor
+import numpy as np
+
 
 _CURRENT_CONTEXT_FOR_THREAD = collections.defaultdict(lambda: None)
 _CURRENT_THREAD_FOR_CONTEXT = collections.defaultdict(lambda: None)
@@ -146,6 +148,10 @@ class ContextBase(metaclass=abc.ABCMeta):
           _CURRENT_CONTEXT_FOR_THREAD[self._render_executor.thread] = id(self)
           ctx.call(self._platform_make_current)
       yield ctx
+
+  def to_pixels(self, buffer):
+    """Converts the buffer to pixels."""
+    return np.flipud(buffer)
 
   @abc.abstractmethod
   def _platform_init(self, max_width, max_height):
