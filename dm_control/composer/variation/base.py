@@ -91,9 +91,21 @@ class _UnaryOperation(Variation):
     self._op = op
     self._variation = variation
 
+  def __eq__(self, other):
+    if not isinstance(other, _UnaryOperation):
+      return False
+    return self._op == other._op and self._variation == other._variation
+
+  def __str__(self):
+    return f"{self._op.__name__}({self._variation})"
+
+  def __repr__(self):
+    return f"UnaryOperation({self._op.__name__}({self._variation}))"
+
   def __call__(self, initial_value=None, current_value=None, random_state=None):
     value = variation_values.evaluate(
-        self._variation, initial_value, current_value, random_state)
+        self._variation, initial_value, current_value, random_state
+    )
     return self._op(value)
 
 
@@ -105,21 +117,56 @@ class _BinaryOperation(Variation):
     self._second = second
     self._op = op
 
+  def __eq__(self, other):
+    if not isinstance(other, _BinaryOperation):
+      return False
+    return (
+        self._op == other._op
+        and self._first == other._first
+        and self._second == other._second
+    )
+
+  def __str__(self):
+    return f"{self._op.__name__}({self._first}, {self._second})"
+
+  def __repr__(self):
+    return (
+        f"BinaryOperation({self._op.__name__}({self._first!r},"
+        f" {self._second!r}))"
+    )
+
   def __call__(self, initial_value=None, current_value=None, random_state=None):
     first_value = variation_values.evaluate(
-        self._first, initial_value, current_value, random_state)
+        self._first, initial_value, current_value, random_state
+    )
     second_value = variation_values.evaluate(
-        self._second, initial_value, current_value, random_state)
+        self._second, initial_value, current_value, random_state
+    )
     return self._op(first_value, second_value)
 
 
 class _GetItemOperation(Variation):
+  """Returns a single element from the output of a Variation."""
 
   def __init__(self, variation, index):
     self._variation = variation
     self._index = index
 
+  def __eq__(self, other):
+    if not isinstance(other, _GetItemOperation):
+      return False
+    return self._variation == other._variation and self._index == other._index
+
+  def __str__(self):
+    return f"{self._variation}[{self._index}]"
+
+  def __repr__(self):
+    return (
+        f"GetItemOperation({self._variation!r}[{self._index}])"
+    )
+
   def __call__(self, initial_value=None, current_value=None, random_state=None):
     value = variation_values.evaluate(
-        self._variation, initial_value, current_value, random_state)
+        self._variation, initial_value, current_value, random_state
+    )
     return np.asarray(value)[self._index]

@@ -33,6 +33,17 @@ class Constant(base.Variation):
   def __call__(self, initial_value=None, current_value=None, random_state=None):
     return self._value
 
+  def __eq__(self, other):
+    if not isinstance(other, Constant):
+      return False
+    return self._value == other._value
+
+  def __str__(self):
+    return f"{self._value}"
+
+  def __repr__(self):
+    return f"Constant({self._value!r})"
+
 
 class Sequence(base.Variation):
   """Variation representing a fixed sequence of values."""
@@ -52,6 +63,8 @@ class Sequence(base.Variation):
 
 
 class Identity(base.Variation):
-
   def __call__(self, initial_value=None, current_value=None, random_state=None):
     return current_value
+
+  def __eq__(self, other):
+    return isinstance(other, Identity)

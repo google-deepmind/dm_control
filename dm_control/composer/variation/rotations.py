@@ -35,6 +35,12 @@ class UniformQuaternion(base.Variation):
                      np.sqrt(u1) * np.sin(u3),
                      np.sqrt(u1) * np.cos(u3)])
 
+  def __eq__(self, other):
+    return isinstance(other, UniformQuaternion)
+
+  def __repr__(self):
+    return "UniformQuaternion()"
+
 
 class QuaternionFromAxisAngle(base.Variation):
   """Quaternion variation specified in terms of variations in axis and angle."""
@@ -50,6 +56,19 @@ class QuaternionFromAxisAngle(base.Variation):
     angle = variation_values.evaluate(
         self._angle, initial_value, current_value, random_state)
     return transformations.axisangle_to_quat(np.asarray(axis) * angle)
+
+  def __eq__(self, other):
+    if not isinstance(other, QuaternionFromAxisAngle):
+      return False
+    return (
+        self._axis == other._axis
+        and self._angle == other._angle
+    )
+
+  def __repr__(self):
+    return (
+        f"QuaternionFromAxisAngle(axis={self._axis}, angle={self._angle})"
+    )
 
 
 class QuaternionPreMultiply(base.Variation):
@@ -71,6 +90,17 @@ class QuaternionPreMultiply(base.Variation):
                                    random_state)
     q2 = current_value if self._cumulative else initial_value
     return transformations.quat_mul(np.asarray(q1), np.asarray(q2))
+
+  def __eq__(self, other):
+    if not isinstance(other, QuaternionPreMultiply):
+      return False
+    return self._quat == other._quat and self._cumulative == other._cumulative
+
+  def __repr__(self):
+    return (
+        f"QuaternionPreMultiply(quat={self._quat},"
+        f" cumulative={self._cumulative})"
+    )
 
 
 class QuaternionRotate(base.Variation):
@@ -99,3 +129,18 @@ class QuaternionRotate(base.Variation):
           self._vec, initial_value, current_value, random_state
       )
     return transformations.quat_rotate(np.asarray(quat), np.asarray(vec))
+
+  def __eq__(self, other):
+    if not isinstance(other, QuaternionRotate):
+      return False
+    return (
+        self._quat == other._quat
+        and self._vec == other._vec
+        and self._cumulative == other._cumulative
+    )
+
+  def __repr__(self):
+    return (
+        f"QuaternionRotate(quat={self._quat}, vec={self._vec},"
+        f" cumulative={self._cumulative})"
+    )

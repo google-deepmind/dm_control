@@ -51,12 +51,46 @@ class VariationTest(parameterized.TestCase):
     self.assertEqual(
         variation.evaluate(func(self.variation_1, self.variation_2)),
         func(self.value_1, self.value_2))
+    self.assertEqual(
+        func(self.variation_1, self.variation_2),
+        func(self.variation_1, self.variation_2),
+    )
+    self.assertNotEqual(
+        func(self.variation_1, self.variation_2),
+        func(self.variation_1, self.variation_1),
+    )
+
+  def test_binary_operator_str(self):
+    self.assertEqual(
+        'add(3, 5)',
+        str(
+            self.variation_1 + self.variation_2
+        ),
+    )
+    self.assertEqual(
+        'BinaryOperation(add(Constant(3), Constant(5)))',
+        repr(
+            self.variation_1 + self.variation_2
+        ),
+    )
 
   def test_getitem(self):
     value = deterministic.Constant(np.array([4, 5, 6, 7, 8]))
     np.testing.assert_array_equal(
         variation.evaluate(value[[3, 1]]),
         [7, 5])
+    self.assertEqual(
+        '[4 5 6 7 8][3]',
+        str(
+            value[3]
+        ),
+    )
+    self.assertEqual(
+        'GetItemOperation(Constant(array([4, 5, 6, 7, 8]))[3])',
+        repr(
+            value[3]
+        ),
+    )
 
 if __name__ == '__main__':
   absltest.main()

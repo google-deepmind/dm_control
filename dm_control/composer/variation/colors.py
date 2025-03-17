@@ -43,6 +43,16 @@ class RgbVariation(base.Variation):
         variation_values.evaluate([self._r, self._g, self._b, self._alpha],
                                   initial_value, current_value, random_state))
 
+  def __eq__(self, other):
+    if not isinstance(other, RgbVariation):
+      return False
+    return (
+        self._r == other._r
+        and self._g == other._g
+        and self._b == other._b
+        and self._alpha == other._alpha
+    )
+
 
 class HsvVariation(base.Variation):
   """Represents a variation in the HSV color space.
@@ -62,6 +72,22 @@ class HsvVariation(base.Variation):
         random_state)
     return np.asarray(list(colorsys.hsv_to_rgb(h, s, v)) + [alpha])
 
+  def __eq__(self, other):
+    if not isinstance(other, HsvVariation):
+      return False
+    return (
+        self._h == other._h
+        and self._s == other._s
+        and self._v == other._v
+        and self._alpha == other._alpha
+    )
+
+  def __repr__(self):
+    return (
+        f"HsvVariation(h={self._h}, s={self._s}, v={self._v}, "
+        f"alpha={self._alpha})"
+    )
+
 
 class GrayVariation(HsvVariation):
   """Represents a variation in gray level.
@@ -73,3 +99,8 @@ class GrayVariation(HsvVariation):
 
   def __init__(self, gray_level, alpha=1.0):
     super().__init__(h=0.0, s=0.0, v=gray_level, alpha=alpha)
+
+  def __repr__(self):
+    return (
+        f"GrayVariation(gray_level={self._v}, alpha={self._alpha})"
+    )

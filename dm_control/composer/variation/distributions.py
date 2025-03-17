@@ -71,6 +71,22 @@ class Distribution(base.Variation, metaclass=abc.ABCMeta):
   def _callable(self, random_state):
     raise NotImplementedError
 
+  def __eq__(self, other):
+    if not isinstance(other, type(self)):
+      return False
+    return (
+        self._args == other._args
+        and self._kwargs == other._kwargs
+        and self._single_sample == other._single_sample
+    )
+
+  def __repr__(self):
+    return '{}(args={}, kwargs={}, single_sample={})'.format(
+        type(self).__name__,
+        self._args,
+        self._kwargs,
+        self._single_sample)
+
 
 class Uniform(Distribution):
   __slots__ = ()
@@ -117,6 +133,17 @@ class UniformPointOnSphere(base.Variation):
     axis = random_state.normal(size=size)
     axis /= np.linalg.norm(axis, axis=-1, keepdims=True)
     return axis
+
+  def __eq__(self, other):
+    if not isinstance(other, UniformPointOnSphere):
+      return False
+    return self._single_sample == other._single_sample
+
+  def __repr__(self):
+    return '{}(single_sample={})'.format(
+        type(self).__name__,
+        self._single_sample,
+    )
 
 
 class Normal(Distribution):
@@ -215,3 +242,17 @@ class BiasedRandomWalk(base.Variation):
         self._retain * self._value +
         random_state.normal(loc=0.0, scale=self._scale))
     return self._value
+
+  def __eq__(self, other):
+    # __eq__ shouldn't be used for this one, because it's stateful.
+    return id(self) == id(other)
+
+  def __repr__(self):
+    # include id(self), to make sure that two instances with the same parameters
+    # don't appear equal in logs.
+    return '{}(id={}, scale={}, retain={}, value={})'.format(
+        type(self).__name__,
+        id(self),
+        self._scale,
+        self._retain,
+        self._value)

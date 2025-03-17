@@ -26,10 +26,10 @@ import numpy as np
 class MathOp(base.Variation):
   """Base MathOp class for applying math operations on variation objects.
 
-  Subclasses need to implement `_op`, which takes in a single value and applies
-  the desired math operation. This operation gets applied to the result of the
-  evaluated base variation object passed at construction. Structured variation
-  objects are automatically traversed.
+  Subclasses need to implement `_callable`, which takes in a single value and
+  applies the desired math operation. This operation gets applied to the result
+  of the evaluated base variation object passed at construction. Structured
+  variation objects are automatically traversed.
   """
 
   def __init__(self, *args, **kwargs):
@@ -53,6 +53,21 @@ class MathOp(base.Variation):
   @abc.abstractmethod
   def _callable(self):
     pass
+
+  def __eq__(self, other):
+    if not isinstance(other, type(self)):
+      return False
+    return (
+        self._args == other._args
+        and self._kwargs == other._kwargs
+    )
+
+  def __repr__(self):
+    return '{}(args={}, kwargs={})'.format(
+        type(self).__name__,
+        self._args,
+        self._kwargs,
+    )
 
 
 class Log(MathOp):
