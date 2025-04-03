@@ -23,6 +23,7 @@
         <attribute name="fusestatic" type="keyword" valid_values="false true"/>
         <attribute name="inertiafromgeom" type="keyword" valid_values="false true auto"/>
         <attribute name="inertiagrouprange" type="array" array_type="int" array_size="2"/>
+        <attribute name="saveinertial" type="keyword" valid_values="false true"/>
         <attribute name="alignfree" type="keyword" valid_values="false true"/>
       </attributes>
       <children>
