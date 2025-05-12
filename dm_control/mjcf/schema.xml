@@ -1201,6 +1201,7 @@
                 <attribute name="gap" type="float"/>
                 <attribute name="internal" type="string" valid_values="true false"/>
                 <attribute name="selfcollide" type="string" valid_values="none narrow bvh sap auto"/>
+                <attribute name="vertcollide" type="string" valid_values="true false"/>
                 <attribute name="activelayers" type="int"/>
               </attributes>
             </element>
@@ -1569,6 +1570,7 @@
                     <attribute name="gap" type="float"/>
                     <attribute name="internal" type="string" valid_values="true false"/>
                     <attribute name="selfcollide" type="string" valid_values="none narrow bvh sap auto"/>
+                    <attribute name="vertcollide" type="string" valid_values="true false"/>
                     <attribute name="activelayers" type="int"/>
                   </attributes>
                 </element>
@@ -1714,6 +1716,7 @@
                 <attribute name="gap" type="float"/>
                 <attribute name="internal" type="int"/>
                 <attribute name="selfcollide" type="string" valid_values="none narrow bvh sap auto"/>
+                <attribute name="vertcollide" type="string" valid_values="true false"/>
                 <attribute name="activelayers" type="int"/>
               </attributes>
             </element>
