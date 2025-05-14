@@ -1194,6 +1194,7 @@
                 <attribute name="poisson" type="float"/>
                 <attribute name="thickness" type="float"/>
                 <attribute name="damping" type="float"/>
+                <attribute name="elastic2d" type="int"/>
               </attributes>
             </element>
             <element name="contact" repeated="true">
@@ -1566,6 +1567,7 @@
                     <attribute name="poisson" type="float"/>
                     <attribute name="thickness" type="float"/>
                     <attribute name="damping" type="float"/>
+                    <attribute name="elastic2d" type="int"/>
                   </attributes>
                 </element>
                 <element name="contact" repeated="true">
