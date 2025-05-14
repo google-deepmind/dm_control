@@ -363,6 +363,9 @@
             <attribute name="ambient" type="array" array_type="float" array_size="3"/>
             <attribute name="diffuse" type="array" array_type="float" array_size="3"/>
             <attribute name="specular" type="array" array_type="float" array_size="3"/>
+            <attribute name="bulbradius" type="float"/>
+            <attribute name="intensity" type="float"/>
+            <attribute name="range" type="float"/>
           </attributes>
         </element>
         <element name="pair">
@@ -683,6 +686,9 @@
                 <attribute name="ambient" type="array" array_type="float" array_size="3"/>
                 <attribute name="diffuse" type="array" array_type="float" array_size="3"/>
                 <attribute name="specular" type="array" array_type="float" array_size="3"/>
+                <attribute name="bulbradius" type="float"/>
+                <attribute name="intensity" type="float"/>
+                <attribute name="range" type="float"/>
               </attributes>
             </element>
             <element name="pair">
@@ -1124,6 +1130,9 @@
             <attribute name="ambient" type="array" array_type="float" array_size="3"/>
             <attribute name="diffuse" type="array" array_type="float" array_size="3"/>
             <attribute name="specular" type="array" array_type="float" array_size="3"/>
+            <attribute name="bulbradius" type="float"/>
+            <attribute name="intensity" type="float"/>
+            <attribute name="range" type="float"/>
           </attributes>
         </element>
         <element name="flexcomp" repeated="true">
@@ -1493,6 +1502,9 @@
                 <attribute name="ambient" type="array" array_type="float" array_size="3"/>
                 <attribute name="diffuse" type="array" array_type="float" array_size="3"/>
                 <attribute name="specular" type="array" array_type="float" array_size="3"/>
+                <attribute name="bulbradius" type="float"/>
+                <attribute name="intensity" type="float"/>
+                <attribute name="range" type="float"/>
               </attributes>
             </element>
             <element name="flexcomp" repeated="true">
