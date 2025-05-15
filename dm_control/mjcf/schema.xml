@@ -1734,6 +1734,15 @@
                 <attribute name="activelayers" type="int"/>
               </attributes>
             </element>
+            <element name="elasticity" repeated="true">
+              <attributes>
+                <attribute name="young" type="float"/>
+                <attribute name="poisson" type="float"/>
+                <attribute name="thickness" type="float"/>
+                <attribute name="damping" type="float"/>
+                <attribute name="elastic2d" type="int"/>
+              </attributes>
+            </element>
           </children>
         </element>
         <element name="skin" repeated="true" namespace="deformable">
