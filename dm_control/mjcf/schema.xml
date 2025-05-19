@@ -1194,7 +1194,7 @@
                 <attribute name="poisson" type="float"/>
                 <attribute name="thickness" type="float"/>
                 <attribute name="damping" type="float"/>
-                <attribute name="elastic2d" type="int"/>
+                <attribute name="elastic2d" type="keyword" valid_values="none bend stretch both"/>
               </attributes>
             </element>
             <element name="contact" repeated="true">
@@ -1567,7 +1567,7 @@
                     <attribute name="poisson" type="float"/>
                     <attribute name="thickness" type="float"/>
                     <attribute name="damping" type="float"/>
-                    <attribute name="elastic2d" type="int"/>
+                    <attribute name="elastic2d" type="keyword" valid_values="none bend stretch both"/>
                   </attributes>
                 </element>
                 <element name="contact" repeated="true">
@@ -1740,7 +1740,7 @@
                 <attribute name="poisson" type="float"/>
                 <attribute name="thickness" type="float"/>
                 <attribute name="damping" type="float"/>
-                <attribute name="elastic2d" type="int"/>
+                <attribute name="elastic2d" type="keyword" valid_values="none bend stretch both"/>
               </attributes>
             </element>
           </children>
