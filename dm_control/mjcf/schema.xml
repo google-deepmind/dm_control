@@ -904,6 +904,7 @@
           <attributes>
             <attribute name="name" type="identifier"/>
             <attribute name="type" type="keyword" valid_values="2d cube skybox"/>
+            <attribute name="colorspace" type="keyword" valid_values="auto linear sRGB"/>
             <attribute name="file" type="file" path_namespace="texture"/>
             <attribute name="gridsize" type="array" array_type="int" array_size="2"/>
             <attribute name="gridlayout" type="string"/>
