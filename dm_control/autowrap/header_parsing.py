@@ -78,11 +78,24 @@ def _nested_if_else(if_, pred, else_, endif, match_if_true, match_if_false):
   return ifelse
 
 
+def _nested_ifn_else(ifn_, pred, else_, endif, match_if_true, match_if_false):
+  """Constructs a parser for (possibly nested) if...(else)...endif blocks."""
+  ifnelse = pp.Forward()
+  ifnelse << pp.Group(  # pylint: disable=expression-not-assigned
+      ifn_ +
+      pred("predicate") +
+      pp.ZeroOrMore(match_if_true | ifnelse)("if_false") +
+      pp.Optional(else_ +
+                  pp.ZeroOrMore(match_if_false | ifnelse)("if_true")) +
+      endif)
+  return ifnelse
+
+
 # Some common string patterns to suppress.
 # ------------------------------------------------------------------------------
 (LPAREN, RPAREN, LBRACK, RBRACK, LBRACE, RBRACE, SEMI, COMMA, EQUAL, FSLASH,
  BSLASH) = list(map(pp.Suppress, "()[]{};,=/\\"))
-X = (pp.Keyword("X") | pp.Keyword("XMJV")).suppress()
+X = (pp.Keyword("X") | pp.Keyword("XMJV") | pp.Keyword("XNV")).suppress()
 EOL = pp.LineEnd().suppress()
 
 # Comments, continuation.
@@ -189,7 +202,9 @@ TYPE_DECL = pp.Group(
 UNCOND_DECL = DEF_FLAG | DEF_CONST | TYPE_DECL
 
 # Declarations inside (possibly nested) #if(n)def... #else... #endif... blocks.
-COND_DECL = _nested_if_else(IFDEF, NAME, ELSE, ENDIF, UNCOND_DECL, UNCOND_DECL)
+COND_DECL = _nested_if_else(
+    IFDEF, NAME, ELSE, ENDIF, UNCOND_DECL, UNCOND_DECL
+) | _nested_ifn_else(IFNDEF, NAME, ELSE, ENDIF, UNCOND_DECL, UNCOND_DECL)
 # Note: this doesn't work for '#if defined(FLAG)' blocks
 
 # e.g. "mjtNum gravity[3];              // gravitational acceleration"

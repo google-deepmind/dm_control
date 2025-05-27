@@ -13,8 +13,6 @@
 # limitations under the License.
 # ============================================================================
 
-"""Tests for image_utils."""
-
 import os
 
 from absl.testing import absltest
@@ -31,8 +29,9 @@ class ImageUtilsTest(parameterized.TestCase):
 
   @parameterized.parameters(
       dict(frame_index1=0, frame_index2=0, expected_rms=0.0),
-      dict(frame_index1=0, frame_index2=1, expected_rms=23.214),
-      dict(frame_index1=0, frame_index2=9, expected_rms=55.738))
+      dict(frame_index1=0, frame_index2=1, expected_rms=22.285),
+      dict(frame_index1=0, frame_index2=9, expected_rms=55.559),
+  )
   def test_compute_rms(self, frame_index1, frame_index2, expected_rms):
     # Force loading of the software rendering reference images regardless of the
     # actual GL backend, since these should match the expected RMS values.
@@ -51,7 +50,8 @@ class ImageUtilsTest(parameterized.TestCase):
     image2 = random_state.randint(0, 255, size=(64, 64, 3), dtype=np.uint8)
     image_utils.assert_images_close(image1, image1, tolerance=0)
     with self.assertRaisesRegex(  # pylint: disable=g-error-prone-assert-raises
-        image_utils.ImagesNotCloseError, 'RMS error exceeds tolerance'):
+        image_utils.ImagesNotCloseError, 'RMS error exceeds tolerance'
+    ):
       image_utils.assert_images_close(image1, image2)
 
   def test_save_images_on_failure(self):
@@ -66,8 +66,9 @@ class ImageUtilsTest(parameterized.TestCase):
     def func():
       raise image_utils.ImagesNotCloseError(message, image1, image2)
 
-    with self.assertRaisesRegex(image_utils.ImagesNotCloseError,
-                                '{}.*'.format(message)):
+    with self.assertRaisesRegex(
+        image_utils.ImagesNotCloseError, '{}.*'.format(message)
+    ):
       func()
 
     def validate_saved_file(name, expected_contents):

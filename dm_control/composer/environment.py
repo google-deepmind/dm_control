@@ -249,8 +249,9 @@ class _CommonEnvironment:
 
   def _recompile_physics(self):
     """Creates a new Physics using the latest MJCF model from the task."""
-    if getattr(self, '_physics', None):
-      self._physics.free()
+    physics = getattr(self, '_physics', None)
+    if physics:
+      physics.free()
     self._physics = mjcf.Physics.from_mjcf_model(
         self._task.root_entity.mjcf_model)
     self._physics.legacy_step = self._legacy_step
@@ -267,9 +268,10 @@ class _CommonEnvironment:
     """Returns a `weakref.ProxyType` pointing to the current `mjcf.Physics`.
 
     Note that the underlying `mjcf.Physics` will be destroyed whenever the MJCF
-    model is recompiled. It is therefore unsafe for external objects to hold a
-    reference to `environment.physics`. Attempting to access attributes of a
-    dead `Physics` instance will result in a `ReferenceError`.
+    model is recompiled or environment.close() is called. It is therefore unsafe
+    for external objects to hold a reference to `environment.physics`.
+    Attempting to access attributes of a dead `Physics` instance will result in
+    a `ReferenceError`.
     """
     return self._physics_proxy
 
@@ -461,6 +463,11 @@ class Environment(_CommonEnvironment, dm_env.Environment):
         self._physics_proxy, action, self._random_state)
     self._physics.step()
     self._hooks.after_substep(self._physics_proxy, self._random_state)
+
+  def close(self):
+    super().close()
+    self._physics.free()
+    self._physics = None
 
   def action_spec(self):
     """Returns the action specification for this environment."""

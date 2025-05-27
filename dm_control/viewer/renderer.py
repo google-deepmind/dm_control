@@ -181,7 +181,7 @@ class OffScreenRenderer(BaseRenderer):
 
     with self._surface.make_current() as ctx:
       ctx.call(self._render_on_gl_thread, viewport, scene)
-    self._pixels = np.flipud(self._rgb_buffer)
+    self._pixels = self._surface.to_pixels(self._rgb_buffer)
 
   def _render_on_gl_thread(self, viewport, scene):
     mujoco.mjr_setBuffer(mujoco.mjtFramebuffer.mjFB_OFFSCREEN,

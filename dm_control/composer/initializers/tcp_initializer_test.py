@@ -13,8 +13,6 @@
 # limitations under the License.
 # ============================================================================
 
-"""Tests for tcp_initializer."""
-
 import functools
 
 from absl.testing import absltest
@@ -105,7 +103,7 @@ class TcpInitializerTest(parameterized.TestCase):
 
     initializer = make_initializer()
     with self.assertRaisesWithLiteralMatch(
-        RuntimeError,
+        composer.EpisodeInitializationError,
         tcp_initializer._REJECTION_SAMPLING_FAILED.format(
             max_rejection_samples=max_rejection_samples,
             max_ik_attempts=max_ik_attempts)):
@@ -145,7 +143,7 @@ class TcpInitializerTest(parameterized.TestCase):
 
     initializer = make_initializer()
     with self.assertRaisesWithLiteralMatch(
-        RuntimeError,
+        composer.EpisodeInitializationError,
         tcp_initializer._REJECTION_SAMPLING_FAILED.format(
             max_rejection_samples=max_rejection_samples,
             max_ik_attempts=max_ik_attempts)):

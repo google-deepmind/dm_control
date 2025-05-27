@@ -13,8 +13,6 @@
 # limitations under the License.
 # ============================================================================
 
-"""Tests for prop_initializer."""
-
 from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control import composer
@@ -111,7 +109,9 @@ class PropPlacerTest(parameterized.TestCase):
     expected_message = prop_initializer._REJECTION_SAMPLING_FAILED.format(
         model_name=spheres[1].mjcf_model.model,  # Props are placed in order.
         max_attempts=max_attempts_per_prop)
-    with self.assertRaisesWithLiteralMatch(RuntimeError, expected_message):
+    with self.assertRaisesWithLiteralMatch(
+        composer.EpisodeInitializationError, expected_message
+    ):
       prop_placer(physics, random_state=np.random.RandomState(0))
 
   def test_ignore_contacts_with_entities(self):
@@ -143,7 +143,9 @@ class PropPlacerTest(parameterized.TestCase):
     prop_placer_init(physics, random_state=np.random.RandomState(0))
     expected_message = prop_initializer._REJECTION_SAMPLING_FAILED.format(
         model_name=spheres[0].mjcf_model.model, max_attempts=1)
-    with self.assertRaisesWithLiteralMatch(RuntimeError, expected_message):
+    with self.assertRaisesWithLiteralMatch(
+        composer.EpisodeInitializationError, expected_message
+    ):
       prop_placer_seq[0](physics, random_state=np.random.RandomState(0))
 
     # Placing the first sphere should succeed if we ignore contacts involving
@@ -160,6 +162,8 @@ class PropPlacerTest(parameterized.TestCase):
   def test_settle_physics(self, settle_physics):
     radius = 0.1
     physics, spheres = _make_spheres(num_spheres=2, radius=radius, nconmax=1)
+    physics_start_time = 1337.0
+    physics.data.time = physics_start_time
 
     # Only place the first sphere.
     prop_placer = prop_initializer.PropPlacer(
@@ -180,7 +184,10 @@ class PropPlacerTest(parameterized.TestCase):
     del second_quaternion  # Unused.
 
     # The sphere that we were not placing should not have moved.
-    self.assertEqual(second_position[2], 0.)
+    self.assertEqual(second_position[2], 0.0)
+    self.assertEqual(
+        physics.data.time, physics_start_time, 'Physics time should be reset.'
+    )
 
   @parameterized.parameters([0, 1, 2, 3])
   def test_settle_physics_multiple_attempts(self, max_settle_physics_attempts):

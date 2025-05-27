@@ -3,14 +3,13 @@
 This submodule contains the components and environment used in the following
 works.
 
-* [Emergent Coordination through Competition][boxhead].
-* [From Motor Control to Team Play in Simulated Humanoid Football][humanoid].
+*   [Emergent Coordination through Competition][boxhead]
+    ([dynamic team play](https://www.youtube.com/watch?v=8nU35D8vAlo),
+    [defensive team play](https://www.youtube.com/watch?v=-gFQqB8L_mI)).
 
-# ![soccer](soccer.png)
+*   [From Motor Control to Team Play in Simulated Humanoid Football][humanoid].
 
-## Installation and requirements
-
-See [dm_control](../../../README.md#installation-and-requirements) for instructions.
+![soccer](soccer.png)
 
 ## Quickstart
 
@@ -50,9 +49,9 @@ while not timestep.last():
 
 ## Rewards
 
-The environment provides a reward of +1 to each player when their team
-scores a goal, -1 when their team concedes a goal, or 0 if neither team scored
-on the current timestep.
+The environment provides a reward of +1 to each player when their team scores a
+goal, -1 when their team concedes a goal, or 0 if neither team scored on the
+current timestep.
 
 In addition to the sparse reward returned the environment, the player
 observations also contain various environment statistics that may be used to
@@ -75,5 +74,5 @@ after `time_limit` with a discount factor of `1.0`.
 To visualize an example environment instance using the `dm_control` interactive
 viewer, execute `dm_control/locomotion/soccer/explore.py`.
 
-[boxhead]: https://sites.google.com/corp/view/emergent-coordination/home
+[boxhead]: http://arxiv.org/abs/1902.07151
 [humanoid]: https://arxiv.org/abs/2105.12196

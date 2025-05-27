@@ -39,6 +39,19 @@ class Additive(base.Variation):
         variation_values.evaluate(self._variation, initial_value, current_value,
                                   random_state))
 
+  def __eq__(self, other):
+    if not isinstance(other, Additive):
+      return False
+    return (
+        self._variation == other._variation
+        and self._cumulative == other._cumulative
+    )
+
+  def __repr__(self):
+    return (
+        f"Additive(variation={self._variation}, cumulative={self._cumulative})"
+    )
+
 
 class Multiplicative(base.Variation):
   """A variation that multiplies to an existing value.
@@ -58,3 +71,17 @@ class Multiplicative(base.Variation):
     return base_value * (
         variation_values.evaluate(self._variation, initial_value, current_value,
                                   random_state))
+
+  def __eq__(self, other):
+    if not isinstance(other, Multiplicative):
+      return False
+    return (
+        self._variation == other._variation
+        and self._cumulative == other._cumulative
+    )
+
+  def __repr__(self):
+    return (
+        f"Multiplicative(variation={self._variation}, "
+        f"cumulative={self._cumulative})"
+    )

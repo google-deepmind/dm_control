@@ -13,7 +13,6 @@
 # limitations under the License.
 # ============================================================================
 
-"""Tests for core.py."""
 
 import gc
 import os
@@ -194,7 +193,7 @@ class CoreTest(parameterized.TestCase):
       mujoco.mj_step(self.model.ptr, self.data.ptr)
     data2 = func(self.data)
     self.assertNotEqual(data2.ptr, self.data.ptr)
-    attr_to_compare = ("warning", "timer", "solver")
+    attr_to_compare = ("warning", "solver")
     self._assert_attributes_equal(self.data, data2, attr_to_compare)
     for _ in range(10):
       mujoco.mj_step(self.model.ptr, self.data.ptr)

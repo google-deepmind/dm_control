@@ -462,7 +462,7 @@ All children of non-worldbody elements, e.g. actuators or tendons, are
 automatically merged in to appropriate places when a model is attached. Named
 elements are prefixed as previously described.
 
-## Common gotchas {#common-gotchas}
+## Common gotchas
 
 ### Use `foo.dclass`, not ~~`foo.class`~~
 

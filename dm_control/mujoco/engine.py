@@ -417,7 +417,8 @@ class Physics(_control.Physics):
     with self._contexts_lock:
       if self._contexts:
         self._free_rendering_contexts()
-    del self._data
+    if hasattr(self, '_data'):
+      del self._data
 
   @classmethod
   def from_model(cls, model):
@@ -920,7 +921,7 @@ class Camera:
       image = self._rgb_buffer
 
     # The first row in the buffer is the bottom row of pixels in the image.
-    return np.flipud(image)
+    return self._physics.contexts.gl.to_pixels(image)
 
   def select(self, cursor_position):
     """Returns bodies and geoms visible at given coordinates in the frame.

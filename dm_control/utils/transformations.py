@@ -625,6 +625,26 @@ def mat_to_quat(mat):
   return q
 
 
+def axisangle_to_quat(axisangle, tol=0.0):
+  """Returns the quaternion corresponding to the provided axis-angle.
+
+  Args:
+    axisangle: A 3x1 numpy array describing the axis of rotation, with angle
+      encoded by its length.
+    tol: Tolerance for the angle magnitude below which the identity quaternion
+      is returned.
+
+  Returns:
+    A quaternion [w, i, j, k].
+  """
+  axisangle = np.asarray(axisangle)
+  angle = np.linalg.norm(axisangle, axis=-1, keepdims=True)
+  axis = np.where(angle <= tol, [1.0, 0.0, 0.0], axisangle / angle)
+  angle = np.where(angle <= tol, [0.0], angle)
+  sine, cosine = np.sin(angle / 2), np.cos(angle / 2)
+  return np.concatenate([cosine, axis * sine], axis=-1)
+
+
 # ################
 # # 2D Functions #
 # ################

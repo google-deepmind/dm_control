@@ -28,6 +28,8 @@ FLAGS = flags.FLAGS
 _ASSETS_DIR = os.path.join(os.path.dirname(__file__), 'test_assets')
 _TEST_MODEL_WITH_ASSETS = os.path.join(_ASSETS_DIR, 'model_with_assets.xml')
 _TEST_MODEL_WITH_ASSETDIR = os.path.join(_ASSETS_DIR, 'model_with_assetdir.xml')
+_TEST_MODEL_WITH_SEPARATORS = os.path.join(_ASSETS_DIR,
+                                           'model_with_separators.xml')
 _TEST_MODEL_WITHOUT_ASSETS = os.path.join(_ASSETS_DIR, 'lego_brick.xml')
 
 
@@ -85,6 +87,15 @@ class ExportWithAssetsTest(parameterized.TestCase):
   def test_default_model_filename(self):
     out_dir = self.create_tempdir().full_path
     mjcf_model = mjcf.from_path(_TEST_MODEL_WITH_ASSETS)
+    mjcf.export_with_assets(mjcf_model, out_dir, out_file_name=None)
+    expected_name = mjcf_model.model + '.xml'
+    self.assertTrue(os.path.isfile(os.path.join(out_dir, expected_name)))
+
+  def test_model_with_separators(self):
+    out_dir = self.create_tempdir().full_path
+    mjcf_model = mjcf.from_path(
+        _TEST_MODEL_WITH_SEPARATORS, escape_separators=True
+    )
     mjcf.export_with_assets(mjcf_model, out_dir, out_file_name=None)
     expected_name = mjcf_model.model + '.xml'
     self.assertTrue(os.path.isfile(os.path.join(out_dir, expected_name)))

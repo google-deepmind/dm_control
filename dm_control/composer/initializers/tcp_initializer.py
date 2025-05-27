@@ -131,8 +131,8 @@ class ToolCenterPointInitializer(composer.Initializer):
       random_state: An `np.random.RandomState` instance.
 
     Raises:
-      RuntimeError: If a collision-free pose could not be found within
-        `max_ik_attempts`.
+      composer.EpisodeInitializationError: If a collision-free pose could not be
+      found within `max_ik_attempts`.
     """
     if self._hand is not None:
       target_site = self._hand.tool_center_point
@@ -162,6 +162,9 @@ class ToolCenterPointInitializer(composer.Initializer):
       # positions and try again with a new target.
       physics.bind(self._arm.joints).qpos = initial_qpos
 
-    raise RuntimeError(_REJECTION_SAMPLING_FAILED.format(
-        max_rejection_samples=self._max_rejection_samples,
-        max_ik_attempts=self._max_ik_attempts))
+    raise composer.EpisodeInitializationError(
+        _REJECTION_SAMPLING_FAILED.format(
+            max_rejection_samples=self._max_rejection_samples,
+            max_ik_attempts=self._max_ik_attempts,
+        )
+    )

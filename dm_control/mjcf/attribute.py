@@ -317,7 +317,9 @@ class Reference(_Attribute):
       return self._reference_namespace
 
   def _assign(self, value):
-    if not isinstance(value, (base.Element, str)):
+    if not isinstance(value, (base.Element, str)) and not (
+        isinstance(value, np.ndarray) and value.dtype.kind == 'U'
+    ):
       raise ValueError(
           'Expect a string or `mjcf.Element` value: got {}'.format(value))
     elif not value:
@@ -330,6 +332,8 @@ class Reference(_Attribute):
           raise ValueError(_INVALID_REFERENCE_TYPE.format(
               valid_type=self.reference_namespace,
               actual_type=value_namespace))
+      elif isinstance(value, np.ndarray):
+        value = value.item()
       self._value = value
 
   def _before_clear(self):
@@ -424,7 +428,7 @@ class BaseAsset:
   def __eq__(self, other):
     return self.get_vfs_filename() == other.get_vfs_filename()
 
-  def get_vfs_filename(self):
+  def get_vfs_filename(self, filename_with_hash=True):
     """Returns the name of the asset file as registered in MuJoCo's VFS."""
     # Hash the contents of the asset to get a unique identifier.
     hash_string = hashlib.sha1(util.to_binary_string(self.contents)).hexdigest()
@@ -435,7 +439,10 @@ class BaseAsset:
       if raw_length > constants.MAX_VFS_FILENAME_LENGTH:
         trim_amount = raw_length - constants.MAX_VFS_FILENAME_LENGTH
         prefix = prefix[:-trim_amount]
-      filename = '-'.join([prefix, hash_string])
+      if filename_with_hash:
+        filename = '-'.join([prefix, hash_string])
+      else:
+        filename = prefix
     else:
       filename = hash_string
 
@@ -568,6 +575,7 @@ class File(_Attribute):
     """Returns the asset filename as it will appear in the generated XML."""
     del prefix_root  # Unused
     if self._value is not None:
-      return self._value.get_vfs_filename()
+      filename_with_hash = kwargs.get('filename_with_hash', True)
+      return self._value.get_vfs_filename(filename_with_hash)
     else:
       return None

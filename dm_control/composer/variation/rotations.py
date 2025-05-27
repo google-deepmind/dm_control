@@ -18,6 +18,7 @@
 
 from dm_control.composer.variation import base
 from dm_control.composer.variation import variation_values
+from dm_control.utils import transformations
 import numpy as np
 
 IDENTITY_QUATERNION = np.array([1., 0., 0., 0.])
@@ -34,6 +35,12 @@ class UniformQuaternion(base.Variation):
                      np.sqrt(u1) * np.sin(u3),
                      np.sqrt(u1) * np.cos(u3)])
 
+  def __eq__(self, other):
+    return isinstance(other, UniformQuaternion)
+
+  def __repr__(self):
+    return "UniformQuaternion()"
+
 
 class QuaternionFromAxisAngle(base.Variation):
   """Quaternion variation specified in terms of variations in axis and angle."""
@@ -48,8 +55,20 @@ class QuaternionFromAxisAngle(base.Variation):
         self._axis, initial_value, current_value, random_state)
     angle = variation_values.evaluate(
         self._angle, initial_value, current_value, random_state)
-    sine, cosine = np.sin(angle / 2), np.cos(angle / 2)
-    return np.array([cosine, axis[0] * sine, axis[1] * sine, axis[2] * sine])
+    return transformations.axisangle_to_quat(np.asarray(axis) * angle)
+
+  def __eq__(self, other):
+    if not isinstance(other, QuaternionFromAxisAngle):
+      return False
+    return (
+        self._axis == other._axis
+        and self._angle == other._angle
+    )
+
+  def __repr__(self):
+    return (
+        f"QuaternionFromAxisAngle(axis={self._axis}, angle={self._angle})"
+    )
 
 
 class QuaternionPreMultiply(base.Variation):
@@ -70,8 +89,58 @@ class QuaternionPreMultiply(base.Variation):
     q1 = variation_values.evaluate(self._quat, initial_value, current_value,
                                    random_state)
     q2 = current_value if self._cumulative else initial_value
-    return np.array([
-        q1[0]*q2[0] - q1[1]*q2[1] - q1[2]*q2[2] - q1[3]*q2[3],
-        q1[0]*q2[1] + q1[1]*q2[0] + q1[2]*q2[3] - q1[3]*q2[2],
-        q1[0]*q2[2] - q1[1]*q2[3] + q1[2]*q2[0] + q1[3]*q2[1],
-        q1[0]*q2[3] + q1[1]*q2[2] - q1[2]*q2[1] + q1[3]*q2[0]])
+    return transformations.quat_mul(np.asarray(q1), np.asarray(q2))
+
+  def __eq__(self, other):
+    if not isinstance(other, QuaternionPreMultiply):
+      return False
+    return self._quat == other._quat and self._cumulative == other._cumulative
+
+  def __repr__(self):
+    return (
+        f"QuaternionPreMultiply(quat={self._quat},"
+        f" cumulative={self._cumulative})"
+    )
+
+
+class QuaternionRotate(base.Variation):
+  """Variation that rotates a given vector by the given quaternion.
+
+  The vector can either be an existing value passed at evaluation, or specified
+  as a separate variation at construction. In the former case, cumulative mode
+  determines whether to use the current or initial value of the vector. The#
+  quaternion is always specified by a variation at construction.
+  """
+
+  def __init__(self, quat, vec=None, cumulative=False):
+    self._quat = quat
+    self._vec = vec
+    self._cumulative = cumulative
+
+  def __call__(self, initial_value=None, current_value=None, random_state=None):
+    random_state = random_state or np.random
+    quat = variation_values.evaluate(
+        self._quat, initial_value, current_value, random_state
+    )
+    if self._vec is None:
+      vec = current_value if self._cumulative else initial_value
+    else:
+      vec = variation_values.evaluate(
+          self._vec, initial_value, current_value, random_state
+      )
+    return transformations.quat_rotate(np.asarray(quat), np.asarray(vec))
+
+  def __eq__(self, other):
+    if not isinstance(other, QuaternionRotate):
+      return False
+    return (
+        self._quat == other._quat
+        and self._vec == other._vec
+        and self._cumulative == other._cumulative
+    )
+
+  def __repr__(self):
+    return (
+        f"QuaternionRotate(quat={self._quat}, vec={self._vec},"
+        f" cumulative={self._cumulative})"
+    )

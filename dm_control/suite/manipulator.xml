@@ -11,7 +11,7 @@
   <visual>
     <map shadowclip=".5"/>
     <quality shadowsize="2048"/>
-  </visual>>
+  </visual>
 
   <option timestep="0.001" cone="elliptic"/>
 

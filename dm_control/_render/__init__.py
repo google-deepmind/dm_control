@@ -45,6 +45,9 @@ def _import_glfw():
 def _import_osmesa():
   from dm_control._render.pyopengl.osmesa_renderer import OSMesaContext
   return OSMesaContext
+
+
+# Import removed.
 # pylint: enable=g-import-not-at-top
 
 
@@ -59,6 +62,7 @@ _ALL_RENDERERS = (
     (constants.GLFW, _import_glfw),
     (constants.EGL, _import_egl),
     (constants.OSMESA, _import_osmesa),
+    # Option removed.
 )
 
 _NO_RENDERER = (

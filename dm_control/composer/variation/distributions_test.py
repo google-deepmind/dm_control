@@ -13,8 +13,6 @@
 # limitations under the License.
 # ============================================================================
 
-"""Tests for distributions."""
-
 from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control.composer.variation import distributions
@@ -43,6 +41,10 @@ class DistributionsTest(parameterized.TestCase):
           variation(random_state=self._variation_random_state),
           self._np_random_state.uniform(lower, upper))
 
+    self.assertEqual(variation, distributions.Uniform(low=lower, high=upper))
+    self.assertNotEqual(variation, distributions.Uniform(low=upper, high=upper))
+    self.assertIn('[2, 3, 4]', repr(variation))
+
   def testUniformChoice(self):
     choices = ['apple', 'banana', 'cherry']
     variation = distributions.UniformChoice(choices)
@@ -50,6 +52,8 @@ class DistributionsTest(parameterized.TestCase):
       self.assertEqual(
           variation(random_state=self._variation_random_state),
           self._np_random_state.choice(choices))
+
+    self.assertIn('banana', repr(variation))
 
   def testUniformPointOnSphere(self):
     variation = distributions.UniformPointOnSphere()
@@ -60,8 +64,11 @@ class DistributionsTest(parameterized.TestCase):
       np.testing.assert_approx_equal(np.linalg.norm(sample), 1.0)
       samples.append(sample)
     # Make sure that none of the samples are the same.
-    self.assertLen(
-        set(np.reshape(np.asarray(samples), -1)), 3 * NUM_ITERATIONS)
+    self.assertLen(set(np.reshape(np.asarray(samples), -1)), 3 * NUM_ITERATIONS)
+    self.assertEqual(variation, distributions.UniformPointOnSphere())
+    self.assertNotEqual(
+        variation, distributions.UniformPointOnSphere(single_sample=True)
+    )
 
   def testNormal(self):
     loc, scale = 1, 2
@@ -70,6 +77,14 @@ class DistributionsTest(parameterized.TestCase):
       self.assertEqual(
           variation(random_state=self._variation_random_state),
           self._np_random_state.normal(loc, scale))
+    self.assertEqual(variation, distributions.Normal(loc=loc, scale=scale))
+    self.assertNotEqual(
+        variation, distributions.Normal(loc=loc*2, scale=scale)
+    )
+    self.assertEqual(
+        "Normal(args=(), kwargs={'loc': 1, 'scale': 2}, single_sample=False)",
+        repr(variation),
+    )
 
   def testExponential(self):
     scale = 3
@@ -78,6 +93,14 @@ class DistributionsTest(parameterized.TestCase):
       self.assertEqual(
           variation(random_state=self._variation_random_state),
           self._np_random_state.exponential(scale))
+    self.assertEqual(variation, distributions.Exponential(scale=scale))
+    self.assertNotEqual(
+        variation, distributions.Exponential(scale=scale*2)
+    )
+    self.assertEqual(
+        "Exponential(args=(), kwargs={'scale': 3}, single_sample=False)",
+        repr(variation),
+    )
 
   def testPoisson(self):
     lam = 4
@@ -86,6 +109,14 @@ class DistributionsTest(parameterized.TestCase):
       self.assertEqual(
           variation(random_state=self._variation_random_state),
           self._np_random_state.poisson(lam))
+    self.assertEqual(variation, distributions.Poisson(lam=lam))
+    self.assertNotEqual(
+        variation, distributions.Poisson(lam=lam*2)
+    )
+    self.assertEqual(
+        "Poisson(args=(), kwargs={'lam': 4}, single_sample=False)",
+        repr(variation),
+    )
 
   @parameterized.parameters(0, 10)
   def testBiasedRandomWalk(self, timescale):

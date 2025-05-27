@@ -13,8 +13,6 @@
 # limitations under the License.
 # ============================================================================
 
-"""Tests for `engine`."""
-
 import copy
 import pickle
 
@@ -201,6 +199,10 @@ class MujocoEngineTest(parameterized.TestCase):
     self.assertFalse(
         np.all(disabled == enabled),
         msg='Images are identical regardless of whether wireframe is enabled.')
+
+  def testFreeIdempotent(self):
+    self._physics.free()
+    self._physics.free()
 
   @parameterized.parameters(((0.5, 0.5), (1, 3)),  # pole
                             ((0.5, 0.1), (0, 0)),  # ground

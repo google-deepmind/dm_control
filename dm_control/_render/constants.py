@@ -28,5 +28,6 @@ PYOPENGL_PLATFORM = 'PYOPENGL_PLATFORM'
 OSMESA = ('osmesa',)
 GLFW = ('glfw', 'on', 'enable', 'enabled', 'true', '1', '')
 EGL = ('egl',)
+# Constant removed.
 NO_RENDERER = ('off', 'disable', 'disabled', 'false', '0')
 
