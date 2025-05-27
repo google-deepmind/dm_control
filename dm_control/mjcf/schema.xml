@@ -354,6 +354,7 @@
             <attribute name="target" type="reference" reference_namespace="body"/>
             <attribute name="directional" type="keyword" valid_values="false true"/>
             <attribute name="type" type="keyword" valid_values="spot directional point image"/>
+            <attribute name="texture" type="reference"/>
             <attribute name="castshadow" type="keyword" valid_values="false true"/>
             <attribute name="active" type="keyword" valid_values="false true"/>
             <attribute name="pos" type="array" array_type="float" array_size="3"/>
@@ -678,6 +679,7 @@
                 <attribute name="target" type="reference" reference_namespace="body"/>
                 <attribute name="directional" type="keyword" valid_values="false true"/>
                 <attribute name="type" type="keyword" valid_values="spot directional point image"/>
+                <attribute name="texture" type="reference"/>
                 <attribute name="castshadow" type="keyword" valid_values="false true"/>
                 <attribute name="active" type="keyword" valid_values="false true"/>
                 <attribute name="pos" type="array" array_type="float" array_size="3"/>
@@ -1124,6 +1126,7 @@
             <attribute name="target" type="reference" reference_namespace="body"/>
             <attribute name="directional" type="keyword" valid_values="false true"/>
             <attribute name="type" type="keyword" valid_values="spot directional point image"/>
+            <attribute name="texture" type="reference"/>
             <attribute name="castshadow" type="keyword" valid_values="false true"/>
             <attribute name="active" type="keyword" valid_values="false true"/>
             <attribute name="pos" type="array" array_type="float" array_size="3"/>
@@ -1498,6 +1501,7 @@
                 <attribute name="target" type="reference" reference_namespace="body"/>
                 <attribute name="directional" type="keyword" valid_values="false true"/>
                 <attribute name="type" type="keyword" valid_values="spot directional point image"/>
+                <attribute name="texture" type="reference"/>
                 <attribute name="castshadow" type="keyword" valid_values="false true"/>
                 <attribute name="active" type="keyword" valid_values="false true"/>
                 <attribute name="pos" type="array" array_type="float" array_size="3"/>
