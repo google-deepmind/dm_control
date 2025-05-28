@@ -908,6 +908,7 @@
           <attributes>
             <attribute name="name" type="identifier"/>
             <attribute name="type" type="keyword" valid_values="2d cube skybox"/>
+            <attribute name="content_type" type="string" valid_values="image/png image/vnd.mujoco.texture"/>
             <attribute name="colorspace" type="keyword" valid_values="auto linear sRGB"/>
             <attribute name="file" type="file" path_namespace="texture"/>
             <attribute name="gridsize" type="array" array_type="int" array_size="2"/>
@@ -933,6 +934,7 @@
         <element name="hfield" repeated="true">
           <attributes>
             <attribute name="name" type="identifier"/>
+            <attribute name="content_type" type="string" valid_values="image/png image/vnd.mujoco.hfield"/>
             <attribute name="file" type="file" path_namespace="mesh"/>
             <attribute name="nrow" type="int"/>
             <attribute name="ncol" type="int"/>
