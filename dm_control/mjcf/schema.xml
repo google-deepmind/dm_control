@@ -123,6 +123,7 @@
       <children>
         <element name="global">
           <attributes>
+            <attribute name="cameraid" type="int"/>
             <attribute name="fovy" type="float"/>
             <attribute name="ipd" type="float"/>
             <attribute name="azimuth" type="float"/>
