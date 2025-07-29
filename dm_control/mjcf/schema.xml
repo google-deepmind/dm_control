@@ -958,6 +958,8 @@
             <attribute name="refquat" type="array" array_type="float" array_size="4"/>
             <attribute name="maxhullvert" type="int"/>
             <attribute name="inertia" type="keyword" valid_values="legacy convex exact shell"/>
+            <attribute name="builtin" type="keyword" valid_values="wedge rect"/>
+            <attribute name="parameters" type="array" array_type="float"/>
           </attributes>
           <children>
             <element name="plugin" repeated="true" namespace="mesh">
