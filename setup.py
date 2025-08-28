@@ -27,7 +27,6 @@ import setuptools
 from setuptools import find_packages
 from setuptools import setup
 from setuptools.command import install
-from setuptools.command import test
 
 PLATFORM = platform.system()
 
@@ -142,16 +141,6 @@ class InstallCommand(install.install):
     install.install.run(self)
 
 
-class TestCommand(test.test):
-  """Prepends path to generated sources before running unit tests."""
-
-  def run(self):
-    # Generate ctypes bindings in-place so that they can be imported in tests.
-    self.reinitialize_command('build_mjbindings', inplace=1)
-    self.run_command('build_mjbindings')
-    test.test.run(self)
-
-
 def find_data_files(package_dir, patterns, excludes=()):
   """Recursively finds files whose names match the given shell patterns."""
   paths = set()
@@ -192,10 +181,7 @@ notebook: [Open In Google Colab](https://colab.research.google.com/github/google
     author='DeepMind',
     author_email='mujoco@deepmind.com',
     url='https://github.com/google-deepmind/dm_control',
-    license='Apache License 2.0',
-    classifiers=[
-        'License :: OSI Approved :: Apache Software License',
-    ],
+    license='Apache-2.0',
     keywords='machine learning control physics MuJoCo AI',
     python_requires='>=3.9',
     install_requires=[
@@ -205,9 +191,9 @@ notebook: [Open In Google Colab](https://colab.research.google.com/github/google
         'glfw',
         'labmaze',
         'lxml',
-        'mujoco >= 3.3.4',
+        'mujoco >= 3.3.5',
         'numpy >= 1.9.0',
-        'protobuf >= 3.19.4',  # TensorFlow requires protobuf<3.20 (b/182876485)
+        'protobuf >= 3.19.4',
         'pyopengl >= 3.1.4',
         'pyparsing >= 3.0.0',
         'requests',
@@ -220,10 +206,9 @@ notebook: [Open In Google Colab](https://colab.research.google.com/github/google
     },
     tests_require=[
         'mock',
-        'nose',
+        'pytest',
         'pillow>=10.2.0',
     ],
-    test_suite='nose.collector',
     packages=find_packages(),
     package_data={
         'dm_control': find_data_files(
@@ -247,7 +232,6 @@ notebook: [Open In Google Colab](https://colab.research.google.com/github/google
     cmdclass={
         'build_mjbindings': BuildMJBindingsCommand,
         'install': InstallCommand,
-        'test': TestCommand,
     },
     entry_points={},
 )

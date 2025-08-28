@@ -38,8 +38,7 @@ SCALAR_TYPES = (int, float)
 ARRAY_TYPES = (np.ndarray,)
 
 OUT_DIR = absltest.get_default_test_tmpdir()
-if not os.path.exists(OUT_DIR):
-  os.makedirs(OUT_DIR)  # Ensure that the output directory exists.
+os.makedirs(OUT_DIR, exist_ok=True)  # Ensure that the output directory exists.
 
 
 class CoreTest(parameterized.TestCase):

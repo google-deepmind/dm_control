@@ -34,6 +34,8 @@ with mock.patch.dict('sys.modules', _MOCKED_MODULES):
 
 glfw_gui.base.GL = _OPEN_GL_MOCK
 glfw_gui.base.shaders = _OPEN_GL_MOCK
+glfw_gui.fullscreen_quad.GL = _OPEN_GL_MOCK
+glfw_gui.fullscreen_quad.shaders = _OPEN_GL_MOCK
 glfw_gui.glfw = _GLFW_MOCK
 
 # Pretend we are using GLFW for offscreen rendering so that the runtime backend
