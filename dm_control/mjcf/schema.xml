@@ -79,7 +79,8 @@
             <attribute name="frictionloss" type="keyword" valid_values="disable enable"/>
             <attribute name="limit" type="keyword" valid_values="disable enable"/>
             <attribute name="contact" type="keyword" valid_values="disable enable"/>
-            <attribute name="passive" type="keyword" valid_values="disable enable"/>
+            <attribute name="spring" type="keyword" valid_values="disable enable"/>
+            <attribute name="damper" type="keyword" valid_values="disable enable"/>
             <attribute name="gravity" type="keyword" valid_values="disable enable"/>
             <attribute name="clampctrl" type="keyword" valid_values="disable enable"/>
             <attribute name="warmstart" type="keyword" valid_values="disable enable"/>
