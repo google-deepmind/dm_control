@@ -1227,6 +1227,7 @@
                 <attribute name="selfcollide" type="string" valid_values="none narrow bvh sap auto"/>
                 <attribute name="vertcollide" type="string" valid_values="true false"/>
                 <attribute name="activelayers" type="int"/>
+                <attribute name="passive" type="string" valid_values="true false"/>
               </attributes>
             </element>
             <element name="pin" repeated="true">
@@ -1602,6 +1603,7 @@
                     <attribute name="selfcollide" type="string" valid_values="none narrow bvh sap auto"/>
                     <attribute name="vertcollide" type="string" valid_values="true false"/>
                     <attribute name="activelayers" type="int"/>
+                    <attribute name="passive" type="string" valid_values="true false"/>
                   </attributes>
                 </element>
                 <element name="pin" repeated="true">
@@ -1748,6 +1750,7 @@
                 <attribute name="selfcollide" type="string" valid_values="none narrow bvh sap auto"/>
                 <attribute name="vertcollide" type="string" valid_values="true false"/>
                 <attribute name="activelayers" type="int"/>
+                <attribute name="passive" type="string" valid_values="true false"/>
               </attributes>
             </element>
             <element name="elasticity" repeated="true">
