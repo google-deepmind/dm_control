@@ -173,12 +173,13 @@ XMEMBER = pp.Group(
     pp.delimitedList(XDIM, delim=COMMA)("dims") +
     RPAREN)
 
+XMACRO_LINE = XMEMBER | NAME
 XMACRO = pp.Group(
     pp.Optional(COMMENT("comment")) +
     DEFINE +
     NAME("name") +
     CONTINUATION +
-    pp.delimitedList(XMEMBER, delim=CONTINUATION)("members"))
+    pp.delimitedList(XMACRO_LINE, delim=CONTINUATION)("members"))
 
 
 # Type/variable declarations.

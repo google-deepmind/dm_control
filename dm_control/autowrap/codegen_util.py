@@ -78,14 +78,18 @@ class UniqueOrderedDict(collections.OrderedDict):
 
 def macro_struct_name(name, suffix=None):
   """Converts mjxmacro struct names, e.g. "MJDATA_POINTERS" to "mjdata"."""
+  if name.startswith("MJMODEL_POINTERS"):
+    return "mjmodel"
   if suffix is None:
     suffix = _MJXMACRO_SUFFIX
-  return name[:-len(suffix)].lower()
+  if name.endswith(suffix):
+    return name[:-len(suffix)].lower()
+  return name.lower()
 
 
 def is_macro_pointer(name):
   """Returns True if the mjxmacro struct name contains pointer sizes."""
-  return name.endswith(_MJXMACRO_SUFFIX)
+  return name.endswith(_MJXMACRO_SUFFIX) or name.startswith("MJMODEL_POINTERS")
 
 
 def try_coerce_to_num(s, try_types=(int, float)):

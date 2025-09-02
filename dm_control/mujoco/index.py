@@ -300,7 +300,14 @@ def _is_name_pointer(field_name):
 
 def _get_size_name(field_name, struct_name='mjmodel'):
   # Look up size name in metadata.
-  return sizes.array_sizes[struct_name][field_name][0]
+  try:
+    return sizes.array_sizes[struct_name][field_name][0]
+  except KeyError:
+    # Special handling required for name pointers in mjModel.
+    if _is_name_pointer(field_name):
+      return 'n' + field_name.split('_')[1][:-3]
+    else:
+      raise
 
 
 def _validate_key_item(key_item):

@@ -160,6 +160,8 @@ class BindingGenerator:
     for tokens, _, _ in parser.scanString(xmacro_src):
       for xmacro in tokens:
         for member in xmacro.members:
+          if not hasattr(member, "name") or not member.name:
+            continue
           # "Squeeze out" singleton dimensions.
           shape = self.get_shape_tuple(member.dims, squeeze=True)
           self.hints_dict.update({member.name: shape})
