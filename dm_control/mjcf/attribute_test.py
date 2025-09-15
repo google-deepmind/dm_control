@@ -13,8 +13,6 @@
 # limitations under the License.
 # ============================================================================
 
-"""Tests for `dm_control.mjcf.attribute`."""
-
 import contextlib
 import hashlib
 import os
@@ -450,6 +448,19 @@ class AttributeTest(parameterized.TestCase):
     contents = 'Fake contents'
     assets = {path: contents}
     mujoco = element.RootElement(assets=assets)
+    text_file = mujoco.files.add('text', file=path)
+    expected_value = attribute.Asset(
+        contents=contents, extension=extension, prefix=prefix)
+    self.assertEqual(text_file.file, expected_value)
+
+  def testFileFromAssetsDictWithBasepath(self):
+    prefix = 'fake_filename'
+    extension = '.whatever'
+    path = 'invalid/path/' + prefix + extension
+    contents = 'Fake contents'
+    assets = {os.path.join(ASSETS_DIR, path): contents}
+    mujoco = element.RootElement(assets=assets)
+    mujoco.files.text_path = ASSETS_DIR
     text_file = mujoco.files.add('text', file=path)
     expected_value = attribute.Asset(
         contents=contents, extension=extension, prefix=prefix)

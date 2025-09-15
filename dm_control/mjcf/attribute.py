@@ -518,39 +518,34 @@ class File(_Attribute):
     _, basename = os.path.split(path)
     filename, extension = os.path.splitext(basename)
 
-    assetdir = None
+    # Construct the path to the asset file (relative to the model directory),
+    # prefixed by the appropriate base path, if specified.
+    base_path = None
     if self._parent.namescope.has_identifier(
+        constants.BASEPATH, self._path_namespace
+    ):
+      base_path = self._parent.namescope.get(
+          constants.BASEPATH, self._path_namespace
+      )
+    elif self._path_namespace in (
+        constants.TEXTUREDIR_NAMESPACE,
+        constants.MESHDIR_NAMESPACE,
+    ) and self._parent.namescope.has_identifier(
         constants.BASEPATH, constants.ASSETDIR_NAMESPACE
     ):
-      assetdir = self._parent.namescope.get(
+      base_path = self._parent.namescope.get(
           constants.BASEPATH, constants.ASSETDIR_NAMESPACE
       )
+    full_path = os.path.join(base_path, path) if base_path else path
 
+    # Look in the dict of pre-loaded assets before checking the filesystem.
     if path in self._parent.namescope.assets:
-      # Look in the dict of pre-loaded assets before checking the filesystem.
       contents = self._parent.namescope.assets[path]
+    elif full_path in self._parent.namescope.assets:
+      contents = self._parent.namescope.assets[full_path]
     else:
-      # Construct the full path to the asset file, prefixed by the path to the
-      # model directory, and by `meshdir` or `texturedir` if appropriate.
-      path_parts = []
       if self._parent.namescope.model_dir:
-        path_parts.append(self._parent.namescope.model_dir)
-
-      if self._parent.namescope.has_identifier(
-          constants.BASEPATH, self._path_namespace
-      ):
-        base_path = self._parent.namescope.get(
-            constants.BASEPATH, self._path_namespace
-        )
-        path_parts.append(base_path)
-      elif (
-          self._path_namespace
-          in (constants.TEXTUREDIR_NAMESPACE, constants.MESHDIR_NAMESPACE)
-          and assetdir is not None
-      ):
-        path_parts.append(assetdir)
-      path_parts.append(path)
-      full_path = os.path.join(*path_parts)  # pylint: disable=no-value-for-parameter
+        full_path = os.path.join(self._parent.namescope.model_dir, full_path)
       contents = resources.GetResource(full_path)
 
     if self._parent.tag == constants.SKIN:
