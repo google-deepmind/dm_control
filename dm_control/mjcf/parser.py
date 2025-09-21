@@ -15,8 +15,10 @@
 
 """Functions for parsing XML into an MJCF object model."""
 
+import io
 import os
 import sys
+import zipfile
 
 from dm_control.mjcf import constants
 from dm_control.mjcf import debugging
@@ -105,6 +107,60 @@ def from_path(path, escape_separators=False, resolve_references=True,
   return _parse(xml_root, escape_separators,
                 model_dir=model_dir, resolve_references=resolve_references,
                 assets=assets)
+
+
+def from_zip(path, model_file='model.xml', escape_separators=False,
+             resolve_references=True):
+  """Parses a zipped XML file into an MJCF object model.
+
+  Args:
+    path: A path to a zip file containing an MJCF model and its assets.
+    model_file: If the zip contains multiple XML files, specify the name of the
+      main model file. Ignored if the zip only contains one XML file.
+    escape_separators: (optional) A boolean, whether to replace '/' characters
+      in element identifiers. If `False`, any '/' present in the XML causes a
+      ValueError to be raised.
+    resolve_references: (optional) A boolean indicating whether the parser
+      should attempt to resolve reference attributes to a corresponding element.
+
+  Returns:
+    An `mjcf.RootElement`.
+
+  Raises:
+    ValueError: If:
+      - the path does not point to a zip file
+      - the zip file contains no XML files
+      - the zip file contains more than one XML file and none of them have the
+        name specified in `model_file`.
+  """
+  contents = resources.GetResource(path)
+  if not zipfile.is_zipfile(io.BytesIO(contents)):
+    raise ValueError(f'File {path} is not a zip file.')
+  with zipfile.ZipFile(io.BytesIO(contents), 'r') as zf:
+    xml_files = [f for f in zf.namelist() if f.endswith('.xml')]
+    if not xml_files:
+      raise ValueError(f'No XML file found in {path}.')
+    elif len(xml_files) > 1:
+      model_files = [f for f in xml_files if f == model_file]
+      if not model_files:
+        raise ValueError(
+            f'Multiple XML files found in {path}, but none named {model_file}.'
+        )
+      xml_path = model_files[0]
+    else:
+      xml_path = xml_files[0]
+    xml_string = zf.read(xml_path)
+
+    model_dir = os.path.dirname(xml_path)
+    assets = {
+        os.path.relpath(name, model_dir): zf.read(name)
+        for name in zf.namelist()
+        if not (name.endswith(os.path.sep) or name == xml_path)
+    }
+
+  xml_root = etree.fromstring(xml_string)
+  return _parse(xml_root, escape_separators,
+                resolve_references=resolve_references, assets=assets)
 
 
 def _parse(xml_root, escape_separators=False,

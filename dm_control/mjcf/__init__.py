@@ -29,6 +29,7 @@ from dm_control.mjcf.export_with_assets_as_zip import export_with_assets_as_zip
 from dm_control.mjcf.parser import from_file
 from dm_control.mjcf.parser import from_path
 from dm_control.mjcf.parser import from_xml_string
+from dm_control.mjcf.parser import from_zip
 
 from dm_control.mjcf.physics import Physics
 

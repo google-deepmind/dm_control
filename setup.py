@@ -222,6 +222,7 @@ notebook: [Open In Google Colab](https://colab.research.google.com/github/google
                 '*.xml',
                 '*.textproto',
                 '*.h5',
+                '*.zip',
             ],
             excludes=[
                 '*/dog_assets/extras/*',

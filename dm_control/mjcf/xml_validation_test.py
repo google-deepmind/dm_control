@@ -25,9 +25,10 @@ ASSETS_DIR = os.path.join(os.path.dirname(__file__), 'test_assets')
 _ARENA_XML = os.path.join(ASSETS_DIR, 'arena.xml')
 _LEGO_BRICK_XML = os.path.join(ASSETS_DIR, 'lego_brick.xml')
 _ROBOT_XML = os.path.join(ASSETS_DIR, 'robot_arm.xml')
+_ZIPPED_MODEL = os.path.join(ASSETS_DIR, 'model_with_assetdir.zip')
 
 
-def validate(xml_string):
+def validate(xml_string, assets=None):
   """Validates that an XML string is a valid MJCF.
 
   Validation is performed by constructing Mujoco model from the string.
@@ -36,9 +37,10 @@ def validate(xml_string):
 
   Args:
     xml_string: XML string to validate
+    assets: Optional dict of assets to use for the model.
   """
 
-  mjmodel = wrapper.MjModel.from_xml_string(xml_string)
+  mjmodel = wrapper.MjModel.from_xml_string(xml_string, assets)
   wrapper.MjData(mjmodel)
 
 
@@ -60,6 +62,10 @@ class XMLValidationTest(absltest.TestCase):
 
     # validate
     validate(arena.to_xml_string())
+
+  def testXmlFromZip(self):
+    model = parser.from_zip(_ZIPPED_MODEL)
+    validate(model.to_xml_string(), model.get_assets())
 
 
 if __name__ == '__main__':
