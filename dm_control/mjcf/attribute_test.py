@@ -456,9 +456,9 @@ class AttributeTest(parameterized.TestCase):
   def testFileFromAssetsDictWithBasepath(self):
     prefix = 'fake_filename'
     extension = '.whatever'
-    path = 'invalid/path/' + prefix + extension
+    path = 'invalid/../path/' + prefix + extension
     contents = 'Fake contents'
-    assets = {os.path.join(ASSETS_DIR, path): contents}
+    assets = {os.path.normpath(os.path.join(ASSETS_DIR, path)): contents}
     mujoco = element.RootElement(assets=assets)
     mujoco.files.text_path = ASSETS_DIR
     text_file = mujoco.files.add('text', file=path)

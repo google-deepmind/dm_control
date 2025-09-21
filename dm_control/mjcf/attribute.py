@@ -536,7 +536,9 @@ class File(_Attribute):
       base_path = self._parent.namescope.get(
           constants.BASEPATH, constants.ASSETDIR_NAMESPACE
       )
-    full_path = os.path.join(base_path, path) if base_path else path
+    full_path = (
+        os.path.normpath(os.path.join(base_path, path)) if base_path else path
+    )
 
     # Look in the dict of pre-loaded assets before checking the filesystem.
     if path in self._parent.namescope.assets:
