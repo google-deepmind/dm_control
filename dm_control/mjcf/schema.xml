@@ -46,7 +46,6 @@
     <element name="option">
       <attributes>
         <attribute name="timestep" type="float" conflict_allowed="true" conflict_behavior="min"/>
-        <attribute name="apirate" type="float"/>
         <attribute name="gravity" type="array" array_type="float" array_size="3"/>
         <attribute name="wind" type="array" array_type="float" array_size="3"/>
         <attribute name="magnetic" type="array" array_type="float" array_size="3"/>
