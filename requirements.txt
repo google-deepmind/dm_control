@@ -6,7 +6,7 @@ h5py==3.14.0
 labmaze==1.0.6
 lxml==6.0.1
 mock==5.2.0
-mujoco==3.3.6
+mujoco==3.3.7
 numpy==2.3.2; python_version >= '3.11'
 numpy==2.2.6; python_version == '3.10'
 numpy==2.0.2; python_version == '3.9'
