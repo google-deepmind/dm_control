@@ -232,35 +232,57 @@ class Physics(_control.Physics):
     camera._scene.free()  # pylint: disable=protected-access
     return image
 
-  def get_state(self):
+  def get_state(self, sig=None):
     """Returns the physics state.
+
+    Args:
+      sig: Optional integer, if specified then the returned array corresponds to
+        the state obtained by calling `mj_getState` with `sig`.
 
     Returns:
       NumPy array containing full physics simulation state.
     """
-    return np.concatenate(self._physics_state_items())
+    if sig is None:
+      return np.concatenate(self._physics_state_items())
+    else:
+      retval = np.empty(mujoco.mj_stateSize(self.model.ptr, sig), np.float64)
+      mujoco.mj_getState(self.model.ptr, self.data.ptr, retval, sig)
+      return retval
 
-  def set_state(self, physics_state):
+  def set_state(self, physics_state, sig=None):
     """Sets the physics state.
 
     Args:
       physics_state: NumPy array containing the full physics simulation state.
+      sig: Optional integer, if specified then physics_state is passed directly
+        to `mj_setState` with `sig`.
 
     Raises:
       ValueError: If `physics_state` has invalid size.
     """
-    state_items = self._physics_state_items()
+    if sig is None:
+      state_items = self._physics_state_items()
 
-    expected_shape = (sum(item.size for item in state_items),)
-    if expected_shape != physics_state.shape:
-      raise ValueError('Input physics state has shape {}. Expected {}.'.format(
-          physics_state.shape, expected_shape))
+      expected_shape = (sum(item.size for item in state_items),)
+      if expected_shape != physics_state.shape:
+        raise ValueError(
+            'Input physics state has shape {}. Expected {}.'.format(
+                physics_state.shape, expected_shape
+            )
+        )
 
-    start = 0
-    for state_item in state_items:
-      size = state_item.size
-      np.copyto(state_item, physics_state[start:start + size])
-      start += size
+      start = 0
+      for state_item in state_items:
+        size = state_item.size
+        np.copyto(state_item, physics_state[start:start + size])
+        start += size
+    else:
+      mujoco.mj_setState(
+          self.model.ptr,
+          self.data.ptr,
+          np.asarray(physics_state, np.float64),
+          sig,
+      )
 
   def copy(self, share_model=False):
     """Creates a copy of this `Physics` instance.

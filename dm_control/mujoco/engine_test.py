@@ -370,7 +370,7 @@ class MujocoEngineTest(parameterized.TestCase):
     self.assertEqual(0., self._physics.time())
     self.assertEqual(0.01, self._physics.timestep())
 
-  def testSetGetPhysicsState(self):
+  def testSetGetPhysicsStateLegacy(self):
     physics_state = self._physics.get_state()
 
     # qpos, qvel, act
@@ -383,6 +383,27 @@ class MujocoEngineTest(parameterized.TestCase):
 
     np.testing.assert_allclose(new_physics_state,
                                self._physics.get_state())
+
+  def testSetGetPhysicsState(self):
+    actual_physics_state = self._physics.get_state(
+        sig=mujoco.mjtState.mjSTATE_FULLPHYSICS.value
+    )
+    expected_physics_state = np.zeros(mujoco.mj_stateSize(
+        self._physics.model.ptr, mujoco.mjtState.mjSTATE_FULLPHYSICS.value
+    ))
+    mujoco.mj_getState(self._physics.model.ptr, self._physics.data.ptr,
+                       expected_physics_state,
+                       mujoco.mjtState.mjSTATE_FULLPHYSICS.value)
+    np.testing.assert_array_equal(expected_physics_state, actual_physics_state)
+
+    new_physics_state = np.random.random_sample(expected_physics_state.shape)
+    self._physics.set_state(
+        new_physics_state, sig=mujoco.mjtState.mjSTATE_FULLPHYSICS.value
+    )
+    np.testing.assert_array_equal(
+        new_physics_state,
+        self._physics.get_state(sig=mujoco.mjtState.mjSTATE_FULLPHYSICS.value),
+    )
 
   def testSetGetPhysicsStateWithPlugin(self):
     # Model copied from mujoco/test/plugin/elasticity/elasticity_test.cc
