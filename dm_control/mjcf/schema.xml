@@ -95,6 +95,7 @@
             <attribute name="fwdinv" type="keyword" valid_values="disable enable"/>
             <attribute name="invdiscrete" type="keyword" valid_values="disable enable"/>
             <attribute name="multiccd" type="keyword" valid_values="disable enable"/>
+            <attribute name="sleep" type="keyword" valid_values="disable enable"/>
             <attribute name="island" type="keyword" valid_values="disable enable"/>
             <attribute name="nativeccd" type="keyword" valid_values="disable enable"/>
           </attributes>
@@ -1340,6 +1341,7 @@
             <attribute name="zaxis" type="array" array_type="float" array_size="3"/>
             <attribute name="euler" type="array" array_type="float" array_size="3"/>
             <attribute name="gravcomp" type="float"/>
+            <attribute name="sleep" type="keyword" valid_values="auto never allowed init"/>
             <attribute name="user" type="array" array_type="float"/>
           </attributes>
           <children>
