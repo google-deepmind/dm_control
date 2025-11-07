@@ -334,7 +334,7 @@ class TaskTest(parameterized.TestCase):
         self.assertEqual(timestep.discount, 1.)
         timestep = env.step(actions)
 
-    # If a goal was scored then the epsiode should have ended with a discount of
+    # If a goal was scored then the episode should have ended with a discount of
     # 0. If neither team scored and the episode ended due to hitting the time
     # limit then the discount should be 1.
     with self.subTest("Correct terminal discount"):

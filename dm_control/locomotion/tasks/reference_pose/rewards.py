@@ -137,7 +137,7 @@ def comic_reward_fn(termination_error, termination_error_threshold,
       based on the termination error.
     walker_features: Current features of the walker
     reference_features: features of the current reference pose
-    unused_kwargs: unused addtional keyword arguments.
+    unused_kwargs: unused additional keyword arguments.
 
   Returns:
     RewardFnOutput tuple containing reward, debug terms and reward terms.

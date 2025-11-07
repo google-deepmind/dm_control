@@ -223,7 +223,7 @@ class Updater:
             if not hasattr(aggregator, 'preserves_bounds'):
               logging.warning('Ignoring the bounds of this observable\'s spec, '
                               'as its aggregator method has no boolean '
-                              '`preserves_bounds` attrubute.')
+                              '`preserves_bounds` attribute.')
               bounds = None
             elif not aggregator.preserves_bounds:
               bounds = None
