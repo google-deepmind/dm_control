@@ -192,7 +192,7 @@ class Buffer:
         We assume that observations will only be queried at times that are
         integer multiples of `read_interval`.
     """
-    # Private deques to simulate what the deques will look like in the future,
+    # Private dequeues to simulate what the dequeues will look like in the future,
     # according to the proposed upcoming observation schedule.
     future_arrived_deque = collections.deque()
     future_pending_deque = collections.deque()
