@@ -53,10 +53,10 @@ class TcpInitializerTest(parameterized.TestCase):
     second_geom_ids = physics.bind(
         second.mjcf_model.find_all('geom')).element_id
     contact = physics.data.contact
-    first_to_second = (np.in1d(contact.geom1, first_geom_ids) &
-                       np.in1d(contact.geom2, second_geom_ids))
-    second_to_first = (np.in1d(contact.geom1, second_geom_ids) &
-                       np.in1d(contact.geom2, first_geom_ids))
+    first_to_second = (np.isin(contact.geom1, first_geom_ids).ravel() &
+                       np.isin(contact.geom2, second_geom_ids).ravel())
+    second_to_first = (np.isin(contact.geom1, second_geom_ids).ravel() &
+                       np.isin(contact.geom2, first_geom_ids).ravel())
     touching = contact.dist <= 0
     valid_contact = touching & (first_to_second | second_to_first)
     self.assertTrue(np.any(valid_contact), msg='Entities are not in contact.')

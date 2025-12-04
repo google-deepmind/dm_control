@@ -155,7 +155,9 @@ class Physics(mujoco.Physics):
     try:
       sensor_names = self._sensor_types_to_names[sensor_types]
     except KeyError:
-      [sensor_ids] = np.where(np.in1d(self.model.sensor_type, sensor_types))
+      [sensor_ids] = np.where(
+          np.isin(self.model.sensor_type, sensor_types).ravel()
+      )
       sensor_names = [self.model.id2name(s_id, 'sensor') for s_id in sensor_ids]
       self._sensor_types_to_names[sensor_types] = sensor_names
     return sensor_names
