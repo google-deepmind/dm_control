@@ -250,6 +250,14 @@
             <attribute name="reflectance" type="float"/>
             <attribute name="rgba" type="array" array_type="float" array_size="4"/>
           </attributes>
+          <children>
+            <element name="layer" repeated="true">
+              <attributes>
+                <attribute name="texture" type="reference" required="true"/>
+                <attribute name="role" type="keyword" valid_values="rgb normal occlusion roughness metallic opacity emissive orm rgba" required="true"/>
+              </attributes>
+            </element>
+          </children>
         </element>
         <element name="joint">
           <attributes>
