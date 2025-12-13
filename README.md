@@ -44,7 +44,7 @@ If you use this package, please cite our accompanying [publication]:
          issn = {2665-9638},
          doi = {https://doi.org/10.1016/j.simpa.2020.100022},
          url = {https://www.sciencedirect.com/science/article/pii/S2665963820300099},
-         author = {Saran Tunyasuvunakool and Alistair Muldal and Yotam Doron and
+         author = {Saran Tunyasuvunakool and Alistair Muldal and Yotam Doron and Salvador Arturo Ortiz Gonzalez 
                    Siqi Liu and Steven Bohez and Josh Merel and Tom Erez and
                    Timothy Lillicrap and Nicolas Heess and Yuval Tassa},
 }
