@@ -350,6 +350,7 @@
             <attribute name="zaxis" type="array" array_type="float" array_size="3"/>
             <attribute name="euler" type="array" array_type="float" array_size="3"/>
             <attribute name="resolution" type="array" array_type="int" array_size="2"/>
+            <attribute name="output" type="string"/>
             <attribute name="focal" type="array" array_type="float" array_size="2"/>
             <attribute name="focalpixel" type="array" array_type="float" array_size="2"/>
             <attribute name="principal" type="array" array_type="float" array_size="2"/>
@@ -675,6 +676,7 @@
                 <attribute name="zaxis" type="array" array_type="float" array_size="3"/>
                 <attribute name="euler" type="array" array_type="float" array_size="3"/>
                 <attribute name="resolution" type="array" array_type="int" array_size="2"/>
+                <attribute name="output" type="string"/>
                 <attribute name="focal" type="array" array_type="float" array_size="2"/>
                 <attribute name="focalpixel" type="array" array_type="float" array_size="2"/>
                 <attribute name="principal" type="array" array_type="float" array_size="2"/>
@@ -1125,6 +1127,7 @@
             <attribute name="zaxis" type="array" array_type="float" array_size="3"/>
             <attribute name="euler" type="array" array_type="float" array_size="3"/>
             <attribute name="resolution" type="array" array_type="int" array_size="2"/>
+            <attribute name="output" type="string"/>
             <attribute name="focal" type="array" array_type="float" array_size="2"/>
             <attribute name="focalpixel" type="array" array_type="float" array_size="2"/>
             <attribute name="principal" type="array" array_type="float" array_size="2"/>
@@ -1502,6 +1505,7 @@
                 <attribute name="zaxis" type="array" array_type="float" array_size="3"/>
                 <attribute name="euler" type="array" array_type="float" array_size="3"/>
                 <attribute name="resolution" type="array" array_type="int" array_size="2"/>
+                <attribute name="output" type="string"/>
                 <attribute name="focal" type="array" array_type="float" array_size="2"/>
                 <attribute name="focalpixel" type="array" array_type="float" array_size="2"/>
                 <attribute name="principal" type="array" array_type="float" array_size="2"/>
