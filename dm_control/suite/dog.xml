@@ -327,7 +327,7 @@
     <mesh name="humerus_R" file="BONEhumerus_R.stl"/>
     <texture name="skin" type="2d" file="skin_texture.png"/>
     <material name="skin" texture="skin"/>
-    <skin name="skin" file="dog_skin.skn" material="skin"/>
+    <skin name="skin" file="skins/dog_skin.skn" material="skin"/>
     <texture name="tennis_ball" file="tennis_ball.png" gridsize="3 4" gridlayout=".U..LFRB.D.."/>
     <material name="tennis_ball" texture="tennis_ball"/>
   </asset>
