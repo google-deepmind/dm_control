@@ -231,6 +231,8 @@ class Array(_Attribute):
       return util.to_native_string(out.getvalue())[:-1]  # Strip trailing space.
 
   def _check_shape(self, array):
+    if array.ndim == 0:
+      array = array.reshape(1)
     actual_length = array.shape[0]
     if len(array.shape) > 1:
       raise ValueError('Expect one-dimensional array: got {}'.format(array))
