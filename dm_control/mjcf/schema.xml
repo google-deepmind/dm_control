@@ -440,6 +440,8 @@
             <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
             <attribute name="actrange" type="array" array_type="float" array_size="2"/>
             <attribute name="gear" type="array" array_type="float" array_size="6"/>
+            <attribute name="damping" type="array" array_type="float" array_size="3"/>
+            <attribute name="armature" type="float"/>
             <attribute name="cranklength" type="float"/>
             <attribute name="user" type="array" array_type="float"/>
             <attribute name="dyntype" type="keyword" valid_values="none integrator filter filterexact muscle user"/>
@@ -459,6 +461,8 @@
             <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
             <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
             <attribute name="gear" type="array" array_type="float" array_size="6"/>
+            <attribute name="damping" type="array" array_type="float" array_size="3"/>
+            <attribute name="armature" type="float"/>
             <attribute name="cranklength" type="float"/>
             <attribute name="user" type="array" array_type="float"/>
           </attributes>
@@ -471,6 +475,8 @@
             <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
             <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
             <attribute name="gear" type="array" array_type="float" array_size="6"/>
+            <attribute name="damping" type="array" array_type="float" array_size="3"/>
+            <attribute name="armature" type="float"/>
             <attribute name="cranklength" type="float"/>
             <attribute name="user" type="array" array_type="float"/>
             <attribute name="kp" type="float"/>
@@ -488,6 +494,8 @@
             <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
             <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
             <attribute name="gear" type="array" array_type="float" array_size="6"/>
+            <attribute name="damping" type="array" array_type="float" array_size="3"/>
+            <attribute name="armature" type="float"/>
             <attribute name="cranklength" type="float"/>
             <attribute name="user" type="array" array_type="float"/>
             <attribute name="kv" type="float"/>
@@ -502,6 +510,8 @@
             <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
             <attribute name="actrange" type="array" array_type="float" array_size="2"/>
             <attribute name="gear" type="array" array_type="float" array_size="6"/>
+            <attribute name="damping" type="array" array_type="float" array_size="3"/>
+            <attribute name="armature" type="float"/>
             <attribute name="cranklength" type="float"/>
             <attribute name="user" type="array" array_type="float"/>
             <attribute name="kp" type="float"/>
@@ -517,6 +527,8 @@
             <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
             <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
             <attribute name="gear" type="array" array_type="float" array_size="6"/>
+            <attribute name="damping" type="array" array_type="float" array_size="3"/>
+            <attribute name="armature" type="float"/>
             <attribute name="cranklength" type="float"/>
             <attribute name="user" type="array" array_type="float"/>
             <attribute name="kv" type="float"/>
@@ -530,6 +542,8 @@
             <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
             <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
             <attribute name="gear" type="array" array_type="float" array_size="6"/>
+            <attribute name="damping" type="array" array_type="float" array_size="3"/>
+            <attribute name="armature" type="float"/>
             <attribute name="cranklength" type="float"/>
             <attribute name="user" type="array" array_type="float"/>
             <attribute name="timeconst" type="float"/>
@@ -546,6 +560,8 @@
             <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
             <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
             <attribute name="gear" type="array" array_type="float" array_size="6"/>
+            <attribute name="damping" type="array" array_type="float" array_size="3"/>
+            <attribute name="armature" type="float"/>
             <attribute name="cranklength" type="float"/>
             <attribute name="user" type="array" array_type="float"/>
             <attribute name="timeconst" type="array" array_type="float" array_size="2"/>
@@ -753,6 +769,8 @@
                 <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
                 <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
                 <attribute name="gear" type="array" array_type="float" array_size="6"/>
+                <attribute name="damping" type="array" array_type="float" array_size="3"/>
+                <attribute name="armature" type="float"/>
                 <attribute name="cranklength" type="float"/>
                 <attribute name="user" type="array" array_type="float"/>
                 <attribute name="actdim" type="int"/>
@@ -772,6 +790,8 @@
                 <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
                 <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
                 <attribute name="gear" type="array" array_type="float" array_size="6"/>
+                <attribute name="damping" type="array" array_type="float" array_size="3"/>
+                <attribute name="armature" type="float"/>
                 <attribute name="cranklength" type="float"/>
                 <attribute name="user" type="array" array_type="float"/>
               </attributes>
@@ -783,6 +803,8 @@
                 <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
                 <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
                 <attribute name="gear" type="array" array_type="float" array_size="6"/>
+                <attribute name="damping" type="array" array_type="float" array_size="3"/>
+                <attribute name="armature" type="float"/>
                 <attribute name="cranklength" type="float"/>
                 <attribute name="user" type="array" array_type="float"/>
                 <attribute name="kp" type="float"/>
@@ -799,6 +821,8 @@
                 <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
                 <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
                 <attribute name="gear" type="array" array_type="float" array_size="6"/>
+                <attribute name="damping" type="array" array_type="float" array_size="3"/>
+                <attribute name="armature" type="float"/>
                 <attribute name="cranklength" type="float"/>
                 <attribute name="user" type="array" array_type="float"/>
                 <attribute name="kv" type="float"/>
@@ -812,6 +836,8 @@
                 <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
                 <attribute name="actrange" type="array" array_type="float" array_size="2"/>
                 <attribute name="gear" type="array" array_type="float" array_size="6"/>
+                <attribute name="damping" type="array" array_type="float" array_size="3"/>
+                <attribute name="armature" type="float"/>
                 <attribute name="cranklength" type="float"/>
                 <attribute name="user" type="array" array_type="float"/>
                 <attribute name="kp" type="float"/>
@@ -826,6 +852,8 @@
                 <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
                 <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
                 <attribute name="gear" type="array" array_type="float" array_size="6"/>
+                <attribute name="damping" type="array" array_type="float" array_size="3"/>
+                <attribute name="armature" type="float"/>
                 <attribute name="cranklength" type="float"/>
                 <attribute name="user" type="array" array_type="float"/>
                 <attribute name="kv" type="float"/>
@@ -838,6 +866,8 @@
                 <attribute name="ctrlrange" type="array" array_type="float" array_size="2"/>
                 <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
                 <attribute name="gear" type="array" array_type="float" array_size="6"/>
+                <attribute name="damping" type="array" array_type="float" array_size="3"/>
+                <attribute name="armature" type="float"/>
                 <attribute name="cranklength" type="float"/>
                 <attribute name="user" type="array" array_type="float"/>
                 <attribute name="timeconst" type="float"/>
