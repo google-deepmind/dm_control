@@ -51,7 +51,9 @@ def export_with_assets(mjcf_model, out_dir, out_file_name=None,
                      '\'.xml\': got {}'.format(out_file_name))
   assets = mjcf_model.get_assets()
   # This should never happen because `mjcf` does not support `.xml` assets.
-  assert out_file_name not in assets
+  if out_file_name in assets:
+    raise RuntimeError(
+        f"Output filename '{out_file_name}' conflicts with an existing asset")
   assets[out_file_name] = mjcf_model.to_xml_string(
       precision=precision, zero_threshold=zero_threshold)
   if not os.path.exists(out_dir):

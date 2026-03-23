@@ -230,7 +230,10 @@ def _get_size_name_to_element_names(model):
     body_mocapid = model.body_mocapid[body_id]
     if body_mocapid != -1:
       mocap_body_names[body_mocapid] = body_name
-  assert None not in mocap_body_names
+  if None in mocap_body_names:
+    raise RuntimeError(
+        "Failed to resolve all mocap body names; some body_mocapid mappings "
+        "are missing")
   size_name_to_element_names['nmocap'] = mocap_body_names
 
   return size_name_to_element_names
