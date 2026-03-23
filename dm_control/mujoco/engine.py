@@ -972,19 +972,23 @@ class Camera:
 
     # Validate IDs
     if body_id != -1:
-      assert 0 <= body_id < self._physics.model.nbody
+      if not (0 <= body_id < self._physics.model.nbody):
+        raise ValueError(f"body_id {body_id} out of range [0, {self._physics.model.nbody})")
     else:
       body_id = None
     if geom_id != -1:
-      assert 0 <= geom_id < self._physics.model.ngeom
+      if not (0 <= geom_id < self._physics.model.ngeom):
+        raise ValueError(f"geom_id {geom_id} out of range [0, {self._physics.model.ngeom})")
     else:
       geom_id = None
     if flex_id != -1:
-      assert 0 <= flex_id < self._physics.model.nflex
+      if not (0 <= flex_id < self._physics.model.nflex):
+        raise ValueError(f"flex_id {flex_id} out of range [0, {self._physics.model.nflex})")
     else:
       flex_id = None
     if skin_id != -1:
-      assert 0 <= skin_id < self._physics.model.nskin
+      if not (0 <= skin_id < self._physics.model.nskin):
+        raise ValueError(f"skin_id {skin_id} out of range [0, {self._physics.model.nskin})")
     else:
       skin_id = None
 
