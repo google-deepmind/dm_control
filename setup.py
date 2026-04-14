@@ -166,7 +166,7 @@ def find_data_files(package_dir, patterns, excludes=()):
 
 setup(
     name='dm_control',
-    version='1.0.38',
+    version='1.0.39',
     description='Continuous control environments and MuJoCo Python bindings.',
     long_description="""
 # `dm_control`: DeepMind Infrastructure for Physics-Based Simulation.
@@ -191,7 +191,7 @@ notebook: [Open In Google Colab](https://colab.research.google.com/github/google
         'glfw',
         'labmaze',
         'lxml',
-        'mujoco >= 3.6.0',
+        'mujoco >= 3.7.0',
         'numpy >= 1.9.0',
         'protobuf >= 3.19.4',
         'pyopengl >= 3.1.4',
