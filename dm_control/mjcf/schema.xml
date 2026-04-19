@@ -1947,6 +1947,8 @@
             <attribute name="solref" type="array" array_type="float" array_size="2"/>
             <attribute name="solimp" type="array" array_type="float" array_size="5"/>
             <attribute name="flex" type="identifier"/>
+            <attribute name="cell" type="array" array_type="int" array_size="3"/>
+
           </attributes>
         </element>
       </children>
