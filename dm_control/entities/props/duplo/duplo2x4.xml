@@ -1,6 +1,6 @@
 <mujoco model='duplo2x4'>
   <option>
-    <flag nativeccd="disable"/>
+    <flag nativeccd="disable" multiccd="disable"/>
   </option>
 
   <default>
