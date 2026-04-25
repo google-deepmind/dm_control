@@ -4,7 +4,7 @@ dm-tree==0.1.9
 glfw==2.9.0
 h5py==3.14.0
 labmaze==1.0.6
-lxml==6.0.1
+lxml==6.1.0
 mock==5.2.0
 mujoco==3.8.0
 numpy==2.3.2; python_version >= '3.11'
