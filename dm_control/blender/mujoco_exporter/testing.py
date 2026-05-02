@@ -70,7 +70,7 @@ def build_armature(
     parent: Optional[Any] = None,
     parent_bone: Optional[str] = None,
     bones: Optional[Any] = None,
-) -> ...:
+):
   """TBD."""
   obj = mock.MagicMock(spec=bpy.types.Object, type='ARMATURE')
   obj.name = name
@@ -154,7 +154,8 @@ def build_mesh_object(
     name: str,
     mesh: Optional[Any] = None,
     parent: Optional[Any] = None,
-    parent_bone: Optional[str] = None) -> ...:
+    parent_bone: Optional[str] = None,
+):
   """Builds a mock object with a mesh assigned to it."""
   obj = mock.MagicMock(spec=bpy.types.Object, type='MESH')
   obj.name = name
