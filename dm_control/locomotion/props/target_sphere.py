@@ -58,7 +58,7 @@ class TargetSphere(composer.Entity):
     self._material = self._mjcf_root.asset.add(
         'material', name='target_sphere', texture=self._texture)
     self._geom = self._mjcf_root.worldbody.add(
-        'geom', type='sphere', name='geom', gap=2*radius,
+        'geom', type='sphere', name='geom', margin=-2*radius, gap=2*radius,
         pos=[0, 0, height_above_ground], size=[radius], material=self._material)
     self._geom_id = -1
     self._activated = False
@@ -157,7 +157,7 @@ class TargetSphereTwoTouch(composer.Entity):
     self._material = self._mjcf_root.asset.add(
         'material', name='target_sphere_init', texture=self._texture_initial)
     self._geom = self._mjcf_root.worldbody.add(
-        'geom', type='sphere', name='geom', gap=2*radius,
+        'geom', type='sphere', name='geom', margin=-2*radius, gap=2*radius,
         pos=[0, 0, height_above_ground], size=[radius],
         material=self._material)
     self._geom_id = -1
