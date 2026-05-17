@@ -99,6 +99,7 @@
             <attribute name="invdiscrete" type="keyword" valid_values="disable enable"/>
             <attribute name="multiccd" type="keyword" valid_values="disable enable"/>
             <attribute name="sleep" type="keyword" valid_values="disable enable"/>
+            <attribute name="diagexact" type="keyword" valid_values="disable enable"/>
             <attribute name="island" type="keyword" valid_values="disable enable"/>
             <attribute name="nativeccd" type="keyword" valid_values="disable enable"/>
           </attributes>
