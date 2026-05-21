@@ -41,7 +41,7 @@ HEADER_FILENAMES = [
     'mjdata.h',
     'mjmodel.h',
     'mjrender.h',
-    'mjtnum.h',
+    'mjtype.h',
     'mjui.h',
     'mjvisualize.h',
     'mjxmacro.h',
