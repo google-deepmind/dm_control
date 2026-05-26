@@ -550,7 +550,8 @@ class AttributesTest(parameterized.TestCase):
     # Don't write to integer arrays since these might contain pointers. Also
     # don't write directly into the stack.
     elif (attr_name != "stack"
-          and not np.issubdtype(target_array.dtype, np.integer)):
+          and not np.issubdtype(target_array.dtype, np.integer)
+          and not np.issubdtype(target_array.dtype, np.bool_)):
       new_contents = np.arange(target_array.size, dtype=target_array.dtype)
       new_contents.shape = target_array.shape
       target_array[:] = new_contents
