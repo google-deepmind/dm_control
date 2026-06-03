@@ -46,8 +46,9 @@ def solve(env):
 
   # Compute the mass matrix.
   mass = np.zeros((n, n))
-  wrapper.mjbindings.mjlib.mj_fullM(env.physics.model.ptr, mass,
-                                    env.physics.data.qM)
+  wrapper.mjbindings.mjlib.mju_sym2dense(
+      mass, env.physics.data.ptr.M, env.physics.model.ptr.M_rownnz,
+      env.physics.model.ptr.M_rowadr, env.physics.model.ptr.M_colind)
 
   # Compute input matrices a, b, q and r to the DARE solvers.
   # State transition matrix a.
