@@ -189,7 +189,10 @@ notebook: [Open In Google Colab](https://colab.research.google.com/github/google
         'dm-env',
         'dm-tree != 0.1.2',
         'glfw',
-        'labmaze',
+        # Upstream labmaze has no Python 3.14 wheels and its sdist requires
+        # Bazel; this fork builds with just pip and a C++17 compiler.
+        'labmaze @ git+https://github.com/echen01/labmaze.git ; python_version >= "3.14"',
+        'labmaze ; python_version < "3.14"',
         'lxml',
         'mujoco >= 3.9.0',
         'numpy >= 1.9.0',

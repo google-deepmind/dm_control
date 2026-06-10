@@ -1,9 +1,12 @@
 absl-py==2.3.1
 dm-env==1.6
-dm-tree==0.1.9
+dm-tree==0.1.10; python_version >= '3.14'
+dm-tree==0.1.9; python_version < '3.14'
 glfw==2.9.0
-h5py==3.14.0
-labmaze==1.0.6
+h5py==3.16.0; python_version >= '3.14'
+h5py==3.14.0; python_version < '3.14'
+labmaze @ git+https://github.com/echen01/labmaze.git; python_version >= '3.14'
+labmaze==1.0.6; python_version < '3.14'
 lxml==6.0.1
 mock==5.2.0
 mujoco==3.9.0
@@ -11,7 +14,8 @@ numpy==2.3.2; python_version >= '3.11'
 numpy==2.2.6; python_version == '3.10'
 numpy==2.0.2; python_version == '3.9'
 pillow==11.3.0
-protobuf==3.19.4
+protobuf==7.35.0; python_version >= '3.14'
+protobuf==3.19.4; python_version < '3.14'
 pyopengl==3.1.10
 pyparsing==3.2.3
 pytest==8.4.1

@@ -26,6 +26,17 @@ from google.protobuf import descriptor
 import numpy as np
 
 
+def _is_repeated_field(field):
+  """Returns whether a proto field is repeated, across protobuf versions.
+
+  `FieldDescriptor.label` was removed in protobuf 7.x in favor of
+  `is_repeated`, which is only available from protobuf 5.29 onwards.
+  """
+  if hasattr(field, 'is_repeated'):
+    return field.is_repeated
+  return field.label == descriptor.FieldDescriptor.LABEL_REPEATED
+
+
 class TrajectoryLoader(metaclass=abc.ABCMeta):
   """Base class for helpers that load and decode mocap trajectories."""
 
@@ -106,7 +117,7 @@ class HDF5TrajectoryLoader(TrajectoryLoader):
         continue
       elif field.type not in (descriptor.FieldDescriptor.TYPE_GROUP,
                               descriptor.FieldDescriptor.TYPE_MESSAGE):
-        if field.label == descriptor.FieldDescriptor.LABEL_REPEATED:
+        if _is_repeated_field(field):
           getattr(proto, field.name).extend(h5_group.attrs[field.name])
         else:
           setattr(proto, field.name, h5_group.attrs[field.name])

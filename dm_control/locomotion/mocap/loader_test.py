@@ -40,7 +40,7 @@ class HDF5TrajectoryLoaderTest(absltest.TestCase):
     for field in x.DESCRIPTOR.fields:
       x_field = getattr(x, field.name)
       y_field = getattr(y, field.name)
-      if field.label == descriptor.FieldDescriptor.LABEL_REPEATED:
+      if loader._is_repeated_field(field):
         if field.type == descriptor.FieldDescriptor.TYPE_MESSAGE:
           for i, (x_child, y_child) in enumerate(zip(x_field, y_field)):
             self.assert_proto_equal(
