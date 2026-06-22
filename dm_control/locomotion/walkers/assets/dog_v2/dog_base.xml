@@ -1,14 +1,15 @@
 <mujoco model="dog">
   <compiler meshdir="dog_assets/" texturedir="dog_assets/"/>
 
-  <option timestep="0.005" noslip_iterations="4"/>
+  <option timestep="0.005" integrator="Euler" cone="elliptic" noslip_iterations="3"/>
 
-  <size njmax="900" nconmax="300" nkey="1"/>
+  <size memory="100M"/>
 
   <visual>
     <global offwidth="1920" offheight="1080"/>
-    <map znear="0.001"/>
-    <scale jointlength="8.0" jointwidth="0.5" framelength="2.0" framewidth="0.3"/>
+    <headlight ambient="0.4 0.4 0.4" diffuse="0.8 0.8 0.8" specular="0.1 0.1 0.1"/>
+    <map znear="0.01"/>
+    <scale jointlength="8" jointwidth="0.01" framelength="0.3" framewidth="0.01"/>
   </visual>
 
   <statistic meansize="0.01" extent="1.0"/>
@@ -16,10 +17,10 @@
   <default>
     <joint limited="true" solreflimit="0.01 1" solimplimit="0.9 0.99 0.01" stiffness="0.1" armature="0.0001" damping="0.01"/>
     <geom friction="0.9" solref="0.01 1" solimp="0.95 0.99 0.001"/>
-    <tendon rgba="0.5 0 0 1"/>
+    <tendon rgba="0.5 0 0 1" width="0.005"/>
     <general ctrllimited="true" ctrlrange="-1 1" dyntype="filter" dynprm="0.05" gainprm="0.02"/>
     <default class="bone">
-      <geom type="mesh" contype="0" conaffinity="0" group="5" rgba="0.5 0.5 0.5 1" density="1100.0"/>
+      <geom type="mesh" contype="0" conaffinity="0" group="5" rgba="0.69 0.65 0.58 1" density="1100.0"/>
       <default class="light_bone">
         <geom density="300.0"/>
       </default>
@@ -49,20 +50,20 @@
       <joint group="3" pos="0.012 0 0.01" armature="0.01" damping="3.0"/>
       <general gainprm="40"/>
       <default class="lumbar_extend">
-        <joint stiffness="30.0" range="-24.5 24.5"/>
+        <joint stiffness="30.0" range="-13 13"/>
         <general gainprm="60"/>
       </default>
       <default class="lumbar_bend">
-        <joint stiffness="45.0" range="-21 21"/>
+        <joint stiffness="45.0" range="-15 15"/>
       </default>
       <default class="lumbar_twist">
-        <joint stiffness="45.0" range="-16.333 16.333"/>
+        <joint stiffness="45.0" range="-10 10"/>
       </default>
     </default>
     <default class="cervical">
-      <joint group="3" pos="-0.7 0 0" stiffness="4.0" armature="0.01" damping="3.0"/>
+      <joint group="3" pos="-0.7 0 0" stiffness="5.0" armature="0.01" damping="5.0"/>
       <default class="cervical_extend">
-        <joint range="-17.5 61.25"/>
+        <joint range="-17.5 30"/>
         <general gainprm="20"/>
       </default>
       <default class="cervical_bend">
@@ -99,15 +100,15 @@
         <joint range="-20 20"/>
       </default>
       <default class="hip_abduct">
-        <joint range="-30 90"/>
+        <joint range="-50 10"/>
       </default>
       <default class="hip_extend">
-        <joint range="-130 60"/>
+        <joint range="-115 60"/>
         <general gainprm="40"/>
       </default>
     </default>
     <default class="knee">
-      <joint range="-120 10" damping="0.5"/>
+      <joint range="-95 25" damping="0.5"/>
       <general gainprm="30"/>
     </default>
     <default class="ankle">
@@ -157,14 +158,24 @@
     <default class="sensor">
       <site group="4"/>
     </default>
+    <default class="wrapping">
+      <geom type='cylinder' mass="0" contype="0" conaffinity="0" group="2" rgba="0 0 1 1" euler="90 0 0"/>
+      <site group="2" rgba="0 0 1 1" />
+    </default>
+    <default class="marker">
+      <site group="3" rgba="1 0.5 0 0.5" size="0.01 0.01 0.01"/>
+    </default>
+    <default class="mocap_marker">
+      <site group="3" rgba="0 1 0 0.5" size="0.01 0.01 0.01"/>
+    </default>
   </default>
 
   <asset>
-    <texture name="grid" type="2d" builtin="checker" rgb1="0.1 0.2 0.3" rgb2="0.2 0.3 0.4" mark="edge" markrgb="0.2 0.3 0.4" width="300" height="300"/>
+    <texture name="grid" type="2d" builtin="checker" rgb1="0.1 0.2 0.3" rgb2="0.2 0.3 0.4" mark="edge" markrgb="0.2 0.3 0.4" width="50" height="50"/>
+    <texture type="skybox" name="skybox" builtin="gradient" rgb1="0.4 0.6 0.8" rgb2="0 0 0" width="50" height="50"/>
     <material name="grid" texture="grid" texrepeat="1 1" texuniform="true" reflectance="0.2"/>
   </asset>
 
   <worldbody>
-    <geom name="floor" conaffinity="1" type="plane" size="10 10 0.1" material="grid"/>
   </worldbody>
 </mujoco>
