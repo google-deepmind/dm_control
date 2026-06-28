@@ -13,16 +13,16 @@
 # limitations under the License.
 # ============================================================================
 
+
 """Main user-facing classes and utility functions for loading MuJoCo models."""
 
 import contextlib
 import copy
 import ctypes
-from typing import Union
+from typing import Any, TYPE_CHECKING, Union
 import weakref
 
 from absl import logging
-
 from dm_control.mujoco.wrapper import util
 # Some clients explicitly import core.mjlib.
 from dm_control.mujoco.wrapper.mjbindings import mjlib  # pylint: disable=unused-import
@@ -30,6 +30,7 @@ import mujoco
 import numpy as np
 
 # Unused internal import: resources.
+
 
 _FAKE_BINARY_FILENAME = "model.mjb"
 
@@ -257,6 +258,13 @@ class MjModel(metaclass=_MjModelMeta):
   changed occasionally, although this is done explicitly by the user.
   """
   _HAS_DYNAMIC_ATTRIBUTES = True
+  if TYPE_CHECKING:
+
+    def __getattr__(self, name: str) -> Any:
+      ...
+
+    def __setattr__(self, name: str, value: Any) -> None:
+      ...
 
   def __init__(self, model_ptr):
     """Creates a new MjModel instance from a mujoco.MjModel."""
@@ -447,6 +455,13 @@ class MjData(metaclass=_MjDataMeta):
   """
 
   _HAS_DYNAMIC_ATTRIBUTES = True
+  if TYPE_CHECKING:
+
+    def __getattr__(self, name: str) -> Any:
+      ...
+
+    def __setattr__(self, name: str, value: Any) -> None:
+      ...
 
   def __init__(self, model_or_data: Union[MjModel, mujoco.MjData]):
     """Constructs a new MjData instance.
