@@ -136,3 +136,7 @@ setting the environment variable `MUJOCO_EGL_DEVICE_ID=` to the target GPU ID.
 [`dm_control.viewer`]: dm_control/viewer/README.md
 [`dm_control.locomotion`]: dm_control/locomotion/README.md
 [`dm_control.locomotion.soccer`]: dm_control/locomotion/soccer/README.md
+
+---
+
+*[Mukller](https://github.com/Mukller)*
