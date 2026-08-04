@@ -1818,6 +1818,7 @@
             <attribute name="texcoord" type="array" array_type="float"/>
             <attribute name="elemtexcoord" type="array" array_type="float"/>
             <attribute name="node" type="array" array_type="float" array_size="3"/>
+            <attribute name="nodecoord" type="array" array_type="float"/>
             <attribute name="cellcount" type="array" array_type="int" array_size="3"/>
             <attribute name="dof" type="keyword" valid_values="trilinear quadratic"/>
           </attributes>
