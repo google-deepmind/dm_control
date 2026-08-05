@@ -1257,7 +1257,7 @@
             <attribute name="texcoord" type="string"/>
             <attribute name="material" type="string"/>
             <attribute name="rgba" type="array" array_type="float" array_size="4"/>
-            <attribute name="flatskin" type="int"/>
+            <attribute name="flatskin" type="keyword" valid_values="false true"/>
             <attribute name="pos" type="array" array_type="float" array_size="3"/>
             <attribute name="quat" type="array" array_type="float" array_size="4"/>
             <attribute name="axisangle" type="array" array_type="float" array_size="4"/>
@@ -1641,7 +1641,7 @@
                 <attribute name="texcoord" type="string"/>
                 <attribute name="material" type="string"/>
                 <attribute name="rgba" type="array" array_type="float" array_size="4"/>
-                <attribute name="flatskin" type="int"/>
+                <attribute name="flatskin" type="keyword" valid_values="false true"/>
                 <attribute name="pos" type="array" array_type="float" array_size="3"/>
                 <attribute name="quat" type="array" array_type="float" array_size="4"/>
                 <attribute name="axisangle" type="array" array_type="float" array_size="4"/>
@@ -1810,18 +1810,18 @@
         <element name="flex" repeated="true" namespace="deformable">
           <attributes>
             <attribute name="name" type="identifier"/>
-            <attribute name="group" type="reference"/>
-            <attribute name="dim" type="int" required="true"/>
-            <attribute name="radius" type="float" required="true"/>
+            <attribute name="group" type="int"/>
+            <attribute name="dim" type="int"/>
+            <attribute name="radius" type="float"/>
             <attribute name="material" type="reference"/>
             <attribute name="rgba" type="array" array_type="float" array_size="4"/>
-            <attribute name="flatskin" type="array" array_type="float" array_size="2"/>
+            <attribute name="flatskin" type="keyword" valid_values="false true"/>
             <attribute name="body" type="string"/>
-            <attribute name="vertex" type="array" array_type="float" array_size="5"/>
+            <attribute name="vertex" type="array" array_type="float"/>
             <attribute name="element" type="array" array_type="int"/>
             <attribute name="texcoord" type="array" array_type="float"/>
             <attribute name="elemtexcoord" type="array" array_type="float"/>
-            <attribute name="node" type="array" array_type="float" array_size="3"/>
+            <attribute name="node" type="array" array_type="float"/>
             <attribute name="nodecoord" type="array" array_type="float"/>
             <attribute name="cellcount" type="array" array_type="int" array_size="3"/>
             <attribute name="dof" type="keyword" valid_values="trilinear quadratic"/>
