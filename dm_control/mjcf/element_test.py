@@ -28,6 +28,7 @@ from dm_control import mjcf
 from dm_control.mjcf import element
 from dm_control.mjcf import namescope
 from dm_control.mjcf import parser
+from dm_control.mjcf import schema
 from dm_control.mujoco.wrapper import util
 import lxml
 import numpy as np
@@ -748,6 +749,65 @@ class ElementTest(parameterized.TestCase):
                      'submodel//unnamed_joint_0')
     self.assertEqual(submujoco_body.joint[0].full_identifier,
                      'submodel//unnamed_joint_1')
+
+  def testNestedDefaultAcceptsSameChildrenAsTopLevel(self):
+    # A nested <default> class can set defaults for exactly the same elements
+    # as the top level <default>, so the two specs must never drift apart.
+    top_level = schema.MUJOCO.children['default']
+    nested = top_level.children['default']
+    self.assertEqual(list(nested.children), list(top_level.children))
+    for name, child_spec in top_level.children.items():
+      if name != 'default':
+        self.assertIs(nested.children[name], child_spec)
+    self.assertIs(nested.children['default'], nested)
+
+  def testParseNestedDefaultWithMuscle(self):
+    xml_string = """
+<mujoco model="test">
+  <default>
+    <default class="forearm_muscle">
+      <muscle ctrllimited="true" ctrlrange="-1 1"/>
+      <tendon width="0.002"/>
+    </default>
+  </default>
+</mujoco>
+"""
+    mujoco = parser.from_xml_string(xml_string)
+    forearm_muscle = mujoco.find('default', 'forearm_muscle')
+    self.assertEqual(forearm_muscle.muscle.ctrllimited, 'true')
+    np.testing.assert_array_equal(forearm_muscle.muscle.ctrlrange, [-1, 1])
+    self.assertEqual(forearm_muscle.tendon.width, 0.002)
+
+  @parameterized.named_parameters(
+      ('camera_projection', '<camera projection="orthographic"/>'),
+      ('cylinder_group', '<cylinder group="1"/>'),
+      ('damper_group', '<damper group="1" kv="1"/>'),
+      ('general_actrange', '<general actlimited="true" actrange="-1 1"/>'),
+      ('intvelocity_group', '<intvelocity group="1" actrange="-1 1"/>'),
+      ('joint_limited_auto', '<joint limited="auto"/>'),
+      ('material_metallic', '<material metallic="0.5" roughness="0.3"/>'),
+      ('motor_group', '<motor group="2"/>'),
+      ('muscle', '<muscle ctrllimited="true" ctrlrange="-1 1"/>'),
+      ('pair_solreffriction', '<pair solreffriction="0.02 1"/>'),
+      ('position_group', '<position group="1"/>'),
+      ('site_fromto', '<site fromto="0 0 0 0 0 1"/>'),
+      ('tendon_springlength', '<tendon group="1" springlength="0.1 0.2"/>'),
+      ('velocity_group', '<velocity group="1"/>'),
+  )
+  def testParseNestedDefaultChild(self, child_xml_string):
+    # All of these are valid MJCF that the nested <default> spec used to
+    # reject, because it did not list the same children as the top level one.
+    xml_string = """
+<mujoco model="test">
+  <default>
+    <default class="outer">
+      <default class="inner">{}</default>
+    </default>
+  </default>
+</mujoco>
+""".format(child_xml_string)
+    mujoco = parser.from_xml_string(xml_string)
+    self.assertIsNotNone(mujoco.find('default', 'inner'))
 
   def testFindAll(self):
     mujoco = parser.from_path(_TEST_MODEL_XML)

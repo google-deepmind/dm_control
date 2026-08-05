@@ -106,10 +106,14 @@ def _parse_element(element_xml):
       namespace = element_xml.get('namespace') or name
 
   children = collections.OrderedDict()
+  inheriting_children = []
   children_xml = element_xml.find('children')
   if children_xml is not None:
     for child_xml in children_xml.findall('element'):
-      children[child_xml.get('name')] = _parse_element(child_xml)
+      child_spec = _parse_element(child_xml)
+      children[child_xml.get('name')] = child_spec
+      if _str2bool(child_xml.get('inherit_children')):
+        inheriting_children.append(child_spec)
 
   element_spec = ElementSpec(
       name, repeated, on_demand, identifier, namespace, attributes, children)
@@ -118,15 +122,32 @@ def _parse_element(element_xml):
   if recursive:
     element_spec.children[name] = element_spec
 
+  # A child marked `inherit_children` accepts exactly the same children as the
+  # element that encloses it, while keeping its own attributes. This is used by
+  # nested <default> classes, which can set defaults for the same elements as
+  # the top level <default> but require a `class` attribute. Sharing the parsed
+  # children here stops the two from drifting apart as MuJoCo adds elements.
+  for child_spec in inheriting_children:
+    inherited = collections.OrderedDict(element_spec.children)
+    inherited.update(child_spec.children)
+    child_spec.children.clear()
+    child_spec.children.update(inherited)
+    _check_no_name_clashes(child_spec)
+
+  _check_no_name_clashes(element_spec)
+
+  return element_spec
+
+
+def _check_no_name_clashes(element_spec):
+  """Raises if an element has an attribute and a child of the same name."""
   common_keys = set(element_spec.attributes).intersection(element_spec.children)
   if common_keys:
     raise RuntimeError(
         'Element \'{}\' contains the following attributes and children with '
         'the same name: \'{}\'. This violates the design assumptions of '
         'this library. Please file a bug report. Thank you.'
-        .format(name, sorted(common_keys)))
-
-  return element_spec
+        .format(element_spec.name, sorted(common_keys)))
 
 
 def _parse_attribute(attribute_xml):
