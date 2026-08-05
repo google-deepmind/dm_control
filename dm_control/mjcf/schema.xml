@@ -385,6 +385,7 @@
             <attribute name="dir" type="array" array_type="float" array_size="3"/>
             <attribute name="attenuation" type="array" array_type="float" array_size="3"/>
             <attribute name="cutoff" type="float"/>
+            <attribute name="softness" type="float"/>
             <attribute name="exponent" type="float"/>
             <attribute name="ambient" type="array" array_type="float" array_size="3"/>
             <attribute name="diffuse" type="array" array_type="float" array_size="3"/>
@@ -740,6 +741,7 @@
                 <attribute name="dir" type="array" array_type="float" array_size="3"/>
                 <attribute name="attenuation" type="array" array_type="float" array_size="3"/>
                 <attribute name="cutoff" type="float"/>
+                <attribute name="softness" type="float"/>
                 <attribute name="exponent" type="float"/>
                 <attribute name="ambient" type="array" array_type="float" array_size="3"/>
                 <attribute name="diffuse" type="array" array_type="float" array_size="3"/>
@@ -1226,6 +1228,7 @@
             <attribute name="dir" type="array" array_type="float" array_size="3"/>
             <attribute name="attenuation" type="array" array_type="float" array_size="3"/>
             <attribute name="cutoff" type="float"/>
+            <attribute name="softness" type="float"/>
             <attribute name="exponent" type="float"/>
             <attribute name="ambient" type="array" array_type="float" array_size="3"/>
             <attribute name="diffuse" type="array" array_type="float" array_size="3"/>
@@ -1610,6 +1613,7 @@
                 <attribute name="dir" type="array" array_type="float" array_size="3"/>
                 <attribute name="attenuation" type="array" array_type="float" array_size="3"/>
                 <attribute name="cutoff" type="float"/>
+                <attribute name="softness" type="float"/>
                 <attribute name="exponent" type="float"/>
                 <attribute name="ambient" type="array" array_type="float" array_size="3"/>
                 <attribute name="diffuse" type="array" array_type="float" array_size="3"/>
