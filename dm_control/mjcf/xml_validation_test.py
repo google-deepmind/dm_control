@@ -67,6 +67,25 @@ class XMLValidationTest(absltest.TestCase):
     model = parser.from_zip(_ZIPPED_MODEL)
     validate(model.to_xml_string(), model.get_assets())
 
+  def testActuatorArmatureAndDampingRoundTrip(self):
+    model = parser.from_xml_string("""
+<mujoco model="test">
+  <worldbody>
+    <body>
+      <joint name="j" type="hinge"/>
+      <geom type="sphere" size="0.1"/>
+    </body>
+  </worldbody>
+  <actuator>
+    <position name="a" joint="j" armature="0.7" damping="2.5"/>
+  </actuator>
+</mujoco>
+""")
+    validate(model.to_xml_string())
+    mjmodel = wrapper.MjModel.from_xml_string(model.to_xml_string())
+    self.assertEqual(mjmodel.actuator_armature[0], 0.7)
+    self.assertEqual(mjmodel.actuator_damping[0], 2.5)
+
 
 if __name__ == '__main__':
   absltest.main()

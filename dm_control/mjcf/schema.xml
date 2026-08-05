@@ -2102,6 +2102,8 @@
             <attribute name="actrange" type="array" array_type="float" array_size="2"/>
             <attribute name="lengthrange" type="array" array_type="float" array_size="2"/>
             <attribute name="gear" type="array" array_type="float" array_size="6"/>
+            <attribute name="damping" type="array" array_type="float" array_size="3"/>
+            <attribute name="armature" type="float"/>
             <attribute name="cranklength" type="float"/>
             <attribute name="joint" type="reference"/>
             <attribute name="jointinparent" type="reference" reference_namespace="joint"/>
@@ -2135,6 +2137,8 @@
             <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
             <attribute name="lengthrange" type="array" array_type="float" array_size="2"/>
             <attribute name="gear" type="array" array_type="float" array_size="6"/>
+            <attribute name="damping" type="array" array_type="float" array_size="3"/>
+            <attribute name="armature" type="float"/>
             <attribute name="cranklength" type="float"/>
             <attribute name="joint" type="reference"/>
             <attribute name="jointinparent" type="reference" reference_namespace="joint"/>
@@ -2160,6 +2164,8 @@
             <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
             <attribute name="lengthrange" type="array" array_type="float" array_size="2"/>
             <attribute name="gear" type="array" array_type="float" array_size="6"/>
+            <attribute name="damping" type="array" array_type="float" array_size="3"/>
+            <attribute name="armature" type="float"/>
             <attribute name="cranklength" type="float"/>
             <attribute name="joint" type="reference"/>
             <attribute name="jointinparent" type="reference" reference_namespace="joint"/>
@@ -2190,6 +2196,8 @@
             <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
             <attribute name="lengthrange" type="array" array_type="float" array_size="2"/>
             <attribute name="gear" type="array" array_type="float" array_size="6"/>
+            <attribute name="damping" type="array" array_type="float" array_size="3"/>
+            <attribute name="armature" type="float"/>
             <attribute name="cranklength" type="float"/>
             <attribute name="joint" type="reference"/>
             <attribute name="jointinparent" type="reference" reference_namespace="joint"/>
@@ -2218,6 +2226,8 @@
             <attribute name="actrange" type="array" array_type="float" array_size="2"/>
             <attribute name="lengthrange" type="array" array_type="float" array_size="2"/>
             <attribute name="gear" type="array" array_type="float" array_size="6"/>
+            <attribute name="damping" type="array" array_type="float" array_size="3"/>
+            <attribute name="armature" type="float"/>
             <attribute name="cranklength" type="float"/>
             <attribute name="joint" type="reference"/>
             <attribute name="jointinparent" type="reference" reference_namespace="joint"/>
@@ -2267,6 +2277,8 @@
             <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
             <attribute name="lengthrange" type="array" array_type="float" array_size="2"/>
             <attribute name="gear" type="array" array_type="float" array_size="6"/>
+            <attribute name="damping" type="array" array_type="float" array_size="3"/>
+            <attribute name="armature" type="float"/>
             <attribute name="cranklength" type="float"/>
             <attribute name="joint" type="reference"/>
             <attribute name="jointinparent" type="reference" reference_namespace="joint"/>
@@ -2293,6 +2305,8 @@
             <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
             <attribute name="lengthrange" type="array" array_type="float" array_size="2"/>
             <attribute name="gear" type="array" array_type="float" array_size="6"/>
+            <attribute name="damping" type="array" array_type="float" array_size="3"/>
+            <attribute name="armature" type="float"/>
             <attribute name="cranklength" type="float"/>
             <attribute name="joint" type="reference"/>
             <attribute name="jointinparent" type="reference" reference_namespace="joint"/>
@@ -2322,6 +2336,8 @@
             <attribute name="forcerange" type="array" array_type="float" array_size="2"/>
             <attribute name="lengthrange" type="array" array_type="float" array_size="2"/>
             <attribute name="gear" type="array" array_type="float" array_size="6"/>
+            <attribute name="damping" type="array" array_type="float" array_size="3"/>
+            <attribute name="armature" type="float"/>
             <attribute name="cranklength" type="float"/>
             <attribute name="joint" type="reference"/>
             <attribute name="jointinparent" type="reference" reference_namespace="joint"/>

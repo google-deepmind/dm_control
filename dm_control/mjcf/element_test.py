@@ -800,6 +800,30 @@ class ElementTest(parameterized.TestCase):
     with self.assertRaisesRegex(TypeError, 'does not support item deletion'):
       del elem['foo']
 
+  @parameterized.parameters('general', 'motor', 'position', 'velocity',
+                            'intvelocity', 'damper', 'cylinder', 'muscle')
+  def testActuatorArmatureAndDamping(self, actuator_type):
+    # MuJoCo accepts `armature` and `damping` on these actuators, and the
+    # <default> section of the schema already allowed both, but the <actuator>
+    # elements themselves did not list them.
+    xml_string = """
+<mujoco model="test">
+  <worldbody>
+    <body>
+      <joint name="j" type="hinge"/>
+      <geom type="sphere" size="0.1"/>
+    </body>
+  </worldbody>
+  <actuator>
+    <{} name="a" joint="j" armature="0.7" damping="2.5"/>
+  </actuator>
+</mujoco>
+""".format(actuator_type)
+    mujoco = parser.from_xml_string(xml_string)
+    actuator = mujoco.find('actuator', 'a')
+    self.assertEqual(actuator.armature, 0.7)
+    np.testing.assert_array_equal(actuator.damping, [2.5])
+
   def testSetAndGetAttributes(self):
     mujoco = element.RootElement(model='test')
 
