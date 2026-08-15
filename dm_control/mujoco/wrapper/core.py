@@ -332,7 +332,7 @@ class MjModel(metaclass=_MjModelMeta):
     return buf.tobytes()
 
   def copy(self):
-    """Returns a copy of this MjModel instance with the same parent MjModel."""
+    """Returns a copy of this MjModel instance."""
     return self.__copy__()
 
   def free(self):
