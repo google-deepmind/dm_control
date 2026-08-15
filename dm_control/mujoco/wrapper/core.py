@@ -332,7 +332,7 @@ class MjModel(metaclass=_MjModelMeta):
     return buf.tobytes()
 
   def copy(self):
-    """Returns a copy of this MjModel instance."""
+    """Returns a copy of this MjModel instance with the same parent MjModel."""
     return self.__copy__()
 
   def free(self):
@@ -619,16 +619,19 @@ class MjrContext:
     if not isinstance(font_scale, mujoco.mjtFontScale):
       font_scale = mujoco.mjtFontScale(font_scale)
     self._gl_context = gl_context
+    self._ptr = None
+    self._gl_context_refcounted = False
     with gl_context.make_current() as ctx:
       ptr = ctx.call(mujoco.MjrContext, model.ptr, font_scale)
       ctx.call(mujoco.mjr_setBuffer, mujoco.mjtFramebuffer.mjFB_OFFSCREEN, ptr)
     gl_context.keep_alive(ptr)
     gl_context.increment_refcount()
+    self._gl_context_refcounted = True
     self._ptr = weakref.ref(ptr)
 
   @property
   def ptr(self):
-    return self._ptr()
+    return self._ptr() if self._ptr is not None else None
 
   def free(self):
     """Frees the native resources held by this MjrContext.
@@ -637,17 +640,24 @@ class MjrContext:
     necessary. This MjrContext object MUST NOT be used after this function has
     been called.
     """
-    if self._gl_context and not self._gl_context.terminated:
-      ptr = self.ptr
-      if ptr:
-        self._gl_context.dont_keep_alive(ptr)
-        with self._gl_context.make_current() as ctx:
-          ctx.call(ptr.free)
+    gl_context = self._gl_context
+    if gl_context is None:
+      return
 
-    if self._gl_context:
-      self._gl_context.decrement_refcount()
-      self._gl_context.free()
-      self._gl_context = None
+    if self._gl_context_refcounted:
+      if not gl_context.terminated:
+        ptr = self.ptr
+        if ptr:
+          gl_context.dont_keep_alive(ptr)
+          with gl_context.make_current() as ctx:
+            ctx.call(ptr.free)
+
+      gl_context.decrement_refcount()
+      gl_context.free()
+      self._gl_context_refcounted = False
+
+    self._ptr = None
+    self._gl_context = None
 
   def __del__(self):
     self.free()
