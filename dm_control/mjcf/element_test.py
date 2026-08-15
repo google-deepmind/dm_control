@@ -39,6 +39,8 @@ _TEST_MODEL_XML = os.path.join(_ASSETS_DIR, 'test_model.xml')
 _TEXTURE_PATH = os.path.join(_ASSETS_DIR, 'textures/deepmind.png')
 _MESH_PATH = os.path.join(_ASSETS_DIR, 'meshes/cube.stl')
 _MODEL_WITH_INCLUDE_PATH = os.path.join(_ASSETS_DIR, 'model_with_include.xml')
+_MODEL_WITH_NESTED_INCLUDE_PATH = os.path.join(
+    _ASSETS_DIR, 'model_with_nested_include.xml')
 
 _MODEL_WITH_INVALID_FILENAMES = os.path.join(
     _ASSETS_DIR, 'model_with_invalid_filenames.xml')
@@ -850,7 +852,8 @@ class ElementTest(parameterized.TestCase):
 
   @parameterized.named_parameters(
       ('WithoutInclude', _TEST_MODEL_XML),
-      ('WithInclude', _MODEL_WITH_INCLUDE_PATH))
+      ('WithInclude', _MODEL_WITH_INCLUDE_PATH),
+      ('WithNestedInclude', _MODEL_WITH_NESTED_INCLUDE_PATH))
   def testParseFromString(self, model_path):
     with open(model_path) as xml_file:
       xml_string = xml_file.read()
@@ -859,7 +862,8 @@ class ElementTest(parameterized.TestCase):
 
   @parameterized.named_parameters(
       ('WithoutInclude', _TEST_MODEL_XML),
-      ('WithInclude', _MODEL_WITH_INCLUDE_PATH))
+      ('WithInclude', _MODEL_WITH_INCLUDE_PATH),
+      ('WithNestedInclude', _MODEL_WITH_NESTED_INCLUDE_PATH))
   def testParseFromFile(self, model_path):
     model_dir, _ = os.path.split(model_path)
     with open(model_path) as xml_file:
@@ -867,9 +871,24 @@ class ElementTest(parameterized.TestCase):
 
   @parameterized.named_parameters(
       ('WithoutInclude', _TEST_MODEL_XML),
-      ('WithInclude', _MODEL_WITH_INCLUDE_PATH))
+      ('WithInclude', _MODEL_WITH_INCLUDE_PATH),
+      ('WithNestedInclude', _MODEL_WITH_NESTED_INCLUDE_PATH))
   def testParseFromPath(self, model_path):
     parser.from_path(model_path)
+
+  def testNestedIncludeIsPutInPlace(self):
+    mjcf_model = parser.from_path(_MODEL_WITH_NESTED_INCLUDE_PATH)
+
+    # The body was included inside <worldbody>, not merged at the root.
+    body = mjcf_model.find('body', 'included_body')
+    self.assertIsNotNone(body)
+    self.assertEqual(body.parent.tag, 'worldbody')
+
+    # The defaults were included inside the class that contained the tag.
+    nested = mjcf_model.default.find_all('default')[-1]
+    self.assertEqual(nested.dclass, 'nested')
+    self.assertEqual(nested.tendon.width, 0.002)
+    np.testing.assert_array_equal(nested.geom.rgba, [1, 0, 0, 1])
 
   def testGetAssetFromFile(self):
     with open(_TEXTURE_PATH, 'rb') as f:

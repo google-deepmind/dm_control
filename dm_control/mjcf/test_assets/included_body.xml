@@ -1,0 +1,6 @@
+<!-- Included by `model_with_nested_include.xml` -->
+<mujoco>
+  <body name="included_body">
+    <geom name="included_geom" class="nested" type="sphere" size="0.1"/>
+  </body>
+</mujoco>
