@@ -17,12 +17,13 @@
 
 import collections
 
-from dm_control import mjcf
 import numpy as np
+
+from dm_control import mjcf
 
 
 def create_torso(
-    model, bones, bone_position, lumbar_dofs_per_vertebra, side_sign, parent
+    model, bones, bone_position, lumbar_dofs_per_vertebra, side_sign, parent, composer
 ):
   """Add torso in the dog model.
 
@@ -35,61 +36,62 @@ def create_torso(
     side_sign: a dictionary with two axis representing the signs of
       translations.
     parent: parent object on which we should start attaching new components.
-
+    composer: boolean to determine if a model used by the composer is being created.
   Returns:
     The tuple `(pelvic_bones, lumbar_joints)`.
   """
   # Lumbar Spine
-  def_lumbar_extend = model.default.find('default', 'lumbar_extend')
-  def_lumbar_bend = model.default.find('default', 'lumbar_bend')
-  def_lumbar_twist = model.default.find('default', 'lumbar_twist')
+  def_lumbar_extend = model.default.find("default", "lumbar_extend")
+  def_lumbar_bend = model.default.find("default", "lumbar_bend")
+  def_lumbar_twist = model.default.find("default", "lumbar_twist")
   lumbar_defaults = {
-      'extend': def_lumbar_extend,
-      'bend': def_lumbar_bend,
-      'twist': def_lumbar_twist,
+      "extend": def_lumbar_extend,
+      "bend": def_lumbar_bend,
+      "twist": def_lumbar_twist,
   }
 
-  thoracic_spine = [m for m in bones if 'T_' in m]
-  ribs = [m for m in bones if 'Rib' in m and 'cage' not in m]
-  sternum = [m for m in bones if 'Sternum' in m]
+  thoracic_spine = [m for m in bones if "T_" in m]
+  ribs = [m for m in bones if "Rib" in m and "cage" not in m]
+  sternum = [m for m in bones if "Sternum" in m]
   torso_bones = thoracic_spine + ribs + sternum  # + ['Xiphoid_cartilage']
-  torso = parent.add('body', name='torso')
-  torso.add('freejoint', name='root')
-  torso.add('site', name='root', size=(0.01,), rgba=[0, 1, 0, 1])
-  torso.add('light', name='light', mode='trackcom', pos=[0, 0, 3])
+  torso = parent.add("body", name="torso")
+
+  if not composer:
+    torso.add("freejoint", name="root")
+
+  torso.add("site", name="root", size=(0.01,), rgba=[0, 1, 0, 1])
+  torso.add("light", name="light", mode="trackcom", pos=[0, 0, 3])
   torso.add(
-      'camera',
-      name='y-axis',
-      mode='trackcom',
+      "camera",
+      name="y-axis",
+      mode="trackcom",
       pos=[0, -1.5, 0.8],
       xyaxes=[1, 0, 0, 0, 0.6, 1],
   )
   torso.add(
-      'camera',
-      name='x-axis',
-      mode='trackcom',
+      "camera",
+      name="x-axis",
+      mode="trackcom",
       pos=[2, 0, 0.5],
       xyaxes=[0, 1, 0, -0.3, 0, 1],
   )
   torso_geoms = []
   for bone in torso_bones:
     torso_geoms.append(
-        torso.add('geom', name=bone, mesh=bone, dclass='light_bone')
-    )
+        torso.add("geom", name=bone, mesh=bone, dclass="light_bone"))
 
   # Reload, get CoM position, set pos
   physics = mjcf.Physics.from_mjcf_model(model)
-  torso_pos = np.array(physics.bind(model.find('body', 'torso')).xipos)
+  torso_pos = np.array(physics.bind(model.find("body", "torso")).xipos)
   torso.pos = torso_pos
   for geom in torso_geoms:
     geom.pos = -torso_pos
-
   # Collision primitive for torso
   torso.add(
-      'geom',
-      name='collision_torso',
-      dclass='nonself_collision_primitive',
-      type='ellipsoid',
+      "geom",
+      name="collision_torso",
+      dclass="nonself_collision_primitive",
+      type="ellipsoid",
       pos=[0, 0, 0],
       size=[0.2, 0.09, 0.11],
       euler=[0, 10, 0],
@@ -97,23 +99,24 @@ def create_torso(
   )
 
   # Lumbar spine bodies:
-  lumbar_bones = ['L_1', 'L_2', 'L_3', 'L_4', 'L_5', 'L_6', 'L_7']
+  lumbar_bones = ["L_1", "L_2", "L_3", "L_4", "L_5", "L_6", "L_7"]
   parent = torso
   parent_pos = torso_pos
   lumbar_bodies = []
   lumbar_geoms = []
   for i, bone in enumerate(lumbar_bones):
     bone_pos = bone_position[bone]
-    child = parent.add('body', name=bone, pos=bone_pos - parent_pos)
+    child = parent.add("body", name=bone, pos=bone_pos - parent_pos)
     lumbar_bodies.append(child)
-    geom = child.add('geom', name=bone, mesh=bone, pos=-bone_pos, dclass='bone')
+    geom = child.add("geom", name=bone, mesh=bone,
+                     pos=-bone_pos, dclass="bone")
     child.add(
-        'geom',
-        name=bone + '_collision',
-        type='sphere',
+        "geom",
+        name=bone + "_collision",
+        type="sphere",
         size=[0.05],
         pos=[0, 0, -0.02],
-        dclass='nonself_collision_primitive',
+        dclass="nonself_collision_primitive",
     )
     lumbar_geoms.append(geom)
     parent = child
@@ -122,9 +125,9 @@ def create_torso(
 
   # Lumbar spine joints:
   lumbar_axis = collections.OrderedDict()
-  lumbar_axis['extend'] = np.array((0.0, 1.0, 0.0))
-  lumbar_axis['bend'] = np.array((0.0, 0.0, 1.0))
-  lumbar_axis['twist'] = np.array((1.0, 0.0, 0))
+  lumbar_axis["extend"] = np.array((0.0, 1.0, 0.0))
+  lumbar_axis["bend"] = np.array((0.0, 0.0, 1.0))
+  lumbar_axis["twist"] = np.array((1.0, 0.0, 0))
 
   num_dofs = 0
   lumbar_joints = []
@@ -134,11 +137,11 @@ def create_torso(
       dof = num_dofs % 3
       dof_name = list(lumbar_axis.keys())[dof]
       dof_axis = lumbar_axis[dof_name]
-      lumbar_joint_names.append(vertebra.name + '_' + dof_name)
+      lumbar_joint_names.append(vertebra.name + "_" + dof_name)
       joint = vertebra.add(
-          'joint',
+          "joint",
           name=lumbar_joint_names[-1],
-          dclass='lumbar_' + dof_name,
+          dclass="lumbar_" + dof_name,
           axis=dof_axis,
       )
       lumbar_joints.append(joint)
@@ -146,36 +149,35 @@ def create_torso(
 
   # Scale joint defaults relative to 3 lumbar_dofs_per_veterbra
   for dof in lumbar_axis.keys():
-    axis_scale = 7.0 / [dof in joint for joint in lumbar_joint_names].count(
-        True
-    )
+    axis_scale = 7.0 / \
+        [dof in joint for joint in lumbar_joint_names].count(True)
     lumbar_defaults[dof].joint.range *= axis_scale
 
   # Pelvis:
   pelvis = l_7.add(
-      'body', name='pelvis', pos=bone_position['Pelvis'] - bone_position['L_7']
+      "body", name="pelvis", pos=bone_position["Pelvis"] - bone_position["L_7"]
   )
-  pelvic_bones = ['Sacrum', 'Pelvis']
+  pelvic_bones = ["Sacrum", "Pelvis"]
   pelvic_geoms = []
   for bone in pelvic_bones:
     geom = pelvis.add(
-        'geom',
+        "geom",
         name=bone,
         mesh=bone,
-        pos=-bone_position['Pelvis'],
-        dclass='bone',
+        pos=-bone_position["Pelvis"],
+        dclass="bone",
     )
     pelvic_geoms.append(geom)
   # Collision primitives for pelvis
-  for side in ['_L', '_R']:
+  for side in ["_L", "_R"]:
     pos = np.array((0.01, -0.02, -0.01)) * side_sign[side]
     pelvis.add(
-        'geom',
-        name='collision_pelvis' + side,
+        "geom",
+        name="collision_pelvis" + side,
         pos=pos,
         size=[0.05, 0.05, 0],
         euler=[0, 70, 0],
-        dclass='nonself_collision_primitive',
+        dclass="nonself_collision_primitive",
     )
 
   return pelvic_bones, lumbar_joints
