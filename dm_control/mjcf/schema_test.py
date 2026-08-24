@@ -187,5 +187,46 @@ class SchemaTest(absltest.TestCase):
                 + '\n'.join(failures[:20]))
 
 
+class SchemaRegressionTest(absltest.TestCase):
+  """Declarations that MuJoCo accepts must stay representable in PyMJCF."""
+
+  def test_contact_sensor_parses_and_compiles(self):
+    xml_string = """
+      <mujoco>
+        <worldbody>
+          <body name="b">
+            <joint name="j" type="slide"/>
+            <geom name="g" size="0.1"/>
+          </body>
+        </worldbody>
+        <sensor>
+          <contact name="cs" geom1="g" num="1" data="found"
+                   reduce="netforce"/>
+        </sensor>
+      </mujoco>"""
+    root = mjcf.from_xml_string(xml_string)
+    physics = mjcf.Physics.from_mjcf_model(root)
+    self.assertEqual(physics.model.nsensor, 1)
+    self.assertEqual(root.find('sensor', 'cs').geom1.name, 'g')
+
+  def test_jointinparent_is_scoped_on_attach(self):
+    child = mjcf.RootElement(model='child')
+    body = child.worldbody.add('body', name='b')
+    body.add('joint', name='j', type='hinge')
+    body.add('geom', name='g', size=[0.1])
+    child.actuator.add('general', name='a', jointinparent='j')
+    parent = mjcf.RootElement(model='parent')
+    parent.attach(child)
+    self.assertIn('jointinparent="child/j"', parent.to_xml_string())
+    physics = mjcf.Physics.from_mjcf_model(parent)
+    self.assertEqual(physics.model.nu, 1)
+
+  def test_custom_numeric_accepts_array_data(self):
+    root = mjcf.RootElement(model='m')
+    root.custom.add('numeric', name='x', data=[1, 2, 3])
+    physics = mjcf.Physics.from_mjcf_model(root)
+    self.assertEqual(physics.model.nnumericdata, 3)
+
+
 if __name__ == '__main__':
   absltest.main()
