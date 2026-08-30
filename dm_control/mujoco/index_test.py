@@ -347,8 +347,9 @@ class AllFieldsTest(parameterized.TestCase):
     # Write unique values to the FieldIndexer and read them back again.
     # Don't write to non-float fields since these might contain pointers.
     if np.issubdtype(old_contents.dtype, np.floating):
-      new_contents = np.arange(old_contents.size, dtype=old_contents.dtype)
-      new_contents.shape = old_contents.shape
+      new_contents = np.arange(
+          old_contents.size, dtype=old_contents.dtype
+      ).reshape(old_contents.shape)
       field[:] = new_contents
       np.testing.assert_array_equal(new_contents, field[:])
 
