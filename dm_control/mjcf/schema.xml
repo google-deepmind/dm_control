@@ -3150,6 +3150,28 @@
             <attribute name="user" type="array" array_type="float"/>
           </attributes>
         </element>
+        <element name="contact" repeated="true" namespace="sensor">
+          <attributes>
+            <attribute name="name" type="identifier"/>
+            <attribute name="noise" type="float"/>
+            <attribute name="cutoff" type="float"/>
+            <attribute name="nsample" type="int"/>
+            <attribute name="interp" type="keyword" valid_values="zoh linear cubic"/>
+            <attribute name="delay" type="float"/>
+            <attribute name="interval" type="array" array_type="float" array_size="2"/>
+            <attribute name="user" type="array" array_type="float"/>
+            <attribute name="num" type="int"/>
+            <attribute name="data" type="string"/>
+            <attribute name="reduce" type="keyword" valid_values="none mindist maxforce netforce"/>
+            <attribute name="site" type="reference"/>
+            <attribute name="body1" type="reference" reference_namespace="body"/>
+            <attribute name="body2" type="reference" reference_namespace="body"/>
+            <attribute name="subtree1" type="reference" reference_namespace="body"/>
+            <attribute name="subtree2" type="reference" reference_namespace="body"/>
+            <attribute name="geom1" type="reference" reference_namespace="geom"/>
+            <attribute name="geom2" type="reference" reference_namespace="geom"/>
+          </attributes>
+        </element>
         <element name="tactile" repeated="true" namespace="sensor">
           <attributes>
             <attribute name="name" type="identifier"/>
