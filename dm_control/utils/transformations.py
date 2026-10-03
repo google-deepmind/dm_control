@@ -468,15 +468,16 @@ def quat_to_axisangle(quat):
     axisangle: A 3x1 numpy array describing the axis of rotation, with angle
         encoded by its length.
   """
-  angle = 2 * np.arccos(_clip_within_precision(quat[0], -1., 1.))
-
+  scalar = _clip_within_precision(quat[0], -1.0, 1.0)
+  axis = np.asarray(quat[1:4])
+  axis_norm = np.linalg.norm(axis)
+  # The vector part retains small rotations after the scalar rounds to +/-1.
+  angle = 2 * np.arctan2(axis_norm, abs(scalar))
   if angle < _TOL:
     return np.zeros(3)
-  else:
-    qn = np.sin(angle/2)
-    angle = (angle + np.pi) % (2 * np.pi) - np.pi
-    axis = quat[1:4] / qn
-    return axis * angle
+  if scalar <= 0 or angle == np.pi:
+    angle = -angle
+  return axis * (angle / axis_norm)
 
 
 def quat_to_euler(quat, ordering='XYZ'):
