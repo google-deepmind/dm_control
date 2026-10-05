@@ -129,8 +129,11 @@ class Buffer:
     # If using `pad_with_initial_value`, the `arrived_deque` would be empty.
     # We can now pad it with the initial value now.
     if not self._arrived_deque:
+      initial_value = np.array(value)
       for _ in range(self._buffer_size):
-        self._arrived_deque.append(InFlightObservation(-np.inf, 0, value))
+        self._arrived_deque.append(
+            InFlightObservation(-np.inf, 0, initial_value)
+        )
 
     self._update_arrived_deque(timestamp)
     new_obs = InFlightObservation(timestamp, delay, np.array(value))
