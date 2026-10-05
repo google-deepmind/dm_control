@@ -118,7 +118,7 @@ class Trajectory:
         self._create_all_items(self._dict)
         for k in self._dict:
           # make trajectory immutable by default
-          self._dict[k].flags.writeable = False  # pytype: disable=attribute-error
+          self._dict[k].flags.writeable = False
 
     return {k: v[self._start_step:self._end_step]
             for k, v in self._dict.items()}

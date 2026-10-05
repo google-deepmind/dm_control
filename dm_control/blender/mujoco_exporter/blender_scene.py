@@ -122,7 +122,7 @@ class ObjectRef:
 
   @property
   def is_armature(self) -> bool:
-    return (  # pytype: disable=bad-return-type
+    return (
         self.native_obj  # pyrefly: ignore[bad-return]
         and self.native_obj.type == _ARMATURE
         and not self.native_bone
@@ -138,19 +138,19 @@ class ObjectRef:
 
   @property
   def is_mesh(self) -> bool:
-    return self.native_obj and self.native_obj.type == _MESH  # pytype: disable=bad-return-type
+    return self.native_obj and self.native_obj.type == _MESH  # pyrefly: ignore[bad-return]
 
   @property
   def is_light(self) -> bool:
-    return self.native_obj and self.native_obj.type == _LIGHT  # pytype: disable=bad-return-type
+    return self.native_obj and self.native_obj.type == _LIGHT  # pyrefly: ignore[bad-return]
 
   @property
   def is_camera(self) -> bool:
-    return self.native_obj and self.native_obj.type == _CAMERA  # pytype: disable=bad-return-type
+    return self.native_obj and self.native_obj.type == _CAMERA  # pyrefly: ignore[bad-return]
 
   @property
   def is_empty(self) -> bool:
-    return self.native_obj and self.native_obj.type == _EMPTY  # pytype: disable=bad-return-type
+    return self.native_obj and self.native_obj.type == _EMPTY  # pyrefly: ignore[bad-return]
 
   @property
   def name(self) -> str:

@@ -266,7 +266,7 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
     self._reset_reward_channels()
 
   def _strip_reference_prefix(self):
-    self._clip_reference_features = _strip_reference_prefix(  # pytype: disable=wrong-arg-types
+    self._clip_reference_features = _strip_reference_prefix(
         self._clip_reference_features,
         'walker/',
         keep_prefixes=self._prop_prefixes)  # pyrefly: ignore[bad-argument-type]
@@ -488,7 +488,7 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
         physics, self._walker, props=self._props)
     self._walker_features_prev = self._walker_features.copy()
 
-    self._walker_joints = np.array(physics.bind(self._walker.mocap_joints).qpos)  # pytype: disable=attribute-error
+    self._walker_joints = np.array(physics.bind(self._walker.mocap_joints).qpos)
 
     # compute initial error
     self._compute_termination_error()
@@ -779,14 +779,14 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
 
   def action_spec(self, physics: 'mjcf.Physics'):
     """Action spec of the walker only."""
-    ctrl = physics.bind(self._walker.actuators).ctrl  # pytype: disable=attribute-error
+    ctrl = physics.bind(self._walker.actuators).ctrl
     shape = ctrl.shape
     dtype = ctrl.dtype
     minimum = []
     maximum = []
     for actuator in self._walker.actuators:
-      if physics.bind(actuator).ctrllimited:  # pytype: disable=attribute-error
-        ctrlrange = physics.bind(actuator).ctrlrange  # pytype: disable=attribute-error
+      if physics.bind(actuator).ctrllimited:
+        ctrlrange = physics.bind(actuator).ctrlrange
         minimum.append(ctrlrange[0])
         maximum.append(ctrlrange[1])
       else:
@@ -797,7 +797,7 @@ class ReferencePosesTask(composer.Task, metaclass=abc.ABCMeta):
         dtype=dtype,
         minimum=np.asarray(minimum, dtype=dtype),
         maximum=np.asarray(maximum, dtype=dtype),
-        name='\t'.join(actuator.full_identifier  # pytype: disable=attribute-error
+        name='\t'.join(actuator.full_identifier
                        for actuator in self._walker.actuators))
 
   @property
@@ -903,7 +903,7 @@ class MultiClipMocapTracking(ReferencePosesTask):
     self._walker_features = utils.get_features(
         physics, self._walker, props=self._props)
     # features for default error
-    self._walker_joints = np.array(physics.bind(self._walker.mocap_joints).qpos)  # pytype: disable=attribute-error
+    self._walker_joints = np.array(physics.bind(self._walker.mocap_joints).qpos)
 
     self._current_reference_features = {
         k: v[self._time_step].copy()
