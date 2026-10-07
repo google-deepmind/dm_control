@@ -109,6 +109,16 @@ class TransformationsTest(parameterized.TestCase):
       euler_angles = transformations.rmat_to_euler(r, ordering)
       np.testing.assert_allclose(euler_angles, [r1, r2, r3])
 
+  @parameterized.parameters('XYZ', 'ZYX', 'XZY', 'YZX', 'ZXY', 'YXZ')
+  def test_rmat_to_euler_tait_bryan_singularities(self, ordering):
+    middle_angles = (-np.pi/2, np.pi/2)
+    for angles in itertools.product((-.3, .3), middle_angles, (-.7, .7)):
+      rmat = transformations.euler_to_rmat(angles, ordering)
+      euler_angles = transformations.rmat_to_euler(rmat, ordering)
+      # Euler angles are not unique at a singularity, but the rotation is.
+      reconstructed = transformations.euler_to_rmat(euler_angles, ordering)
+      np.testing.assert_allclose(reconstructed, rmat, atol=1e-10)
+
   def test_quat_mul_vs_mat_mul_random(self):
     for _ in range(_NUM_RANDOM_SAMPLES):
       quat1 = self._random_quaternion()
