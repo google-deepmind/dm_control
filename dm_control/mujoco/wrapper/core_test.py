@@ -553,7 +553,7 @@ class AttributesTest(parameterized.TestCase):
           and not np.issubdtype(target_array.dtype, np.integer)
           and not np.issubdtype(target_array.dtype, np.bool_)):
       new_contents = np.arange(target_array.size, dtype=target_array.dtype)
-      new_contents.shape = target_array.shape
+      new_contents = new_contents.reshape(target_array.shape)
       target_array[:] = new_contents
       np.testing.assert_array_equal(new_contents, target_array[:])
 
