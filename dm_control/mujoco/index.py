@@ -378,7 +378,7 @@ class RegularNamedAxis(Axis):
         key_item = np.array([self._names_to_offsets[util.to_native_string(k)]
                              for k in key_item.flat])
         # Ensure the output shape is the same as that of the input.
-        key_item.shape = original_shape
+        key_item = key_item.reshape(original_shape)
 
     return key_item
 
