@@ -25,8 +25,12 @@ environment variable to 'glfw', 'egl', or 'osmesa'.
 import collections
 import os
 
-from absl import logging
+import logging
 from dm_control._render import constants
+
+# Import-time status logging must not install a handler on the application root
+# logger. A named stdlib logger leaves logging.basicConfig() available to users.
+_LOGGER = logging.getLogger(__name__)
 
 BACKEND = os.environ.get(constants.MUJOCO_GL)
 
@@ -85,11 +89,11 @@ if BACKEND is not None:
     raise RuntimeError(
         'Environment variable {} must be one of {!r}: got {!r}.'
         .format(constants.MUJOCO_GL, sorted(all_names), BACKEND))
-  logging.info('MUJOCO_GL=%s, attempting to import specified OpenGL backend.',
+  _LOGGER.info('MUJOCO_GL=%s, attempting to import specified OpenGL backend.',
                BACKEND)
   Renderer = import_func()
 else:
-  logging.info('MUJOCO_GL is not set, so an OpenGL backend will be chosen '
+  _LOGGER.info('MUJOCO_GL is not set, so an OpenGL backend will be chosen '
                'automatically.')
   # Otherwise try importing them in descending order of priority until
   # successful.
@@ -97,12 +101,12 @@ else:
     try:
       Renderer = import_func()
       BACKEND = names[0]
-      logging.info('Successfully imported OpenGL backend: %s', names[0])
+      _LOGGER.info('Successfully imported OpenGL backend: %s', names[0])
       break
     except ImportError:
-      logging.info('Failed to import OpenGL backend: %s', names[0])
+      _LOGGER.info('Failed to import OpenGL backend: %s', names[0])
   if BACKEND is None:
-    logging.info('No OpenGL backend could be imported. Attempting to create a '
+    _LOGGER.info('No OpenGL backend could be imported. Attempting to create a '
                  'rendering context will result in a RuntimeError.')
     Renderer = _no_renderer()
 

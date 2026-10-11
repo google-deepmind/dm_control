@@ -16,11 +16,13 @@
 """Import core names of MuJoCo ctypes bindings."""
 
 
-from absl import logging
+import logging
 
 from dm_control.mujoco.wrapper.mjbindings import constants
 from dm_control.mujoco.wrapper.mjbindings import enums
 from dm_control.mujoco.wrapper.mjbindings import sizes
+
+_LOGGER = logging.getLogger(__name__)
 
 # Internal analytics import.
 
@@ -28,8 +30,8 @@ from dm_control.mujoco.wrapper.mjbindings import sizes
 try:
   from dm_control.mujoco.wrapper.mjbindings import functions
   from dm_control.mujoco.wrapper.mjbindings.functions import mjlib
-  logging.info('MuJoCo library version is: %s', mjlib.mj_versionString())
+  _LOGGER.info('MuJoCo library version is: %s', mjlib.mj_versionString())
   # Internal analytics.
 except (IOError, OSError):
-  logging.warning('mjbindings failed to import mjlib and other functions. '
+  _LOGGER.warning('mjbindings failed to import mjlib and other functions. '
                   'libmujoco.so may not be accessible.')
