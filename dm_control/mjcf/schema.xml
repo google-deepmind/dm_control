@@ -27,6 +27,8 @@
         <attribute name="inertiafromgeom" type="keyword" valid_values="false true auto" default="auto"/>
         <attribute name="inertiagrouprange" type="array" array_type="int" array_size="2" default="0 5"/>
         <attribute name="saveinertial" type="keyword" valid_values="false true"/>
+        <attribute name="savecompiled" type="keyword" valid_values="false true" default="true"/>
+        <attribute name="savecanonical" type="keyword" valid_values="false true" default="true"/>
         <attribute name="assetdir" type="basepath" path_namespace="asset" conflict_allowed="true"/>
         <attribute name="alignfree" type="keyword" valid_values="false true"/>
         <attribute name="conflict" type="keyword" valid_values="warning merge error"/>
@@ -464,9 +466,10 @@
                 <attribute name="armature" type="float"/>
                 <attribute name="cranklength" type="float"/>
                 <attribute name="actdim" type="int" default="-1"/>
-                <attribute name="input" type="keyword" valid_values="expmap quat"/>
+                <attribute name="input" type="string"/>
                 <attribute name="velrange" type="array" array_type="float" array_size="2"/>
                 <attribute name="ffrange" type="array" array_type="float" array_size="2"/>
+                <attribute name="inheritrange" type="float"/>
                 <attribute name="dyntype" type="keyword" valid_values="none integrator filter filterexact muscle dcmotor pid user" default="none"/>
                 <attribute name="gaintype" type="keyword" valid_values="fixed affine muscle dcmotor so3 pid user" default="fixed"/>
                 <attribute name="biastype" type="keyword" valid_values="none affine muscle dcmotor so3 user" default="none"/>
@@ -861,9 +864,10 @@
             <attribute name="armature" type="float"/>
             <attribute name="cranklength" type="float"/>
             <attribute name="actdim" type="int" default="-1"/>
-            <attribute name="input" type="keyword" valid_values="expmap quat"/>
+            <attribute name="input" type="string"/>
             <attribute name="velrange" type="array" array_type="float" array_size="2"/>
             <attribute name="ffrange" type="array" array_type="float" array_size="2"/>
+            <attribute name="inheritrange" type="float"/>
             <attribute name="dyntype" type="keyword" valid_values="none integrator filter filterexact muscle dcmotor pid user" default="none"/>
             <attribute name="gaintype" type="keyword" valid_values="fixed affine muscle dcmotor so3 pid user" default="fixed"/>
             <attribute name="biastype" type="keyword" valid_values="none affine muscle dcmotor so3 user" default="none"/>
@@ -1090,7 +1094,7 @@
             <attribute name="smoothnormal" type="keyword" valid_values="false true"/>
             <attribute name="maxhullvert" type="int" default="-1"/>
             <attribute name="inertia" type="keyword" valid_values="convex legacy exact shell" default="legacy"/>
-            <attribute name="builtin" type="keyword" valid_values="none sphere hemisphere cone supertorus supersphere wedge plate"/>
+            <attribute name="builtin" type="keyword" valid_values="none sphere hemisphere cone supertorus supersphere wedge plate grid box cylinder ellipsoid square disc"/>
             <attribute name="params" type="array" array_type="float"/>
             <attribute name="material" type="reference" reference_namespace="material"/>
           </attributes>
@@ -1216,6 +1220,7 @@
             <attribute name="gravcomp" type="float"/>
             <attribute name="sleep" type="keyword" valid_values="auto never allowed init"/>
             <attribute name="simple" type="keyword" valid_values="false auto" default="auto"/>
+            <attribute name="fuse" type="keyword" valid_values="false auto" default="auto"/>
             <attribute name="user" type="array" array_type="float"/>
           </attributes>
           <children>
@@ -1514,6 +1519,7 @@
                 <attribute name="inertiabox" type="float"/>
                 <attribute name="scale" type="array" array_type="float" array_size="3"/>
                 <attribute name="file" type="file"/>
+                <attribute name="mesh" type="reference" reference_namespace="mesh"/>
                 <attribute name="point" type="array" array_type="float"/>
                 <attribute name="element" type="array" array_type="float"/>
                 <attribute name="texcoord" type="array" array_type="float"/>
@@ -1823,6 +1829,7 @@
             <attribute name="inertiabox" type="float"/>
             <attribute name="scale" type="array" array_type="float" array_size="3"/>
             <attribute name="file" type="file"/>
+            <attribute name="mesh" type="reference" reference_namespace="mesh"/>
             <attribute name="point" type="array" array_type="float"/>
             <attribute name="element" type="array" array_type="float"/>
             <attribute name="texcoord" type="array" array_type="float"/>
@@ -2205,9 +2212,10 @@
             <attribute name="refsite" type="reference" reference_namespace="site"/>
             <attribute name="body" type="reference" reference_namespace="body"/>
             <attribute name="actdim" type="int" default="-1"/>
-            <attribute name="input" type="keyword" valid_values="expmap quat"/>
+            <attribute name="input" type="string"/>
             <attribute name="velrange" type="array" array_type="float" array_size="2"/>
             <attribute name="ffrange" type="array" array_type="float" array_size="2"/>
+            <attribute name="inheritrange" type="float"/>
             <attribute name="dyntype" type="keyword" valid_values="none integrator filter filterexact muscle dcmotor pid user" default="none"/>
             <attribute name="gaintype" type="keyword" valid_values="fixed affine muscle dcmotor so3 pid user" default="fixed"/>
             <attribute name="biastype" type="keyword" valid_values="none affine muscle dcmotor so3 user" default="none"/>
