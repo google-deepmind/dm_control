@@ -213,6 +213,20 @@ def qpos_from_site_pose(physics,
       logging.debug('Step %2i: err_norm=%-10.3g update_norm=%-10.3g',
                     steps, err_norm, update_norm)
 
+  # The final permitted update may reach the target. Report the residual
+  # of the returned configuration rather than the preceding configuration.
+  err_norm = 0.0
+  if target_pos is not None:
+    err_pos[:] = target_pos - site_xpos
+    err_norm += np.linalg.norm(err_pos)
+  if target_quat is not None:
+    mjlib.mju_mat2Quat(site_xquat, site_xmat)
+    mjlib.mju_negQuat(neg_site_xquat, site_xquat)
+    mjlib.mju_mulQuat(err_rot_quat, target_quat, neg_site_xquat)
+    mjlib.mju_quat2Vel(err_rot, err_rot_quat, 1)
+    err_norm += np.linalg.norm(err_rot) * rot_weight
+  success = err_norm < tol
+
   if not success and steps == max_steps - 1:
     logging.warning('Failed to converge after %i steps: err_norm=%3g',
                     steps, err_norm)
