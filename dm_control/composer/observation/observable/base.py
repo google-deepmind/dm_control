@@ -24,7 +24,7 @@ import numpy as np
 
 def _make_aggregator(np_reducer_func, bounds_preserving):
   result = functools.partial(np_reducer_func, axis=0)
-  setattr(result, 'bounds_reserving', bounds_preserving)
+  setattr(result, 'preserves_bounds', bounds_preserving)
   return result
 
 
