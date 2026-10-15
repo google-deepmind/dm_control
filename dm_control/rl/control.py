@@ -18,6 +18,7 @@
 import abc
 import collections
 import contextlib
+import math
 import dm_env
 from dm_env import specs
 import numpy as np
@@ -145,12 +146,21 @@ class Environment(dm_env.Environment):
       shape and dtype.
     """
     try:
-      return self._task.observation_spec(self._physics)
+      observation_spec = self._task.observation_spec(self._physics)
     except NotImplementedError:
       observation = self._task.get_observation(self._physics)
       if self._flat_observation:
         observation = flatten_observation(observation)
       return _spec_from_observation(observation)
+
+    if self._flat_observation:
+      # Match concatenation without allocating arrays or observing the task.
+      size = sum(math.prod(spec.shape) for spec in observation_spec.values())
+      dtype = np.result_type(*(spec.dtype for spec in observation_spec.values()))
+      observation_spec = type(observation_spec)([(
+          FLAT_OBSERVATION_KEY,
+          specs.Array((size,), dtype, name=FLAT_OBSERVATION_KEY))])
+    return observation_spec
 
   @property
   def physics(self):
