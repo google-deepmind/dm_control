@@ -453,7 +453,8 @@ class _ElementImpl(base.Element):
     return found_element
 
   def find_all(self, namespace,
-               immediate_children_only=False, exclude_attachments=False):
+               immediate_children_only=False, exclude_attachments=False,
+               dclass=None):
     """Finds all elements of a particular kind.
 
     The `namespace` argument specifies the kind of element to
@@ -471,6 +472,9 @@ class _ElementImpl(base.Element):
         the immediate children of this element are returned.
       exclude_attachments: (optional) A boolean, if `True` then elements
         belonging to attached models are excluded.
+
+      dclass: (optional) A default class name string to match. If None,
+        elements of all default classes are returned.
 
     Returns:
       A list of `mjcf.Element`.
@@ -491,10 +495,15 @@ class _ElementImpl(base.Element):
               namespace + constants.NAMESPACE_SEPARATOR) or
           # Attachment frames are considered part of the "body" namespace.
           namespace == constants.BODY and isinstance(child, _AttachmentFrame)):
-        out.append(child)
+        default = getattr(child, 'dclass', None)
+        # A PyMJCF dclass is an Element, rather than the XML class string.
+        class_name = getattr(default, 'dclass', default)
+        if dclass is None or class_name == dclass:
+          out.append(child)
       if not immediate_children_only:
-        out.extend(child.find_all(namespace,
-                                  exclude_attachments=exclude_attachments))
+        out.extend(child.find_all(
+            namespace, exclude_attachments=exclude_attachments,
+            dclass=dclass))
     return out
 
   def enter_scope(self, scope_identifier):

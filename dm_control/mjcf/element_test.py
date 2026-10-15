@@ -776,6 +776,23 @@ class ElementTest(parameterized.TestCase):
     self.assertLen(b_0.find_all('joint', immediate_children_only=True), 1)
     self.assertLen(b_0.find_all('joint', exclude_attachments=True), 2)
 
+  def testFindAllFiltersByDefaultClass(self):
+    root = element.RootElement(model='filter_defaults')
+    default = root.default.add('default', dclass='red_sites')
+    body = root.worldbody.add('body', name='body')
+    red = body.add('site', name='red', dclass=default)
+    plain = body.add('site', name='plain')
+    nested = body.add('body', name='nested')
+    red_nested = nested.add('site', name='red_nested', dclass=default)
+
+    self.assertEqual(
+        root.find_all('site', dclass='red_sites'), [red, red_nested])
+    self.assertEqual(root.find_all('site'), [red, plain, red_nested])
+    self.assertEqual(root.find_all('site', dclass='not_used'), [])
+    self.assertEqual(
+        body.find_all('site', immediate_children_only=True,
+                      dclass='red_sites'), [red])
+
   def testFindAllFrameJoints(self):
     root_model = parser.from_path(_TEST_MODEL_XML)
     root_model.model = 'model'
