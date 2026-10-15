@@ -1,3 +1,7 @@
+<p align="center">
+  <b>English</b> · <a href="README.zh.md">简体中文</a>
+</p>
+
 # `dm_control`: Google DeepMind Infrastructure for Physics-Based Simulation.
 
 Google DeepMind's software stack for physics-based simulation and Reinforcement
