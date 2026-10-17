@@ -15,6 +15,8 @@
 
 """An OpenGL renderer backed by GLFW."""
 
+import sys
+
 from dm_control._render import base
 from dm_control._render import executor
 
@@ -24,10 +26,29 @@ try:
   import glfw  # pylint: disable=g-import-not-at-top
 except (ImportError, IOError, OSError) as exc:
   raise ImportError from exc
-try:
-  glfw.init()
-except glfw.GLFWError as exc:
-  raise ImportError from exc
+
+
+def _init_glfw():
+  """Calls `glfw.init()`, re-raising failures as `ImportError`.
+
+  `glfwInit` is a no-op if GLFW has already been initialized, so this is safe
+  to call multiple times.
+  """
+  try:
+    glfw.init()
+  except glfw.GLFWError as exc:
+    raise ImportError from exc
+
+
+# On macOS, initializing GLFW at import time disrupts the shared NSApplication
+# state used by other GUI toolkits, most notably matplotlib's default 'MacOSX'
+# backend (https://github.com/google-deepmind/dm_control/issues/377), so we
+# defer initialization until a context is actually created. On other platforms
+# we initialize at import time so that the automatic backend selection in
+# `dm_control/_render/__init__.py` can still fall back to EGL/OSMesa when GLFW
+# cannot create a context (e.g. on headless Linux machines).
+if sys.platform != 'darwin':
+  _init_glfw()
 
 
 class GLFWContext(base.ContextBase):
@@ -37,6 +58,7 @@ class GLFWContext(base.ContextBase):
     # GLFWContext always uses `PassthroughRenderExecutor` rather than offloading
     # rendering calls to a separate thread because GLFW can only be safely used
     # from the main thread.
+    _init_glfw()
     super().__init__(max_width, max_height, executor.PassthroughRenderExecutor)
 
   def _platform_init(self, max_width, max_height):
