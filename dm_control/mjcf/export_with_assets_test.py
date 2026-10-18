@@ -13,8 +13,6 @@
 # limitations under the License.
 # ============================================================================
 
-"""Tests for `dm_control.mjcf.export_with_assets`."""
-
 import os
 from absl import flags
 from absl.testing import absltest
@@ -74,9 +72,15 @@ class ExportWithAssetsTest(parameterized.TestCase):
     self.assertDictEqual(out_dir_contents, assets)
 
     # Check that we can construct an MjModel instance using the path to the
-    # output file.
-    from_exported = wrapper.MjModel.from_xml_path(
-        os.path.join(out_dir, out_xml_name))
+    # output file. Load relative to `out_dir` so `modelfiledir` is empty,
+    # matching `from_xml_string` below when resolved paths are stored in
+    # `mjModel.paths`.
+    old_cwd = os.getcwd()
+    try:
+      os.chdir(out_dir)
+      from_exported = wrapper.MjModel.from_xml_path(out_xml_name)
+    finally:
+      os.chdir(old_cwd)
 
     # Check that this model is identical to one constructed directly from
     # `mjcf_model`.
