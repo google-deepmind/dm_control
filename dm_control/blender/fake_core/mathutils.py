@@ -67,7 +67,7 @@ class Vector:
   def __eq__(self, rhs) -> bool:
     if not isinstance(rhs, Vector):
       return False
-    return np.linalg.norm(self._coords - rhs._coords) < 1e-6
+    return np.linalg.norm(self._coords - rhs._coords) < 1e-6  # pyrefly: ignore[bad-return]
 
   def __str__(self) -> str:
     return 'Vector({:.2f}, {:.2f}, {:.2f})'.format(self.x, self.y, self.z)
