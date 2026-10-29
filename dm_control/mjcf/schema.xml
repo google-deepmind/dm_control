@@ -364,6 +364,7 @@
                 <attribute name="mesh" type="reference" reference_namespace="mesh"/>
                 <attribute name="fitscale" type="float" default="1"/>
                 <attribute name="rgba" type="array" array_type="float" array_size="4" default="0.5 0.5 0.5 1"/>
+                <attribute name="castshadow" type="keyword" valid_values="false true" default="true"/>
                 <attribute name="fluidshape" type="keyword" valid_values="none ellipsoid"/>
                 <attribute name="fluidcoef" type="array" array_type="float" array_size="5" default="0.5 0.25 1.5 1 1"/>
                 <attribute name="user" type="array" array_type="float"/>
@@ -782,6 +783,7 @@
             <attribute name="mesh" type="reference" reference_namespace="mesh"/>
             <attribute name="fitscale" type="float" default="1"/>
             <attribute name="rgba" type="array" array_type="float" array_size="4" default="0.5 0.5 0.5 1"/>
+            <attribute name="castshadow" type="keyword" valid_values="false true" default="true"/>
             <attribute name="fluidshape" type="keyword" valid_values="none ellipsoid"/>
             <attribute name="fluidcoef" type="array" array_type="float" array_size="5" default="0.5 0.25 1.5 1 1"/>
             <attribute name="user" type="array" array_type="float"/>
@@ -1349,6 +1351,7 @@
                 <attribute name="mesh" type="reference" reference_namespace="mesh"/>
                 <attribute name="fitscale" type="float" default="1"/>
                 <attribute name="rgba" type="array" array_type="float" array_size="4" default="0.5 0.5 0.5 1"/>
+                <attribute name="castshadow" type="keyword" valid_values="false true" default="true"/>
                 <attribute name="fluidshape" type="keyword" valid_values="none ellipsoid"/>
                 <attribute name="fluidcoef" type="array" array_type="float" array_size="5" default="0.5 0.25 1.5 1 1"/>
                 <attribute name="user" type="array" array_type="float"/>
@@ -1580,7 +1583,7 @@
               <children>
                 <element name="edge">
                   <attributes>
-                    <attribute name="equality" type="keyword" valid_values="false true vert strain"/>
+                    <attribute name="equality" type="keyword" valid_values="false true strain"/>
                     <attribute name="solref" type="array" array_type="float" array_size="2"/>
                     <attribute name="solimp" type="array" array_type="float" array_size="5"/>
                     <attribute name="stiffness" type="float"/>
@@ -1675,6 +1678,7 @@
             <attribute name="mesh" type="reference" reference_namespace="mesh"/>
             <attribute name="fitscale" type="float" default="1"/>
             <attribute name="rgba" type="array" array_type="float" array_size="4" default="0.5 0.5 0.5 1"/>
+            <attribute name="castshadow" type="keyword" valid_values="false true" default="true"/>
             <attribute name="fluidshape" type="keyword" valid_values="none ellipsoid"/>
             <attribute name="fluidcoef" type="array" array_type="float" array_size="5" default="0.5 0.25 1.5 1 1"/>
             <attribute name="user" type="array" array_type="float"/>
@@ -1892,7 +1896,7 @@
           <children>
             <element name="edge">
               <attributes>
-                <attribute name="equality" type="keyword" valid_values="false true vert strain"/>
+                <attribute name="equality" type="keyword" valid_values="false true strain"/>
                 <attribute name="solref" type="array" array_type="float" array_size="2"/>
                 <attribute name="solimp" type="array" array_type="float" array_size="5"/>
                 <attribute name="stiffness" type="float"/>
@@ -2198,16 +2202,6 @@
           </attributes>
         </element>
         <element name="flex" repeated="true" namespace="equality">
-          <attributes>
-            <attribute name="name" type="identifier"/>
-            <attribute name="class" type="reference" reference_namespace="default"/>
-            <attribute name="active" type="keyword" valid_values="false true" default="true"/>
-            <attribute name="solref" type="array" array_type="float" array_size="2" default="0.02 1"/>
-            <attribute name="solimp" type="array" array_type="float" array_size="5" default="0.9 0.95 0.001 0.5 2"/>
-            <attribute name="flex" type="reference" reference_namespace="deformable" required="true"/>
-          </attributes>
-        </element>
-        <element name="flexvert" repeated="true" namespace="equality">
           <attributes>
             <attribute name="name" type="identifier"/>
             <attribute name="class" type="reference" reference_namespace="default"/>
