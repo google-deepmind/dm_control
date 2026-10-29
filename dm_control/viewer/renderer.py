@@ -45,6 +45,8 @@ _DEFAULT_RENDER_FLAGS[mujoco.mjtRndFlag.mjRND_SHADOW.value] = 1
 _DEFAULT_RENDER_FLAGS[mujoco.mjtRndFlag.mjRND_REFLECTION.value] = 1
 _DEFAULT_RENDER_FLAGS[mujoco.mjtRndFlag.mjRND_SKYBOX.value] = 1
 _DEFAULT_RENDER_FLAGS[mujoco.mjtRndFlag.mjRND_CULL_FACE.value] = 1
+if hasattr(mujoco.mjtRndFlag, 'mjRND_POST_PROCESSING'):
+  _DEFAULT_RENDER_FLAGS[mujoco.mjtRndFlag.mjRND_POST_PROCESSING.value] = 1
 
 # Font scale values.
 _DEFAULT_FONT_SCALE = mujoco.mjtFontScale.mjFONTSCALE_100
