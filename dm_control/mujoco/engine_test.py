@@ -406,37 +406,27 @@ class MujocoEngineTest(parameterized.TestCase):
     )
 
   def testSetGetPhysicsStateWithPlugin(self):
-    # Model copied from mujoco/test/plugin/elasticity/elasticity_test.cc
-    model_with_cable_plugin = """
+    model_with_pid_plugin = """
     <mujoco>
-      <option gravity="0 0 0"/>
       <extension>
-        <plugin plugin="mujoco.elasticity.cable"/>
+        <plugin plugin="mujoco.pid"/>
       </extension>
       <worldbody>
-        <geom type="plane" size="0 0 1" quat="1 0 0 0"/>
-        <site name="reference" pos="0 0 0"/>
-        <composite type="cable" curve="s" count="41 1 1" size="1" offset="0 0 1" initial="none">
-          <plugin plugin="mujoco.elasticity.cable">
-            <config key="twist" value="1e6"/>
-            <config key="bend" value="1e9"/>
-          </plugin>
-          <joint kind="main" damping="2"/>
-          <geom type="capsule" size=".005" density="1"/>
-        </composite>
+        <body pos="0 0 1">
+          <joint name="j" type="slide" axis="0 0 1"/>
+          <geom size=".1"/>
+        </body>
       </worldbody>
-      <contact>
-        <exclude body1="B_first" body2="B_last"/>
-      </contact>
-      <sensor>
-        <framepos objtype="site" objname="S_last"/>
-      </sensor>
       <actuator>
-        <motor site="S_last" gear="0 0 0 0 1 0" ctrllimited="true" ctrlrange="0 4"/>
+        <plugin plugin="mujoco.pid" joint="j" actdim="2">
+          <config key="kp" value="10"/>
+          <config key="ki" value="1"/>
+          <config key="slewmax" value="1"/>
+        </plugin>
       </actuator>
     </mujoco>
     """
-    physics = engine.Physics.from_xml_string(model_with_cable_plugin)
+    physics = engine.Physics.from_xml_string(model_with_pid_plugin)
     physics_state = physics.get_state()
 
     # qpos, qvel, act, plugin_state
@@ -549,7 +539,10 @@ class MujocoEngineTest(parameterized.TestCase):
   @parameterized.named_parameters(
       ('_copy', lambda x: x.copy()),
       ('_deepcopy', copy.deepcopy),
-      ('_pickle_and_unpickle', lambda x: pickle.loads(pickle.dumps(x))),
+      (
+          '_pickle_and_unpickle',
+          lambda x: pickle.loads(pickle.dumps(x)),  # pylint: disable=g-unsafe-pickle-load
+      ),
   )
   def testCopyOrPicklePhysics(self, func):
     for _ in range(10):
@@ -573,7 +566,10 @@ class MujocoEngineTest(parameterized.TestCase):
 
   @parameterized.named_parameters(
       ('_copy', lambda x: x.copy()),
-      ('_pickle_and_unpickle', lambda x: pickle.loads(pickle.dumps(x))),
+      (
+          '_pickle_and_unpickle',
+          lambda x: pickle.loads(pickle.dumps(x)),  # pylint: disable=g-unsafe-pickle-load
+      ),
   )
   def testSuppressErrorsAfterCopyOrPicklePhysics(self, func):
     # Regression test for a problem that used to exist where

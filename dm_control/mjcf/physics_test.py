@@ -13,8 +13,6 @@
 # limitations under the License.
 # ============================================================================
 
-"""Tests for `dm_control.mjcf.physics`."""
-
 import copy
 import os
 import pickle
@@ -579,33 +577,6 @@ class PhysicsTest(parameterized.TestCase):
         mjcf_physics._PICKLING_NOT_SUPPORTED.format(type=type(xpos_view))):
       pickle.dumps(xpos_view)
 
-  def test_plugins_elasticity(self):
-    root = mjcf.RootElement()
-    root.extension.add('plugin', plugin='mujoco.elasticity.cable')
-
-    # Replicate example in mujoco/model/plugin/elasticity/cable.xml
-    composite = root.worldbody.add(
-        'composite',
-        type='cable',
-        curve='s',
-        count=[41, 1, 1],
-        size=[1, 0, 0],
-        offset=[-0.3, 0, 0.6],
-        initial='none',
-    )
-    plugin = composite.add('plugin', plugin='mujoco.elasticity.cable')
-    plugin.add('config', key='twist', value='1e7')
-    plugin.add('config', key='bend', value='4e6')
-    plugin.add('config', key='vmax', value='0.05')
-    composite.add('joint', kind='main', damping=0.015)
-    composite.geom.type = 'capsule'
-    composite.geom.size = [0.005, 0, 0]
-    composite.geom.rgba = [0.8, 0.2, 0.1, 1]
-    composite.geom.condim = 1
-
-    physics = mjcf.Physics.from_mjcf_model(root)
-    physics.step()
-
   def test_plugins_sdf(self):
     root = mjcf.RootElement()
     root.option.sdf_iterations = 10
@@ -616,7 +587,7 @@ class PhysicsTest(parameterized.TestCase):
     instance.add('config', key='radius1', value='0.35')
     instance.add('config', key='radius2', value='0.15')
 
-    # Replicate example in mujoco/model/plugin/elasticity/torus.xml
+    # Replicate example in mujoco/model/plugin/sdf/torus.xml
     mesh = root.asset.add('mesh', name='torus')
     mesh.add('plugin', instance='torus')
 
