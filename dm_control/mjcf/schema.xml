@@ -176,7 +176,7 @@
             <attribute name="ambient" type="array" array_type="float" array_size="3" default="0.1 0.1 0.1"/>
             <attribute name="diffuse" type="array" array_type="float" array_size="3" default="0.4 0.4 0.4"/>
             <attribute name="specular" type="array" array_type="float" array_size="3" default="0.5 0.5 0.5"/>
-            <attribute name="active" type="int" default="1"/>
+            <attribute name="active" type="keyword" valid_values="false true auto 0 1 2" default="auto"/>
           </attributes>
         </element>
         <element name="map">
@@ -456,7 +456,9 @@
               <attributes>
                 <attribute name="group" type="int"/>
                 <attribute name="limited" type="keyword" valid_values="false true auto" default="auto"/>
+                <attribute name="actuatorfrclimited" type="keyword" valid_values="false true auto" default="auto"/>
                 <attribute name="range" type="array" array_type="float" array_size="2"/>
+                <attribute name="actuatorfrcrange" type="array" array_type="float" array_size="2"/>
                 <attribute name="solreflimit" type="array" array_type="float" array_size="2"/>
                 <attribute name="solimplimit" type="array" array_type="float" array_size="5"/>
                 <attribute name="solreffriction" type="array" array_type="float" array_size="2"/>
@@ -469,6 +471,7 @@
                 <attribute name="margin" type="float"/>
                 <attribute name="stiffness" type="array" array_type="float" array_size="3"/>
                 <attribute name="damping" type="array" array_type="float" array_size="3"/>
+                <attribute name="armature" type="float"/>
                 <attribute name="rgba" type="array" array_type="float" array_size="4"/>
                 <attribute name="user" type="array" array_type="float"/>
               </attributes>
@@ -877,7 +880,9 @@
           <attributes>
             <attribute name="group" type="int"/>
             <attribute name="limited" type="keyword" valid_values="false true auto" default="auto"/>
+            <attribute name="actuatorfrclimited" type="keyword" valid_values="false true auto" default="auto"/>
             <attribute name="range" type="array" array_type="float" array_size="2"/>
+            <attribute name="actuatorfrcrange" type="array" array_type="float" array_size="2"/>
             <attribute name="solreflimit" type="array" array_type="float" array_size="2"/>
             <attribute name="solimplimit" type="array" array_type="float" array_size="5"/>
             <attribute name="solreffriction" type="array" array_type="float" array_size="2"/>
@@ -890,6 +895,7 @@
             <attribute name="margin" type="float"/>
             <attribute name="stiffness" type="array" array_type="float" array_size="3"/>
             <attribute name="damping" type="array" array_type="float" array_size="3"/>
+            <attribute name="armature" type="float"/>
             <attribute name="rgba" type="array" array_type="float" array_size="4"/>
             <attribute name="user" type="array" array_type="float"/>
           </attributes>
@@ -1507,11 +1513,11 @@
                 <element name="elasticity">
                   <attributes>
                     <attribute name="young" type="float"/>
-                    <attribute name="shear" type="float"/>
                     <attribute name="poisson" type="float"/>
+                    <attribute name="shear" type="float"/>
                     <attribute name="damping" type="float"/>
                     <attribute name="thickness" type="float" default="-1"/>
-                    <attribute name="yield" type="float"/>
+                    <attribute name="yield" type="array" array_type="float" array_size="2"/>
                     <attribute name="elastic2d" type="keyword" valid_values="none bend stretch both"/>
                     <attribute name="section" type="keyword" valid_values="circle box"/>
                     <attribute name="sectionsize" type="array" array_type="float" array_size="2"/>
@@ -1730,11 +1736,11 @@
             <element name="elasticity">
               <attributes>
                 <attribute name="young" type="float"/>
-                <attribute name="shear" type="float"/>
                 <attribute name="poisson" type="float"/>
+                <attribute name="shear" type="float"/>
                 <attribute name="damping" type="float"/>
                 <attribute name="thickness" type="float" default="-1"/>
-                <attribute name="yield" type="float"/>
+                <attribute name="yield" type="array" array_type="float" array_size="2"/>
                 <attribute name="elastic2d" type="keyword" valid_values="none bend stretch both"/>
                 <attribute name="section" type="keyword" valid_values="circle box"/>
                 <attribute name="sectionsize" type="array" array_type="float" array_size="2"/>
@@ -1831,11 +1837,11 @@
             <element name="elasticity">
               <attributes>
                 <attribute name="young" type="float"/>
-                <attribute name="shear" type="float"/>
                 <attribute name="poisson" type="float"/>
+                <attribute name="shear" type="float"/>
                 <attribute name="damping" type="float"/>
                 <attribute name="thickness" type="float" default="-1"/>
-                <attribute name="yield" type="float"/>
+                <attribute name="yield" type="array" array_type="float" array_size="2"/>
                 <attribute name="elastic2d" type="keyword" valid_values="none bend stretch both"/>
                 <attribute name="section" type="keyword" valid_values="circle box"/>
                 <attribute name="sectionsize" type="array" array_type="float" array_size="2"/>
