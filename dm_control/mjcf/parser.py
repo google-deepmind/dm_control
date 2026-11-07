@@ -216,6 +216,10 @@ def _parse(xml_root, escape_separators=False,
       # these are a schema violation.
       xml_root.remove(include_tag)
 
+    # MuJoCo also allows <include/> further down the tree, where the contents
+    # of the included file take the place of the tag.
+    _expand_nested_includes(xml_root, model_dir, assets)
+
     # Parse the main XML file.
     try:
       model = xml_root.attrib.pop('model')
@@ -235,6 +239,55 @@ def _parse(xml_root, escape_separators=False,
     if resolve_references:
       mjcf_root.resolve_references()
     return mjcf_root
+
+
+def _read_included_xml(include_tag, model_dir, assets):
+  """Returns the root `etree.Element` of the file an `<include/>` names."""
+  filename = include_tag.attrib['file']
+  try:
+    # First look for the included XML file in the assets dict.
+    contents = assets[filename]
+  except KeyError:
+    # If it's not present in the assets dict then load it from the filesystem.
+    contents = resources.GetResource(os.path.join(model_dir, filename))
+  included_root = etree.fromstring(contents)
+  if not included_root.tag.startswith('mujoco'):
+    raise ValueError(
+        'Root element of an included file should be <mujoco.*>: got <{}> in '
+        '{!r}'.format(included_root.tag, filename))
+  return included_root
+
+
+def _expand_nested_includes(xml_element, model_dir, assets):
+  """Replaces `<include/>` tags below the root with the contents of the file.
+
+  MuJoCo allows `<include/>` wherever a child element is allowed, not only at
+  the top level, and puts the children of the included file in its place. Top
+  level includes are handled separately in `_parse`, which merges them as whole
+  models so that they keep their own asset directories.
+
+  Args:
+    xml_element: The `etree.Element` whose descendants are to be expanded.
+    model_dir: Path to the directory containing the XML file being parsed.
+    assets: A dictionary of pre-loaded assets, of the form
+      `{filename: bytestring}`.
+  """
+  for child in list(xml_element):
+    if child.tag is etree.Comment or child.tag is etree.PI:
+      continue
+    if child.tag == 'include':
+      included_root = _read_included_xml(child, model_dir, assets)
+      # A file included from a subdirectory may include further files relative
+      # to itself.
+      included_dir = os.path.join(
+          model_dir, os.path.dirname(child.attrib['file']))
+      _expand_nested_includes(included_root, included_dir, assets)
+      index = xml_element.index(child)
+      xml_element.remove(child)
+      for offset, included_child in enumerate(list(included_root)):
+        xml_element.insert(index + offset, included_child)
+    else:
+      _expand_nested_includes(child, model_dir, assets)
 
 
 def _parse_children(xml_element, mjcf_element, escape_separators=False):

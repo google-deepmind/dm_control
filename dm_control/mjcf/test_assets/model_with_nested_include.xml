@@ -1,0 +1,11 @@
+<!-- Model with an <include/> tag below the root element -->
+<mujoco>
+  <default>
+    <default class="nested">
+      <include file="included_defaults.xml"/>
+    </default>
+  </default>
+  <worldbody>
+    <include file="included_body.xml"/>
+  </worldbody>
+</mujoco>
