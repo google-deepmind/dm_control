@@ -268,7 +268,8 @@ class TransformationsTest(parameterized.TestCase):
 
   def test_axisangle_to_quat_zero(self):
     axisangle = np.array([0, 0, 0])
-    quat = transformations.axisangle_to_quat(axisangle)
+    with np.errstate(invalid='raise', divide='raise'):
+      quat = transformations.axisangle_to_quat(axisangle)
     np.testing.assert_allclose(quat, [1, 0, 0, 0])
 
   def test_axisangle_to_quat_zero_tol(self):
@@ -277,12 +278,14 @@ class TransformationsTest(parameterized.TestCase):
     np.testing.assert_allclose(quat, [1, 0, 0, 0])
 
   def test_axisangle_to_quat_batched(self):
-    axisangle = np.stack([np.array([0.1, 0.2, 0.3]), np.array([0.4, 0.5, 0.6])])
-    quat = transformations.axisangle_to_quat(axisangle)
+    axisangle = np.array([[0.1, 0.2, 0.3], [0, 0, 0], [0.4, 0.5, 0.6]])
+    with np.errstate(invalid='raise', divide='raise'):
+      quat = transformations.axisangle_to_quat(axisangle)
     np.testing.assert_allclose(
         quat,
         [
             [0.982551, 0.0497088, 0.0994177, 0.1491265],
+            [1, 0, 0, 0],
             [0.9052841, 0.1936448, 0.242056, 0.2904672],
         ],
         atol=1e-6,

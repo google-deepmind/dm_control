@@ -639,8 +639,10 @@ def axisangle_to_quat(axisangle, tol=0.0):
   """
   axisangle = np.asarray(axisangle)
   angle = np.linalg.norm(axisangle, axis=-1, keepdims=True)
-  axis = np.where(angle <= tol, [1.0, 0.0, 0.0], axisangle / angle)
-  angle = np.where(angle <= tol, [0.0], angle)
+  is_identity = angle <= tol
+  safe_angle = np.where(is_identity, 1.0, angle)
+  axis = np.where(is_identity, [1.0, 0.0, 0.0], axisangle / safe_angle)
+  angle = np.where(is_identity, [0.0], angle)
   sine, cosine = np.sin(angle / 2), np.cos(angle / 2)
   return np.concatenate([cosine, axis * sine], axis=-1)
 
