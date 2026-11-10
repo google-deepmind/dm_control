@@ -14,6 +14,7 @@
 # ============================================================================
 
 import collections
+from unittest import mock
 
 from absl.testing import absltest
 from absl.testing import parameterized
@@ -72,6 +73,25 @@ class MujocoIndexTest(parameterized.TestCase):
 
     self._data_indexers = index.struct_indexer(self._data, 'mjdata',
                                                self._size_to_axis_indexer)
+
+  def testStructIndexerSkipsRemovedDataFields(self):
+    # MuJoCo may remove a field that remains in generated array_sizes.
+    with mock.patch.dict(sizes.array_sizes['mjdata'],
+                         {'removed_data_field': ('nbody',)}):
+      named = index.struct_indexer(
+          self._data, 'mjdata', self._size_to_axis_indexer)
+    self.assertNotIn('removed_data_field', named._asdict())
+    self.assertIn('xpos', named._asdict())
+    np.testing.assert_array_equal(
+        named.xpos['cart'], self._data.xpos[1])
+
+  def testStructIndexerSkipsRemovedModelFields(self):
+    with mock.patch.dict(sizes.array_sizes['mjmodel'],
+                         {'removed_model_field': ('ngeom',)}):
+      named = index.struct_indexer(
+          self._model, 'mjmodel', self._size_to_axis_indexer)
+    self.assertNotIn('removed_model_field', named._asdict())
+    self.assertIn('geom_rgba', named._asdict())
 
   def assertIndexExpressionEqual(self, expected, actual):
     try:
