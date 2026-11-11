@@ -15,13 +15,14 @@
 
 """Tests for dm_control.composer.environment."""
 
+from unittest import mock
+
 from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control import composer
 from dm_control import mjcf
 from dm_control.composer.observation import observable
 import dm_env
-import mock
 import numpy as np
 
 

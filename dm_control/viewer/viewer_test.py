@@ -15,11 +15,12 @@
 """Tests of the viewer.py module."""
 
 
+from unittest import mock
+
 from absl.testing import absltest
 from dm_control.mujoco.wrapper.mjbindings import enums
 from dm_control.viewer import util
 from dm_control.viewer import viewer
-import mock
 
 
 class ViewerTest(absltest.TestCase):

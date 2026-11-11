@@ -16,12 +16,12 @@
 """Tests for GLFWContext."""
 
 import unittest
+from unittest import mock
+
 from absl.testing import absltest
 from dm_control import _render
 from dm_control.mujoco import wrapper
 from dm_control.mujoco.testing import decorators
-
-import mock  # pylint: disable=g-import-not-at-top
 
 MAX_WIDTH = 1024
 MAX_HEIGHT = 1024

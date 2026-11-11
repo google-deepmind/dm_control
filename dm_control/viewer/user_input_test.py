@@ -15,9 +15,10 @@
 """Tests for the user_input module."""
 
 
+from unittest import mock
+
 from absl.testing import absltest
 from dm_control.viewer import user_input
-import mock
 
 
 class InputMapTests(absltest.TestCase):

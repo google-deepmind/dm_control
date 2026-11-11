@@ -15,10 +15,10 @@
 """Tests for the GLFW based windowing system."""
 
 import contextlib
+from unittest import mock
 
 from absl.testing import absltest
 from dm_control.viewer import user_input
-import mock
 import numpy as np
 
 

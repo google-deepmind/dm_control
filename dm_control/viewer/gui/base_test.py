@@ -15,9 +15,10 @@
 """Tests for the base windowing system."""
 
 
+from unittest import mock
+
 from absl.testing import absltest
 from dm_control.viewer import user_input
-import mock
 
 
 # pylint: disable=g-import-not-at-top

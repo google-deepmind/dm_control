@@ -15,12 +15,13 @@
 """Runtime tests."""
 
 import collections
+from unittest import mock
+
 from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control.viewer import runtime
 import dm_env
 from dm_env import specs
-import mock
 import numpy as np
 
 

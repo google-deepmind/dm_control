@@ -16,10 +16,10 @@
 """Tests for OSMesaContext."""
 
 import unittest
+from unittest import mock
 
 from absl.testing import absltest
 from dm_control import _render
-import mock
 from OpenGL import GL
 
 MAX_WIDTH = 640

@@ -15,11 +15,12 @@
 
 """Control Environment tests."""
 
+from unittest import mock
+
 from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control.rl import control
 from dm_env import specs
-import mock
 import numpy as np
 
 _CONSTANT_REWARD_VALUE = 1.0

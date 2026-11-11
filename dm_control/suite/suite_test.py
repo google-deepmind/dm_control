@@ -15,12 +15,13 @@
 
 """Tests for dm_control.suite domains."""
 
+from unittest import mock
+
 from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control import suite
 from dm_control.mujoco.wrapper.mjbindings import constants
 from dm_control.rl import control
-import mock
 import numpy as np
 
 

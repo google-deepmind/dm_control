@@ -15,12 +15,13 @@
 """Tests of the renderer module."""
 
 
+from unittest import mock
+
 from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control.mujoco import wrapper
 from dm_control.mujoco.wrapper.mjbindings import enums
 from dm_control.viewer import renderer
-import mock
 import mujoco
 import numpy as np
 

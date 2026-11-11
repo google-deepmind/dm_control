@@ -15,12 +15,13 @@
 """Tests of the application.py module."""
 
 
+from unittest import mock
+
 from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control.viewer import application
 import dm_env
 from dm_env import specs
-import mock
 import numpy as np
 
 

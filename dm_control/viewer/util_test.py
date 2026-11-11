@@ -15,10 +15,11 @@
 """Tests for the keyboard module."""
 
 import collections
+from unittest import mock
+
 from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control.viewer import util
-import mock
 import numpy as np
 
 

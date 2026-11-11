@@ -18,11 +18,11 @@
 import threading
 import time
 import unittest
+from unittest import mock
 
 from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control._render import executor
-import mock
 
 
 def enforce_timeout(timeout):

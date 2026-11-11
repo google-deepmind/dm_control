@@ -14,11 +14,11 @@
 # ============================================================================
 
 import os
+from unittest import mock
 
 from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control.mujoco.testing import image_utils
-import mock
 import numpy as np
 from PIL import Image
 

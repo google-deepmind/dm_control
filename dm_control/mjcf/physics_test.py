@@ -16,13 +16,13 @@
 import copy
 import os
 import pickle
+from unittest import mock
 
 from absl.testing import absltest
 from absl.testing import parameterized
 from dm_control import mjcf
 from dm_control.mjcf import physics as mjcf_physics
 from dm_control.mujoco.wrapper import mjbindings
-import mock
 import mujoco
 import numpy as np
 

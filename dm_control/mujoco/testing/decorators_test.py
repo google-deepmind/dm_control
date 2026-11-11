@@ -15,9 +15,10 @@
 
 """Tests of the decorators module."""
 
+from unittest import mock
+
 from absl.testing import absltest
 from dm_control.mujoco.testing import decorators
-import mock
 
 
 class RunThreadedTest(absltest.TestCase):

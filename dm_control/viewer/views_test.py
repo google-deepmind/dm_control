@@ -15,9 +15,10 @@
 """Tests for the views.py module."""
 
 
+from unittest import mock
+
 from absl.testing import absltest
 from dm_control.viewer import views
-import mock
 import numpy as np
 
 
