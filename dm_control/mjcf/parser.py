@@ -153,9 +153,9 @@ def from_zip(path, model_file='model.xml', escape_separators=False,
 
     model_dir = os.path.dirname(xml_path)
     assets = {
-        os.path.relpath(name, model_dir): zf.read(name)
+        os.path.relpath(name, model_dir).replace('\\', '/'): zf.read(name)
         for name in zf.namelist()
-        if not (name.endswith(os.path.sep) or name == xml_path)
+        if not (name.endswith('/') or name == xml_path)
     }
 
   xml_root = etree.fromstring(xml_string)
