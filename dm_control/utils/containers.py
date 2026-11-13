@@ -70,8 +70,15 @@ class TaggedTasks(collections.abc.Mapping):
     """
     def wrap(factory_func):
       name = factory_func.__name__
-      if name in self and not self.allow_overriding_keys:
-        raise ValueError(_NAME_ALREADY_EXISTS.format(name=name))
+      if name in self:
+        if not self.allow_overriding_keys:
+          raise ValueError(_NAME_ALREADY_EXISTS.format(name=name))
+        # A replacement has its own tags; do not leave old memberships
+        # (or references to the previous factory) in the tag index.
+        for tag, tagged_tasks in list(self._tags.items()):
+          tagged_tasks.pop(name, None)
+          if not tagged_tasks:
+            del self._tags[tag]
       self._tasks[name] = factory_func
       for tag in tags:
         self._tags[tag][name] = factory_func
