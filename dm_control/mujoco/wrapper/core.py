@@ -504,7 +504,7 @@ class MjData(metaclass=_MjDataMeta):
       object_id: Object identifier. Can be either integer ID or String name.
       object_type: The type of the object. Can be either a lowercase string
         (e.g. 'body', 'geom') or an `mjtObj` enum value.
-      local_frame: Boolean specifiying whether the velocity is given in the
+      local_frame: Boolean specifying whether the velocity is given in the
         global (worldbody), or local (object) frame.
 
     Returns:

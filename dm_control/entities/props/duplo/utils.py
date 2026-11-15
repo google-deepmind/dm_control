@@ -45,8 +45,8 @@ def measure_separation_force(top_brick,
   Args:
     top_brick: An instance of `Duplo` representing the top brick.
     bottom_brick: An instance of `Duplo` representing the bottom brick.
-    min_force: A force that should be insufficent to separate the bricks (N).
-    max_force: A force that should be sufficent to separate the bricks (N).
+    min_force: A force that should be insufficient to separate the bricks (N).
+    max_force: A force that should be sufficient to separate the bricks (N).
     tolerance: The desired precision of the solution (N).
     time_limit: The maximum simulation time (s) over which to apply force on
       each iteration. Increasing this value will result in smaller estimates

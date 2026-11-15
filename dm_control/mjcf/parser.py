@@ -228,7 +228,7 @@ def _parse(xml_root, escape_separators=False,
     # Merge in the included XML files.
     for included_mjcf in to_include:
       # The included MJCF might have been automatically assigned a model name
-      # that conficts with that of `mjcf_root`, so we override it here.
+      # that conflicts with that of `mjcf_root`, so we override it here.
       included_mjcf.model = mjcf_root.model
       mjcf_root.include_copy(included_mjcf)
 
