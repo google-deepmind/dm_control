@@ -1,0 +1,5 @@
+<!-- Included by `model_with_nested_include.xml` -->
+<mujoco>
+  <geom rgba="1 0 0 1"/>
+  <tendon width="0.002"/>
+</mujoco>
