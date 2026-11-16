@@ -433,7 +433,7 @@ def _get_pairwise_stacking_rewards(physics, bricks, pairs, close_coef=0.1):
     bricks: A list of `composer.Entity` instances corresponding to bricks.
     pairs: A list of `(bottom_idx, top_idx)` tuples specifying which pairs of
       bricks should be measured.
-    close_coef: Float specfying the relative weight given to the coarse-
+    close_coef: Float specifying the relative weight given to the coarse-
       tolerance shaping component for getting the bricks close to one another
       (as opposed to the fine-tolerance component for clicking them together).
 

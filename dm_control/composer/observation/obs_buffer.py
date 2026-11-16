@@ -115,7 +115,7 @@ class Buffer:
     This function implicitly updates the internal "clock" of this buffer to
     the timestamp of the new observation, and the internal buffer is trimmed
     accordingly, i.e. at most `buffer_size` items whose delayed arrival time
-    preceeds `timestamp` are kept.
+    precedes `timestamp` are kept.
 
     Args:
       timestamp: The time at which this observation was made.

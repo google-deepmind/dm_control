@@ -173,7 +173,7 @@ def _post_radius(goalpost_name, goalpost_radius):
   if 'top' in goalpost_name:
     radius *= 1.01  # Prevent z-fighting at the corners.
   if 'support' in goalpost_name:
-    radius *= _SUPPORT_POST_RATIO  # Suport posts are a bit narrower.
+    radius *= _SUPPORT_POST_RATIO  # Support posts are a bit narrower.
   return radius
 
 
