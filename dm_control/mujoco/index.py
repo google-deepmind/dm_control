@@ -636,9 +636,9 @@ def struct_indexer(struct, struct_name, size_to_axis_indexer):
 
   for field_name in array_sizes:
 
-    # Skip over structured arrays and fields that have sizes but aren't numpy
-    # arrays, such as text fields and contacts (b/34805932).
-    attr = getattr(struct, field_name)
+    # Skip fields removed by newer MuJoCo versions even if older generated
+    # metadata still lists them, as well as non-array and structured fields.
+    attr = getattr(struct, field_name, None)
     if not isinstance(attr, np.ndarray) or attr.dtype.fields:
       continue
 
