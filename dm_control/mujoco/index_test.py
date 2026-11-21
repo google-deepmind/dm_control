@@ -87,6 +87,15 @@ class MujocoIndexTest(parameterized.TestCase):
       self.fail('Indexing expressions are not equal.\n'
                 'expected: {!r}\nactual: {!r}'.format(expected, actual))
 
+  def testRegularNamedAxisPreservesMultidimensionalShape(self):
+    axis = index.RegularNamedAxis(['first', 'second'])
+    key = np.array([['second'], ['first']])
+
+    converted = axis.convert_key_item(key)
+
+    np.testing.assert_array_equal(converted, [[1], [0]])
+    self.assertEqual(converted.shape, key.shape)
+
   @parameterized.parameters(
       # (field name, named index key, expected integer index key)
       ('actuator_gear', 'slide', 0),
@@ -347,8 +356,8 @@ class AllFieldsTest(parameterized.TestCase):
     # Write unique values to the FieldIndexer and read them back again.
     # Don't write to non-float fields since these might contain pointers.
     if np.issubdtype(old_contents.dtype, np.floating):
-      new_contents = np.arange(old_contents.size, dtype=old_contents.dtype)
-      new_contents.shape = old_contents.shape
+      new_contents = np.arange(
+          old_contents.size, dtype=old_contents.dtype).reshape(old_contents.shape)
       field[:] = new_contents
       np.testing.assert_array_equal(new_contents, field[:])
 
