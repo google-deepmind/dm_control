@@ -1,0 +1,31 @@
+<mujoco>
+
+    <visual>
+        <headlight ambient=".4 .4 .4" diffuse=".8 .8 .8" specular="0.1 0.1 0.1"/>
+        <map znear=".01"/>
+        <quality shadowsize="2048"/>
+        <global elevation="-15"/>
+    </visual>
+
+    <asset>
+        <texture name="blue_grid" type="2d" builtin="checker" rgb1=".02 .14 .44" rgb2=".27 .55 1" width="300" height="300" mark="edge" markrgb="1 1 1"/>
+        <material name="blue_grid" texture="blue_grid" texrepeat="1 1" texuniform="true" reflectance=".2"/>
+
+        <texture name="grey_grid" type="2d" builtin="checker" rgb1=".26 .26 .26" rgb2=".6 .6 .6" width="300" height="300" mark="edge" markrgb="1 1 1"/>
+        <material name="grey_grid" texture="blue_grid" texrepeat="1 1" texuniform="true" reflectance=".2"/>
+        <texture name="skybox" type="skybox" builtin="gradient" rgb1=".66 .79 1" rgb2=".9 .91 .93" width="800" height="800"/>
+
+        <material name="self" rgba=".7 .5 .3 1"/>
+        <material name="self_default" rgba=".7 .5 .3 1"/>
+        <material name="self_highlight" rgba="0 .5 .3 1"/>
+        <material name="effector" rgba=".7 .4 .2 1"/>
+        <material name="effector_default" rgba=".7 .4 .2 1"/>
+        <material name="effector_highlight" rgba="0 .5 .3 1"/>
+        <material name="decoration" rgba=".2 .6 .3 1"/>
+        <material name="eye" rgba="0 .2 1 1"/>
+        <material name="target" rgba=".6 .3 .3 1"/>
+        <material name="target_default" rgba=".6 .3 .3 1"/>
+        <material name="target_highlight" rgba=".6 .3 .3 .4"/>
+        <material name="site" rgba=".5 .5 .5 .3"/>
+    </asset>
+</mujoco>
