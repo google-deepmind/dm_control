@@ -116,7 +116,7 @@ def _rmat_to_euler_zyx(rmat):
   """Converts a 3x3 rotation matrix to ZYX euler angles."""
   if rmat[2, 0] > _POLE_LIMIT:
     logging.warning('Angle at North Pole')
-    x = np.arctan2(rmat[0, 1], rmat[0, 2])
+    x = np.arctan2(-rmat[0, 1], -rmat[0, 2])
     y = -np.pi/2
     z = 0.0
     return np.array([z, y, x])
@@ -140,7 +140,7 @@ def _rmat_to_euler_xzy(rmat):
   """Converts a 3x3 rotation matrix to XZY euler angles."""
   if rmat[0, 1] > _POLE_LIMIT:
     logging.warning('Angle at North Pole')
-    y = np.arctan2(rmat[1, 2], rmat[1, 0])
+    y = np.arctan2(-rmat[1, 2], -rmat[1, 0])
     z = -np.pi/2
     x = 0.0
     return np.array([x, z, y])
@@ -164,7 +164,7 @@ def _rmat_to_euler_yzx(rmat):
   """Converts a 3x3 rotation matrix to YZX euler angles."""
   if rmat[1, 0] > _POLE_LIMIT:
     logging.warning('Angle at North Pole')
-    x = -np.arctan2(rmat[0, 2], rmat[0, 1])
+    x = np.arctan2(rmat[0, 2], -rmat[0, 1])
     z = np.pi/2
     y = 0.0
     return np.array([y, z, x])
